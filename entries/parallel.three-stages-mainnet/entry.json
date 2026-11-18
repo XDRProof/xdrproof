@@ -32,8 +32,7 @@
         "container_sha256": "088efd0bc5fdc0a5a01666f2495dd86aaa12ee8fb548da43609dbdda5a15b7c4"
       },
       "focus": {
-        "tx_hash": "1011f8f40f79d361b9f4e68a5cf5f87225ddd2d6b1222f055b2d02475de612c3",
-        "op_index": 0
+        "ledger": true
       }
     }
   ],

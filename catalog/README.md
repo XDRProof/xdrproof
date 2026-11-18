@@ -20,9 +20,12 @@ verify` and `make oracle` then check the built entries; nothing in `entries/` is
     "lane": "soroban",                            // classic | soroban | mined
     "step": "race-victim-txBAD_SEQ",              // recipe step name (manifest.steps[].name); for mined: the record id
     "variants": ["p30-mainnet", "p28-mainnet", "p30-testnet"],  // <p><proto>-<net>[-<flags>]; runs of make generate
-    "ledger_offset": 10                           // optional: the entry is about the ledger N after the step (focus: ledger)
+    "ledger_offset": 10,                          // optional: the entry is about the ledger N after the step (focus: ledger)
+    "mined": [{ "record": "signed-payload-signer@testnet-4437357", "key": "p28-testnet-mined", "tx_hash": "d9f7…" }]
+                                                  // optional: mined variants beside generated ones, each naming its focus tx
   },
-  "focus": { "op_index": 0 },                     // or { "ledger": true } when the entry is about the ledger itself
+  "focus": { "op_index": 0 },                     // or { "ledger": true } when the entry is about the ledger itself;
+                                                  // a mined entry states { "tx_hash": … } (the build never picks one)
   "facts": [
     { "says": "...", "at": "tx.result", "path": "", "equals": "tx_bad_seq", "evidence": ["construction"] }
   ]

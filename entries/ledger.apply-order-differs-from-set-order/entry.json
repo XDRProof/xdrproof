@@ -36,8 +36,7 @@
         "recipe": "recipes/soroban/gen/gen.mjs#race-attacker-bump-sequence"
       },
       "focus": {
-        "tx_hash": "bb863e3627a925918dd3e4e829e390989b41c4b0429d815c00d35f881352ddb7",
-        "op_index": 0
+        "ledger": true
       }
     },
     {
@@ -59,8 +58,7 @@
         "recipe": "recipes/soroban/gen/gen.mjs#race-attacker-bump-sequence"
       },
       "focus": {
-        "tx_hash": "86aaca7b5f6ef4c53049986de367c63f5684e20fae244f6eb348189063dcfb98",
-        "op_index": 0
+        "ledger": true
       }
     },
     {
@@ -82,8 +80,7 @@
         "recipe": "recipes/soroban/gen/gen.mjs#race-attacker-bump-sequence"
       },
       "focus": {
-        "tx_hash": "4ac9fa3f3e0cd863700b37054c9c9173ecacdb1327a26d7b0195aef52e87cbaa",
-        "op_index": 0
+        "ledger": true
       }
     },
     {
@@ -105,8 +102,7 @@
         "recipe": "recipes/soroban/gen/gen.mjs#race-attacker-bump-sequence"
       },
       "focus": {
-        "tx_hash": "bb4487f2c1d7f482ab1c58dfb6cea6e4042b6737ac49e266a97b2830de9ed860",
-        "op_index": 0
+        "ledger": true
       }
     }
   ],

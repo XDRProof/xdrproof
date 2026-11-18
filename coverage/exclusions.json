@@ -13,7 +13,7 @@
     "network-only": "reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined",
     "todo": "core can write it at protocol 30 and a standalone recipe can produce it; not yet in an entry"
   },
-  "method": "First pass by an independent reviewer (Codex) over stellar-core source; every evidence line re-opened and its quote matched; each class checked against every place core sets the code (apply vs check-valid paths); 17 classes corrected (review field).",
+  "method": "First pass by an independent reviewer (Codex) over stellar-core source; every evidence line re-opened and its quote matched; each class checked against every place core sets the code (apply vs check-valid paths); 18 classes corrected (review field).",
   "arms": [
     {
       "arm": "AccountMergeResult.ACCOUNT_MERGE_DEST_FULL",
@@ -1306,12 +1306,13 @@
     },
     {
       "arm": "TransactionResultResult.txINSUFFICIENT_BALANCE",
-      "class": "todo",
+      "class": "historical",
       "evidence": [
-        "src/transactions/TransactionFrame.cpp:1719 txResult.setInnermostError(txINSUFFICIENT_BALANCE);"
+        "src/transactions/TransactionFrame.cpp:1710 (applying && protocolVersionStartsFrom(header.current().ledgerVersion,",
+        "src/transactions/TransactionFrame.cpp:1716 if (chargeFee && getAvailableBalance(header.current(),"
       ],
-      "note": "Drain an accepted transaction source below its required balance before that transaction applies.",
-      "review": "source lines checked"
+      "note": "From protocol 9, apply asks only that the available balance is not negative (the fee was charged before apply), and every operation that raises an account's reserve or liabilities checks it can afford them; before protocol 9 apply re-checked the full fee, so pre-P9 ledgers can carry it.",
+      "review": "corrected after source check (Codex said reachable-generatable)"
     },
     {
       "arm": "TransactionResultResult.txINSUFFICIENT_FEE",

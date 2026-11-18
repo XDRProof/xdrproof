@@ -1,6 +1,6 @@
 {
   "id": "signer.signed-payload.set-options",
-  "title": "Account adds a signed-payload (P…) signer with SET_OPTIONS",
+  "title": "Account adds a signed-payload (P\u2026) signer with SET_OPTIONS",
   "pattern": "CAP-0040 added a signer type that carries a payload: the strkey starts with P and is longer than a G address (up to 165 characters for a 64-byte payload). Readers that assume every signer is a 32-byte ed25519 key truncate it or fail. wallet-backend halted ingestion on testnet ledger 4437357 (#729) and stored the signer as 33 bytes, losing the payload (#716).",
   "caps": [
     "CAP-0040"
@@ -25,7 +25,8 @@
     "mined": [
       {
         "record": "signed-payload-signer@testnet-4437357",
-        "key": "p28-testnet-mined"
+        "key": "p28-testnet-mined",
+        "tx_hash": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed"
       }
     ]
   },
@@ -43,7 +44,7 @@
       ]
     },
     {
-      "says": "The mined testnet signer is the P… strkey from the wallet-backend#729 ledger, kept whole.",
+      "says": "The mined testnet signer is the P\u2026 strkey from the wallet-backend#729 ledger, kept whole.",
       "variants": [
         "p28-testnet-mined"
       ],
@@ -55,7 +56,7 @@
       ]
     },
     {
-      "says": "After apply, the mined account's only signer is that full P… key (an indexer storing 33 bytes has lost the payload).",
+      "says": "After apply, the mined account's only signer is that full P\u2026 key (an indexer storing 33 bytes has lost the payload).",
       "variants": [
         "p28-testnet-mined"
       ],

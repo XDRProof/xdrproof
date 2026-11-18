@@ -29,6 +29,17 @@
       "evidence": [
         "snapshot"
       ]
+    },
+    {
+      "says": "A diagnostic event names the error: SCError type wasm_vm, code invalid_action.",
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/wasm_vm": "invalid_action"
+      },
+      "evidence": [
+        "snapshot"
+      ]
     }
   ]
 }

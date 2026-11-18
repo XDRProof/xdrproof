@@ -28,11 +28,17 @@ const totals = Object.fromEntries(Object.entries(kinds).map(([k, n]) => [n, [...
 
 console.log(`${entries.length} entries, ${variants} variants. Atoms in the corpus: ${Object.entries(totals).map(([n, c]) => `${c} ${n}`).join(', ')}.`);
 console.log(`${report.length - placementOnly.length - redundant.length} entries hold an arm, enum member, hazard or sighting no other entry holds.`);
+// Placement text is the author's claim, not a measurement. The sharpest review aid: entries whose structural atoms
+// (arms, enums, hazards, sightings) all sit inside ONE other entry. Each such pair must differ in what the facts check.
+const structural = (id) => [...atoms.get(id)].filter((a) => !a.startsWith('P:'));
+const containedIn = new Map(placementOnly.map((r) => [r.id, entries.filter((f) => f.id !== r.id && structural(r.id).every((a) => atoms.get(f.id).has(a))).map((f) => f.id)]));
+const contained = [...containedIn].filter(([, v]) => v.length);
 if (placementOnly.length) {
-  console.log(`\n${placementOnly.length} entries are unique by placement only (their arms, enums, hazards and sightings appear elsewhere):`);
-  for (const r of placementOnly) console.log(`  ${r.id}\n      ${r.placements.join('\n      ')}`);
+  console.log(`\n${placementOnly.length} entries are told apart only by their placement (their arms, enums, hazards and sightings appear elsewhere);`);
+  console.log(`${contained.length} of them are structurally contained in a single other entry (review: the facts must check a different thing):`);
+  for (const r of placementOnly) console.log(`  ${r.id}${containedIn.get(r.id).length ? '   [contained in ' + containedIn.get(r.id).slice(0, 2).join(', ') + ']' : ''}\n      ${r.placements.join('\n      ')}`);
 }
-if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ entries: entries.length, variants, totals, report }, null, 2) + '\n');
+if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ entries: entries.length, variants, totals, contained: Object.fromEntries(contained), report }, null, 2) + '\n');
 if (redundant.length) {
   console.log(`\nREDUNDANT (every atom is contributed by another entry):`);
   for (const r of redundant) console.log(`  ${r.id}`);

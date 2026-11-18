@@ -49,6 +49,18 @@
         ],
         "path": "/v2/tx_processing/243/result/result/result/tx_failed/0/op_inner/invoke_host_function",
         "equals": "trapped"
+      },
+      {
+        "says": "A diagnostic event names the error: SCError type wasm_vm, code invalid_action.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/243/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/error/wasm_vm": "invalid_action"
+        }
       }
     ]
   }

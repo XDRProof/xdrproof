@@ -75,6 +75,7 @@ for (const [i, j] of jobs.entries()) {
       else if (wSees && cSees) planted.coincidence++;
       else { planted.oneReader++; disagreements++; console.log(`DISAGREE planted ${j.id}@${j.v.key} fact ${k}: ${changed} (from ${x}) seen by ${wSees ? 'walker' : 'core'} only`); }
     }
+    if (c === null && checkable.length) { disagreements++; console.log(`DISAGREE core   ${j.id}@${j.v.key} fact ${k}: stellar-core could not print this ledger, so nothing is confirmed`); }
     if (wMissing.length) { disagreements++; console.log(`DISAGREE walker ${j.id}@${j.v.key} fact ${k} "${f.says.slice(0, 60)}": missing ${wMissing.join(', ')}`); }
     if (cMissing?.length) { disagreements++; console.log(`DISAGREE core   ${j.id}@${j.v.key} fact ${k} "${f.says.slice(0, 60)}": missing ${cMissing.join(', ')}`); }
   });

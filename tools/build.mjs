@@ -60,7 +60,7 @@ function generatedVariant(cat, label) {
   const manifest = JSON.parse(readFileSync(join(d1, 'manifest.json'), 'utf8'));
   // source.ledger_offset: the entry is about a ledger N after the step's (e.g. the eviction minPersistentTTL ledgers later)
   const at = findStep(manifest, cat.source.step); const off = cat.source.ledger_offset ?? 0;
-  const ledger = at.ledger + off, tx = off ? null : at.tx;
+  const ledger = at.ledger + off, tx = off || cat.focus?.ledger ? null : at.tx;
   const file = `ledger-${String(ledger).padStart(3, '0')}.xdr`; let bytes = readFileSync(join(d1, 'lcm', file));
   const key = `p${cfg.proto}-${cfg.net}-generated${cfg.flags === 'base' ? '' : '-' + cfg.flags}`;
   // change order: 20-run scan for base P30 mainnet, else the two matrix runs
@@ -96,7 +96,8 @@ function minedVariant(cat, ref) { // ref: a mined record id, or {record, key} to
   const net = rec.network === 'pubnet' ? 'mainnet' : 'testnet';
   const bytes = zstdDecompressSync(readFileSync(join(ROOT, rec.file)));
   const key = typeof ref === 'string' ? `p${rec.protocol_version}-${net}-mined-l${rec.ledger_seq}` : ref.key;
-  const tx = cat.focus?.tx_hash ?? rec.findings.find((f) => f.tx_hash)?.tx_hash ?? null;
+  // the catalog states the focus: a transaction, or the ledger itself; never a transaction picked from the record
+  const tx = cat.focus?.ledger ? null : (typeof ref === 'object' && ref.tx_hash) || cat.focus?.tx_hash || die(`${cat.id}: mined variant ${recId} needs a tx_hash (focus.tx_hash, or tx_hash on the source.mined reference) or focus.ledger`);
   return { key, protocol: rec.protocol_version, passphrase: PASSPHRASE[net], bytes, fileName: `${key}.xdr.zst`, zst: readFileSync(join(ROOT, rec.file)), tx, manifest: {},
     source: { lane: 'mined', ledger_seq: rec.ledger_seq, url: rec.source.lake_url, container_sha256: rec.source.batch_sha256 }, // full provenance: mined/index.json
     change_order: null, minority: [] };
@@ -150,6 +151,7 @@ function build(cat) {
   for (const v of variants) {
     const { json, hashes } = native(v.bytes, v.passphrase);
     v.hashes = hashes; v.envPtrs = envelopePointers(json); v.opIndex = cat.focus?.op_index ?? 0;
+    if (Boolean(cat.focus?.ledger) === Boolean(v.tx)) die(`${cat.id}@${v.key}: catalog focus is ${cat.focus?.ledger ? 'the ledger' : 'a transaction'} but the variant resolved ${v.tx ? 'transaction ' + v.tx : 'no transaction'}`);
     if (v.envPtrs.length !== hashes.length) die(`${cat.id}@${v.key}: envelope count ${v.envPtrs.length} != ${hashes.length}`);
     for (const [n, f] of (cat.facts ?? []).entries()) {
       if (f.variants && !f.variants.some((w) => w === v.key || w === v.label)) continue;

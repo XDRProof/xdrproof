@@ -1597,8 +1597,7 @@
       "sha256": "039ba91a4dfd229cbbc58204ce16afed91eb066f4b88219b7d1932f08359b584",
       "size": 887884,
       "focus": {
-        "tx_hash": "44aca175be4d51c1282466f8dd37d7e5a0e5b1acef74e453e5fb6cba92070df8",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 2,
       "sdk_checks": 0,
@@ -7716,8 +7715,7 @@
       "sha256": "dbc26aa0d75267052a7b0ff3a399e6a5f1bd708bf51da7b88e10fce8e646ba9b",
       "size": 17236,
       "focus": {
-        "tx_hash": "bb863e3627a925918dd3e4e829e390989b41c4b0429d815c00d35f881352ddb7",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 3,
       "sdk_checks": 0,
@@ -7746,8 +7744,7 @@
       "sha256": "b464fb610c5dc4338e51264688075287b17489787054fc0a9a3ed48926be972c",
       "size": 17228,
       "focus": {
-        "tx_hash": "86aaca7b5f6ef4c53049986de367c63f5684e20fae244f6eb348189063dcfb98",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 3,
       "sdk_checks": 0,
@@ -7776,8 +7773,7 @@
       "sha256": "93d7ae80867e77f226d47e6e0b9ffda64102deea242ce75547630c1b054069d4",
       "size": 17132,
       "focus": {
-        "tx_hash": "4ac9fa3f3e0cd863700b37054c9c9173ecacdb1327a26d7b0195aef52e87cbaa",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 3,
       "sdk_checks": 0,
@@ -7806,8 +7802,7 @@
       "sha256": "e7e04e4b8cdf6577f759407db04947b1975e718e8cc0409916390ace9facde81",
       "size": 17124,
       "focus": {
-        "tx_hash": "bb4487f2c1d7f482ab1c58dfb6cea6e4042b6737ac49e266a97b2830de9ed860",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 3,
       "sdk_checks": 0,
@@ -9701,8 +9696,7 @@
       "sha256": "fc6b3e4907991b6d568d0fb6096551348de8e2d062ad836b91f56b773dced1e0",
       "size": 2495988,
       "focus": {
-        "tx_hash": "1011f8f40f79d361b9f4e68a5cf5f87225ddd2d6b1222f055b2d02475de612c3",
-        "op_index": 0
+        "ledger": true
       },
       "facts_checked": 2,
       "sdk_checks": 0,
@@ -12641,7 +12635,7 @@
         "tx_hash": "4c1ea3381aa6c730114212fd529e7c87babc84ba9eb78efaa09f8c540116c224",
         "op_index": 0
       },
-      "facts_checked": 1,
+      "facts_checked": 2,
       "sdk_checks": 0,
       "change_order_stable": true,
       "sightings": [],
@@ -12671,7 +12665,7 @@
         "tx_hash": "1843e11721fed515ba066863a2ff92105943bd2da807c253d69397c86e26460d",
         "op_index": 0
       },
-      "facts_checked": 1,
+      "facts_checked": 2,
       "sdk_checks": 0,
       "change_order_stable": true,
       "sightings": [],

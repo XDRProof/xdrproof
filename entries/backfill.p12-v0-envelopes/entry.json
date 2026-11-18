@@ -36,8 +36,7 @@
         "container_sha256": "e6cdde6d0600fb7d6019a25164abbb19468258392faa1f258b2ef457ff4a0749"
       },
       "focus": {
-        "tx_hash": "44aca175be4d51c1282466f8dd37d7e5a0e5b1acef74e453e5fb6cba92070df8",
-        "op_index": 0
+        "ledger": true
       }
     }
   ],
