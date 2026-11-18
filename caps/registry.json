@@ -548,7 +548,7 @@
         "CAP-0063",
         "stellar-etl#453"
       ],
-      "test": "Facts on existing S-ledgers; Soroban fee bump with a muxed fee source, charge and refund both on the fee source: s-base `soroban-fee-bump-muxed-fee-source`",
+      "test": "Facts on existing S-ledgers; Soroban fee bump with a muxed fee source, charge and refund both on the fee source: s-base `soroban-fee-bump-muxed-fee-source`; fee source merged earlier in the same ledger: no refund, no refund event, fee_charged is the full maximum (TransactionFrame.cpp:998-1001): s-base `race-victim-txNO_ACCOUNT`",
       "checks": [
         "R",
         "V"
@@ -589,7 +589,7 @@
       "title": "Transaction-level failures at apply time: `txBAD_SEQ`, `txNO_ACCOUNT`, `txBAD_AUTH`, `opBAD_AUTH` (state changed earlier in the same ledger or tx)",
       "evidence": "15 TransactionResultResult arms uncovered",
       "refs": [],
-      "test": "Multi-tx ledgers in failure-suite style; each code proven reachable or unreachable with a core apply-path line",
+      "test": "One ledger, classic attackers then Soroban victims (core applies the classic phase first; within a phase the order is a hash shuffle): txBAD_SEQ, txNO_ACCOUNT, txBAD_AUTH, txBAD_MIN_SEQ_AGE_OR_GAP, and txFAILED with opBAD_AUTH and opNO_ACCOUNT, all valid at submission (TransactionFrame::commonValid, OperationFrame::checkSignature forApply): s-base `race-victim-*`",
       "checks": [
         "V"
       ]

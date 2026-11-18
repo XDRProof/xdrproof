@@ -292,6 +292,55 @@ for (const [kind, address] of [
     { ro: [kCode(wasmHash)], rw: [kInstance(contractId(preimage))] }), `CreateContractV2 from a ${kind} ScAddress: included, refused by the host`);
 }
 
+// ---- H-C16: transactions valid at submission that fail at apply ----------------
+// Core applies a ledger's classic phase before its Soroban phase, and re-checks the source account,
+// sequence number, signatures and sequence-age preconditions at apply (TransactionFrame::commonValid,
+// OperationFrame::checkSignature with forApply). So a classic "attacker" that changes an account
+// makes a Soroban "victim" queued for the same ledger fail, in a fixed order. (Within one phase the
+// order is a hash shuffle, TxSetFrame.cpp ApplyTxSorter, so classic-only pairs are not reproducible.)
+const pending = [];
+const enqueue = async (name, tx, note) => { // like submit(), but the ledger closes in closeGroup()
+  const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
+  if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); return false; }
+  const inner = tx.innerTransaction ?? tx;
+  const src = inner.source.startsWith('M') ? S.MuxedAccount.fromAddress(inner.source, '0').baseAccount().accountId() : inner.source;
+  seq.set(src, seq.get(src) + 1n); // victims that fail txBAD_SEQ or txNO_ACCOUNT never use the next number; they are not reused
+  pending.push({ name, tx: Buffer.from(tx.hash()).toString('hex'), note }); return true;
+};
+const closeGroup = async (group) => {
+  await close();
+  for (const p of pending.splice(0)) { manifest.steps.push({ ...p, ledger, group }); console.log(String(ledger).padStart(3), p.name, p.tx); }
+};
+{ const [x1, x2, x3, x4, vA, vB, vC, vD, vF, vG, y1, y2] = ['x1', 'x2', 'x3', 'x4', 'vA', 'vB', 'vC', 'vD', 'vF', 'vG', 'y1', 'y2'].map((n) => kp('race-' + n));
+  const sC = kp('race-signer-C'), sD = kp('race-signer-D');
+  await submit('race-setup-accounts', classic(root, [x1, x2, x3, x4, vA, vB, vC, vD, vF, vG, y1, y2].map((k) => S.Operation.createAccount({ destination: k.publicKey(), startingBalance: '1000' }))));
+  for (const k of [x1, x2, x3, x4, vA, vB, vC, vD, vF, vG, y1, y2]) seq.set(k.publicKey(), BigInt(ledger) << 32n);
+  for (const [v, s] of [[vC, sC], [vD, sD]]) // one extra signer, thresholds 1 so a signature is always needed
+    await enqueue('race-setup-signer-' + (v === vC ? 'vC' : 'vD'), classic(v, [S.Operation.setOptions({ signer: { ed25519PublicKey: s.publicKey(), weight: 1 }, lowThreshold: 1, medThreshold: 1, highThreshold: 1 })]));
+  await closeGroup('race-setup');
+
+  const ttl = (source) => S.Operation.extendFootprintTtl({ extendTo: 60001, ...(source ? { source: source.publicKey() } : {}) });
+  const fp = { ro: [kData(K0, sym('collide'))] };
+  // classic phase: six attackers
+  await enqueue('race-attacker-bump-sequence', classic(x1, [S.Operation.bumpSequence({ bumpTo: String((BigInt(ledger) << 32n) + 1000n), source: vA.publicKey() })], [x1, vA]), 'bumps vA past its queued transaction');
+  await enqueue('race-attacker-merge-tx-source', classic(x2, [S.Operation.accountMerge({ destination: x2.publicKey(), source: vB.publicKey() })], [x2, vB]), 'merges vB after its fee was charged');
+  await enqueue('race-attacker-remove-tx-signer', classic(x3, [S.Operation.setOptions({ signer: { ed25519PublicKey: sC.publicKey(), weight: 0 }, source: vC.publicKey() })], [x3, vC]), 'removes the only key that signed vC\'s transaction');
+  await enqueue('race-attacker-remove-op-signer', classic(vD, [S.Operation.setOptions({ signer: { ed25519PublicKey: sD.publicKey(), weight: 0 } })]), 'removes the key that signed for vD as operation source');
+  await enqueue('race-attacker-merge-op-source', classic(vF, [S.Operation.accountMerge({ destination: x2.publicKey() })]), 'vF merges itself away');
+  await enqueue('race-attacker-bump-sequence-ledger', classic(x4, [S.Operation.bumpSequence({ bumpTo: '0', source: vG.publicKey() })], [x4, vG]), 'bumpTo 0 changes no sequence number but sets vG seqLedger to this ledger');
+  // Soroban phase: six victims, each valid against the previous ledger
+  await enqueue('race-victim-txBAD_SEQ', soroban(vA, ttl(), fp), 'vA\'s sequence number was bumped earlier in the ledger');
+  await enqueue('race-victim-txNO_ACCOUNT', soroban(vB, ttl(), fp), 'vB was merged earlier in the ledger');
+  await enqueue('race-victim-txBAD_AUTH', soroban(vC, ttl(), fp, [sC]), 'signed only by sC, removed earlier in the ledger');
+  await enqueue('race-victim-opBAD_AUTH', soroban(y1, ttl(vD), fp, [y1, sD]), 'operation source vD, signed by sD, removed earlier in the ledger');
+  await enqueue('race-victim-opNO_ACCOUNT', soroban(y2, ttl(vF), fp, [y2, vF]), 'operation source vF, merged earlier in the ledger');
+  { const data = new S.SorobanDataBuilder().setFootprint(fp.ro, []).setResources(RES.ins, RES.read, RES.write).setResourceFee(RES.fee).build();
+    const t = new S.TransactionBuilder(new S.Account(vG.publicKey(), seq.get(vG.publicKey()).toString()), { fee: String(1000 + RES.fee), networkPassphrase: passphrase, timebounds: TB })
+      .setMinAccountSequenceLedgerGap(1).addOperation(ttl()).setSorobanData(data).build(); t.sign(vG);
+    await enqueue('race-victim-txBAD_MIN_SEQ_AGE_OR_GAP', t, 'minSeqLedgerGap 1, and vG\'s seqLedger moved to this ledger'); }
+  await closeGroup('apply-time-failures');
+  manifest.accounts.race = Object.fromEntries(Object.entries({ x1, x2, x3, x4, vA, vB, vC, vD, vF, vG, y1, y2, sC, sD }).map(([n, k]) => [n, k.publicKey()])); }
+
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {
   const big = { ins: 240_000_000, read: 200_000, write: 20_000, fee: 400_000_000 };
