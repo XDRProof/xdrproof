@@ -1,0 +1,56 @@
+{
+  "id": "fee-bump.soroban-muxed-fee-source",
+  "title": "A Soroban call in a fee bump paid by a muxed account: charge and refund on the fee source",
+  "pattern": "The resource fee is charged at the maximum and the unused part refunded after apply; both go to the fee source bob (via M(bob, 13)), not to the inner source alice.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0046",
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-C13",
+      "placement": "Soroban refund to a muxed fee-bump fee source"
+    },
+    {
+      "id": "H-A8",
+      "placement": "FeeBumpTransaction.feeSource muxed, Soroban inner"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "soroban-fee-bump-muxed-fee-source",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The fee source is bob muxed with ID 13.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/fee_source",
+      "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAABWR4I",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The refund after apply goes to bob.",
+      "at": "tx.post_apply_fee",
+      "some": {
+        "/updated/data/account/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

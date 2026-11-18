@@ -1,0 +1,144 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "auth.tree-depth-245-max",
+  "title": "The deepest authorization tree core applies: 245 invocations; the WASM decoder rejects it",
+  "pattern": "One source-credential entry whose root invocation carries a chain of 244 never-called sub-invocations: 245 nodes, the deepest that applies at P30 (246 traps). The kits[1] contract appears 244 times in the auth and never in the meta. @stellar/stellar-xdr-json 30.0.0 (WASM) cannot decode this ledger; native rs-stellar-xdr can.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "auth tree 245 nodes deep, the maximum that applies"
+    },
+    {
+      "id": "H-B13",
+      "placement": "a valid ledger the WASM decoder rejects (depth limit exceeded)"
+    },
+    {
+      "id": "H-A7",
+      "placement": "auth entries name an address the meta never touches"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "4dabb873a396e4349e215b3b2cc671eb5f0681702b02590785af1e84d301f269",
+      "size": 29780,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/soroban/gen/gen.mjs#auth-tree-depth-245-max"
+      },
+      "focus": {
+        "tx_hash": "a727985cdc82bb3eb88cf4ea23237af97be0b38aebfb32fbd2a7cb297a96c8ea",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "b5e104842e4d60a0a581532bdff55df26ad568561b40758c1502400a117f00b5",
+      "size": 29772,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/soroban/gen/gen.mjs#auth-tree-depth-245-max"
+      },
+      "focus": {
+        "tx_hash": "a727985cdc82bb3eb88cf4ea23237af97be0b38aebfb32fbd2a7cb297a96c8ea",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "cdc0876232a755fd4a7646d8b2919cca2b6e630546e33517a4fb4c22f80b74cc",
+      "size": 29780,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/soroban/gen/gen.mjs#auth-tree-depth-245-max"
+      },
+      "focus": {
+        "tx_hash": "3a9b38296b818d0d055779388af57216762bc6f558e29c691ed15a2254ddf2cc",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "558f01d3a986144f5db8d3f987b7a1353edfa2e663c024bad3adc6736158606b",
+      "size": 29772,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/soroban/gen/gen.mjs#auth-tree-depth-245-max"
+      },
+      "focus": {
+        "tx_hash": "3a9b38296b818d0d055779388af57216762bc6f558e29c691ed15a2254ddf2cc",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The call succeeds; the success hash covers its return value (u32 1) and no events, the same on every network.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/invoke_host_function/success",
+        "equals": "df071a249d03fc2f22313f75c734a254bbea03124cea77001704db0670b2fc02"
+      },
+      {
+        "says": "It changes no ledger entry.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "length": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "archival.restore-footprint",
+  "title": "RESTORE_FOOTPRINT of an evicted entry",
+  "pattern": "Restoring from the hot archive: restored changes only, no value change.",
+  "caps": [
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-D7",
+      "placement": "RestoreFootprint of an evicted entry"
+    },
+    {
+      "id": "H-D4",
+      "placement": "restore changes entries with no value change"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "archival-restore-footprint",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "archived_op is restored with its value 2.",
+      "at": "op.changes",
+      "some": {
+        "/restored/data/contract_data/key/symbol": "archived_op",
+        "/restored/data/contract_data/val/u32": 2
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The restore_footprint operation succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/restore_footprint",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

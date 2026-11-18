@@ -1,0 +1,56 @@
+{
+  "id": "deploy.from-liquidity-pool-address",
+  "title": "A deploy from a liquidity-pool address: included, trapped",
+  "pattern": "The host refuses SC_ADDRESS_TYPE_LIQUIDITY_POOL anywhere (CAP-0067); the transaction is still in the ledger. wallet-backend#745.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A5",
+      "placement": "liquidity-pool ScAddress as deployer"
+    },
+    {
+      "id": "H-C6",
+      "placement": "Soroban failure: trapped on a refused address kind"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/745"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "deploy-from-liquidity-pool-address",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails: the host traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The deployer is the L… address of sha256(\"xdrproof:deployer:liquidity-pool\").",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/create_contract_v2/contract_id_preimage/address/address",
+      "equals": "LCB3UXMKOPZLTZLD7U5FCWNVE2UHZWG7CWQAFSLJYM5YXHRMS37MMOAE",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "archival.automatic-restore",
+  "title": "A contract call restores an archived entry and overwrites it in one operation",
+  "pattern": "SorobanTransactionDataExt v1 marks readWrite[0] archived: the call restores it (restored changes for the entry and its TTL) and then updates it. Readers that expect one change per key, or no restored type in an invoke, get it wrong.",
+  "caps": [
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-D7",
+      "placement": "archivedSorobanEntries: restored then updated, same key, one operation"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "archival-automatic-restore-in-invoke",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction marks readWrite index 0 as archived.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/ext/v1/ext/v1/archived_soroban_entries",
+      "equals": [
+        0
+      ],
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "archived_auto is restored.",
+      "at": "op.changes",
+      "some": {
+        "/restored/data/contract_data/key/symbol": "archived_auto"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "and updated to 11 in the same operation.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/contract_data/key/symbol": "archived_auto",
+        "/updated/data/contract_data/val/u32": 11
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

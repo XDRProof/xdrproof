@@ -1,0 +1,44 @@
+{
+  "id": "executable-ref.tag-entry",
+  "title": "An executable-reference entry keyed by SCV_EXECUTABLE_TAG",
+  "pattern": "CA1 stores the v1 kit Wasm hash under an SCV_EXECUTABLE_TAG key \"kit\" (CAP-0085): other contracts may run that Wasm by reference.",
+  "caps": [
+    "CAP-0085"
+  ],
+  "hazards": [
+    {
+      "id": "H-D11",
+      "placement": "ContractData keyed by SCV_EXECUTABLE_TAG"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit2-set-executable-ref",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The key is executable_tag \"kit\".",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/executable_tag": "kit",
+        "/created/data/contract_data/val/bytes": {
+          "$manifest": "contracts.kit_wasm_hash"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

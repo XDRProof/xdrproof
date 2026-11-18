@@ -1,0 +1,42 @@
+{
+  "id": "deploy.from-claimable-balance-address",
+  "title": "A deploy from a claimable-balance address: included, trapped",
+  "pattern": "SC_ADDRESS_TYPE_CLAIMABLE_BALANCE as deployer: refused by the host, still in the ledger.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A5",
+      "placement": "claimable-balance ScAddress as deployer"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/745"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "deploy-from-claimable-balance-address",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails: the host traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

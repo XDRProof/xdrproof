@@ -1,0 +1,47 @@
+{
+  "id": "ttl.restore-live-entry",
+  "title": "RESTORE_FOOTPRINT on a live entry succeeds and changes nothing",
+  "pattern": "Restoring an entry that is not archived is a success with no change.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D4",
+      "placement": "RestoreFootprint of a live entry: no change"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "restore-footprint-live-entry",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The restore_footprint operation succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/restore_footprint",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Nothing changes.",
+      "at": "op.changes",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

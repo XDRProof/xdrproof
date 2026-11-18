@@ -1,0 +1,55 @@
+{
+  "id": "auth.tree-depth-245-max",
+  "title": "The deepest authorization tree core applies: 245 invocations; the WASM decoder rejects it",
+  "pattern": "One source-credential entry whose root invocation carries a chain of 244 never-called sub-invocations: 245 nodes, the deepest that applies at P30 (246 traps). The kits[1] contract appears 244 times in the auth and never in the meta. @stellar/stellar-xdr-json 30.0.0 (WASM) cannot decode this ledger; native rs-stellar-xdr can.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "auth tree 245 nodes deep, the maximum that applies"
+    },
+    {
+      "id": "H-B13",
+      "placement": "a valid ledger the WASM decoder rejects (depth limit exceeded)"
+    },
+    {
+      "id": "H-A7",
+      "placement": "auth entries name an address the meta never touches"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "auth-tree-depth-245-max",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call succeeds; the success hash covers its return value (u32 1) and no events, the same on every network.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/invoke_host_function/success",
+      "equals": "df071a249d03fc2f22313f75c734a254bbea03124cea77001704db0670b2fc02",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "It changes no ledger entry.",
+      "at": "op.changes",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

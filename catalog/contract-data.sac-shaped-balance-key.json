@@ -1,0 +1,45 @@
+{
+  "id": "contract-data.sac-shaped-balance-key",
+  "title": "A plain contract stores a key shaped like a SAC balance",
+  "pattern": "kit0 (not a Stellar Asset Contract) stores [\"Balance\", bob] → i128 1234. Readers that detect token balances by key shape record a balance that does not exist.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D10",
+      "placement": "a non-SAC [\"Balance\", G] contract-data key"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit-put-sac-shaped-balance-key",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "kit0 stores key [\"Balance\", bob].",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit.0"
+        },
+        "/created/data/contract_data/key/vec/0/symbol": "Balance",
+        "/created/data/contract_data/key/vec/1/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

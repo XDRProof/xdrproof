@@ -1,0 +1,65 @@
+{
+  "id": "auth.nested-delegates",
+  "title": "Address credentials with three levels of nested delegates",
+  "pattern": "SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES (CAP-0071-01): CA1 delegates to CA2, CA2 to CA3, CA3 to bob, whose ed25519 signature is the only real one. Readers that walk SorobanDelegateSignature must recurse into nestedDelegates.",
+  "caps": [
+    "CAP-0071"
+  ],
+  "hazards": [
+    {
+      "id": "H-B14",
+      "placement": "SorobanDelegateSignature.nestedDelegates three levels deep"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "custom-account-nested-delegates",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "CA1 is the credentialed address.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/credentials/address_with_delegates/address_credentials/address",
+      "equals": {
+        "$manifest": "contracts.kit2.CA1"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Three levels down the delegate is bob.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/credentials/address_with_delegates/delegates/0/nested_delegates/0/nested_delegates/0/address",
+      "equals": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The call succeeds and records CA1's nonce.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit2.CA1"
+        },
+        "/created/data/contract_data/durability": "temporary"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

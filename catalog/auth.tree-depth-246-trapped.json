@@ -1,0 +1,44 @@
+{
+  "id": "auth.tree-depth-246-trapped",
+  "title": "One level deeper, 246: included and trapped",
+  "pattern": "The same shape with 246 nodes is accepted at submission and included, then fails trapped.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "auth tree 246 deep: included, trapped"
+    },
+    {
+      "id": "H-C6",
+      "placement": "Soroban failure: trapped on auth depth"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "auth-tree-depth-246-trapped",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails: the host traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

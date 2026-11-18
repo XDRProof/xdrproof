@@ -1,0 +1,61 @@
+{
+  "id": "sac.xlm-transfer-muxed-contract",
+  "title": "An XLM SAC transfer to a muxed contract address (W…)",
+  "pattern": "CAP-0084 muxed contract address: the argument is SC_ADDRESS_TYPE_MUXED_CONTRACT (a W… strkey); the event names the contract (C…) and carries to_muxed_id 84; the balance is the contract's.",
+  "caps": [
+    "CAP-0084",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "SC_ADDRESS_TYPE_MUXED_CONTRACT as transfer destination"
+    },
+    {
+      "id": "H-E2",
+      "placement": "to_muxed_id for a contract destination"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "xlm-sac-transfer-muxed-contract",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The destination argument is the kit contract muxed with ID 84, a W… strkey.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/args/1/address",
+      "equals": {
+        "$muxedContract": [
+          "contracts.kit.0",
+          "84"
+        ]
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The event names the contract and carries to_muxed_id 84.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/2/address": {
+          "$manifest": "contracts.kit.0"
+        },
+        "/body/v0/data/map/1/val/u64": "84"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

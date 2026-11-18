@@ -1,0 +1,60 @@
+{
+  "id": "sac.contract-balance-above-int64",
+  "title": "A SAC balance held by a contract above int64",
+  "pattern": "The issuer mints 2^64 + 2^63 XPF to a contract. Contract balances in a SAC are i128 with no int64 cap, unlike trustlines. Readers that store token balances as int64 overflow.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B4",
+      "placement": "SAC contract balance i128 above int64"
+    },
+    {
+      "id": "H-B3",
+      "placement": "token amount above int64 max"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "sac-mint-to-contract-beyond-int64",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The balance entry [\"Balance\", kit0] holds 27670116110564327424.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/vec/1/address": {
+          "$manifest": "contracts.kit.0"
+        },
+        "/created/data/contract_data/val/map/0/val/i128": "27670116110564327424"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The mint event carries the same amount.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "mint",
+        "/body/v0/data/i128": "27670116110564327424"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

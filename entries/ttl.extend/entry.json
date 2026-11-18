@@ -1,0 +1,140 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "ttl.extend",
+  "title": "EXTEND_FOOTPRINT_TTL changes only a TTL entry",
+  "pattern": "The data entry is untouched; only its TTL entry, named by sha256 of the data's LedgerKey, changes.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D4",
+      "placement": "ExtendFootprintTTL updates only the ttl entry"
+    },
+    {
+      "id": "H-D8",
+      "placement": "TTL entry named by key_hash"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "e8091664fbd18c59ca2f369e31953e3419a1e932a7b6a51bda5010ec03510204",
+      "size": 2272,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 29,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-footprint-ttl"
+      },
+      "focus": {
+        "tx_hash": "babd1fa7d1693e596557b987b9363149f86a958f6ce443d71186ecf16ce82e2c",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "b5e37223dc52e997949aba78684988e9111e0f0587678724bfa1f9d20c7e271a",
+      "size": 2264,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 28,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-footprint-ttl"
+      },
+      "focus": {
+        "tx_hash": "9ba7a3eca5dcd70c7e6247bb779a6f241f1265f7fb2382cb578b56e630d3fa32",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b85a49e1be626176589767a767a2830f5b0eab83d0685c41252d3b3d4000c90c",
+      "size": 2272,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 29,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-footprint-ttl"
+      },
+      "focus": {
+        "tx_hash": "7f7c9dd1f7415d7f9f87b744c0399dcac6bc3af09e2dd308a89c8ab767fb11e9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "06f81df7f5c01a2b5015d54bc0167fe8eed5f01dadd499a7c7dcb52b353737c9",
+      "size": 2264,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 28,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-footprint-ttl"
+      },
+      "focus": {
+        "tx_hash": "b6b82db348590eea8d6148cb56b961974d8c87fb3dfaad71c9e62cd83434752a",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The extend_footprint_ttl operation succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/extend_footprint_ttl",
+        "equals": "success"
+      },
+      {
+        "says": "Only a TTL entry changes (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "length": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "frozen.claim-claimable-balance",
+  "title": "Claiming a claimable balance into a frozen trustline fails at apply",
+  "pattern": "CAP-0077: claimable-balance operations name no trustline, so the freeze is checked at apply: CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "frozen-claim-claimable-balance",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "claim_claimable_balance fails with trustline_frozen at apply.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/claim_claimable_balance",
+      "equals": "trustline_frozen",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

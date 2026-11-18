@@ -1,0 +1,57 @@
+{
+  "id": "upgrade.config-lanes-and-freeze",
+  "title": "A config-settings upgrade: Soroban transaction limit and three frozen trustlines",
+  "pattern": "LEDGER_UPGRADE_CONFIG with two settings in one set: contract_execution_lanes (ledgerMaxTxCount 2) and frozen_ledger_keys (three trustlines). The new values appear only in upgradesProcessing, after the ledger's transactions.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-F10",
+      "placement": "LEDGER_UPGRADE_CONFIG updating contract_execution_lanes and frozen_ledger_keys"
+    },
+    {
+      "id": "H-D12",
+      "placement": "frozen-key list grown by a config upgrade"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "config-upgrade-lanes-and-freeze",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "One upgrade, a config upgrade.",
+      "at": "ledger",
+      "path": "/upgrades_processing",
+      "length": 1,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "It sets ledger_max_tx_count 2.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/changes",
+      "some": {
+        "/updated/data/config_setting/contract_execution_lanes/ledger_max_tx_count": 2
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

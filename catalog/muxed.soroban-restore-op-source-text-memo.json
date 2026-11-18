@@ -1,0 +1,52 @@
+{
+  "id": "muxed.soroban-restore-op-source-text-memo",
+  "title": "RESTORE_FOOTPRINT with a muxed operation source and a text memo",
+  "pattern": "The operation source is M(alice, 2^64-1) and the memo text: valid for RestoreFootprint.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A9",
+      "placement": "muxed Operation.sourceAccount and MEMO_TEXT on RestoreFootprint"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/pull/753"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "restore-muxed-op-source-text-memo",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation source is alice muxed with ID 2^64-1.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/source_account",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJ7777777777775YC2",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The restore_footprint operation succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/restore_footprint",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

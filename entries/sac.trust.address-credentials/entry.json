@@ -1,0 +1,207 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sac.trust.address-credentials",
+  "title": "SAC trust() for a trustor who is not the transaction source creates a trustline",
+  "pattern": "alice submits, carol is the trustor: carol authorizes with address credentials and a nonce. The trustline is carol's; nothing names it but the created entry. wallet-backend#731 dropped such trustlines.",
+  "caps": [
+    "CAP-0073",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D1",
+      "placement": "InvokeHostFunction trust() with address credentials creates the trustor's trustline"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/731"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "45ed4084708f1fa1a3461f853fa5e0cd400017767149cc74e8dd24708b89adb1",
+      "size": 3292,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 6,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-address-auth"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "129c115020f114b90e7d606a38e8c368317e7e32a859f0eba5bfbd5afc32c035",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "45ed4084708f1fa1a3461f853fa5e0cd400017767149cc74e8dd24708b89adb1",
+            "runs": 14
+          },
+          {
+            "sha256": "4f308918f887e4338b27ee9f7cf8c8a3da7eb57bc195f6ba72c9b995d3edd1f9",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "2146da991d6f3f1bab532bc381322e2a809e9e01e0f75fc5b4fd941c47bb5876",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "5803bb53e862095dce097af732598cd840e5e0ff49ec7ce2097e010295514a0e",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "864822d57bb73eba9cf261f2da0c6deb4745d824a01cc15045828c1d0819607c",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "6ad720713dfcd5cdb38b5cfee135dff96ea6482e4409744bf3bfb94f7b5a59d7",
+      "size": 3284,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 6,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-address-auth"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "de703af406186c73d81bc6fc3564b3a6cfe0a845f6a5da7d110530705692a449",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "6ad720713dfcd5cdb38b5cfee135dff96ea6482e4409744bf3bfb94f7b5a59d7",
+            "runs": 1
+          },
+          {
+            "sha256": "60e5f30e3a7d11f75896b44b519d57dfffc627a62a9f0a7408c019b4a61721d8",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "864822d57bb73eba9cf261f2da0c6deb4745d824a01cc15045828c1d0819607c",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6e2225d9d45eb76331eed33b777eba99d8ed8dfaea99049914a4455de35700d3",
+      "size": 3292,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 6,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-address-auth"
+      },
+      "focus": {
+        "tx_hash": "c60b63be70cf098e611cdc3f37d322bf9199c8dd9bd2fb0aacb83b35a5e5471b",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "dafc288344215b790c8a717d20e6fa418692bb96fcc11542e9b8fe0ea2672a7e",
+      "size": 3284,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 6,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-address-auth"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "442fd49e088e7aefdbb16da5d537aa108f279f52c9d34b9f9a7bafefcfb30d12",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "dafc288344215b790c8a717d20e6fa418692bb96fcc11542e9b8fe0ea2672a7e",
+            "runs": 1
+          },
+          {
+            "sha256": "c4f3e9ccb872cb7c03cf3b9b482feb7ccd040769166c6f7c2ea1ce89ead75b94",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "c60b63be70cf098e611cdc3f37d322bf9199c8dd9bd2fb0aacb83b35a5e5471b",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "A trustline for carol is created.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/trustline/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+        }
+      },
+      {
+        "says": "carol authorizes with address credentials and nonce 7310001.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/auth/0/credentials/address/nonce",
+        "equals": "7310001"
+      },
+      {
+        "says": "No event is emitted.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "length": 0
+      }
+    ]
+  }
+}

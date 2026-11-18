@@ -1,0 +1,64 @@
+{
+  "id": "contract-data.one-key-two-durabilities",
+  "title": "One contract, one key, persistent and temporary: two different entries",
+  "pattern": "put_all(\"dup\") writes the same key in persistent and temporary storage and in instance storage. Contract-data identity is (contract, key, durability): the two created entries are distinct. Readers keyed by (contract, key) merge them.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D10",
+      "placement": "two ContractData entries differing only by durability; the same key in instance storage"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit2-same-key-three-durabilities",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "A persistent entry \"dup\" is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/symbol": "dup",
+        "/created/data/contract_data/durability": "persistent"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "A temporary entry \"dup\" is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/symbol": "dup",
+        "/created/data/contract_data/durability": "temporary"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The instance is updated (instance storage).",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/contract_data/key": "ledger_key_contract_instance"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

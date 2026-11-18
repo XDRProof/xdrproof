@@ -1,0 +1,138 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "archival.eviction-persistent",
+  "title": "Persistent entries evicted with no transaction",
+  "pattern": "minPersistentTTL ledgers after creation, the eviction scan moves three persistent entries to the hot archive: they leave the live state in evicted_keys, with no transaction touching them.",
+  "caps": [
+    "CAP-0062",
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-D6",
+      "placement": "evicted_keys holding persistent contract data and TTLs"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "d49b3c04157ab2cd926b250a291974bb9b08cd5792c7fea1e90ddf72fb9f1524",
+      "size": 880,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 73,
+        "recipe": "recipes/soroban/gen/gen.mjs#archival-put-persistent-auto"
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "f56b48c62a4f6928ace83a7349504cb05e76b2fab3436035dc2824b8919ed061",
+      "size": 872,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 72,
+        "recipe": "recipes/soroban/gen/gen.mjs#archival-put-persistent-auto"
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "77edcef57b4c0b4999f8e0bf3dfebb2a9d0505f50c25e3ecefd75bc49eec01bd",
+      "size": 880,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 73,
+        "recipe": "recipes/soroban/gen/gen.mjs#archival-put-persistent-auto"
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "f8a56d62a5ce6b0e9b874503bbae7d93f3cd1e42f9ba418ee94a48b651bf3fb7",
+      "size": 872,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 72,
+        "recipe": "recipes/soroban/gen/gen.mjs#archival-put-persistent-auto"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "archived_auto is evicted.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/evicted_keys",
+        "some": {
+          "/contract_data/key/symbol": "archived_auto",
+          "/contract_data/durability": "persistent"
+        }
+      },
+      {
+        "says": "The ledger has no transactions.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing",
+        "length": 0
+      }
+    ]
+  }
+}

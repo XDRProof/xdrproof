@@ -1,0 +1,51 @@
+{
+  "id": "ttl.extend",
+  "title": "EXTEND_FOOTPRINT_TTL changes only a TTL entry",
+  "pattern": "The data entry is untouched; only its TTL entry, named by sha256 of the data's LedgerKey, changes.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D4",
+      "placement": "ExtendFootprintTTL updates only the ttl entry"
+    },
+    {
+      "id": "H-D8",
+      "placement": "TTL entry named by key_hash"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "extend-footprint-ttl",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The extend_footprint_ttl operation succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/extend_footprint_ttl",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Only a TTL entry changes (state, updated).",
+      "at": "op.changes",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

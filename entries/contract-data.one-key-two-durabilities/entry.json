@@ -1,0 +1,404 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "contract-data.one-key-two-durabilities",
+  "title": "One contract, one key, persistent and temporary: two different entries",
+  "pattern": "put_all(\"dup\") writes the same key in persistent and temporary storage and in instance storage. Contract-data identity is (contract, key, durability): the two created entries are distinct. Readers keyed by (contract, key) merge them.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D10",
+      "placement": "two ContractData entries differing only by durability; the same key in instance storage"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "2a59a9ef0a8c1edbf1f266844120992be1dead6a09de83752c12fa27583e7881",
+      "size": 5496,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 45,
+        "recipe": "recipes/soroban/gen/gen.mjs#kit2-same-key-three-durabilities"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "31e20c24a2a56ea8fe26eb45480778c5c6c78ac6cf9fcb1502c37e66cdbed9a1",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "2a59a9ef0a8c1edbf1f266844120992be1dead6a09de83752c12fa27583e7881",
+            "runs": 5
+          },
+          {
+            "sha256": "a1f1c6e8a6b645eec87f226ebf78ed39f2750254547761831b7adb32fccb83ea",
+            "runs": 5,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "0009dd8b9b1bf43069e65220d96c689e6d451e29d3305d917e767859bffa861e",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "d6332cfbaefb16efdd1e2b691619912a5d1e7a9a581b0e164045fec0fe6cb83d",
+            "runs": 2
+          },
+          {
+            "sha256": "d67fed0797042e4182008afa41a46cbc087f56a4d94a3ba80e31aa2488f89668",
+            "runs": 2
+          },
+          {
+            "sha256": "7e62e8242dfaa27655c36fbcea65ccb23b3743fe367c9973c54825ded1c7ead1",
+            "runs": 1
+          },
+          {
+            "sha256": "90a146e02d9b373d06b5d9a608884f61b4fc75d4a40b23632ba0301a3646552e",
+            "runs": 1
+          },
+          {
+            "sha256": "a8319284d118402704ffc0a26ce359a9defada315139f0e89a4f242f7bf7b908",
+            "runs": 1
+          },
+          {
+            "sha256": "f8733928cbf630167c50be1641f1b517cf70666914610cce57d5cd7bc4d8223b",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "dee0e29a2e79536965979e945e99004a17454579a46b0bbb675a8b3685c1699f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "fbb943eb46fe7af620b464dc80518fe14514c35b71dedff6506312dd2e728067",
+      "size": 5488,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 44,
+        "recipe": "recipes/soroban/gen/gen.mjs#kit2-same-key-three-durabilities"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "1040f284b9e286aae8a67c7be30347705c9a24386c10d38e6d0788cfda80fab7",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "fbb943eb46fe7af620b464dc80518fe14514c35b71dedff6506312dd2e728067",
+            "runs": 1
+          },
+          {
+            "sha256": "5d81f7ec08ea6b383c093344fdf7ca40002d25e26548308e8de2c6e59ad6efb0",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "79c6ff27fdda235f00940ae7ef17fac10537be1f2fb4678d0e98791e21895eb5",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "224d4ba6aaa61cc1fac743d9eadfed298eac2580dc1571bbf6412df4d37cf0b2",
+      "size": 5496,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 45,
+        "recipe": "recipes/soroban/gen/gen.mjs#kit2-same-key-three-durabilities"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "8cdec0b33612e677c9e1a9023686aeff412924a79f24378c49c03a08eb418d25",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "224d4ba6aaa61cc1fac743d9eadfed298eac2580dc1571bbf6412df4d37cf0b2",
+            "runs": 1
+          },
+          {
+            "sha256": "9c12b0d55830a4b9a2055d17d5944cacfd6ca67346a5e531d53b0bfe9f1605f9",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "6fb830a1d0359fea59ee1b28e844c4288407716c67c0fad5066cb20bf161fa71",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "90c2d3912c0b82b2e8eeec73e248e682a45767f32cb3732858c7d4bfdd9811d1",
+      "size": 5488,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 44,
+        "recipe": "recipes/soroban/gen/gen.mjs#kit2-same-key-three-durabilities"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "57758283a1121e7f10ce35a708a22b010ba0aae3c1514497f02bfaa6e9466546",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "90c2d3912c0b82b2e8eeec73e248e682a45767f32cb3732858c7d4bfdd9811d1",
+            "runs": 1
+          },
+          {
+            "sha256": "421b241c7bdae55ac041f44f459bf7250a1512cda072296ffb88a88f8ba227bf",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "7f5804c80516466bfde79332b90aec9487fb55c983a7a23d7f3f15466254213e",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "A persistent entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "persistent"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "A persistent entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "persistent"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "A persistent entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "persistent"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "A persistent entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "persistent"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "A temporary entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "temporary"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "A temporary entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "temporary"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "A temporary entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "temporary"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "A temporary entry \"dup\" is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "dup",
+          "/created/data/contract_data/durability": "temporary"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is updated (instance storage).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/contract_data/key": "ledger_key_contract_instance"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is updated (instance storage).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/contract_data/key": "ledger_key_contract_instance"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is updated (instance storage).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/contract_data/key": "ledger_key_contract_instance"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is updated (instance storage).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/contract_data/key": "ledger_key_contract_instance"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

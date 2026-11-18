@@ -1,0 +1,40 @@
+{
+  "id": "auth.nested-tree-depth-6",
+  "title": "An authorization tree six invocations deep across six contracts",
+  "pattern": "bob authorizes a chain of real cross-contract calls kit0 → kit1 → … → kit5 with one address-credential entry whose sub-invocations nest six deep.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "SorobanAuthorizedInvocation nested 6 levels with real calls"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "nested-auth-tree-depth-6",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The root sub-invocation chain goes 5 levels below the root.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/root_invocation/sub_invocations/0/sub_invocations/0/sub_invocations/0/sub_invocations/0/sub_invocations/0/function/contract_fn/function_name",
+      "equals": "nest",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

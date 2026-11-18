@@ -1,0 +1,199 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "executable-ref.invoke",
+  "title": "Calling a contract whose code comes from a reference",
+  "pattern": "The external-ref contract runs the v1 kit's put: its footprint must include the owner's tag entry and the referenced Wasm.",
+  "caps": [
+    "CAP-0085"
+  ],
+  "hazards": [
+    {
+      "id": "H-D11",
+      "placement": "InvokeHostFunction on an external-ref contract"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "b9b3dea25e3b8e2b4528abe3617b885fb46c8086ca170bc0d179bef50fc9cc78",
+      "size": 2644,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 49,
+        "recipe": "recipes/soroban/gen/gen.mjs#invoke-external-ref-contract"
+      },
+      "focus": {
+        "tx_hash": "c701ebf098089673c974b6ec897f7f71e28c9cb932baeb546e2c5f621d1c2979",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "b4308d3f237c8fd0af633ae3957e6cfc539a92dfa86c195d402c3a7cb7739675",
+      "size": 2636,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 48,
+        "recipe": "recipes/soroban/gen/gen.mjs#invoke-external-ref-contract"
+      },
+      "focus": {
+        "tx_hash": "ebf4026d92989d53c984a2f151588f41f40beff6fa9ea73ba666746300ab7b18",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "8b5da2dc90749e3bc0f3d6d3b0b762edcf1153ce0d0d31331dac7c79a8086887",
+      "size": 2644,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 49,
+        "recipe": "recipes/soroban/gen/gen.mjs#invoke-external-ref-contract"
+      },
+      "focus": {
+        "tx_hash": "a7250850fed440e9530310ac2da6b68169a7ff774f24351f3f58c313d6d25bc0",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "c880988df1be336ed879a343cb6e8ae381ec67f4c6d15183bde28aee67a0f5fa",
+      "size": 2636,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 48,
+        "recipe": "recipes/soroban/gen/gen.mjs#invoke-external-ref-contract"
+      },
+      "focus": {
+        "tx_hash": "6bac8b287330ba9074c04369d81c8121cb2d5a17d4ee5ba3fbc5c0d3eaeb1617",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "It stores via_ref = 85 under its own address.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CDW7ZJ7GAKIA3UFX7VRBHKZ7YFNZ5J7DHAISEDYXS7FGVU2FJQL7SW2M",
+          "/created/data/contract_data/val/u32": 85
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "It stores via_ref = 85 under its own address.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CDW7ZJ7GAKIA3UFX7VRBHKZ7YFNZ5J7DHAISEDYXS7FGVU2FJQL7SW2M",
+          "/created/data/contract_data/val/u32": 85
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "It stores via_ref = 85 under its own address.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CCGAEIDZLDVUARVVAWWFRFA6USR5TNQQSN47CZ3SXWXYHIMFETRRVNFN",
+          "/created/data/contract_data/val/u32": 85
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "It stores via_ref = 85 under its own address.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CCGAEIDZLDVUARVVAWWFRFA6USR5TNQQSN47CZ3SXWXYHIMFETRRVNFN",
+          "/created/data/contract_data/val/u32": 85
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The footprint reads the owner's executable_tag entry.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/ext/v1/resources/footprint/read_only",
+        "some": {
+          "/contract_data/key/executable_tag": "kit"
+        }
+      }
+    ]
+  }
+}

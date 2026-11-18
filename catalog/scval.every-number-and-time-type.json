@@ -1,0 +1,56 @@
+{
+  "id": "scval.every-number-and-time-type",
+  "title": "Every ScVal number and time type at its extreme",
+  "pattern": "i64 min, u128 max, i128 min, u256 max, i256 min, timepoint and duration max, 64 bytes, a non-UTF-8 string, bool and void in one vector: storage, event and return value.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B4",
+      "placement": "ScVal wide integers, timepoint and duration at min and max"
+    },
+    {
+      "id": "H-B5",
+      "placement": "ScString bytes that are not UTF-8"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "scval-every-number-and-time-type",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "u128 max is 340282366920938463463374607431768211455.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/val/vec/1/u128": "340282366920938463463374607431768211455"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The string holds ff fe 41.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/val/vec/8/string": "\\xff\\xfeA"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

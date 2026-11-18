@@ -1,0 +1,56 @@
+{
+  "id": "sac.xlm-transfer-muxed-destination",
+  "title": "An XLM SAC transfer to a muxed address: the event splits it into to and to_muxed_id",
+  "pattern": "The transfer argument is M(bob, 2^64-1). The event names bob's G address in topics and carries the ID as to_muxed_id (u64) in a data map instead of a bare i128.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E2",
+      "placement": "transfer event data map with to_muxed_id u64"
+    },
+    {
+      "id": "H-A11",
+      "placement": "event splits M into to and to_muxed_id"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "xlm-sac-transfer-muxed-dest",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The event names bob's base account.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/2/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The data is a map with amount 1 and to_muxed_id 18446744073709551615.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/data/map/0/val/i128": "1",
+        "/body/v0/data/map/1/val/u64": "18446744073709551615"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

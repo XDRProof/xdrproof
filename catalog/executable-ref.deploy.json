@@ -1,0 +1,44 @@
+{
+  "id": "executable-ref.deploy",
+  "title": "A contract deployed with an external-reference executable",
+  "pattern": "CREATE_CONTRACT_V2 whose executable is CONTRACT_EXECUTABLE_EXTERNAL_REF {owner CA1, tag \"kit\"}: the instance names no Wasm hash. Readers that expect executable to be wasm or stellar_asset fail.",
+  "caps": [
+    "CAP-0085"
+  ],
+  "hazards": [
+    {
+      "id": "H-D11",
+      "placement": "ContractExecutable.CONTRACT_EXECUTABLE_EXTERNAL_REF in an instance"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "deploy-external-ref-executable",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The instance's executable is an external reference to (CA1, \"kit\").",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/val/contract_instance/executable/external_ref/executable_owner": {
+          "$manifest": "contracts.kit2.CA1"
+        },
+        "/created/data/contract_data/val/contract_instance/executable/external_ref/tag": "kit"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

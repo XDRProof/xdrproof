@@ -19,7 +19,8 @@ verify` and `make oracle` then check the built entries; nothing in `entries/` is
   "source": {
     "lane": "soroban",                            // classic | soroban | mined
     "step": "race-victim-txBAD_SEQ",              // recipe step name (manifest.steps[].name); for mined: the record id
-    "variants": ["p30-mainnet", "p28-mainnet", "p30-testnet"]   // <p><proto>-<net>[-<flags>]; runs of make generate
+    "variants": ["p30-mainnet", "p28-mainnet", "p30-testnet"],  // <p><proto>-<net>[-<flags>]; runs of make generate
+    "ledger_offset": 10                           // optional: the entry is about the ledger N after the step (focus: ledger)
   },
   "focus": { "op_index": 0 },                     // or { "ledger": true } when the entry is about the ledger itself
   "facts": [

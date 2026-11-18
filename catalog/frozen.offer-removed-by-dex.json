@@ -1,0 +1,49 @@
+{
+  "id": "frozen.offer-removed-by-dex",
+  "title": "The DEX removes an offer whose seller's trustline is frozen, and moves nothing",
+  "pattern": "A path payment reaches the frozen holder's offer first: CAP-0077 removes it without moving assets and matching continues to the maker's offer. The frozen trustline is still updated (liabilities released). Readers that treat every removed offer as filled record a trade that did not happen.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "offer removed by DEX matching because the seller trustline is frozen"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "frozen-offer-removed-by-path-payment",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The holder's offer is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/offer/seller_id": "GBDE2YYHRNZKJUDZROTGLBL7Z6JON6WBOISQWSGJL4GML47LRUB3BHSE"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The trade is with the maker, not the holder.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/path_payment_strict_send/success/offers/0/order_book/seller_id",
+      "equals": "GBECFHQGZJQV63R22XAFS6ENGZ3JXSH6YVPZWRBTLASDJVRCK6ZNEAGC",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

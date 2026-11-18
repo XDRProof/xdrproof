@@ -1,0 +1,47 @@
+{
+  "id": "scval.map.colliding-keys-as-key",
+  "title": "A map whose five keys collide on native conversion, used as a storage key",
+  "pattern": "The colliding map (u32 1, i32 1, u64 1, string \"1\", symbol 1) is the contract-data KEY: it sits in the LedgerKey and the event topic. Converting it to a native object collapses the keys and changes the entry identity. js-stellar-sdk#1789.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B2",
+      "placement": "colliding ScMap as a ContractData key and event topic"
+    },
+    {
+      "id": "H-D10",
+      "placement": "contract-data identity depends on the exact ScVal key"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/js-stellar-sdk/issues/1789"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "map-colliding-keys-as-key",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The created entry's key is a map with 5 entries.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/map/4/key/symbol": "1"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

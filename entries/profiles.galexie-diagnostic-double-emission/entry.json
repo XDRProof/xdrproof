@@ -1,0 +1,138 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "profiles.galexie-diagnostic-double-emission",
+  "title": "With diagnostic events on, every contract event appears twice",
+  "pattern": "Galexie's default flags include ENABLE_SOROBAN_DIAGNOSTIC_EVENTS. The put's contract event appears in the operation's events and again, type contract, among the diagnostic events; a core_metrics event invoke_time_nsecs carries wall-clock time, so the bytes differ between nodes. stellar-etl#452.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E3",
+      "placement": "contract event repeated in diagnostic_events"
+    },
+    {
+      "id": "H-F9",
+      "placement": "diagnostic events only under the galexie profile"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/stellar-etl/issues/452"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "744986731d9719b9e03dceb25bef7e56aa2855ce08173c19b7da261d1531cb41",
+      "size": 2972,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "focus": {
+        "tx_hash": "739fcbf6280db92b3a445597b78b634ea2e84d885d7df1b5f0e649bddcad78e7",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "8b0cf4eb773859f08c5d91e9bc3b69890c760bf9e16a7ba639d7ecf1dccf20f6",
+      "size": 5080,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "258b1cf2fd27dc97070aa6e9934a4bdb3669c9e7e9a0794bb47a922fcdf6462f",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "8b0cf4eb773859f08c5d91e9bc3b69890c760bf9e16a7ba639d7ecf1dccf20f6",
+            "runs": 1
+          },
+          {
+            "sha256": "d9d8e60caa25dedcc3451ca9dd37c0c36c08d24787d946d6af319a248a402e82",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "739fcbf6280db92b3a445597b78b634ea2e84d885d7df1b5f0e649bddcad78e7",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "With Galexie flags, the diagnostic events include the contract event with topic put.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/type": "contract",
+          "/event/body/v0/topics/0/symbol": "put"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
+      },
+      {
+        "says": "and a core_metrics invoke_time_nsecs event.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/symbol": "invoke_time_nsecs"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
+      },
+      {
+        "says": "With base flags there are no diagnostic events.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      }
+    ]
+  }
+}

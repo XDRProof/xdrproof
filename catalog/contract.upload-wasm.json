@@ -1,0 +1,43 @@
+{
+  "id": "contract.upload-wasm",
+  "title": "A contract Wasm upload creates a contract-code entry",
+  "pattern": "UPLOAD_CONTRACT_WASM: the result is the Wasm hash; a contract_code entry and its TTL are created.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "UploadContractWasm creates a contract_code entry"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit-upload-wasm",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "A contract_code entry with that hash is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_code/hash": {
+          "$manifest": "contracts.kit_wasm_hash"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

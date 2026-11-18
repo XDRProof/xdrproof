@@ -1,0 +1,40 @@
+{
+  "id": "frozen.pool-deposit",
+  "title": "A pool deposit through a frozen trustline fails at apply",
+  "pattern": "LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "frozen-pool-deposit",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "liquidity_pool_deposit fails with trustline_frozen at apply.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_deposit",
+      "equals": "trustline_frozen",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

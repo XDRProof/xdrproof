@@ -1,0 +1,62 @@
+{
+  "id": "muxed.soroban-ttl-tx-source-text-memo",
+  "title": "EXTEND_FOOTPRINT_TTL from a muxed source with a text memo",
+  "pattern": "Core refuses a memo or muxed source only on InvokeHostFunction (TransactionFrame::validateSorobanMemo); on TTL and restore operations both are valid. The JS SDK builder refuses them, so this was built by hand. wallet-backend#753 halted on this shape.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A9",
+      "placement": "muxed Transaction.sourceAccount and MEMO_TEXT on ExtendFootprintTTL"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/pull/753"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "ttl-extend-muxed-source-text-memo",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The source is alice muxed with ID 753.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/source_account",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAC6HGRE",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The memo is text \"xdrproof ttl\".",
+      "at": "tx.envelope",
+      "path": "/tx/tx/memo/text",
+      "equals": "xdrproof ttl",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The extend_footprint_ttl operation succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/extend_footprint_ttl",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

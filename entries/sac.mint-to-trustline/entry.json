@@ -1,0 +1,144 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sac.mint-to-trustline",
+  "title": "SAC mint into a trustline the SAC created",
+  "pattern": "The issuer mints XPF to bob through the SAC: the classic trustline balance changes and a mint event is emitted.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "SAC mint event into a classic trustline"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9ae4ee38481f893d326238eea8824d1212d78dfe15115b67fd27ae1a0c313e69",
+      "size": 2832,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-mint-to-sac-trustline"
+      },
+      "focus": {
+        "tx_hash": "edba18932c4bd036400412c1e979da10c003f747be1640f40aef3aa902a33000",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "82bfe1ece2b1fd72e72077f4705ad531d52de3da839ba104c525607d00772f25",
+      "size": 2824,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-mint-to-sac-trustline"
+      },
+      "focus": {
+        "tx_hash": "edba18932c4bd036400412c1e979da10c003f747be1640f40aef3aa902a33000",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "1f0d5c57eb6db74ad14820407f398e418123f0a30df93816ceebfab8708d1858",
+      "size": 2832,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-mint-to-sac-trustline"
+      },
+      "focus": {
+        "tx_hash": "d7d2d14c39342021912049f099ac7e880e8d3549b2111c589f04aab876c68885",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "95316ba5e1f43e8c24f5ee1ee8295c24896bd176e4ca6e1da4adbd82a475f148",
+      "size": 2824,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-mint-to-sac-trustline"
+      },
+      "focus": {
+        "tx_hash": "d7d2d14c39342021912049f099ac7e880e8d3549b2111c589f04aab876c68885",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "A mint event names bob.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "mint",
+          "/body/v0/topics/1/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+        }
+      },
+      {
+        "says": "bob's trustline balance is updated.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+        }
+      }
+    ]
+  }
+}

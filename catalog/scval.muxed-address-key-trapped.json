@@ -1,0 +1,55 @@
+{
+  "id": "scval.muxed-address-key-trapped",
+  "title": "A muxed ScAddress as a contract-data key traps",
+  "pattern": "CAP-0067: a muxed ScAddress may not appear in a contract-data key. The address is valid in the arguments and even in the footprint's LedgerKey, but the put traps.",
+  "caps": [
+    "CAP-0067",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A11",
+      "placement": "muxed ScAddress inside a contract-data key: trapped"
+    },
+    {
+      "id": "H-C6",
+      "placement": "Soroban failure: trapped"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit-put-muxed-address-key-trapped",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails: the host traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The footprint's read-write key holds the muxed address M(bob, 42).",
+      "at": "tx.envelope",
+      "path": "/tx/tx/ext/v1/resources/footprint/read_write/0/contract_data/key/address",
+      "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAFITJA",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

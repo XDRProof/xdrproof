@@ -1,0 +1,39 @@
+{
+  "id": "surge.soroban-left-over",
+  "title": "The Soroban transaction left out applies next at base fee 100",
+  "pattern": "The 1000 bidder applies one ledger later where the phase is not full.",
+  "caps": [
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-C18",
+      "placement": "Soroban transaction excluded by surge pricing applies one ledger later"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "soroban-surge-left-over-applies-next-ledger",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The Soroban phase base fee is 100.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/1/v1/base_fee",
+      "equals": "100",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

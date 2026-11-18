@@ -1,0 +1,55 @@
+{
+  "id": "archival.eviction-persistent",
+  "title": "Persistent entries evicted with no transaction",
+  "pattern": "minPersistentTTL ledgers after creation, the eviction scan moves three persistent entries to the hot archive: they leave the live state in evicted_keys, with no transaction touching them.",
+  "caps": [
+    "CAP-0062",
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-D6",
+      "placement": "evicted_keys holding persistent contract data and TTLs"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "archival-put-persistent-auto",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ],
+    "ledger_offset": 10
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "archived_auto is evicted.",
+      "at": "ledger",
+      "path": "/evicted_keys",
+      "some": {
+        "/contract_data/key/symbol": "archived_auto",
+        "/contract_data/durability": "persistent"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The ledger has no transactions.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 0,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

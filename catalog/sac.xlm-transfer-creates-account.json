@@ -1,0 +1,50 @@
+{
+  "id": "sac.xlm-transfer-creates-account",
+  "title": "An XLM SAC transfer creates a G account",
+  "pattern": "Since CAP-0073 the native SAC can transfer to an account that does not exist: the transfer creates it with 25 XLM. There is no CREATE_ACCOUNT operation. Readers that only create accounts from CREATE_ACCOUNT miss dave.",
+  "caps": [
+    "CAP-0073"
+  ],
+  "hazards": [
+    {
+      "id": "H-D2",
+      "placement": "XLM SAC transfer creates an account entry"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "xlm-sac-transfer-creates-account",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "dave's account is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/account/account_id": "GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event names dave.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/2/address": "GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

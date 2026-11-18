@@ -1,0 +1,44 @@
+{
+  "id": "archival.eviction-temporary",
+  "title": "A temporary entry deleted by eviction",
+  "pattern": "minTemporaryTTL ledgers after creation, the temporary entry is deleted by the eviction scan.",
+  "caps": [
+    "CAP-0062"
+  ],
+  "hazards": [
+    {
+      "id": "H-D6",
+      "placement": "evicted_keys holding a temporary entry"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "archival-put-all-temporary",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ],
+    "ledger_offset": 16
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "archived_tmp (temporary) is evicted.",
+      "at": "ledger",
+      "path": "/evicted_keys",
+      "some": {
+        "/contract_data/key/symbol": "archived_tmp",
+        "/contract_data/durability": "temporary"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

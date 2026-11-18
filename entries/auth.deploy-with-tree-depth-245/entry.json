@@ -1,0 +1,188 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "auth.deploy-with-tree-depth-245",
+  "title": "A contract deploy whose authorization root carries a 245-deep chain",
+  "pattern": "The deploy succeeds and creates an instance; its auth root is the CreateContractV2 function with 244 nested never-called invocations. wallet-backend's contract-deploy walk (#820) runs only when an instance is created, so this is the ledger that exercises it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "245-deep auth tree with a contract deploy"
+    },
+    {
+      "id": "H-B13",
+      "placement": "a valid ledger the WASM decoder rejects"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/820"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "843eadf1d198c4882d202ca3a5426e7b471b84e38c030a6baf467af17199b937",
+      "size": 29996,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 37,
+        "recipe": "recipes/soroban/gen/gen.mjs#deploy-with-auth-tree-depth-245"
+      },
+      "focus": {
+        "tx_hash": "61b09a270ba379c2a5f3f7379fb2600edab211d86dad839adb6e5b4d5dc445a0",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "355c03c76548c7ec15cebbcd83494c8c69645f0ebe059310246ec82bb4a5c767",
+      "size": 29988,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 36,
+        "recipe": "recipes/soroban/gen/gen.mjs#deploy-with-auth-tree-depth-245"
+      },
+      "focus": {
+        "tx_hash": "615d2674b281dcc29c1571f0cf785ee2d7641c5d4769e0129d4449860c9f0945",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "0da222e5451425a35af6aa4c1733dca32667b82df4b7b4a3e15f6dae1fedb2c7",
+      "size": 29996,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 37,
+        "recipe": "recipes/soroban/gen/gen.mjs#deploy-with-auth-tree-depth-245"
+      },
+      "focus": {
+        "tx_hash": "103550ae44ba6c28740704f646003f8582da1e8e09a3647693aef0b91b916b75",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "06fa2bb802394b75ae6e4654ebd77eb5a2a9b671778b85c28a618c1523a389ca",
+      "size": 29988,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 36,
+        "recipe": "recipes/soroban/gen/gen.mjs#deploy-with-auth-tree-depth-245"
+      },
+      "focus": {
+        "tx_hash": "64b694e0fcc1cb0f33dd175a2206ff6bbf0bf675fdc7fa5a2fc17819fe80bf52",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The instance is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CAVDGD2DCKDOPF2VDGMKKBR5CWRUWMBXVODM3L2K4K4H2BTA5YI4ZYED"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CAVDGD2DCKDOPF2VDGMKKBR5CWRUWMBXVODM3L2K4K4H2BTA5YI4ZYED"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CAGBVMPQVRFEJ65PNXW2QLBGLFV2THK2QZ5QQ65YE2KC4UJSR5FR6BA7"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The instance is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/contract": "CAGBVMPQVRFEJ65PNXW2QLBGLFV2THK2QZ5QQ65YE2KC4UJSR5FR6BA7"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

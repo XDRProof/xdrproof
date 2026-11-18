@@ -1,0 +1,75 @@
+{
+  "id": "profiles.galexie-diagnostic-double-emission",
+  "title": "With diagnostic events on, every contract event appears twice",
+  "pattern": "Galexie's default flags include ENABLE_SOROBAN_DIAGNOSTIC_EVENTS. The put's contract event appears in the operation's events and again, type contract, among the diagnostic events; a core_metrics event invoke_time_nsecs carries wall-clock time, so the bytes differ between nodes. stellar-etl#452.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E3",
+      "placement": "contract event repeated in diagnostic_events"
+    },
+    {
+      "id": "H-F9",
+      "placement": "diagnostic events only under the galexie profile"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/stellar-etl/issues/452"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "map-colliding-keys-as-value",
+    "variants": [
+      "p30-mainnet",
+      "p30-mainnet-galexie"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "With Galexie flags, the diagnostic events include the contract event with topic put.",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/type": "contract",
+        "/event/body/v0/topics/0/symbol": "put"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "and a core_metrics invoke_time_nsecs event.",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/symbol": "invoke_time_nsecs"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With base flags there are no diagnostic events.",
+      "variants": [
+        "p30-mainnet"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

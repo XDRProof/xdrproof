@@ -1,0 +1,56 @@
+{
+  "id": "executable-ref.invoke",
+  "title": "Calling a contract whose code comes from a reference",
+  "pattern": "The external-ref contract runs the v1 kit's put: its footprint must include the owner's tag entry and the referenced Wasm.",
+  "caps": [
+    "CAP-0085"
+  ],
+  "hazards": [
+    {
+      "id": "H-D11",
+      "placement": "InvokeHostFunction on an external-ref contract"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "invoke-external-ref-contract",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "It stores via_ref = 85 under its own address.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit_external_ref"
+        },
+        "/created/data/contract_data/val/u32": 85
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The footprint reads the owner's executable_tag entry.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/ext/v1/resources/footprint/read_only",
+      "some": {
+        "/contract_data/key/executable_tag": "kit"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "sac.trust.noop-existing",
+  "title": "SAC trust() on an existing trustline succeeds and changes nothing",
+  "pattern": "Calling trust() again for bob, whose trustline exists, succeeds with no ledger change and no event: a reader must not create, duplicate or touch anything.",
+  "caps": [
+    "CAP-0073"
+  ],
+  "hazards": [
+    {
+      "id": "H-D1",
+      "placement": "trust() on an existing trustline: success, no change"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "sac-trust-noop-existing",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation changes nothing.",
+      "at": "op.changes",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No event is emitted either.",
+      "at": "op.events",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

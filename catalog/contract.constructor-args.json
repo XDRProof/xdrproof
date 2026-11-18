@@ -1,0 +1,54 @@
+{
+  "id": "contract.constructor-args",
+  "title": "A contract deployed with constructor arguments",
+  "pattern": "CREATE_CONTRACT_V2 with three constructor arguments (owner, tag, signers): the constructor runs inside the deploy and writes instance and persistent storage.",
+  "caps": [
+    "CAP-0058"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "CreateContractV2 with constructorArgs"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit2-deploy-ca1-constructor-args",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The deploy passes three constructor arguments.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/create_contract_v2/constructor_args",
+      "length": 3,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The constructor writes the Signer(CA2) entry.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit2.CA1"
+        },
+        "/created/data/contract_data/key/vec/0/symbol": "Signer"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

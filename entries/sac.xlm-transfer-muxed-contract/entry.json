@@ -1,0 +1,153 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sac.xlm-transfer-muxed-contract",
+  "title": "An XLM SAC transfer to a muxed contract address (W…)",
+  "pattern": "CAP-0084 muxed contract address: the argument is SC_ADDRESS_TYPE_MUXED_CONTRACT (a W… strkey); the event names the contract (C…) and carries to_muxed_id 84; the balance is the contract's.",
+  "caps": [
+    "CAP-0084",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "SC_ADDRESS_TYPE_MUXED_CONTRACT as transfer destination"
+    },
+    {
+      "id": "H-E2",
+      "placement": "to_muxed_id for a contract destination"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "bff3b27c30e094b791f29bfdbbfe7cd65cd61f43d613631df834cf2662fb73e3",
+      "size": 3508,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 27,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-muxed-contract"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "9fec5c113ea9850f46978d612e92f636a9f18e7d52f31cf7aa5e9e1013ae8ec2",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "bff3b27c30e094b791f29bfdbbfe7cd65cd61f43d613631df834cf2662fb73e3",
+            "runs": 14
+          },
+          {
+            "sha256": "90571d84a9b76652adc3a0250ed884726c0731731187a118a4d83990335b85ff",
+            "runs": 6,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "5ee991497f06d4818f2e43ccfb5ff1ded162a497d15e87bc5522ba6b4a8862ca",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "3fa2da0b0f1df822a187b9ba7922c329fe498e270098f516b57b4e8cea46f18e",
+      "size": 3508,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 27,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-muxed-contract"
+      },
+      "focus": {
+        "tx_hash": "282307f35ee4c742eb43c9e05e1af7fbd99c068f298b9d5f46d60150631447a6",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The destination argument is the kit contract muxed with ID 84, a W… strkey.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/args/1/address",
+        "equals": "WBDMIB73D44GAETT5Q73GXU54Q54UOUMJG3ZTZUQPK2FVKGGEGJGCAAAAAAAAAAAKQA6C",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The destination argument is the kit contract muxed with ID 84, a W… strkey.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/args/1/address",
+        "equals": "WCYYWFMANUG6OXBO3SCQGHBPIJDJQIINHQ6XHXZPHFBZXGIXABPG4AAAAAAAAAAAKQVBI",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The event names the contract and carries to_muxed_id 84.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/2/address": "CBDMIB73D44GAETT5Q73GXU54Q54UOUMJG3ZTZUQPK2FVKGGEGJGCGV4",
+          "/body/v0/data/map/1/val/u64": "84"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The event names the contract and carries to_muxed_id 84.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/2/address": "CCYYWFMANUG6OXBO3SCQGHBPIJDJQIINHQ6XHXZPHFBZXGIXABPG4ZM2",
+          "/body/v0/data/map/1/val/u64": "84"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

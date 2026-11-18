@@ -1,0 +1,158 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sac.xlm-transfer-creates-account",
+  "title": "An XLM SAC transfer creates a G account",
+  "pattern": "Since CAP-0073 the native SAC can transfer to an account that does not exist: the transfer creates it with 25 XLM. There is no CREATE_ACCOUNT operation. Readers that only create accounts from CREATE_ACCOUNT miss dave.",
+  "caps": [
+    "CAP-0073"
+  ],
+  "hazards": [
+    {
+      "id": "H-D2",
+      "placement": "XLM SAC transfer creates an account entry"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "2192362c16a9877a57069b5adb62aebfdd47e7d218c83bbbd89b46007bce4f9e",
+      "size": 3292,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-creates-account"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "f4e37fb6d48dba6d3edbe13f1684f46ba67f56111a1ee2aaff3ec7dde61c176b",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "2192362c16a9877a57069b5adb62aebfdd47e7d218c83bbbd89b46007bce4f9e",
+            "runs": 16
+          },
+          {
+            "sha256": "a7a5766c06f46cf9669fd5d5abf1d9b332acd0dac39cbaf1e77a5f6cd4f52e58",
+            "runs": 4,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "25c76de6f0f2f7d7d703cd67d91cbb2f657c31b967633efc9c255b105dcdb26e",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "d8348cf5c6f1711cfe708747624cfc7a88125d0da75328df8477d4053b1a706e",
+      "size": 3284,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-creates-account"
+      },
+      "focus": {
+        "tx_hash": "25c76de6f0f2f7d7d703cd67d91cbb2f657c31b967633efc9c255b105dcdb26e",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "1bfa62521a1608e4c629fa30f95814c309f08b417eb1bc1ddef873a0a8a92f23",
+      "size": 3292,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-creates-account"
+      },
+      "focus": {
+        "tx_hash": "239698f027a29d559d6bc76ec811bbbc04451f632efc8380317eea8cc4e32c83",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "8a32e33932659c3eaf6a065babe97424ec5141cea194428f020f3847c282f303",
+      "size": 3284,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/soroban/gen/gen.mjs#xlm-sac-transfer-creates-account"
+      },
+      "focus": {
+        "tx_hash": "239698f027a29d559d6bc76ec811bbbc04451f632efc8380317eea8cc4e32c83",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "dave's account is created.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/account/account_id": "GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
+        }
+      },
+      {
+        "says": "The transfer event names dave.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/2/address": "GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "upgrade.config-short-lifetimes",
+  "title": "A config upgrade of the state-archival settings",
+  "pattern": "minPersistentTTL 10, minTemporaryTTL 16, eviction scan from level 1.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F10",
+      "placement": "LEDGER_UPGRADE_CONFIG updating state_archival"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "config-upgrade-short-lifetimes",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "min_persistent_ttl becomes 10.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/changes",
+      "some": {
+        "/updated/data/config_setting/state_archival/min_persistent_ttl": 10
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

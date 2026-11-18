@@ -1,0 +1,44 @@
+{
+  "id": "contract.deploy-from-address-salt",
+  "title": "A contract deployed from an address and salt",
+  "pattern": "CREATE_CONTRACT_V2 from alice with salt sha256(\"xdrproof:kit:0\"): the contract ID is derived from the network ID, the deployer and the salt.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "CreateContractV2 from address + salt"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "kit-deploy-0",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The instance is created for the derived contract ID.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit.0"
+        },
+        "/created/data/contract_data/key": "ledger_key_contract_instance"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

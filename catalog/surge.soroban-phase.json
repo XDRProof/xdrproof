@@ -1,0 +1,50 @@
+{
+  "id": "surge.soroban-phase",
+  "title": "A surge-priced Soroban phase: base fee 2000",
+  "pattern": "Two Soroban slots, three bids (3000, 2000, 1000): the phase's base fee is the lowest kept bid, 2000, and both kept transactions pay it.",
+  "caps": [
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-C18",
+      "placement": "Soroban phase baseFee 2000 against header base_fee 100"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "soroban-surge-bid-3000",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The Soroban phase base fee is 2000.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/1/v1/base_fee",
+      "equals": "2000",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "It holds two transactions.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 2,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

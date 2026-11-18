@@ -1,0 +1,147 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "fee-bump.soroban-muxed-fee-source",
+  "title": "A Soroban call in a fee bump paid by a muxed account: charge and refund on the fee source",
+  "pattern": "The resource fee is charged at the maximum and the unused part refunded after apply; both go to the fee source bob (via M(bob, 13)), not to the inner source alice.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0046",
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-C13",
+      "placement": "Soroban refund to a muxed fee-bump fee source"
+    },
+    {
+      "id": "H-A8",
+      "placement": "FeeBumpTransaction.feeSource muxed, Soroban inner"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "eb1bef3c31572940691fd0b0d78d1e0a23704cd914d982e5fb55c4d3f74063fd",
+      "size": 3068,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 33,
+        "recipe": "recipes/soroban/gen/gen.mjs#soroban-fee-bump-muxed-fee-source"
+      },
+      "focus": {
+        "tx_hash": "f44c57a99c6b5b3c20d1fea7ccd4aeab58bb3f2e37e53dd5c1b178217a8c5c32",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "8b26ec845dd7e9f4f9c2d18f3205f3fb6c586bc0c5fab6c3edbeb277c39d4515",
+      "size": 3060,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 32,
+        "recipe": "recipes/soroban/gen/gen.mjs#soroban-fee-bump-muxed-fee-source"
+      },
+      "focus": {
+        "tx_hash": "99f44e97252caa0f205019f048ddcd2ea399a994e8bed1b1a79b8f4fc42f5e29",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "f4dc123d5dc1c548eb6611601513f06672120c7fa00b44fb63c64a755861c355",
+      "size": 3068,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 33,
+        "recipe": "recipes/soroban/gen/gen.mjs#soroban-fee-bump-muxed-fee-source"
+      },
+      "focus": {
+        "tx_hash": "ea1df5aa00d9994324ec0a9de2bc1f3604a93541f5ea51a414c0836c2c31d4ca",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "630c77fcd03a08cd24a554e930a425b28798d3985cc7512460be2861b8952684",
+      "size": 3060,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 32,
+        "recipe": "recipes/soroban/gen/gen.mjs#soroban-fee-bump-muxed-fee-source"
+      },
+      "focus": {
+        "tx_hash": "fae4a194e45d47eb79581f12bb60eed2bba8650707997c76d716cfd65488f806",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The fee source is bob muxed with ID 13.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx_fee_bump/tx/fee_source",
+        "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAABWR4I"
+      },
+      {
+        "says": "The refund after apply goes to bob.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/post_tx_apply_fee_processing",
+        "some": {
+          "/updated/data/account/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+        }
+      }
+    ]
+  }
+}

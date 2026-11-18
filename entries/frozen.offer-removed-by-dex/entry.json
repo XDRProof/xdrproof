@@ -1,0 +1,360 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "frozen.offer-removed-by-dex",
+  "title": "The DEX removes an offer whose seller's trustline is frozen, and moves nothing",
+  "pattern": "A path payment reaches the frozen holder's offer first: CAP-0077 removes it without moving assets and matching continues to the maker's offer. The frozen trustline is still updated (liabilities released). Readers that treat every removed offer as filled record a trade that did not happen.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "offer removed by DEX matching because the seller trustline is frozen"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "d48a0e839b16560286591dd317547e5aa5c5e1681eff694bff4fde87cf77fdb5",
+      "size": 7732,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 56,
+        "recipe": "recipes/soroban/gen/gen.mjs#frozen-offer-removed-by-path-payment"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "d090a1f59d5650d90fd8be6b1ac536046f95e0c112907dd19e0981b7f31c99a5",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "d48a0e839b16560286591dd317547e5aa5c5e1681eff694bff4fde87cf77fdb5",
+            "runs": 2
+          },
+          {
+            "sha256": "11b4428c1727b8fcb48bcbdb572284edd5900b93f97b99eb4597c9a76f50e734",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "1f19a2b0238a67effae2bdbaa2cffbbcf142304fa5684748f080723a81d6b685",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "235d8f968b8a45e9de5e13d6ee48b05478d1458c0b9878d7d5be59138caffd7e",
+            "runs": 1
+          },
+          {
+            "sha256": "319b11dca93cb10ad254ca4384ae3c1aad910151c1f452174c074937a2f4b2a5",
+            "runs": 1
+          },
+          {
+            "sha256": "337cb61282658434bc71143b8c4527f327c1027b6479e5a76bfa77310d7a1700",
+            "runs": 1
+          },
+          {
+            "sha256": "7a0094ddf9d9438c5d3b29605eb6ba5bf2846e6e8fd193599ebc5284a4990aaf",
+            "runs": 1
+          },
+          {
+            "sha256": "8a126df79fd467e01f20ea79b65a6dafe141df6d4657a9d475e324811ea262b9",
+            "runs": 1
+          },
+          {
+            "sha256": "8ffd64e567ca70dc59b213349924227902cd7b3361382d773409864ab51603d7",
+            "runs": 1
+          },
+          {
+            "sha256": "949979e8825e1d4429e9f4766ea1195e7f1f114b5834f16236ab57da7bf3ecad",
+            "runs": 1
+          },
+          {
+            "sha256": "b72a6e88a1f24e1541adf0e50df6deaf0d503a359b889a0476f23f9fb8c655e5",
+            "runs": 1
+          },
+          {
+            "sha256": "b8e8a8d6c2be6e51ca22d0aeaa11850343e43e19634632ce87b5b97ff61e95a4",
+            "runs": 1
+          },
+          {
+            "sha256": "b9aa50a8fbe1e6e24d63321915d2f01676f60142ea439f190e1e08c29afc2cf8",
+            "runs": 1
+          },
+          {
+            "sha256": "bf3a8bbce6757224696b139be774896d9bbf5c737ca291d1b82adcb8f2fdfa69",
+            "runs": 1
+          },
+          {
+            "sha256": "dc5a2c641dfc27f024f79ae332e43074a3f2b407c3f3e2eb1a6af14b6f7372a8",
+            "runs": 1
+          },
+          {
+            "sha256": "de7cce17db9b9a62685b478cb8f0297cdd0fcd98d9381f076e096a071738fe5a",
+            "runs": 1
+          },
+          {
+            "sha256": "e0e6552bf9fc8f80f8f29b6a587cdc73b0e5783eb48fd7f3bc262f70f6e0aa86",
+            "runs": 1
+          },
+          {
+            "sha256": "e4626a6cf1d8ce0916d40bf4f757fe0b69ed7019687fd26980497153cd249de9",
+            "runs": 1
+          },
+          {
+            "sha256": "f8ed89d4269f5b69043ef46278612b5df763632931675330ce51c1c8a4e7c73a",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "5f3532b104a4b423f5c59f9755b5cfc5b06291d3d5ce00696f329b8c2c3307f6",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "9309ab873b4ee01a2ccc17a938df0b51ee7b9864fe462d23139c317171991b1d",
+      "size": 7724,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 55,
+        "recipe": "recipes/soroban/gen/gen.mjs#frozen-offer-removed-by-path-payment"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "7ff7e432eb177f22f019291975ff4d279fd1fcca202ba36956ed48f3be3545e3",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "9309ab873b4ee01a2ccc17a938df0b51ee7b9864fe462d23139c317171991b1d",
+            "runs": 1
+          },
+          {
+            "sha256": "673979a2ba6678032252d519aa99dfde68bbbbee1f60a2c44aa4571889654e14",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "f5ba87acf0227c5a6891cdc91cd74d1094e85e6f0bbed71030d7d4a7d0fe92f9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "65bd17c504203f58fe44b7c67fc59373b4accd892b420ef2041c491927a68ac3",
+      "size": 7732,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 56,
+        "recipe": "recipes/soroban/gen/gen.mjs#frozen-offer-removed-by-path-payment"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "2b4646cab4e32d1f5f1830b6530230e8a872ab5eaacfcea30ac25fcecb512424",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "65bd17c504203f58fe44b7c67fc59373b4accd892b420ef2041c491927a68ac3",
+            "runs": 1
+          },
+          {
+            "sha256": "4b21d8e1cbecabb08e1ac659ce48c11e1f2d0870b50c206c713c7acbbb732afb",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "653cea799d31eeabf885b170b7d8ae43fcf5da31bfcb01a73ab301a8a5285835",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "5cb92da788e9de19f18c3f0b06c6107c5a8e8d7d6456b2461ffa5b18f3c4d069",
+      "size": 7724,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 55,
+        "recipe": "recipes/soroban/gen/gen.mjs#frozen-offer-removed-by-path-payment"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "38e6d40d85bc18832dbc29440b9aaaafab9bc5fdec09fe7461834ac070d2fc27",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "5cb92da788e9de19f18c3f0b06c6107c5a8e8d7d6456b2461ffa5b18f3c4d069",
+            "runs": 1
+          },
+          {
+            "sha256": "fdb009091efc9306ef1b46e283ed00dd970f2343a67988b3bbc9c0f6911262f5",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "bfd17d097c2a7b35d9ecc0d30c935789d3fffdf5716d96c2b3c3237ed3d3b0d0",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The holder's offer is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/seller_id": "GBDE2YYHRNZKJUDZROTGLBL7Z6JON6WBOISQWSGJL4GML47LRUB3BHSE"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The holder's offer is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/seller_id": "GBDE2YYHRNZKJUDZROTGLBL7Z6JON6WBOISQWSGJL4GML47LRUB3BHSE"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The holder's offer is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/seller_id": "GBDE2YYHRNZKJUDZROTGLBL7Z6JON6WBOISQWSGJL4GML47LRUB3BHSE"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The holder's offer is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/seller_id": "GBDE2YYHRNZKJUDZROTGLBL7Z6JON6WBOISQWSGJL4GML47LRUB3BHSE"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The trade is with the maker, not the holder.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_success/0/op_inner/path_payment_strict_send/success/offers/0/order_book/seller_id",
+        "equals": "GBECFHQGZJQV63R22XAFS6ENGZ3JXSH6YVPZWRBTLASDJVRCK6ZNEAGC",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The trade is with the maker, not the holder.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_success/0/op_inner/path_payment_strict_send/success/offers/0/order_book/seller_id",
+        "equals": "GBECFHQGZJQV63R22XAFS6ENGZ3JXSH6YVPZWRBTLASDJVRCK6ZNEAGC",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The trade is with the maker, not the holder.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_success/0/op_inner/path_payment_strict_send/success/offers/0/order_book/seller_id",
+        "equals": "GBECFHQGZJQV63R22XAFS6ENGZ3JXSH6YVPZWRBTLASDJVRCK6ZNEAGC",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The trade is with the maker, not the holder.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/path_payment_strict_send/success/offers/0/order_book/seller_id",
+        "equals": "GBECFHQGZJQV63R22XAFS6ENGZ3JXSH6YVPZWRBTLASDJVRCK6ZNEAGC",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

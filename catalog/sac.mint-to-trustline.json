@@ -1,0 +1,52 @@
+{
+  "id": "sac.mint-to-trustline",
+  "title": "SAC mint into a trustline the SAC created",
+  "pattern": "The issuer mints XPF to bob through the SAC: the classic trustline balance changes and a mint event is emitted.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "SAC mint event into a classic trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "sac-mint-to-sac-trustline",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "A mint event names bob.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "mint",
+        "/body/v0/topics/1/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "bob's trustline balance is updated.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

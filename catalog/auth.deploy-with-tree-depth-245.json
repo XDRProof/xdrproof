@@ -1,0 +1,49 @@
+{
+  "id": "auth.deploy-with-tree-depth-245",
+  "title": "A contract deploy whose authorization root carries a 245-deep chain",
+  "pattern": "The deploy succeeds and creates an instance; its auth root is the CreateContractV2 function with 244 nested never-called invocations. wallet-backend's contract-deploy walk (#820) runs only when an instance is created, so this is the ledger that exercises it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B7",
+      "placement": "245-deep auth tree with a contract deploy"
+    },
+    {
+      "id": "H-B13",
+      "placement": "a valid ledger the WASM decoder rejects"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/820"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "deploy-with-auth-tree-depth-245",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The instance is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.kit_deep_deploy"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

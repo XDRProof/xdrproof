@@ -1,0 +1,51 @@
+{
+  "id": "scval.max-signatures-max-symbol",
+  "title": "A Soroban transaction with 20 signatures and a 32-byte symbol",
+  "pattern": "signatures<20> full (carol needs all 20 signers at thresholds 20) and SCSymbol<32> at 32 bytes as storage key, event topic and argument.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B6",
+      "placement": "TransactionEnvelope.signatures at 20 and SCSymbol at 32 bytes"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "max-signatures-max-symbol",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The envelope carries 20 signatures.",
+      "at": "tx.envelope",
+      "path": "/tx/signatures",
+      "length": 20,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The key is the 32-byte symbol.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/key/symbol": "abcdefghijklmnopqrstuvwxyz_01234"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

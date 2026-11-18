@@ -1,0 +1,43 @@
+{
+  "id": "upgrade.config-restore-and-unfreeze",
+  "title": "A config upgrade that unfreezes keys",
+  "pattern": "A config upgrade restores the Soroban transaction limit and unfreezes the three trustlines: the frozen-key list returns to empty, visible only in upgradesProcessing.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-F10",
+      "placement": "LEDGER_UPGRADE_CONFIG unfreezing keys"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "config-upgrade-restore-and-unfreeze",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The frozen-key list becomes empty.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/changes",
+      "some": {
+        "/updated/data/config_setting/frozen_ledger_keys/keys": []
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

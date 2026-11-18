@@ -10,6 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { zstdDecompressSync } from 'node:zlib';
 import { sha256, stable, pointer, normalisedSha256 } from './lib.mjs';
+import * as K from './strkey.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const NATIVE = join(ROOT, 'tools/native/target/release/xdrproof-native');
@@ -57,7 +58,9 @@ function generatedVariant(cat, label) {
   const lane = cat.source.lane, cfg = parseLabel(label), d1 = runDir(lane, cfg, 1), d2 = runDir(lane, cfg, 2);
   if (!existsSync(d1)) die(`run ${d1} missing: run make generate`);
   const manifest = JSON.parse(readFileSync(join(d1, 'manifest.json'), 'utf8'));
-  const { ledger, tx } = findStep(manifest, cat.source.step);
+  // source.ledger_offset: the entry is about a ledger N after the step's (e.g. the eviction minPersistentTTL ledgers later)
+  const at = findStep(manifest, cat.source.step); const off = cat.source.ledger_offset ?? 0;
+  const ledger = at.ledger + off, tx = off ? null : at.tx;
   const file = `ledger-${String(ledger).padStart(3, '0')}.xdr`; let bytes = readFileSync(join(d1, 'lcm', file));
   const key = `p${cfg.proto}-${cfg.net}-generated${cfg.flags === 'base' ? '' : '-' + cfg.flags}`;
   // change order: 20-run scan for base P30 mainnet, else the two matrix runs
@@ -121,9 +124,11 @@ function anchor(v, json, at) {
     default: die(`unknown fact address ${at}`);
   }
 }
-// {"$manifest": "a.b.c"}: a value from the run's manifest; {"$step": "<name>"}: that recipe step's transaction hash
+// {"$manifest": "a.b.c"}: a value from the run's manifest; {"$step": "<name>"}: that recipe step's transaction hash;
+// {"$muxedContract": ["<manifest path of a C... id>", "<id>"]}: the W... strkey, computed by tools/strkey.mjs
 const resolveValue = (val, manifest) => (val && typeof val === 'object' && !Array.isArray(val)
-  ? ('$manifest' in val ? manifestValue(manifest, val.$manifest) : '$step' in val ? findStep(manifest, val.$step).tx ?? die(`$step ${val.$step} has no tx`)
+  ? ('$manifest' in val ? manifestValue(manifest, val.$manifest)
+    : '$muxedContract' in val ? K.muxedContract(K.decode(manifestValue(manifest, val.$muxedContract[0])).payload, BigInt(val.$muxedContract[1])) : '$step' in val ? findStep(manifest, val.$step).tx ?? die(`$step ${val.$step} has no tx`)
     : Object.fromEntries(Object.entries(val).map(([k, x]) => [k, resolveValue(x, manifest)])))
   : Array.isArray(val) ? val.map((x) => resolveValue(x, manifest)) : val);
 function check(json, fact) {
