@@ -26,7 +26,7 @@ import { createInterface } from 'node:readline';
 import { zstdDecompressSync } from 'node:zlib';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { sha256, stable, pointer, normalise, decode as wasmDecode } from './lib.mjs';
+import { sha256, stable, pointer, normalise, decodeWasm as wasmDecode } from './lib.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WRITE = process.argv.includes('--write');

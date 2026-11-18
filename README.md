@@ -18,7 +18,8 @@ XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stel
 | `make oracle` | Every value-checkable fact is **confirmed by stellar-core's own decoder** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK); a planted one-digit error in a 64-bit value is caught by both | Docker | seconds |
 | `make coverage` | 499 XDR union arms are reachable from `LedgerCloseMeta` at v30.0; the three entries here reach 78 | Python 3 | seconds |
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach **254 of 499** | + git (downloads ~76 MB once) | ~1 min |
-| `make generate` | Every generated entry is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0 on the mainnet passphrase (no RPC, no network, no keys or funds), and the shipped bytes are reproduced | Docker | ~2 min |
+| `make generate` | Every recipe run is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0, pinned by image digest (no RPC, no network, no keys or funds): both lanes, mainnet and testnet passphrases, Soroban at P30 and P28, three emitter-flag profiles. Every pair agrees, byte for byte or after normalisation, and every shipped generated variant is reproduced | Docker | ~10 min (`make generate-quick` ~3 min) |
+| `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | ~15 min |
 | `make conformance` | js-stellar-sdk **#1766, #1785, #1789 fail on pre-fix tags and pass on fixed ones**, and #1766's twin fails on go-stellar-sdk v0.7.1 and passes on v0.7.2 | Node, Rust, Docker | ~5 min cold |
 | `make replay` | Real wallet-backend builds fed corpus ledgers through a mock stellar-rpc. Testnet 4437356–4437359: **#729 halts** before the fix, **#716 stores the signer as 33 bytes**, the fix stores the full 41-byte key. Our own CAP-0073 entry: **#731 drops the trustline** (no TRUSTLINE/ADD) before the fix, records it after | Docker | ~10 min cold |
 
@@ -58,6 +59,9 @@ Beyond the RFP's fields, each entry names its `hazards` (with the `placement` in
 - **Soroban authorization trees up to 245 levels deep apply at Protocol 30; at 246 the transaction is included but traps.** So any indexer cap below about 246 meets real, valid ledgers.
 - **The WASM build of rs-stellar-xdr (`@stellar/stellar-xdr-json` 30.0.0) cannot decode those 245-deep ledgers** (`depth limit exceeded`), while native rs-stellar-xdr decodes them. To be reported upstream once checked for duplicates.
 - **Order across ledger keys is unstable between core processes; the STATE → UPDATED pairing for one key is stable.** Readers can rely on the pairing, never on the order between keys.
+- **Node flags change every byte of the metadata and never the ledger.** Across the 80 ledgers of each recipe lane, the base, Galexie and bare flag profiles give the same header hash and different `LedgerCloseMeta` bytes in every ledger. With Galexie's flags, each contract event appears twice: in the operation's events and again among the diagnostic events.
+- **A Soroban ledger written with diagnostic events on is not byte-reproducible.** Every call carries a `core_metrics` diagnostic event `invoke_time_nsecs`, the wall-clock time the host spent. Two nodes running Galexie's default config write different bytes for the same ledger. The corpus's normalised form zeroes that one value.
+- **A Soroban fee source merged earlier in the same ledger gets no refund.** `fee_charged` is then the full declared maximum, with no refund change and no refund event (`TransactionFrame.cpp:998-1001`). A reader that computes the fee as charge minus refund, or expects a refund for every Soroban transaction, gets it wrong.
 
 ## Layout
 
@@ -67,7 +71,9 @@ caps/registry.json    the 75 hazards
 entries/<id>/         entry.json + one raw XDR file per variant
 manifest.json         generated index
 recipes/classic/      classic recipes for a bare standalone stellar-core (incl. a failure suite)
-recipes/soroban/      Soroban recipes + the test contract
+recipes/soroban/      Soroban recipes + two test contracts (kit, kit2)
+recipes/flags/        emitter-flag profiles: base, galexie, bare
+recipes/core-image    the stellar-core image, pinned by digest
 tools/                verify.mjs, lib.mjs, compare/summarize, native/ (rs-stellar-xdr reader), coverage/ (schema walker)
 conformance/          orchestrator + JS/Rust/Go testees + vectors + recorded matrix
 replay/               wallet-backend replay through a mock stellar-rpc (#729, #716, #731) + recorded runs

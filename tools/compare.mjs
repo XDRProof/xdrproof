@@ -1,4 +1,4 @@
-// compare.mjs <runA/lcm> <runB/lcm> [<entry-id>=<ledger-NNN.xdr> ...]
+// compare.mjs <runA/lcm> <runB/lcm> [<entry-id>[@<variant-key>]=<ledger-NNN.xdr> ...]   (variant default p30-mainnet-generated)
 // Compares two fresh generator runs ledger by ledger (raw bytes, then after change-order
 // normalisation), and checks that each named corpus entry's shipped bytes are reproduced:
 // identical raw bytes, or the same order-normalised content.
@@ -16,21 +16,22 @@ for (const f of files) {
   const x = readFileSync(join(a, f)), y = existsSync(join(b, f)) ? readFileSync(join(b, f)) : null;
   if (!y) { differ++; console.log(`  ${f}: missing in second run`); continue; }
   if (x.equals(y)) { raw++; continue; }
-  if (normalisedSha256('LedgerCloseMeta', x) === normalisedSha256('LedgerCloseMeta', y)) { norm++; console.log(`  ${f}: same content, different change order`); continue; }
+  if (normalisedSha256('LedgerCloseMeta', x) === normalisedSha256('LedgerCloseMeta', y)) { norm++; console.log(`  ${f}: same content after normalisation (change order or diagnostic timing)`); continue; }
   differ++; console.log(`  ${f}: CONTENT DIFFERS`);
 }
-console.log(`  ${files.length - upgrade} ledgers: ${raw} byte-identical, ${norm} identical after change-order normalisation, ${differ} different`);
+console.log(`  ${files.length - upgrade} ledgers: ${raw} byte-identical, ${norm} identical after normalisation, ${differ} different`);
 
 let bad = differ > 0;
 for (const c of checks) {
-  const [id, file] = c.split('=');
+  const [lhs, file] = c.split('='); const [id, key = 'p30-mainnet-generated'] = lhs.split('@');
   const entry = JSON.parse(readFileSync(join(ROOT, 'entries', id, 'entry.json'), 'utf8'));
-  const v = entry.variants.find((x) => x.key === 'p30-mainnet-generated');
+  const v = entry.variants.find((x) => x.key === key);
+  if (!v) { bad = true; console.log(`  ${id}@${key}: no such variant`); continue; }
   const got = readFileSync(join(a, file));
   const shipped = readFileSync(join(ROOT, 'entries', id, v.file));
   const same = got.equals(shipped) ? 'byte-identical'
     : normalisedSha256('LedgerCloseMeta', got) === normalisedSha256('LedgerCloseMeta', shipped) ? 'same content (other change order)' : null;
   if (!same) bad = true;
-  console.log(`  ${id}@p30-mainnet-generated: ${same ?? 'NOT REPRODUCED'} (run sha256 ${sha256(got).slice(0, 12)}, shipped ${v.sha256.slice(0, 12)})`);
+  console.log(`  ${id}@${key}: ${same ?? 'NOT REPRODUCED'} (run sha256 ${sha256(got).slice(0, 12)}, shipped ${v.sha256.slice(0, 12)})`);
 }
 process.exit(bad ? 1 : 0);

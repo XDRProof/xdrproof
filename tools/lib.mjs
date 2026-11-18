@@ -27,10 +27,15 @@ export const pointer = (doc, p) => p.split('/').slice(1).reduce((node, raw) => {
   return Array.isArray(node) ? node[Number(k)] : node[k];
 }, doc);
 
-// stellar-core emits an operation's ledger-entry changes in a per-process random order
-// (hash-map iteration with a random salt), so the order-normalised form sorts every
-// array whose key ends in "changes". Everything else keeps its order.
+// Two things in LedgerCloseMeta vary between runs of the same ledger, so the normalised form removes both:
+// - stellar-core emits an operation's ledger-entry changes in a per-process random order (hash-map iteration
+//   with a random salt): every array whose key ends in "changes" is sorted; everything else keeps its order;
+// - with ENABLE_SOROBAN_DIAGNOSTIC_EVENTS (Galexie's default), each call carries a diagnostic event
+//   ["core_metrics", "invoke_time_nsecs"] whose u64 data is wall-clock execution time: it is set to "0".
+// Ledgers without diagnostic events are unaffected by the second rule.
+const isTimingMetric = (v) => v?.topics?.length === 2 && v.topics[0]?.symbol === 'core_metrics' && v.topics[1]?.symbol === 'invoke_time_nsecs' && v.data?.u64 !== undefined;
 export const normalise = (v, key = '') => {
+  if (v && typeof v === 'object' && !Array.isArray(v) && isTimingMetric(v)) return { ...v, data: { u64: '0' } };
   if (Array.isArray(v)) {
     const items = v.map((x) => normalise(x));
     if (!/changes$/.test(key)) return items;
@@ -50,6 +55,10 @@ const decodeNative = (type, b64) => {
   if (r.status !== 'ok') throw new Error(`native ${r.stage}: ${r.message}`);
   return JSON.stringify(r.json);
 };
+
+// The WASM reader alone, with no fallback: verify.mjs uses it as the independent second reader, so its
+// failures must surface, not be hidden by the native fallback below.
+export const decodeWasm = (type, bytes) => xdr().decode(type, Buffer.from(bytes).toString('base64'));
 
 // Decode one raw XDR value to SEP-0051 JSON (string) with rs-stellar-xdr: WASM first, native when
 // the WASM build hits its depth limit.

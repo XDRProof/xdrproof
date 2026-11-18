@@ -84,6 +84,7 @@ export class Walker {
         return true;
       }
       case 'MuxedEd25519Account': { const id = this.u64(); const k = this.bytes(32); this.emit(K.muxed(k, id)); this.emit(id); return true; }
+      case 'MuxedContract': { const id = this.u64(); const h = this.bytes(32); this.emit(K.muxedContract(h, id)); this.emit(id); return true; } // CAP-0084, W strkey
       case 'SignerKey': {
         const [label] = this.hitUnion('SignerKey', this.i32());
         if (label === 'SIGNER_KEY_TYPE_ED25519') this.emit(K.account(this.bytes(32)));

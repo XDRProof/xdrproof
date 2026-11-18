@@ -20,7 +20,18 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WRITE = process.argv.includes('--write');
 const defs = loadDefs(join(ROOT, 'tools/coverage/defs/xdr-v30.0.json'));
 const bytesOf = (f) => (f.endsWith('.zst') ? zstdDecompressSync(readFileSync(f)) : readFileSync(f));
-const ENUMISH = /^[a-z][a-z0-9_]*$/;
+// Enum member names as SEP-0051 prints them (xdrgen strips the members' common prefix, serde snake_cases
+// the rest: INVOKE_HOST_FUNCTION_TRAPPED -> "trapped"). Only these are skipped as not value-checkable;
+// any other expected value missing from a reader is a disagreement.
+const ENUM_NAMES = new Set();
+for (const d of Object.values(defs)) {
+  if (d.kind !== 'enum' && d.kind !== 'union') continue;
+  const names = d.kind === 'enum' ? d.members.map((m) => m.name) : d.arms.flatMap((a) => a.cases.map((c) => c.name)).filter(Boolean);
+  if (!names.length) continue;
+  const parts = names.map((n) => n.split('_'));
+  let k = 0; while (parts.every((p) => p.length > k + 1 && p[k] === parts[0][k])) k++;
+  for (const p of parts) { ENUM_NAMES.add(p.slice(k).join('_').toLowerCase()); ENUM_NAMES.add(p.join('_').toLowerCase()); }
+}
 
 function leaves(v, out = []) {
   if (Array.isArray(v)) v.forEach((x) => leaves(x, out));
@@ -47,7 +58,7 @@ for (const [i, j] of jobs.entries()) {
   j.entry.expected.facts.forEach((f, k) => {
     if (f.variants && !f.variants.includes(j.v.key)) return;
     const vals = expectedValues(f);
-    const checkable = vals.filter((x) => !(ENUMISH.test(x) && !w.has(x)));
+    const checkable = vals.filter((x) => !(ENUM_NAMES.has(x) && !w.has(x)));
     const per = verdicts.get(j.id) ?? new Map(); verdicts.set(j.id, per);
     const rec = per.get(k) ?? { core: [], walker: [], checkable: checkable.length }; per.set(k, rec);
     const wMissing = checkable.filter((x) => !w.has(x));

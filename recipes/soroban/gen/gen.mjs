@@ -27,7 +27,7 @@ const submit = async (name, tx, note) => {
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
   const inner = tx.innerTransaction ?? tx; // a fee bump consumes the inner source's sequence number
   const src = inner.source.startsWith('M') ? S.MuxedAccount.fromAddress(inner.source, '0').baseAccount().accountId() : inner.source;
-  if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); return false; }
+  if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); if (!process.env.PROBE) throw new Error(name + ': rejected at submission'); return false; }
   seq.set(src, seq.get(src) + 1n);
   await close();
   manifest.steps.push({ name, ledger, tx: Buffer.from(tx.hash()).toString('hex'), note });
@@ -301,7 +301,7 @@ for (const [kind, address] of [
 const pending = [];
 const enqueue = async (name, tx, note) => { // like submit(), but the ledger closes in closeGroup()
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
-  if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); return false; }
+  if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); if (!process.env.PROBE) throw new Error(name + ': rejected at submission'); return false; }
   const inner = tx.innerTransaction ?? tx;
   const src = inner.source.startsWith('M') ? S.MuxedAccount.fromAddress(inner.source, '0').baseAccount().accountId() : inner.source;
   seq.set(src, seq.get(src) + 1n); // victims that fail txBAD_SEQ or txNO_ACCOUNT never use the next number; they are not reused
@@ -427,8 +427,15 @@ const configUpgrade = async (name, entries, note) => {
   await submit(name + '-staged', soroban(alice, invoke(CA1, 'put_all', [k, v]),
     { ro: [kCode(wasm2Hash)], rw: [kInstance(CA1), kData(CA1, k, DUR.persistent), kData(CA1, k, DUR.temporary)] }), 'ConfigUpgradeSet bytes in a temporary entry of CA1');
   const key = new xdr.ConfigUpgradeSetKey({ contractId: new xdr.ContractId(S.StrKey.decodeContract(CA1)), contentHash: hash }).toXDR('base64');
+  // core answers an accepted key with an empty body (CommandHandler::upgrades) and clears it once the upgrade
+  // applies (Upgrades::removeUpgrades), so the pending-upgrade report must change on arming and return after the close
+  const before = await get('upgrades?mode=get');
   const r = (await get('upgrades?mode=set&upgradetime=1970-01-01T00:00:00Z&configupgradesetkey=' + encodeURIComponent(key))).trim();
-  await close(); manifest.steps.push({ name, ledger, note, config_upgrade_set: hash.toString('hex') }); console.log(String(ledger).padStart(3), name, r.slice(0, 60));
+  if (r) throw new Error(name + ': upgrade key refused: ' + r);
+  if ((await get('upgrades?mode=get')) === before) throw new Error(name + ': nothing armed');
+  await close();
+  if ((await get('upgrades?mode=get')) !== before) throw new Error(name + ': still pending after the close, not applied');
+  manifest.steps.push({ name, ledger, note, config_upgrade_set: hash.toString('hex') }); console.log(String(ledger).padStart(3), name, 'applied');
 };
 const [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB] = ['issuer', 'holder', 'maker', 'taker', 'pool-a', 'pool-b'].map((n) => kp('freeze-' + n));
 const fzAll = [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB];
@@ -481,7 +488,8 @@ await enqueue('soroban-surge-bid-3000', bidCall(alice, sym('surge_3000'), 3000))
 await enqueue('soroban-surge-bid-2000', bidCall(bob, sym('surge_2000'), 2000));
 { const late = bidCall(issuer, sym('surge_1000'), 1000);
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(late.toEnvelope().toXDR('base64'))));
-  if (r.status === 'PENDING') seq.set(issuer.publicKey(), seq.get(issuer.publicKey()) + 1n);
+  if (r.status !== 'PENDING') throw new Error('soroban-surge-bid-1000: rejected at submission ' + JSON.stringify(r));
+  seq.set(issuer.publicKey(), seq.get(issuer.publicKey()) + 1n);
   await closeGroup('soroban-surge-priced');
   await close(); manifest.steps.push({ name: 'soroban-surge-left-over-applies-next-ledger', ledger, tx: Buffer.from(late.hash()).toString('hex'), status: r.status });
   console.log(String(ledger).padStart(3), 'soroban-surge-left-over-applies-next-ledger'); }

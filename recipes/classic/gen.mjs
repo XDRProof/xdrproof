@@ -45,7 +45,8 @@ const txb = (k, ops, opts = {}) => { const b = new S.TransactionBuilder(acct(k),
 const submit = async (name, tx, src, note = '') => {
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
   const hash = Buffer.from(tx.hash()).toString('hex');
-  if (r.status === 'PENDING') cur.set(src.publicKey(), cur.get(src.publicKey()) + 1n);
+  if (r.status !== 'PENDING') throw new Error(name + ': rejected at submission ' + JSON.stringify(r)); // every step must reach a ledger
+  cur.set(src.publicKey(), cur.get(src.publicKey()) + 1n);
   await close();
   steps.push({ name, ledger, tx: hash, status: r.status, note, ...(r.status === 'PENDING' ? {} : { error: r }) });
   console.log(name, ledger, hash.slice(0, 12), r.status);
@@ -153,7 +154,8 @@ t.sign(carol); await submit('account-merge-to-muxed', t, carol, 'carol merged in
 const queued = [];
 const queue = async (label, tx, src) => {
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
-  if (r.status === 'PENDING') cur.set(src.publicKey(), cur.get(src.publicKey()) + 1n);
+  if (r.status !== 'PENDING') throw new Error(label + ': rejected at submission ' + JSON.stringify(r));
+  cur.set(src.publicKey(), cur.get(src.publicKey()) + 1n);
   queued.push({ label, tx: Buffer.from(tx.hash()).toString('hex'), status: r.status, ...(r.status === 'PENDING' ? {} : { error: r }) });
 };
 const closeGroup = async (name, note) => {
@@ -394,7 +396,8 @@ await queue('surge-bid-3000-per-op', one(whale, fifty(whale), { fee: '3000' }), 
 await queue('surge-bid-2000-per-op', one(bob, fifty(bob), { fee: '2000' }), bob);
 const late = one(frank, [S.Operation.payment({ destination: alice.publicKey(), asset: S.Asset.native(), amount: '0.0000001' })], { fee: '1000' });
 const lateR = JSON.parse(await get('tx?blob=' + encodeURIComponent(late.toEnvelope().toXDR('base64'))));
-if (lateR.status === 'PENDING') cur.set(frank.publicKey(), cur.get(frank.publicKey()) + 1n);
+if (lateR.status !== 'PENDING') throw new Error('surge-bid-1000: rejected at submission ' + JSON.stringify(lateR));
+cur.set(frank.publicKey(), cur.get(frank.publicKey()) + 1n);
 await closeGroup('surge-priced-oversubscribed', '101 operations queued for 100: bids 3000 and 2000 per op kept, baseFee 2000; bid 1000 left in the queue'); // 81
 await close(); steps.push({ name: 'surge-left-over-applies-next-ledger', ledger, txs: [{ label: 'surge-bid-1000-per-op', tx: Buffer.from(late.hash()).toString('hex'), status: lateR.status }],
   note: 'the transaction left out of the oversubscribed ledger, applied one ledger later at the normal base fee' });

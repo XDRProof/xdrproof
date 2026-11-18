@@ -2,17 +2,18 @@
 // SDK) and returns, per ledger, the set of values it printed, normalised to the same canonical forms
 // the schema walker produces: G/M/P/C/L addresses, exact decimal integers, hex, SEP-0051-escaped strings.
 //
-// Runs one container (`stellar/quickstart`, which ships stellar-core v30.0.0) with networking disabled.
+// Runs one container (the stellar/quickstart image pinned by digest in recipes/core-image, which ships
+// stellar-core v30.0.0) with networking disabled.
 // stellar-core prints 64-bit integers as bare JSON numbers and copies non-UTF-8 string bytes raw, so the
 // output is read as bytes (latin1) and parsed with source-preserving number handling.
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import * as K from './strkey.mjs';
 import { escapeBytes } from './walker.mjs';
 
-export const CORE_IMAGE = process.env.XDRPROOF_CORE_IMAGE || 'stellar/quickstart:latest';
+export const CORE_IMAGE = process.env.XDRPROOF_CORE_IMAGE || readFileSync(new URL('../recipes/core-image', import.meta.url), 'utf8').trim();
 const HEX64 = /^[0-9a-f]{64}$/;
 const latin1Bytes = (s) => Buffer.from(s, 'latin1');
 
@@ -30,6 +31,8 @@ function collect(node, out) {
       const raw = node.accountID ? K.decode(node.accountID).payload : Buffer.from(node.ed25519, 'hex');
       out.add(K.muxed(raw, BigInt(node.id)));
     }
+    // muxed contract (CAP-0084): {id, contractId: C…}
+    if ('id' in node && 'contractId' in node && keys.length === 2) out.add(K.muxedContract(K.decode(node.contractId).payload, BigInt(node.id)));
     // signed-payload signer: {ed25519: hex, payload: hex}
     if ('ed25519' in node && 'payload' in node && keys.length === 2) out.add(K.signedPayload(Buffer.from(node.ed25519, 'hex'), Buffer.from(node.payload, 'hex')));
     // 128-bit and 256-bit integers

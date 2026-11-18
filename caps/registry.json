@@ -1,6 +1,6 @@
 {
   "$schema": "https://xdrproof.dev/schema/v1/registry.schema.json",
-  "note": "XDRProof hazard registry: each hazard is a named way Stellar ledger readers break. Source of the design: research blueprint (2026-11-18). Checks: R replay probe, C conformance, L linter, G guide, V verify facts.",
+  "note": "XDRProof hazard registry: each hazard is a named way Stellar ledger readers break. Source of the design: research blueprint (2026-11-18). Checks: R replay probe, C conformance, L linter, G guide, V verify facts. In `test`, c-base/s-base step names are recipe steps: generated, reproducible ledgers that become corpus entries in B4; \"todo\" marks placements not built yet; \"planned\" marks later stages.",
   "count": 75,
   "hazards": [
     {
@@ -13,7 +13,7 @@
         "stellar-etl#263",
         "wallet-backend#716"
       ],
-      "test": "Muxed in every position: tx source C5, op source C5, payment dest C5, path-payment dest C14, account-merge dest C38, fee-bump fee source todo, SAC transfer dest S11, muxed contract `W` S27; two different muxed IDs over one base account in one ledger todo",
+      "test": "Muxed in every position: tx source C5, op source C5, payment dest C5, path-payment dest C14, account-merge dest C38, fee-bump fee source c-base `fee-bump-muxed-fee-source` and s-base `soroban-fee-bump-muxed-fee-source`, SAC transfer dest S11, muxed contract `W` S27; two different muxed IDs over one base account in one ledger c-base `two-muxed-ids-one-base-account-one-ledger`; muxed tx and operation sources on Soroban TTL and restore operations s-base `ttl-extend-muxed-source-text-memo`, `restore-muxed-op-source-text-memo`",
       "checks": [
         "C",
         "L",
@@ -29,7 +29,7 @@
       "refs": [
         "js-stellar-sdk#1785"
       ],
-      "test": "IDs 0, 1, 2^63, 2^64−1 (C5 has 1, 2^63, 2^64−1; 0 todo); non-canonical strings as API vectors (exists in conformance)",
+      "test": "IDs 0, 1, 2^63, 2^64−1 (C5 has 1, 2^63, 2^64−1; 0 in c-base `muxed-id-zero`); non-canonical strings as API vectors (exists in conformance)",
       "checks": [
         "C"
       ]
@@ -43,7 +43,7 @@
       "refs": [
         "wallet-backend#729"
       ],
-      "test": "Payload lengths 1 todo, 4 (mined testnet 4437357), 29 (needs padding, C6), 64 (max, C6); as account signer C6 + mined mainnet `M:signed-payload-signer`; as extra signer (CAP-21) C33",
+      "test": "Payload lengths 1 (c-base `signed-payload-length-1`), 4 (mined testnet 4437357), 29 (needs padding, C6), 64 (max, C6); as account signer C6 + mined mainnet `M:signed-payload-signer`; as extra signer (CAP-21) C33",
       "checks": [
         "C",
         "R"
@@ -89,7 +89,7 @@
       "refs": [
         "stellar-etl#450"
       ],
-      "test": "Memo text, hash, return and id on payments C26–C29; memo text on a SAC-transfer-like path todo",
+      "test": "Memo text, hash, return and id on payments C26–C29; the memo carried into the CAP-0067 transfer event as to_muxed_id: text as a string (non-UTF-8 in C26), id as u64 (C27), hash and return both as bytes and so indistinguishable (C28, C29)",
       "checks": [
         "R"
       ]
@@ -103,7 +103,7 @@
       "refs": [
         "wallet-backend#739"
       ],
-      "test": "A Soroban tx whose envelope auth names an address the meta never touches todo",
+      "test": "s-base `auth-tree-depth-245-max`: its 244 never-called sub-invocations name kits[1] 244 times in the envelope auth and 0 times in results or meta",
       "checks": [
         "L",
         "R"
@@ -175,7 +175,7 @@
         "js-stellar-sdk#1766",
         "py-stellar-base#1246"
       ],
-      "test": "API vectors (exist); a pool whose issuers sort differently by text and bytes, as a real ledger todo",
+      "test": "API vectors (exist); a pool whose issuers sort differently by text and bytes, as a real ledger: c-base `pool-issuers-sort-differently-by-text-and-bytes`",
       "checks": [
         "C"
       ]
@@ -203,7 +203,7 @@
       "refs": [
         "stellar-etl#454"
       ],
-      "test": "Trustline limit i64::MAX C9/S5; balances > 2^53 stroops todo; offer ids above 2^53 (API vector)",
+      "test": "Trustline limit i64::MAX C9/S5; balances > 2^53 stroops: c-base `create-whale-1e9-xlm`, `payment-above-2-pow-53-stroops`; offer ids above 2^53 (API vector)",
       "checks": [
         "C",
         "R"
@@ -233,7 +233,7 @@
       "refs": [
         "js-stellar-sdk#1823"
       ],
-      "test": "Memo text C26 + mainnet `M:memo-text-non-utf8`; ScString S28; manage-data binary C24 + mainnet; home domain non-UTF-8 todo (if core allows), data name todo",
+      "test": "Memo text C26 + mainnet `M:memo-text-non-utf8`; ScString S28; manage-data binary C24 + mainnet; home domain and data name cannot hold non-ASCII: core requires printable ASCII (SetOptionsOpFrame.cpp:320, ManageDataOpFrame.cpp:115, util/types.cpp isStringValid)",
       "checks": [
         "C",
         "G",
@@ -249,7 +249,7 @@
       "refs": [
         "rs-stellar-xdr#581"
       ],
-      "test": "20 signatures + 32-byte symbol S26; 64-byte data value C24; 32-byte home domain C8; 28-byte memo C26; max ops per tx todo; max signers 20 S25; over-length as lane S (SDK only) todo",
+      "test": "20 signatures + 32-byte symbol S26; 64-byte data value C24; 32-byte home domain C8; 28-byte memo C26; 100 operations c-base `operations-100-muxed-ids`; max signers 20 S25; over-length as lane S (SDK only), planned in B5",
       "checks": [
         "C"
       ]
@@ -295,7 +295,7 @@
       "refs": [
         "js-stellar-sdk#1787"
       ],
-      "test": "Alphanum-12 C9, C11, C14; mainnet `M:alphanum12-asset`; issued \"xlm\" code todo",
+      "test": "Alphanum-12 C9, C11, C14; mainnet `M:alphanum12-asset`; issued \"xlm\" code c-base `trust-issued-xlm-code`, `payment-issued-xlm-code`",
       "checks": [
         "C",
         "R"
@@ -352,7 +352,7 @@
       "title": "A valid ledger common decoders cannot read (depth)",
       "evidence": "measured: stellar-xdr-json WASM fails on S22/S23; Python 512 and Java 200 default depths",
       "refs": [],
-      "test": "S22/S23 as entries; expected divergences pre-registered",
+      "test": "planned: the S22/S23 recipe ledgers (s-base `auth-tree-depth-245-max`, `auth-tree-depth-246-trapped`) as entries in B4, expected divergences pre-registered in B5",
       "checks": [
         "C"
       ]
@@ -481,7 +481,7 @@
         "stellar-etl#451",
         "wallet-backend#755"
       ],
-      "test": "C13, C15, C44 (strict receive through pool), mainnet; pool-share limit-only ChangeTrust todo",
+      "test": "C13, C15, C44 (strict receive through pool), mainnet; pool-share limit-only ChangeTrust c-base `pool-share-limit-only-change-trust`",
       "checks": [
         "R"
       ]
@@ -673,7 +673,7 @@
       "refs": [
         "stellar-etl#461"
       ],
-      "test": "S29, S30, mainnet extend/restore; archived → restored (`LEDGER_ENTRY_RESTORED`) todo",
+      "test": "S29, S30, mainnet extend/restore; archived → restored (`LEDGER_ENTRY_RESTORED`): s-base `archival-restore-footprint`, `archival-automatic-restore-in-invoke`",
       "checks": [
         "R"
       ]
@@ -838,7 +838,7 @@
       "refs": [
         "stellar-etl#452"
       ],
-      "test": "Recipe with diagnostic events enabled todo (core config `ENABLE_SOROBAN_DIAGNOSTIC_EVENTS`)",
+      "test": "Galexie flag profile (recipes/flags/galexie.cfg, ENABLE_SOROBAN_DIAGNOSTIC_EVENTS): each contract event appears twice, in operations[].events and again as a contract-type diagnostic event. The diagnostic core_metrics event invoke_time_nsecs is wall-clock time, so these ledgers are not byte-reproducible; the normalised form zeroes it (tools/lib.mjs normalise)",
       "checks": [
         "R"
       ]
@@ -888,7 +888,7 @@
       "title": "Empty ledgers (no transactions)",
       "evidence": "`STELLAR_VALUE_EMPTY_TX_SET*` arms",
       "refs": [],
-      "test": "Recipe closing an empty ledger todo",
+      "test": "c-base `empty-ledger`; s-base `archival-empty-ledgers` (16 ledgers whose only content is eviction)",
       "checks": [
         "R"
       ]
@@ -924,7 +924,7 @@
       "title": "`LedgerCloseMetaExt` v1 (Galexie) vs v0 (RPC) for the same ledger",
       "evidence": "R01",
       "refs": [],
-      "test": "Same ledger as two variants todo",
+      "test": "Every run under the base profile (LedgerCloseMetaExt v1) and the bare profile (v0); same header hash, different bytes (recipes/flags)",
       "checks": [
         "C",
         "R"
@@ -949,7 +949,7 @@
       "title": "Same ledger, different bytes by node flags (six Galexie flags vs RPC defaults)",
       "evidence": "ledger-close-meta.md:390-406",
       "refs": [],
-      "test": "`emitter_flags` dimension in variant keys; runs with flags off and with Galexie's six",
+      "test": "Every run under three profiles (recipes/flags: base, galexie, bare): in both lanes all 80 ledgers keep the same header hash under all three profiles while every meta differs; galexie adds diagnostic events, bare drops classic events, fee events and both meta extensions; variant keys carry the profile suffix",
       "checks": [
         "R"
       ]
@@ -986,7 +986,7 @@
       "title": "Older protocol a pre-fix indexer can decode",
       "evidence": "R02",
       "refs": [],
-      "test": "P28 variants for sighting entries",
+      "test": "P28 runs of the Soroban lane are part of make generate; sighting entries get P28 variants in B4",
       "checks": [
         "R"
       ]
