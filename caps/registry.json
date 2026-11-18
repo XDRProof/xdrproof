@@ -702,7 +702,7 @@
         "CAP-0062",
         "stellar-etl#461"
       ],
-      "test": "Generated: after a config upgrade to the minimum lifetimes and an eviction scan from level 1, ledgers with no transactions carry evicted_keys: three persistent entries archived to the hot archive 10 ledgers after creation, temporary entries deleted (including older ones the scan reached): s-base `archival-empty-ledgers`; mined: pubnet 65460631, 2000 evicted keys (1000 contract data and their 1000 TTLs), the per-ledger cap maxEntriesToArchive, in a ledger with 162 transactions",
+      "test": "Generated: after a config upgrade to the minimum lifetimes and an eviction scan from level 1, ledgers with no transactions carry evicted_keys: three persistent entries archived to the hot archive 10 ledgers after creation, temporary entries deleted (including older ones the scan reached): s-base `archival-empty-ledgers`; mined: pubnet 65460631 evicts 1000 contract-data entries and their 1000 TTL keys in a ledger with 162 transactions: exactly maxEntriesToArchive, which counts entries, not keys (BucketManager.cpp:1243-1268), and was 1000 on mainnet from pubnet 59516381 (mined/queries/q17_state_archival_setting.sql; at pubnet 59313516 it was briefly 0, pausing eviction)",
       "checks": [
         "R"
       ]
@@ -937,7 +937,7 @@
       "title": "Meta version polymorphism on backfill: LCM v0/v1, TxMeta v2/v3, V0 envelopes, refunds in `txChangesAfter` (P20–22)",
       "evidence": "ledger-close-meta.md:85-105",
       "refs": [],
-      "test": "Mined: pubnet 26588352 (P12: LedgerCloseMeta v0, 532 TransactionEnvelope V0) and pubnet 56085459 (P22: LedgerCloseMeta v1, Soroban fee refunds in txChangesAfter for 53 transactions). In the public lake TransactionMeta is v4 at every protocol: Galexie sets BACKFILL_STELLAR_ASSET_EVENTS, which makes stellar-core emit v4 (TransactionMeta.cpp:532-536; the lake objects name stellar-core 23.0.1 as writer); a default node writes v2 before protocol 20 and v3 for 20-22, for the same ledgers",
+      "test": "Mined: pubnet 26588352 (P12: LedgerCloseMeta v0, 532 TransactionEnvelope V0) and pubnet 56085459 (P22: LedgerCloseMeta v1, Soroban fee refunds in txChangesAfter for 53 transactions). Every lake object inspected (protocols 12, 22 and 29) carries TransactionMeta v4, because Galexie sets BACKFILL_STELLAR_ASSET_EVENTS, which makes stellar-core emit v4 (TransactionMeta.cpp:532-536; the lake objects name stellar-core 23.0.1 as writer); a default node writes v2 before protocol 20 and v3 for 20-22, for the same ledgers",
       "checks": [
         "R"
       ]
@@ -949,7 +949,7 @@
       "title": "Same ledger, different bytes by node flags (six Galexie flags vs RPC defaults)",
       "evidence": "ledger-close-meta.md:390-406",
       "refs": [],
-      "test": "Every run under three profiles (recipes/flags: base, galexie, bare): in both lanes all 80 ledgers keep the same header hash under all three profiles while every meta differs; galexie adds diagnostic events, bare drops classic events, fee events and both meta extensions; variant keys carry the profile suffix",
+      "test": "Every run under three profiles (recipes/flags: base, galexie, bare), compared on normalised content by tools/profile-compare.mjs in make generate (recipes/<lane>/profiles/p30-mainnet.json): every ledger keeps the same header hash; bare differs from base in every ledger but the protocol-upgrade one; galexie differs from base in no classic ledger and in the 46 Soroban ledgers with contract calls (diagnostic events); variant keys carry the profile suffix",
       "checks": [
         "R"
       ]

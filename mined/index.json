@@ -1,0 +1,3325 @@
+[
+ {
+  "id": "fee-bump-inner-failed@pubnet-65517511",
+  "shape_slug": "fee-bump-inner-failed",
+  "network": "pubnet",
+  "ledger_seq": 65517511,
+  "protocol_version": 29,
+  "close_time": "1794873597",
+  "lcm_arm": "v2",
+  "tx_count": 365,
+  "op_count": 840,
+  "file": "mined/ledgers/pubnet-65517511.lcm.xdr.zst",
+  "sha256": "7d14f1b328e0422f2d144fa131089bcc8cc4593169bbfc8a2c0de8c5d73b1d3c",
+  "size_bytes": 1039808,
+  "zst_sha256": "02072a258e0546aefcf1b98bf0331eb554b40538be1f804e2954e7b539d754c4",
+  "zst_bytes": 138602,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184838--65517511.xdr.zst",
+   "compressed_bytes": 162251,
+   "batch_sha256": "402c1b55d4a563fe6474007bc0403e143bbd7b53421d08da41fc334a1ea21f47",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Tue, 17 Nov 2026 00:00:00 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q02_tx_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "fee_bump_inner_failed",
+    "occurrences_in_ledger": 17,
+    "tx_hash": "633208729d7c7c53f5e1c2921fd5c4bf8844947b4c8bd665b5a66495c5e90c3b",
+    "inner_tx_hash": "a1d1e06574094ca46d69eeca788964da99a529792442f63c9586f4e6104fa961",
+    "tx_apply_index": 149,
+    "tx_result": "tx_fee_bump_inner_failed",
+    "inner_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[41]",
+     "result": ".v2.tx_processing[149].result",
+     "shape": ".v2.tx_processing[149].result.result.result.tx_fee_bump_inner_failed"
+    },
+    "expect": {
+     "fee_source": "GD77RS525TLPXBSFTZSHDEVDSCDO3NQBTATLRJQVHBOTKUC2PMGPTQEF",
+     "outer_fee": "400",
+     "fee_charged": "200",
+     "inner_source": "GAIBCMCRQ7XL3LHYJICRDNQRLS4V2P35QKX23W33UJC6NFL4AZHHZSAF",
+     "inner_fee": 100,
+     "inner_fee_charged": "0",
+     "inner_result": "tx_failed",
+     "op_results": [
+      "path_payment_strict_send:under_destmin"
+     ],
+     "result_hash": "a1d1e06574094ca46d69eeca788964da99a529792442f63c9586f4e6104fa961",
+     "soroban": false
+    }
+   },
+   {
+    "shape": "fee_bump_inner_failed",
+    "occurrences_in_ledger": 17,
+    "tx_hash": "7402d792cee1940077b3a6706cef3f455bbf72af4b5192fe7b90ad452d2597ef",
+    "inner_tx_hash": "67e4e32d126718b75d4e8b44ae5103b5c139b4fbffa1740cc91f7cac6cca599a",
+    "tx_apply_index": 155,
+    "tx_result": "tx_fee_bump_inner_failed",
+    "inner_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[48]",
+     "result": ".v2.tx_processing[155].result",
+     "shape": ".v2.tx_processing[155].result.result.result.tx_fee_bump_inner_failed"
+    },
+    "expect": {
+     "fee_source": "GAUA7XL5K54CC2DDGP77FJ2YBHRJLT36CPZDXWPM6MP7MANOGG77PNJU",
+     "outer_fee": "2000000",
+     "fee_charged": "200",
+     "inner_source": "GD6KVVID2X4DFWYRVWYM5LSXXZFYFL3TSOXIWPBENIXC2KDVAB63PHBZ",
+     "inner_fee": 0,
+     "inner_fee_charged": "0",
+     "inner_result": "tx_failed",
+     "op_results": [
+      "payment:underfunded"
+     ],
+     "result_hash": "67e4e32d126718b75d4e8b44ae5103b5c139b4fbffa1740cc91f7cac6cca599a",
+     "soroban": false
+    }
+   }
+  ],
+  "why_readers_break": "The outer result is txFEE_BUMP_INNER_FAILED and the real result (inner hash, inner code, per-op codes) sits one level down in InnerTransactionResultPair; readers that only look at the outer code or outer hash report the wrong hash, fee or success flag."
+ },
+ {
+  "id": "muxed-accounts@pubnet-65517507",
+  "shape_slug": "muxed-accounts",
+  "network": "pubnet",
+  "ledger_seq": 65517507,
+  "protocol_version": 29,
+  "close_time": "1794873577",
+  "lcm_arm": "v2",
+  "tx_count": 409,
+  "op_count": 903,
+  "file": "mined/ledgers/pubnet-65517507.lcm.xdr.zst",
+  "sha256": "b069429b371dfcfa6d7f59b395b2bd196c711e4abb06366de97aa08b07e13b56",
+  "size_bytes": 1450544,
+  "zst_sha256": "943d6f15074cc79dc7f2f1979b3c51e4b79ed6adacfc6d900f12af2026282770",
+  "zst_bytes": 162125,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18483C--65517507.xdr.zst",
+   "compressed_bytes": 189342,
+   "batch_sha256": "580577da1dab9de4734b38be89fb1545edf91658ff494d0a63f953c2682ac2cd",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:59:40 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "muxed_op_source",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "840abfdaaf7a8a2e4b276c8dee462016d943add275adbb926d6edc6e677579cc",
+    "tx_apply_index": 231,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[272]",
+     "result": ".v2.tx_processing[231].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[272].tx.tx.operations[0].source_account"
+    },
+    "expect": {
+     "op_source": "MD3ZN2T6QQMKLAGKKMWHHY4FITANVJBTREEJERHTWGWF2GSBPOSHGAAAAAAAAAA3U7XEY",
+     "op": "payment",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "muxed_payment_dest",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "840abfdaaf7a8a2e4b276c8dee462016d943add275adbb926d6edc6e677579cc",
+    "tx_apply_index": 231,
+    "op_index": 2,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[272]",
+     "result": ".v2.tx_processing[231].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[272].tx.tx.operations[2].body.payment.destination"
+    },
+    "expect": {
+     "destination": "MD3ZN2T6QQMKLAGKKMWHHY4FITANVJBTREEJERHTWGWF2GSBPOSHGAAAAAAAAAA3VEQK2",
+     "asset": "native",
+     "amount": "1000000000",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "classic_transfer_event_to_muxed_id",
+    "occurrences_in_ledger": 123,
+    "tx_hash": "92aa21927a233b3c1f36aba9b790dd6132da29b6268c1281d35602daa04657eb",
+    "tx_apply_index": 77,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[2]",
+     "result": ".v2.tx_processing[77].result",
+     "shape": ".v2.tx_processing[77].tx_apply_processing.v4.operations[0].events[0].body.v0.data"
+    },
+    "expect": {
+     "contract": "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+     "topics": [
+      {
+       "symbol": "transfer"
+      },
+      {
+       "address": "GCOYTNZ6JDQFKTXR452JJBCKMF5WKGO5CSS3PP55BGEBKEGX2YKZV7XM"
+      },
+      {
+       "address": "GAZLHOOLA7643KLGHAAAPS4A2EHNMHBYDPIH4HHYSOD3LDUK54C6DD47"
+      },
+      {
+       "string": "native"
+      }
+     ],
+     "data": {
+      "map": [
+       {
+        "key": {
+         "symbol": "amount"
+        },
+        "val": {
+         "i128": "1000"
+        }
+       },
+       {
+        "key": {
+         "symbol": "to_muxed_id"
+        },
+        "val": {
+         "string": "X-Money stellardex.my.id"
+        }
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "why_readers_break": "M-addresses appear only in the envelope (operation source, payment destination); the meta shows the base G-account and the id moves to the event's to_muxed_id, so readers that key on 32-byte accounts truncate, drop the id or double-count the participant."
+ },
+ {
+  "id": "muxed-accounts@pubnet-65517493",
+  "shape_slug": "muxed-accounts",
+  "network": "pubnet",
+  "ledger_seq": 65517493,
+  "protocol_version": 29,
+  "close_time": "1794873507",
+  "lcm_arm": "v2",
+  "tx_count": 347,
+  "op_count": 703,
+  "file": "mined/ledgers/pubnet-65517493.lcm.xdr.zst",
+  "sha256": "71e0dce3cca947936a7059d0be79551a70fe6ffeb1b82938454bdabef89272e0",
+  "size_bytes": 942928,
+  "zst_sha256": "8de398d6e883f3c8a7e87f841f0842b3f6e386e470a86f98dceddbc4b0fcba97",
+  "zst_bytes": 123760,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18484A--65517493.xdr.zst",
+   "compressed_bytes": 144776,
+   "batch_sha256": "39e88d73670ceb15d27130373c9ff54ccc863e4696951deea12e1cc994cac197",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:58:30 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q02_tx_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "muxed_tx_source",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "c78adf1012d6baeda605040182b3369f46e2a0e78d625668fae13bf99a1c4480",
+    "tx_apply_index": 121,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[47]",
+     "result": ".v2.tx_processing[121].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[47].tx.tx.source_account"
+    },
+    "expect": {
+     "source_account": "MD3ZN2T6QQMKLAGKKMWHHY4FITANVJBTREEJERHTWGWF2GSBPOSHGAAAAAAAAAAVAKXIU",
+     "seq_num": "183565459124525403",
+     "memo": {
+      "text": "\\xf0\\x9f\\x94\\x81 settlement run"
+     }
+    }
+   },
+   {
+    "shape": "muxed_payment_dest",
+    "occurrences_in_ledger": 2,
+    "tx_hash": "8b901319016de6deaa8d0961bca17e7af0812801c6c0f53d7b69d12689912d24",
+    "tx_apply_index": 159,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[9]",
+     "result": ".v2.tx_processing[159].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[9].tx.tx.operations[1].body.payment.destination"
+    },
+    "expect": {
+     "destination": "MBWUWAQ26NG72VHQAM73A2FF7KRJ4HXUDHW556D2UEUGAVPMWDRBIAAAAABY34QGZ2HBC",
+     "asset": "native",
+     "amount": "1499630",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The transaction source is a muxed account: the sequence number and fee belong to the underlying G-account, and code that stores the source as a fixed 32-byte key or compares strkeys as text mismatches it."
+ },
+ {
+  "id": "muxed-accounts@pubnet-65517347",
+  "shape_slug": "muxed-accounts",
+  "network": "pubnet",
+  "ledger_seq": 65517347,
+  "protocol_version": 29,
+  "close_time": "1794872777",
+  "lcm_arm": "v2",
+  "tx_count": 530,
+  "op_count": 773,
+  "file": "mined/ledgers/pubnet-65517347.lcm.xdr.zst",
+  "sha256": "f99bd72f20938ee3c6ec14e97a392a11cc326b187ea9fb486221ba5282789e94",
+  "size_bytes": 1438048,
+  "zst_sha256": "3308d427a526c3b7404e23f4fade6b1379357603dc3ba96fcd3de29048075cbd",
+  "zst_bytes": 191765,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1848DC--65517347.xdr.zst",
+   "compressed_bytes": 221562,
+   "batch_sha256": "0a6f37ed1646d50d2ff6b9944a99ac7d686b60040524c51a34ce22713012c712",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:46:20 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q02_tx_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "muxed_fee_source",
+    "occurrences_in_ledger": 5,
+    "tx_hash": "1f2d76300d3ff607bb9e921e1c7e7184b4a66951c1ff22a1a5854a3949fc2fc3",
+    "inner_tx_hash": "e4d4d6338b4d61de88bfc4c97f5fe1e0e52b012d0a7f07bd886e3b1e81d5216c",
+    "tx_apply_index": 108,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[263]",
+     "result": ".v2.tx_processing[108].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[263].tx_fee_bump.tx.fee_source"
+    },
+    "expect": {
+     "fee_source": "MATFMDG6SSF746PQR6VK3LKMHXJCYAYDR34KLP265SUEI6TS3GMAGAAAAAAAAAAAAAT7A"
+    }
+   },
+   {
+    "shape": "muxed_tx_source",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "04d664532d46acc131e383b017251ad24b4c2fb28ee2ca98ac8765a7550ea0e1",
+    "tx_apply_index": 72,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[301]",
+     "result": ".v2.tx_processing[72].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[301].tx.tx.source_account"
+    },
+    "expect": {
+     "source_account": "MD3ZN2T6QQMKLAGKKMWHHY4FITANVJBTREEJERHTWGWF2GSBPOSHGAAAAAAAAABYIPY2E",
+     "seq_num": "183565459124525361",
+     "memo": {
+      "text": "\\xf0\\x9f\\xa7\\xb9 spam swept"
+     }
+    }
+   }
+  ],
+  "why_readers_break": "The fee-bump fee source is muxed; fee attribution must resolve it to the G-account that is debited in fee_processing."
+ },
+ {
+  "id": "claimable-balance-predicates@pubnet-65490107",
+  "shape_slug": "claimable-balance-predicates",
+  "network": "pubnet",
+  "ledger_seq": 65490107,
+  "protocol_version": 29,
+  "close_time": "1794736577",
+  "lcm_arm": "v2",
+  "tx_count": 188,
+  "op_count": 495,
+  "file": "mined/ledgers/pubnet-65490107.lcm.xdr.zst",
+  "sha256": "f303c0252ef318c87294a1fce57f7213210303a87ffa2d34610f14cfd1a8a5cb",
+  "size_bytes": 870024,
+  "zst_sha256": "9a47abfe27ec7861d62887c5ed5d30eb8eac09c61f5bcdc0cb89758a7f51d9b8",
+  "zst_bytes": 92952,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18B344--65490107.xdr.zst",
+   "compressed_bytes": 111786,
+   "batch_sha256": "e14f040f9e00285bfb84548521b02ab030f42c99632af44d2ad32dedb4ef19bb",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 09:56:20 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q11_cb_and_or.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "claimable_balance_nested_predicate",
+    "occurrences_in_ledger": 32,
+    "tx_hash": "719d3d196dcf637a86d8bc2560773e2bf3f697085d623cbc302a355a7e120b4e",
+    "tx_apply_index": 62,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[111]",
+     "result": ".v2.tx_processing[62].result.result.result.tx_success[0].op_inner.create_claimable_balance",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[111].tx.tx.operations[0].body.create_claimable_balance.claimants"
+    },
+    "expect": {
+     "asset": {
+      "credit_alphanum4": {
+       "asset_code": "XTAR",
+       "issuer": "GAORYJ3KBDGIM7FFSKVUJHJ5NEFWIRDIAGGBJBJS7TY6ECZS53257IG4"
+      }
+     },
+     "amount": "50239544070",
+     "claimants": [
+      {
+       "claimant_type_v0": {
+        "destination": "GDQOXZUANBRVUOAEG4CSRWIUTIA63RFUNVFL5UHWRN2UECN5LIJNI5Y3",
+        "predicate": {
+         "and": [
+          {
+           "not": {
+            "before_relative_time": "172800"
+           }
+          },
+          {
+           "before_relative_time": "2592000"
+          }
+         ]
+        }
+       }
+      },
+      {
+       "claimant_type_v0": {
+        "destination": "GDBSXMDBDHVZ3OMNQWV5MMNPMPOJRZAGEAOVRYWXZG5VC5I5B4SOXSBW",
+        "predicate": "unconditional"
+       }
+      }
+     ],
+     "predicate_depth": 2,
+     "predicate_kinds": [
+      "and",
+      "before_relative_time",
+      "not",
+      "unconditional"
+     ],
+     "result": "success",
+     "balance_id": "BAAD34TIJM5QYQ7K2CJ5YCZMLZI633VLQDHX34BLEZCHLBWUAR6LQY7PSE"
+    }
+   }
+  ],
+  "why_readers_break": "ClaimPredicate is a recursive union (and[not(relative), relative]); flat schemas (Hubble's fixed-depth record) and non-recursive decoders drop or mis-nest the inner predicate, and relative time must not be read as an absolute timestamp."
+ },
+ {
+  "id": "claimable-balance-predicates@pubnet-65509146",
+  "shape_slug": "claimable-balance-predicates",
+  "network": "pubnet",
+  "ledger_seq": 65509146,
+  "protocol_version": 29,
+  "close_time": "1794831772",
+  "lcm_arm": "v2",
+  "tx_count": 554,
+  "op_count": 896,
+  "file": "mined/ledgers/pubnet-65509146.lcm.xdr.zst",
+  "sha256": "e8ca6e004ea6e8c6b8b0f1dd936dfb777bc2d25eb10acf7661b1044ae53e7c93",
+  "size_bytes": 2076716,
+  "zst_sha256": "062fced3103b53f0663c6370f7c47579b16fc0461463dd964665f602216e3619",
+  "zst_bytes": 221508,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1868E5--65509146.xdr.zst",
+   "compressed_bytes": 255007,
+   "batch_sha256": "4d3812f37c4193a9d181659407e668e812fb2bc29ede85fcb9ead8ded82a1306",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 12:22:56 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q12_cb_or.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "claimable_balance_nested_predicate",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "149ad03e6aa904f7d0bc2448dc422ae7dfe0f35b7d1060b8bb1db8d6aa7ee10c",
+    "tx_apply_index": 256,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[251]",
+     "result": ".v2.tx_processing[256].result.result.result.tx_success[1].op_inner.create_claimable_balance",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[251].tx.tx.operations[1].body.create_claimable_balance.claimants"
+    },
+    "expect": {
+     "asset": {
+      "credit_alphanum12": {
+       "asset_code": "USDPEND",
+       "issuer": "GA3ZBL3LBRKOF7CZ6MCA7JLPHWQCGYCCGKH4GVWNEDZOXW4IPXFGN2FQ"
+      }
+     },
+     "amount": "5000000000000",
+     "claimants": [
+      {
+       "claimant_type_v0": {
+        "destination": "GBZXKK632DNUF2DUWTDZZIWXDBJOXA2HWXI2YBKWGUGG6KKF4N6LPZXS",
+        "predicate": {
+         "not": {
+          "before_absolute_time": "1826341200"
+         }
+        }
+       }
+      },
+      {
+       "claimant_type_v0": {
+        "destination": "GA3ZBL3LBRKOF7CZ6MCA7JLPHWQCGYCCGKH4GVWNEDZOXW4IPXFGN2FQ",
+        "predicate": {
+         "or": [
+          {
+           "not": {
+            "before_absolute_time": "1794805200"
+           }
+          },
+          "unconditional"
+         ]
+        }
+       }
+      }
+     ],
+     "predicate_depth": 2,
+     "predicate_kinds": [
+      "before_absolute_time",
+      "not",
+      "or",
+      "unconditional"
+     ],
+     "result": "success",
+     "balance_id": "BAADZO2NJTQ2555K3WFDWSPGOGPEB7K5ZNN2L5F3C7FD5WEDPMW4FQD7SQ"
+    }
+   }
+  ],
+  "why_readers_break": "An `or` predicate holding a `not(absolute time)` and a bare `unconditional` arm in the same vector; readers that expect every element to be an object, or that flatten or/not, lose the second branch."
+ },
+ {
+  "id": "claimable-balance-claim@pubnet-65517506",
+  "shape_slug": "claimable-balance-claim",
+  "network": "pubnet",
+  "ledger_seq": 65517506,
+  "protocol_version": 29,
+  "close_time": "1794873572",
+  "lcm_arm": "v2",
+  "tx_count": 260,
+  "op_count": 777,
+  "file": "mined/ledgers/pubnet-65517506.lcm.xdr.zst",
+  "sha256": "5ff88af6a5144d9253ea6e96ea209e7f0559a541de2b1d1141365dc9330be260",
+  "size_bytes": 1646740,
+  "zst_sha256": "9efa3942ff00567a07c99f79abbf4f5239a35b1db699a7570152dd7a286f5510",
+  "zst_bytes": 122423,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18483D--65517506.xdr.zst",
+   "compressed_bytes": 146012,
+   "batch_sha256": "3ca99295870b799ca3ea445606001d76736c51d7d370ef42e092b5e219d8b7a7",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:59:36 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "claimable_balance_claim",
+    "occurrences_in_ledger": 2,
+    "tx_hash": "165305c4e710764204d68b22dad27d073656f6094bd9952ddc95f08768e07d88",
+    "tx_apply_index": 160,
+    "op_index": 7,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[155]",
+     "result": ".v2.tx_processing[160].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[155].tx.tx.operations[7].body.claim_claimable_balance.balance_id"
+    },
+    "expect": {
+     "balance_id": "BAAO2HR4AWHWAOTTZPSWVHFZUIVRECTUZ2PD5G6AMEWP7RQ3XHB5D54V5I",
+     "op_source": "GBGQHNVBQN5RJTG2Y264AUCJARBJTUJSHVR562BNQXAPF2MUT645M2CY",
+     "tx_source": "GD3ZN2T6QQMKLAGKKMWHHY4FITANVJBTREEJERHTWGWF2GSBPOSHGCLU",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "claimable_balance_claim",
+    "occurrences_in_ledger": 2,
+    "tx_hash": "6fbabfb344600d97f464c3ed2616efc97d10c084fd10a4c242087789b3157f7f",
+    "tx_apply_index": 111,
+    "op_index": 0,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[117]",
+     "result": ".v2.tx_processing[111].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[117].tx.tx.operations[0].body.claim_claimable_balance.balance_id"
+    },
+    "expect": {
+     "balance_id": "BAALUT7UU37W5SMENT3AUODZ7I27UHTUOCJW44VYXZQUHKTAFAGV4QBCII",
+     "tx_source": "GDVIQFRCYJLBPB3HLU2EBKAZXEFHU2JEZP6D3W7KYOZ4QLC6FMBOATMI",
+     "result": "no_trust"
+    }
+   }
+  ],
+  "why_readers_break": "The claim names only a 32-byte balance id; asset, amount and claimant must be recovered from the removed ClaimableBalanceEntry in the operation's meta changes, which readers that work from the envelope alone cannot do."
+ },
+ {
+  "id": "liquidity-pool@pubnet-65517493",
+  "shape_slug": "liquidity-pool",
+  "network": "pubnet",
+  "ledger_seq": 65517493,
+  "protocol_version": 29,
+  "close_time": "1794873507",
+  "lcm_arm": "v2",
+  "tx_count": 347,
+  "op_count": 703,
+  "file": "mined/ledgers/pubnet-65517493.lcm.xdr.zst",
+  "sha256": "71e0dce3cca947936a7059d0be79551a70fe6ffeb1b82938454bdabef89272e0",
+  "size_bytes": 942928,
+  "zst_sha256": "8de398d6e883f3c8a7e87f841f0842b3f6e386e470a86f98dceddbc4b0fcba97",
+  "zst_bytes": 123760,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18484A--65517493.xdr.zst",
+   "compressed_bytes": 144776,
+   "batch_sha256": "39e88d73670ceb15d27130373c9ff54ccc863e4696951deea12e1cc994cac197",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:58:30 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "liquidity_pool_deposit",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "024ad77a157be35635c0f8aff54fb7a74c4b44ad2ec0c6a108ac82f86765a6aa",
+    "tx_apply_index": 37,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[124]",
+     "result": ".v2.tx_processing[37].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[124].tx.tx.operations[1].body.liquidity_pool_deposit"
+    },
+    "expect": {
+     "liquidity_pool_id": "LCFQSAJSTMEZUZMITFX3RNLA7SLNP5472RGAMEHGPFXX2ISO6O4KYAL2",
+     "max_amount_a": "9966322",
+     "max_amount_b": "27149999826",
+     "min_price": {
+      "n": 484541,
+      "d": 1326607252
+     },
+     "max_price": {
+      "n": 673227,
+      "d": 1824863480
+     },
+     "result": "success"
+    }
+   },
+   {
+    "shape": "liquidity_pool_withdraw",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "f8a0d6827c22fcb0a6b954c711055b4c7f35a945bec709fa4dcf2de87fd6b221",
+    "tx_apply_index": 60,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[101]",
+     "result": ".v2.tx_processing[60].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[101].tx.tx.operations[0].body.liquidity_pool_withdraw"
+    },
+    "expect": {
+     "liquidity_pool_id": "LA3ABHAWHUEVZQC2ED2BL6NOE4EZSPAUGBIGSMIHKN3AAWW2I2LNEOFL",
+     "amount": "901111305091",
+     "min_amount_a": "3560112223",
+     "min_amount_b": "281103870065420",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "pool_share_trustline_created_or_updated",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "024ad77a157be35635c0f8aff54fb7a74c4b44ad2ec0c6a108ac82f86765a6aa",
+    "tx_apply_index": 37,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[124]",
+     "result": ".v2.tx_processing[37].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[124].tx.tx.operations[0].body.change_trust.line.pool_share"
+    },
+    "expect": {
+     "line": {
+      "pool_share": {
+       "liquidity_pool_constant_product": {
+        "asset_a": "native",
+        "asset_b": {
+         "credit_alphanum12": {
+          "asset_code": "xLMNR",
+          "issuer": "GDKA6WVMFSA73BMEVKPO6WXSSWP4MPRBDJVSXLLSEVIEVH226L5RJ7NL"
+         }
+        },
+        "fee": 30
+       }
+      }
+     },
+     "limit": "9223372036854775807",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "Pool-share trustlines carry a LiquidityPoolParameters body instead of an asset and are keyed by pool id; deposits and withdrawals change two reserves at once, so asset-keyed trustline readers and single-asset balance readers mis-handle them."
+ },
+ {
+  "id": "liquidity-pool@pubnet-65516375",
+  "shape_slug": "liquidity-pool",
+  "network": "pubnet",
+  "ledger_seq": 65516375,
+  "protocol_version": 29,
+  "close_time": "1794867917",
+  "lcm_arm": "v2",
+  "tx_count": 281,
+  "op_count": 608,
+  "file": "mined/ledgers/pubnet-65516375.lcm.xdr.zst",
+  "sha256": "1533ebaec737e648b7d9d67e86d05be61f1db2749e34a491e96cc01f3fb9e020",
+  "size_bytes": 892176,
+  "zst_sha256": "b45b56cb7c06ec0362b852977e1ada88470d18d0ed72a6c86e063523c599b8e2",
+  "zst_bytes": 93424,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184CA8--65516375.xdr.zst",
+   "compressed_bytes": 110280,
+   "batch_sha256": "adf08a169c0201b7f860405cb44cfb515725fbe64735897f862f0bb6b6472d7b",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 22:25:20 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "liquidity_pool_withdraw",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "30aeb7ce2ac4e007f3dc047560d40718c37d35310bf723402d5d58e2504d5bed",
+    "tx_apply_index": 164,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[182]",
+     "result": ".v2.tx_processing[164].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[182].tx.tx.operations[0].body.liquidity_pool_withdraw"
+    },
+    "expect": {
+     "liquidity_pool_id": "LA5ZWQG5NT4UR2WTSSYRPTIDCIHK3HCVS3UOI4L5IHYZRSZTGOT4PBOD",
+     "amount": "809142870905",
+     "min_amount_a": "75133850034203",
+     "min_amount_b": "8761833471",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "pool_share_trustline_removed",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "30aeb7ce2ac4e007f3dc047560d40718c37d35310bf723402d5d58e2504d5bed",
+    "tx_apply_index": 164,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[182]",
+     "result": ".v2.tx_processing[164].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[182].tx.tx.operations[1].body.change_trust.line.pool_share"
+    },
+    "expect": {
+     "line": {
+      "pool_share": {
+       "liquidity_pool_constant_product": {
+        "asset_a": {
+         "credit_alphanum12": {
+          "asset_code": "ROKETS",
+          "issuer": "GBUPZWBBUTFDICDX5KRBPBOC3ISWCEQ6NVHFOV2MY6JQGNQJYVQRGJMA"
+         }
+        },
+        "asset_b": {
+         "credit_alphanum12": {
+          "asset_code": "sages",
+          "issuer": "GB46PZJBWONKKAFFXKHATAW4ET2C2R25S24AIAPN7ROVKHKFK4LSHB7D"
+         }
+        },
+        "fee": 30
+       }
+      }
+     },
+     "limit": "0",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "A pool-share trustline is removed (change_trust limit 0) right after a full withdraw; readers must delete a trustline whose key is a pool id, not an asset code and issuer."
+ },
+ {
+  "id": "path-payment-long-path@pubnet-65517347",
+  "shape_slug": "path-payment-long-path",
+  "network": "pubnet",
+  "ledger_seq": 65517347,
+  "protocol_version": 29,
+  "close_time": "1794872777",
+  "lcm_arm": "v2",
+  "tx_count": 530,
+  "op_count": 773,
+  "file": "mined/ledgers/pubnet-65517347.lcm.xdr.zst",
+  "sha256": "f99bd72f20938ee3c6ec14e97a392a11cc326b187ea9fb486221ba5282789e94",
+  "size_bytes": 1438048,
+  "zst_sha256": "3308d427a526c3b7404e23f4fade6b1379357603dc3ba96fcd3de29048075cbd",
+  "zst_bytes": 191765,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1848DC--65517347.xdr.zst",
+   "compressed_bytes": 221562,
+   "batch_sha256": "0a6f37ed1646d50d2ff6b9944a99ac7d686b60040524c51a34ce22713012c712",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:46:20 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "path_payment_long_path_send",
+    "occurrences_in_ledger": 60,
+    "tx_hash": "99c82a32550f883e10671f8e69f92239fa39423b28a0ac19b3c2b76441ea8af7",
+    "inner_tx_hash": "12f92dd1396520ed5714b347d2b68e165b05d9698fd2cc27bd28da9e62d6eafd",
+    "tx_apply_index": 359,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[20]",
+     "result": ".v2.tx_processing[359].result.result.result.tx_fee_bump_inner_success.result.result.tx_success[0].op_inner.path_payment_strict_send",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[20].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.path_payment_strict_send.path"
+    },
+    "expect": {
+     "path_len": 5,
+     "path_assets": [
+      {
+       "credit_alphanum4": {
+        "asset_code": "SLVR",
+        "issuer": "GBZVELEQD3WBN3R3VAG64HVBDOZ76ZL6QPLSFGKWPFED33Q3234NSLVR"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "GQX",
+        "issuer": "GD7TC72O5HML5UMZXQCIXGBR4KJ3MYM2ICPOR4BBN56K6JUSRVWTDAQF"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "PALL",
+        "issuer": "GCQ5ZYECTNYW6BZ47AZN6M5BXKV7ZZ24XPNHPSYZVUDVK7CIITOMPALL"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "PLAT",
+        "issuer": "GBIMVJJJOTAKJYWJIY5YEXDZ4QIWQZLRJ4BXVHKH6EXWQ3WAEYBTPLAT"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "DTL",
+        "issuer": "GAVI55AFRGQ5HH75UVNOFCF5CNKRK26PWMKSMYBIHPSQ5LWNVMFJEBEB"
+       }
+      }
+     ],
+     "send_asset": {
+      "credit_alphanum12": {
+       "asset_code": "yUSDC",
+       "issuer": "GDGTVWSM4MGS4T7Z6W4RPWOCHE2I6RDFCIFZGS3DOA63LWQTRNZNTTFF"
+      }
+     },
+     "dest_asset": {
+      "credit_alphanum12": {
+       "asset_code": "yUSDC",
+       "issuer": "GDGTVWSM4MGS4T7Z6W4RPWOCHE2I6RDFCIFZGS3DOA63LWQTRNZNTTFF"
+      }
+     },
+     "destination": "GD77RS525TLPXBSFTZSHDEVDSCDO3NQBTATLRJQVHBOTKUC2PMGPTQEF",
+     "send": "110582",
+     "dest": "110582",
+     "result": "success",
+     "offers_crossed": 6
+    }
+   },
+   {
+    "shape": "path_payment_long_path_receive",
+    "occurrences_in_ledger": 114,
+    "tx_hash": "9e7f72ee27120ddb42a6cc69f7cee22e8f15564098fd2bba4857814f170fb563",
+    "inner_tx_hash": "e969f21a40ee110e2656b1e8c24e5db1f7091ac7cf8391ba3d9348390bde1081",
+    "tx_apply_index": 100,
+    "op_index": 1,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[257]",
+     "result": ".v2.tx_processing[100].result.result.result.tx_fee_bump_inner_success.result.result.tx_success[1].op_inner.path_payment_strict_receive",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[257].tx_fee_bump.tx.inner_tx.tx.tx.operations[1].body.path_payment_strict_receive.path"
+    },
+    "expect": {
+     "path_len": 3,
+     "path_assets": [
+      {
+       "credit_alphanum4": {
+        "asset_code": "XRP",
+        "issuer": "GBXRPL45NPHCVMFFAYZVUVFFVKSIZ362ZXFP7I2ETNQ3QKZMFLPRDTD5"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "USDM",
+        "issuer": "GDHDC4GBNPMENZAOBB4NCQ25TGZPDRK6ZGWUGSI22TVFATOLRPSUUSDM"
+       }
+      },
+      {
+       "credit_alphanum4": {
+        "asset_code": "GOLD",
+        "issuer": "GBC5ZGK6MQU3XG5Y72SXPA7P5R5NHYT2475SNEJB2U3EQ6J56QLVGOLD"
+       }
+      }
+     ],
+     "send_asset": "native",
+     "dest_asset": "native",
+     "destination": "GCQN6GZ4ATLRCYPBQB5ZBZEF5WUWYKO76CB7SOSSQXTCDBZPMVOGM7DT",
+     "send": "387980974",
+     "dest": "387980974",
+     "result": "success",
+     "offers_crossed": 4
+    }
+   }
+  ],
+  "why_readers_break": "A path of 5 intermediate assets yields a chain of ClaimAtoms (order-book and pool) across up to 6 hops in one operation result; readers that assume one trade per payment or a single asset pair attribute the amounts to the wrong assets."
+ },
+ {
+  "id": "account-merge@pubnet-65514426",
+  "shape_slug": "account-merge",
+  "network": "pubnet",
+  "ledger_seq": 65514426,
+  "protocol_version": 29,
+  "close_time": "1794858172",
+  "lcm_arm": "v2",
+  "tx_count": 427,
+  "op_count": 861,
+  "file": "mined/ledgers/pubnet-65514426.lcm.xdr.zst",
+  "sha256": "13ccd7487ae3bf58cb0ab75a24ebac98279648b8d244ff183abc9d8784b094f0",
+  "size_bytes": 1711100,
+  "zst_sha256": "8315827bd6c6d05e02c7f42b112820a8c9061989cfcdecef8f2335709346dd00",
+  "zst_bytes": 154970,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185445--65514426.xdr.zst",
+   "compressed_bytes": 177602,
+   "batch_sha256": "23efed0b37ee3e8f4730c0a2db8a67df44ec20f408a0f426adbc1c11d5855049",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 19:42:55 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "account_merge",
+    "occurrences_in_ledger": 4,
+    "tx_hash": "efb36e401279ed24b7f701ef46e7c1b8e353a65515482d6885dda9f026de555d",
+    "tx_apply_index": 191,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[103]",
+     "result": ".v2.tx_processing[191].result.result.result.tx_success[0].op_inner.account_merge",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[103].tx.tx.operations[0].body.account_merge"
+    },
+    "expect": {
+     "destination": "GCWB3T4MQEGXN6SYLRS35IRQSBA7P5GKYVGXNAJQXM6WIRVIIY6SXDJL",
+     "merged_account": "GAYRP435RZXMUH4DR4RRWZRVZ7B2OQYOD7ZPOSU3LQXHXSNNOTEHTZMC",
+     "result": "success",
+     "merged_balance": "14989800"
+    }
+   },
+   {
+    "shape": "account_merge",
+    "occurrences_in_ledger": 4,
+    "tx_hash": "8c1e96186d9c86bf8898da508b71d8b6030fde8791d8728a942caf7191da6cd3",
+    "tx_apply_index": 246,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[163]",
+     "result": ".v2.tx_processing[246].result.result.result.tx_success[0].op_inner.account_merge",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[163].tx.tx.operations[0].body.account_merge"
+    },
+    "expect": {
+     "destination": "GCWB3T4MQEGXN6SYLRS35IRQSBA7P5GKYVGXNAJQXM6WIRVIIY6SXDJL",
+     "merged_account": "GBXV3SOWHYW3IULR7JRK4AUMGTY2YF4NIXIMNS6BDTA73AC4RVOXZJCJ",
+     "result": "success",
+     "merged_balance": "14989800"
+    }
+   }
+  ],
+  "why_readers_break": "The amount moved is not in the operation (the body is only a destination); it exists only in the result's success arm and the account entry is removed, so readers miss the balance transfer or keep a deleted account."
+ },
+ {
+  "id": "bump-sequence@pubnet-65515672",
+  "shape_slug": "bump-sequence",
+  "network": "pubnet",
+  "ledger_seq": 65515672,
+  "protocol_version": 29,
+  "close_time": "1794864402",
+  "lcm_arm": "v2",
+  "tx_count": 395,
+  "op_count": 713,
+  "file": "mined/ledgers/pubnet-65515672.lcm.xdr.zst",
+  "sha256": "a1e0d2e10e663e9e2d64ae02738f48cf267dcb717244484c529f7ada6a2e8359",
+  "size_bytes": 906660,
+  "zst_sha256": "a9a03e5760d978579d235dd440c9a36fc5365ca884dba11ff8842b29c2c5404b",
+  "zst_bytes": 126656,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184F67--65515672.xdr.zst",
+   "compressed_bytes": 148232,
+   "batch_sha256": "5778d791ce4730a2abd62b0a4195accb03886267b36fc2b1ec42865c62d0b5ef",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 21:26:45 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "bump_sequence",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "ed22676bb1153699be2fc72b5d2a4f65af37c6cfe1597dfa2987a74d718c022d",
+    "inner_tx_hash": "e79642a32365bd73febe7c98bc43051edfc5cfad222f2d4593f2531528cdad3b",
+    "tx_apply_index": 376,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[123]",
+     "result": ".v2.tx_processing[376].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[123].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.bump_sequence.bump_to"
+    },
+    "expect": {
+     "bump_to": "253544512326992647",
+     "op_source": "GDBM633IY7WRTHBW46TSEFE63NJLQOD7V2NSYQXASHE23CTHT2PKJ5TS",
+     "tx_source": "GDBM633IY7WRTHBW46TSEFE63NJLQOD7V2NSYQXASHE23CTHT2PKJ5TS",
+     "tx_seq_num": "253544512326992648",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The account's sequence number jumps to an arbitrary int64 with no payment or balance change; readers that derive sequence numbers by counting transactions go out of step."
+ },
+ {
+  "id": "manage-data-binary@pubnet-65506631",
+  "shape_slug": "manage-data-binary",
+  "network": "pubnet",
+  "ledger_seq": 65506631,
+  "protocol_version": 29,
+  "close_time": "1794819197",
+  "lcm_arm": "v2",
+  "tx_count": 564,
+  "op_count": 723,
+  "file": "mined/ledgers/pubnet-65506631.lcm.xdr.zst",
+  "sha256": "87a200665048393966022983822bf42a496c293fee823daf5318a537974b2fae",
+  "size_bytes": 2053600,
+  "zst_sha256": "ab777d1353443234d11b42ead85d6fa0f53cc14f850845f033540c72840398f7",
+  "zst_bytes": 240640,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1872B8--65506631.xdr.zst",
+   "compressed_bytes": 274679,
+   "batch_sha256": "1ffab6294954644109db1c9792925a208ccbcf0b828a1eed515a4ccc1c03e5ff",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 08:53:22 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q07_manage_data_probe.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "manage_data_binary_value",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "939f9ffbb9e583eae7897b6acdd592bf6a37e58c26c71b3234f461d9a4714f95",
+    "tx_apply_index": 336,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[399]",
+     "result": ".v2.tx_processing[336].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[399].tx.tx.operations[0].body.manage_data.data_value"
+    },
+    "expect": {
+     "data_name": "hash",
+     "data_value_hex": "e0a39ee993900d7116fc9e4262b8900a14f25a67a9c54b278bc6dbf37f4e7224637f7d12f5041ec7d15a298d57c703fffad4b237645a5c51ff4076d309ef9185",
+     "value_len": 64,
+     "op_source": "GB2G7TW2NKQUFXT3GGXGV7GDLLXBZZ52ECNG3GEC25T5XLIKIVMUR5ZV",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "DataValue is opaque<64>, here 64 random bytes; readers that treat it as a UTF-8 string corrupt it (replacement characters) or fail to store it."
+ },
+ {
+  "id": "memo-text-non-utf8@pubnet-65024796",
+  "shape_slug": "memo-text-non-utf8",
+  "network": "pubnet",
+  "ledger_seq": 65024796,
+  "protocol_version": 29,
+  "close_time": "1792409763",
+  "lcm_arm": "v2",
+  "tx_count": 292,
+  "op_count": 607,
+  "file": "mined/ledgers/pubnet-65024796.lcm.xdr.zst",
+  "sha256": "d0baaddf24b11ace302b20fe753315686112aa22bfd6166a822c6053288d5c0c",
+  "size_bytes": 2405204,
+  "zst_sha256": "1b844c6dfcc82622e227ab17a0edc955e91b3fb7a3a33b6446e7db460f68491a",
+  "zst_bytes": 160043,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1FCCE3--65024796.xdr.zst",
+   "compressed_bytes": 181523,
+   "batch_sha256": "f962436df8602a6096f2a5a60e12bc9970901cd8608598d03b63f9d32cd7f213",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 25 Oct 2026 00:06:50 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q08_memo_nonutf8.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "memo_text_non_utf8",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "6df5cc099244032ad98cc83946c690a65a8960bfceca9f895c410c1f09558061",
+    "tx_apply_index": 37,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[61]",
+     "result": ".v2.tx_processing[37].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[61].tx.tx.memo.text"
+    },
+    "expect": {
+     "memo_json": "\\xff6138266",
+     "memo_hex": "ff36313338323636",
+     "source_account": "GBRGMD6HUE6RUCLXRZSRN7RPL7ZXXCYTOXR6YFZ6X4QRGD7N67PX4URQ"
+    }
+   }
+  ],
+  "why_readers_break": "Memo text is string<28> of raw bytes and this one starts with 0xFF, which is not valid UTF-8; SDKs that decode it to a native string re-encode it as EF BF BD and change the transaction hash (js-stellar-sdk#1823), and Hubble stores U+FFFD."
+ },
+ {
+  "id": "memo-hash-return@pubnet-65517493",
+  "shape_slug": "memo-hash-return",
+  "network": "pubnet",
+  "ledger_seq": 65517493,
+  "protocol_version": 29,
+  "close_time": "1794873507",
+  "lcm_arm": "v2",
+  "tx_count": 347,
+  "op_count": 703,
+  "file": "mined/ledgers/pubnet-65517493.lcm.xdr.zst",
+  "sha256": "71e0dce3cca947936a7059d0be79551a70fe6ffeb1b82938454bdabef89272e0",
+  "size_bytes": 942928,
+  "zst_sha256": "8de398d6e883f3c8a7e87f841f0842b3f6e386e470a86f98dceddbc4b0fcba97",
+  "zst_bytes": 123760,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18484A--65517493.xdr.zst",
+   "compressed_bytes": 144776,
+   "batch_sha256": "39e88d73670ceb15d27130373c9ff54ccc863e4696951deea12e1cc994cac197",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:58:30 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q02_tx_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "memo_return",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "a25e2c75f2216366aaed34a6851e810332eb26a9b8b10c9632af3c9bbea6967a",
+    "tx_apply_index": 86,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[78]",
+     "result": ".v2.tx_processing[86].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[78].tx.tx.memo.return"
+    },
+    "expect": {
+     "memo": {
+      "return": "dd7f5fd424d6a1cffbe0b1d128589d31705f5180ddbaff4dc7658d4f12373ee2"
+     },
+     "source_account": "GBAEV2GZKCRGGOS7GDHPZEPF5NYA7YA5LVWFNH4LNV62I3MFGHAWNJPC"
+    }
+   }
+  ],
+  "why_readers_break": "MEMO_RETURN is a 32-byte hash arm that many readers never see; code that switches only on none/text/id/hash drops it or prints it as text."
+ },
+ {
+  "id": "memo-hash-return@pubnet-65517499",
+  "shape_slug": "memo-hash-return",
+  "network": "pubnet",
+  "ledger_seq": 65517499,
+  "protocol_version": 29,
+  "close_time": "1794873537",
+  "lcm_arm": "v2",
+  "tx_count": 349,
+  "op_count": 604,
+  "file": "mined/ledgers/pubnet-65517499.lcm.xdr.zst",
+  "sha256": "1addcc8a84484f04e361fba105812c3df18dbd8c762eb672691a605f88726113",
+  "size_bytes": 920988,
+  "zst_sha256": "976ef5a92d2561bbf0ce94b223b68ecf0591e580619d00eb436f8e48b1c6a77a",
+  "zst_bytes": 125335,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184844--65517499.xdr.zst",
+   "compressed_bytes": 143982,
+   "batch_sha256": "f4dd113a64d0de7dcb9696ed46d3f7b243289a8c1b2fbeb1eb235542b4308d52",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:59:00 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q02_tx_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "memo_hash",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "a0b6d202e6ef56e73fb3bcf6c586ac3de813d9ec76cc12fb584b40aaa3ef3b37",
+    "tx_apply_index": 207,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[232]",
+     "result": ".v2.tx_processing[207].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[232].tx.tx.memo.hash"
+    },
+    "expect": {
+     "memo": {
+      "hash": "b512bba748177209fbc596b26566d5a77380ea58011a68774e6b7846f05bbc17"
+     },
+     "source_account": "GBCOEPIKY7UHR7GCVASRE33TW7XFQZD75YYYBHVYUNPSTLZP32ALOU6Q"
+    }
+   }
+  ],
+  "why_readers_break": "MEMO_HASH is 32 raw bytes; readers that coerce memos to strings corrupt it, and hex versus base64 rendering differs between tools."
+ },
+ {
+  "id": "clawback-and-trustline-flags@pubnet-65517152",
+  "shape_slug": "clawback-and-trustline-flags",
+  "network": "pubnet",
+  "ledger_seq": 65517152,
+  "protocol_version": 29,
+  "close_time": "1794871802",
+  "lcm_arm": "v2",
+  "tx_count": 361,
+  "op_count": 629,
+  "file": "mined/ledgers/pubnet-65517152.lcm.xdr.zst",
+  "sha256": "430778dcf3111a19fcc2259e6d1a8d3488d08c27a84b93b1b5304428c144e6f5",
+  "size_bytes": 1066164,
+  "zst_sha256": "b802876d558aeed644ee6a536d25c31381a79f9025112ee28f3cf0a47f8b1d9a",
+  "zst_bytes": 125197,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18499F--65517152.xdr.zst",
+   "compressed_bytes": 143924,
+   "batch_sha256": "09e39226fe5d654e62989a28337b7bd734faeb70c4620945fba949af1085c9ad",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:30:05 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "clawback",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "29e9151479547e5cf1b7b0569b7c83b40d787c708f5c12240f7703e15872c197",
+    "tx_apply_index": 253,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34]",
+     "result": ".v2.tx_processing[253].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34].tx.tx.operations[1].body.clawback"
+    },
+    "expect": {
+     "asset": {
+      "credit_alphanum4": {
+       "asset_code": "ICE",
+       "issuer": "GAXSGZ2JM3LNWOO4WRGADISNMWO4HQLG4QBGUZRKH5ZHL3EQBGX73ICE"
+      }
+     },
+     "from": "GAXPZRKDJY4X4VHN3GC2YPRBAM7CRGB3H64R3TMVFUUYIVUF2UTBOY4B",
+     "amount": "4676376688",
+     "op_source": "GAXSGZ2JM3LNWOO4WRGADISNMWO4HQLG4QBGUZRKH5ZHL3EQBGX73ICE",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "clawback_claimable_balance",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "29e9151479547e5cf1b7b0569b7c83b40d787c708f5c12240f7703e15872c197",
+    "tx_apply_index": 253,
+    "op_index": 2,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34]",
+     "result": ".v2.tx_processing[253].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34].tx.tx.operations[2].body.clawback_claimable_balance.balance_id"
+    },
+    "expect": {
+     "balance_id": "BAADK7R3R7MJRVH4L3IEVQAPWWTYB4YWHSL7U3LM2QKAZEORYQZ3QOORPI",
+     "op_source": "GAXSGZ2JM3LNWOO4WRGADISNMWO4HQLG4QBGUZRKH5ZHL3EQBGX73ICE",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "set_trust_line_flags",
+    "occurrences_in_ledger": 6,
+    "tx_hash": "29e9151479547e5cf1b7b0569b7c83b40d787c708f5c12240f7703e15872c197",
+    "tx_apply_index": 253,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34]",
+     "result": ".v2.tx_processing[253].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[34].tx.tx.operations[0].body.set_trust_line_flags"
+    },
+    "expect": {
+     "trustor": "GAXPZRKDJY4X4VHN3GC2YPRBAM7CRGB3H64R3TMVFUUYIVUF2UTBOY4B",
+     "asset": {
+      "credit_alphanum4": {
+       "asset_code": "ICE",
+       "issuer": "GAXSGZ2JM3LNWOO4WRGADISNMWO4HQLG4QBGUZRKH5ZHL3EQBGX73ICE"
+      }
+     },
+     "clear_flags": 0,
+     "set_flags": 1,
+     "op_source": "GAXSGZ2JM3LNWOO4WRGADISNMWO4HQLG4QBGUZRKH5ZHL3EQBGX73ICE",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "Clawback burns an asset from a holder with the issuer as source (the `from` field is a MuxedAccount) and clawback_claimable_balance removes a balance entry nobody claimed; readers that model balance decreases only as payments or claims lose these."
+ },
+ {
+  "id": "sponsorship@pubnet-65517153",
+  "shape_slug": "sponsorship",
+  "network": "pubnet",
+  "ledger_seq": 65517153,
+  "protocol_version": 29,
+  "close_time": "1794871807",
+  "lcm_arm": "v2",
+  "tx_count": 340,
+  "op_count": 669,
+  "file": "mined/ledgers/pubnet-65517153.lcm.xdr.zst",
+  "sha256": "793259bb356fef10ba2b077ad3279b126660a90f36ca1edb97c4f6a6f80fd382",
+  "size_bytes": 1130544,
+  "zst_sha256": "b4cacb063d67e622d03562074daa3831addbf7872b6d9fe6d9e693d7ab9039dd",
+  "zst_bytes": 122923,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18499E--65517153.xdr.zst",
+   "compressed_bytes": 141414,
+   "batch_sha256": "d326490e6242363196dcc62e4ca9967cac599deed44d6fd3984bae5d22ac6c20",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:30:11 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "sponsorship_sandwich",
+    "occurrences_in_ledger": 2,
+    "tx_hash": "9f47cfaa44d8479a71fa1bc3e1ee61bbdfd8b6ff940e4e98973b1031cfcb71b1",
+    "inner_tx_hash": "0c27186d576f4b6c1b8e28f7852f9ac4d85e7ea48d7787fde92abb0b45411f79",
+    "tx_apply_index": 71,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[245]",
+     "result": ".v2.tx_processing[71].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[245].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.begin_sponsoring_future_reserves.sponsored_id"
+    },
+    "expect": {
+     "sponsor": "GAUA7XL5K54CC2DDGP77FJ2YBHRJLT36CPZDXWPM6MP7MANOGG77PNJU",
+     "sponsored_id": "GDKGBGA7LBDPANJRSBK4I3LULZW4IMHV3LEIUPLHMBYXFMFGJN23DMWW",
+     "end_op_index": 3,
+     "end_op_source": "GDKGBGA7LBDPANJRSBK4I3LULZW4IMHV3LEIUPLHMBYXFMFGJN23DMWW",
+     "sandwiched_ops": [
+      "create_account",
+      "change_trust"
+     ],
+     "result": "success"
+    }
+   },
+   {
+    "shape": "revoke_sponsorship_ledger_entry",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "747237b67df028a1aa650fb2f1277d8c1ab66abb8c7605e557da778786a54c3e",
+    "inner_tx_hash": "656a3dbb9a540b79f8c00045602382b0954f9e6245831d790cd674c04b07103f",
+    "tx_apply_index": 280,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[148]",
+     "result": ".v2.tx_processing[280].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[148].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.revoke_sponsorship"
+    },
+    "expect": {
+     "revoke": {
+      "ledger_entry": {
+       "account": {
+        "account_id": "GC75LRC5SMVBSIOU4664NYNQO6WO5HHGIEPWEOIUWSA7YJTTZF5WL4JP"
+       }
+      }
+     },
+     "op_source": "GDB3RSSWTUXO7MBTNMHUP3DRBIUR3QRV2CVFRAKMN4GM2B4QNGEUT6CU",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "revoke_sponsorship_signer",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "747237b67df028a1aa650fb2f1277d8c1ab66abb8c7605e557da778786a54c3e",
+    "inner_tx_hash": "656a3dbb9a540b79f8c00045602382b0954f9e6245831d790cd674c04b07103f",
+    "tx_apply_index": 280,
+    "op_index": 1,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[148]",
+     "result": ".v2.tx_processing[280].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[148].tx_fee_bump.tx.inner_tx.tx.tx.operations[1].body.revoke_sponsorship"
+    },
+    "expect": {
+     "revoke": {
+      "signer": {
+       "account_id": "GC75LRC5SMVBSIOU4664NYNQO6WO5HHGIEPWEOIUWSA7YJTTZF5WL4JP",
+       "signer_key": "GAYMTOTEZZZAA5LVQP53OICEH7V2UJB6FPQSCIZ3MFAKP6RBKUBQCGEG"
+      }
+     },
+     "op_source": "GDB3RSSWTUXO7MBTNMHUP3DRBIUR3QRV2CVFRAKMN4GM2B4QNGEUT6CU",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "Begin/end sponsoring changes who pays the reserve for entries created by the operations in between, visible only as sponsoring_id and num_sponsored/num_sponsoring in entry extensions; revoke_sponsorship carries a LedgerKey or (account, signer) union that op-level readers often do not decode."
+ },
+ {
+  "id": "signer-hashx-preauth@pubnet-65517491",
+  "shape_slug": "signer-hashx-preauth",
+  "network": "pubnet",
+  "ledger_seq": 65517491,
+  "protocol_version": 29,
+  "close_time": "1794873497",
+  "lcm_arm": "v2",
+  "tx_count": 327,
+  "op_count": 663,
+  "file": "mined/ledgers/pubnet-65517491.lcm.xdr.zst",
+  "sha256": "0ef302c168081ec75b77f3694070b6650fcb4bb9ecfd8b84ef55f82e4631f82f",
+  "size_bytes": 949812,
+  "zst_sha256": "ff06c903996dc88d0e04c58f2b8603209105312a7896cdb759d53373f6476def",
+  "zst_bytes": 120507,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18484C--65517491.xdr.zst",
+   "compressed_bytes": 141768,
+   "batch_sha256": "9ef94e0f337c1176eabcbb8dbf78f70d0e7449bb2a51aa75621fda9b8973c535",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:58:20 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "signer_hash_x_added",
+    "occurrences_in_ledger": 15,
+    "tx_hash": "3575cfc709f9888751b87970d408267f6ff7bfbfef492a88088dedd058cbe023",
+    "tx_apply_index": 129,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[46]",
+     "result": ".v2.tx_processing[129].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[46].tx.tx.operations[1].body.set_options.signer"
+    },
+    "expect": {
+     "signer_key": "XATF7WQXUNDBDMKTHWFCQH7WQDOFPENQZYFBDQS3GXQRZDTVNBKQSXOM",
+     "weight": 1,
+     "account": "GAHZTLH4IF3GMCISBWF47U2QVBEIWAU554ZRZER7CI3EGMEIHJQNRTV2",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "signer_hash_x_added",
+    "occurrences_in_ledger": 15,
+    "tx_hash": "3575cfc709f9888751b87970d408267f6ff7bfbfef492a88088dedd058cbe023",
+    "tx_apply_index": 129,
+    "op_index": 2,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[46]",
+     "result": ".v2.tx_processing[129].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[46].tx.tx.operations[2].body.set_options.signer"
+    },
+    "expect": {
+     "signer_key": "XCRRRQSCC3PP4IDP523T55N6AABT7KOEU5GQXFT7MUZKE3FFSBWTXPLB",
+     "weight": 1,
+     "account": "GAHZTLH4IF3GMCISBWF47U2QVBEIWAU554ZRZER7CI3EGMEIHJQNRTV2",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The signer key is a hash-x (X...) key, not an ed25519 account; readers that store signers as G-addresses or 32-byte account ids mis-encode or reject it."
+ },
+ {
+  "id": "signer-hashx-preauth@pubnet-65485185",
+  "shape_slug": "signer-hashx-preauth",
+  "network": "pubnet",
+  "ledger_seq": 65485185,
+  "protocol_version": 29,
+  "close_time": "1794711967",
+  "lcm_arm": "v2",
+  "tx_count": 329,
+  "op_count": 949,
+  "file": "mined/ledgers/pubnet-65485185.lcm.xdr.zst",
+  "sha256": "fc6b3e4907991b6d568d0fb6096551348de8e2d062ad836b91f56b773dced1e0",
+  "size_bytes": 2495988,
+  "zst_sha256": "19c988aa29ff614b02bfe81b64ff6c0d5554d29109da46e9f32b6176c4c4a746",
+  "zst_bytes": 208244,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18C67E--65485185.xdr.zst",
+   "compressed_bytes": 244979,
+   "batch_sha256": "088efd0bc5fdc0a5a01666f2495dd86aaa12ee8fb548da43609dbdda5a15b7c4",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 03:06:12 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "signer_pre_auth_tx_added",
+    "occurrences_in_ledger": 6,
+    "tx_hash": "1011f8f40f79d361b9f4e68a5cf5f87225ddd2d6b1222f055b2d02475de612c3",
+    "tx_apply_index": 158,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[88]",
+     "result": ".v2.tx_processing[158].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[88].tx.tx.operations[0].body.set_options.signer"
+    },
+    "expect": {
+     "signer_key": "TAPHJ46CJP3IFZHEHBQQ3OHVX4JH75S5VC4LIBVOATJ56LG2LR5N6JEY",
+     "weight": 1,
+     "account": "GC5RKBYCJELS3G7G5NIQE5PHFGCHAN2BEAVDN4VX77WDJMNQH2K2QM6P",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "signer_pre_auth_tx_added",
+    "occurrences_in_ledger": 6,
+    "tx_hash": "1011f8f40f79d361b9f4e68a5cf5f87225ddd2d6b1222f055b2d02475de612c3",
+    "tx_apply_index": 158,
+    "op_index": 1,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[88]",
+     "result": ".v2.tx_processing[158].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[88].tx.tx.operations[1].body.set_options.signer"
+    },
+    "expect": {
+     "signer_key": "TCNMKO4FMZ6AM36IBVYJBTTXWM63FABM6VWUGE4EDYXMHYM5YN4DYOKQ",
+     "weight": 1,
+     "account": "GC5RKBYCJELS3G7G5NIQE5PHFGCHAN2BEAVDN4VX77WDJMNQH2K2QM6P",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The signer key is a pre-authorized transaction hash (T...); it is removed automatically when that transaction applies, so signer lists change without a set_options operation."
+ },
+ {
+  "id": "soroban-restore-footprint@pubnet-65419251",
+  "shape_slug": "soroban-restore-footprint",
+  "network": "pubnet",
+  "ledger_seq": 65419251,
+  "protocol_version": 29,
+  "close_time": "1794382297",
+  "lcm_arm": "v2",
+  "tx_count": 163,
+  "op_count": 409,
+  "file": "mined/ledgers/pubnet-65419251.lcm.xdr.zst",
+  "sha256": "b1d4d4941b5cbab33b3f7bc0950dbde1ccce566753ca34b5042006bca94f0f8b",
+  "size_bytes": 925824,
+  "zst_sha256": "43c031d213d3efb0ebb0b2af3338307cdb2409dff8c1677f18cc94ae2db5bb20",
+  "zst_bytes": 91512,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC19F3FF--65408000-65471999/FC19C80C--65419251.xdr.zst",
+   "compressed_bytes": 108859,
+   "batch_sha256": "c99fb382a6c9c3d425c78d64615f332fd56354db89ea9327ee3c7094ef6b094e",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 00:04:41 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "restore_footprint",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "bf4b1d02b5a3fe939dfe6bc42e5c45ec435ec9075ed8e2a4616a07002ce60871",
+    "tx_apply_index": 158,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][14]",
+     "result": ".v2.tx_processing[158].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][14].tx.tx.operations[0].body.restore_footprint",
+     "footprint": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][14].tx.tx.ext.v1.resources.footprint.read_write"
+    },
+    "expect": {
+     "read_write_keys": 3,
+     "first_key": {
+      "contract_data": {
+       "contract": "CBM57KNFJGVXBCZWBZZRDAOBZVSCOTSEWWQ4RIIAM2GCX3LHCVMFWCHI",
+       "key": {
+        "vec": [
+         {
+          "symbol": "Balance"
+         },
+         {
+          "address": "GCPJFNZAARY3Z2AM7RVXDZDLPOEBT4QHTQXFOFKMZHLV7PPDKE2M67Q6"
+         }
+        ]
+       },
+       "durability": "persistent"
+      }
+     },
+     "resource_fee": "1548430",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The operation body is empty (ext only); what is restored is defined by the transaction's read_write footprint and shows up as `restored` ledger-entry changes plus TTL entries, which readers that expect created/updated/removed/state only do not handle."
+ },
+ {
+  "id": "soroban-extend-footprint-ttl@pubnet-65514034",
+  "shape_slug": "soroban-extend-footprint-ttl",
+  "network": "pubnet",
+  "ledger_seq": 65514034,
+  "protocol_version": 29,
+  "close_time": "1794856212",
+  "lcm_arm": "v2",
+  "tx_count": 220,
+  "op_count": 709,
+  "file": "mined/ledgers/pubnet-65514034.lcm.xdr.zst",
+  "sha256": "ff410f54a85bf68f034127fe8ed9cc431b966052efb70ea2da5ad597f2c5fc51",
+  "size_bytes": 1110824,
+  "zst_sha256": "2814cd93a99ad5765069ac55bf521726c1247d0e888dc7a648066e68ef43a17a",
+  "zst_bytes": 89003,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1855CD--65514034.xdr.zst",
+   "compressed_bytes": 104599,
+   "batch_sha256": "4270c3b5ddd4e1db1bebbcc575d616bcdf3e05c747ca73e3d8b54e8e973a45b4",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 19:10:15 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "extend_footprint_ttl",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "bc0ad03ac9a30fe34b386615243831ffc4db650eadccca5a38fad2f61bcb1f18",
+    "tx_apply_index": 214,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][9]",
+     "result": ".v2.tx_processing[214].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][9].tx.tx.operations[0].body.extend_footprint_ttl.extend_to",
+     "footprint": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][9].tx.tx.ext.v1.resources.footprint.read_only"
+    },
+    "expect": {
+     "extend_to": 3000000,
+     "read_only_keys": 1,
+     "first_key": {
+      "contract_code": {
+       "hash": "203e2970d9fed24fb5fca2e0aeebb3c1e4648b76dd6601567178e6474c9fec6f"
+      }
+     },
+     "resource_fee": "289824612",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "Only TTL entries change (keyed by the sha256 of the ledger key, not by the key itself), so readers that match changes by contract id see nothing happen."
+ },
+ {
+  "id": "soroban-wasm-upgrade@pubnet-65514477",
+  "shape_slug": "soroban-wasm-upgrade",
+  "network": "pubnet",
+  "ledger_seq": 65514477,
+  "protocol_version": 29,
+  "close_time": "1794858427",
+  "lcm_arm": "v2",
+  "tx_count": 351,
+  "op_count": 681,
+  "file": "mined/ledgers/pubnet-65514477.lcm.xdr.zst",
+  "sha256": "e29beaedb0b4b1919f5ddcf0239b5a382d624cccd07a1ae4a61ffc0b6e24f868",
+  "size_bytes": 1536208,
+  "zst_sha256": "70da0b61ee55fec762868782c60f996dc02486f700fd5e00b653d11322f3e241",
+  "zst_bytes": 125386,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185412--65514477.xdr.zst",
+   "compressed_bytes": 144880,
+   "batch_sha256": "c003d0e2d7452b08fc765551ed942ce15fb81a588cf47828d29811a6ae0278cd",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 19:47:10 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q06_events.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_system_event_executable_update",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "91a365e1595aa417a7f63b948a5cc5723fd62e055247c166a6615fe0fe8c8d70",
+    "tx_apply_index": 300,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][84]",
+     "result": ".v2.tx_processing[300].result",
+     "shape": ".v2.tx_processing[300].tx_apply_processing.v4.operations[0].events[0]"
+    },
+    "expect": {
+     "contract": "CCKXBE5GKJOCE7IKL64HLYKW3IJSUPVOLC4CS77GQT5QQHDZLDYV3DFT",
+     "topics": [
+      {
+       "symbol": "executable_update"
+      },
+      {
+       "vec": [
+        {
+         "symbol": "Wasm"
+        },
+        {
+         "bytes": "c2b3ec57fbd45d5bade9df2ad30c464d1588cead18495a5ce327a98c45c02219"
+        }
+       ]
+      },
+      {
+       "vec": [
+        {
+         "symbol": "Wasm"
+        },
+        {
+         "bytes": "e2acb145fa324907437321dd2d1ad0d51e5dd5f07bf31f25f89bf30896a95e31"
+        }
+       ]
+      }
+     ],
+     "data": {
+      "vec": []
+     }
+    }
+   }
+  ],
+  "why_readers_break": "The contract instance's executable hash changes in place and the only event is a `system`-type executable_update event; readers that filter on `contract`-type events or cache the wasm hash per contract miss the upgrade."
+ },
+ {
+  "id": "soroban-wasm-upgrade@pubnet-65514426",
+  "shape_slug": "soroban-wasm-upgrade",
+  "network": "pubnet",
+  "ledger_seq": 65514426,
+  "protocol_version": 29,
+  "close_time": "1794858172",
+  "lcm_arm": "v2",
+  "tx_count": 427,
+  "op_count": 861,
+  "file": "mined/ledgers/pubnet-65514426.lcm.xdr.zst",
+  "sha256": "13ccd7487ae3bf58cb0ab75a24ebac98279648b8d244ff183abc9d8784b094f0",
+  "size_bytes": 1711100,
+  "zst_sha256": "8315827bd6c6d05e02c7f42b112820a8c9061989cfcdecef8f2335709346dd00",
+  "zst_bytes": 154970,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185445--65514426.xdr.zst",
+   "compressed_bytes": 177602,
+   "batch_sha256": "23efed0b37ee3e8f4730c0a2db8a67df44ec20f408a0f426adbc1c11d5855049",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 19:42:55 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "upload_contract_wasm",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "0bd09cceb834124e824fda24ba3b3c69b3bf0514793a4f1bd2e3cb7353d6ad44",
+    "tx_apply_index": 392,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][7]",
+     "result": ".v2.tx_processing[392].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][7].tx.tx.operations[0].body.invoke_host_function.host_function.upload_contract_wasm"
+    },
+    "expect": {
+     "wasm_bytes": 7820,
+     "wasm_sha256": "71600252deddaf342cd5f086a907f79185eca2216638cf38663d0e9e7c96bb65",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "upload_contract_wasm carries the whole wasm blob inside the operation and creates a ContractCode entry keyed by its sha256; readers with small per-field size limits or that assume every host function is invoke_contract fail on it."
+ },
+ {
+  "id": "soroban-auth-many-entries@pubnet-65167655",
+  "shape_slug": "soroban-auth-many-entries",
+  "network": "pubnet",
+  "ledger_seq": 65167655,
+  "protocol_version": 29,
+  "close_time": "1793124058",
+  "lcm_arm": "v2",
+  "tx_count": 1184,
+  "op_count": 1478,
+  "file": "mined/ledgers/pubnet-65167655.lcm.xdr.zst",
+  "sha256": "f32809fefd5a57bae750fc35120f73a364f1e9e56fd97d3f79b4af96b42b6572",
+  "size_bytes": 5574024,
+  "zst_sha256": "834dccf6950fc3d2cdc523c59ecf2e47715f35b76204e74585a9baf8bd470969",
+  "zst_bytes": 532491,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1DDBFF--65152000-65215999/FC1D9ED8--65167655.xdr.zst",
+   "compressed_bytes": 592489,
+   "batch_sha256": "db5e36ebd5eeabb35caf3b611d5ac8125c58097c264eca32de2da0948c6849d3",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 01 Nov 2026 00:05:10 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q04_ledgers.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_many_auth_entries",
+    "occurrences_in_ledger": 700,
+    "tx_hash": "2a0da9b5243c0e133761e918191ac55417e1b6c421ac3f168a7fc738b2edf396",
+    "inner_tx_hash": "9096b29367566e5acf2a7358f8b84c87b6224e5c37021a8bb3cac669ac01ccb3",
+    "tx_apply_index": 669,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][306]",
+     "result": ".v2.tx_processing[669].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][306].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.invoke_host_function.auth"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CCISQHV7UC3NZQ5WGADCNDYCG4FRWNKPISEGPLKADC3FFYEBG7QYIPRO",
+     "function": "batch_plant",
+     "result": "success",
+     "auth_entries": 26,
+     "max_invocation_depth": 2,
+     "total_invocations": 51,
+     "credential_kinds": [
+      "address"
+     ]
+    }
+   }
+  ],
+  "why_readers_break": "One invocation carries 26 address-credential auth entries (51 authorized invocations), each with its own nonce and signature ScVal; readers that take auth[0] as the signer, or cap the vector, lose 25 participants."
+ },
+ {
+  "id": "soroban-auth-deep-nesting@pubnet-65515672",
+  "shape_slug": "soroban-auth-deep-nesting",
+  "network": "pubnet",
+  "ledger_seq": 65515672,
+  "protocol_version": 29,
+  "close_time": "1794864402",
+  "lcm_arm": "v2",
+  "tx_count": 395,
+  "op_count": 713,
+  "file": "mined/ledgers/pubnet-65515672.lcm.xdr.zst",
+  "sha256": "a1e0d2e10e663e9e2d64ae02738f48cf267dcb717244484c529f7ada6a2e8359",
+  "size_bytes": 906660,
+  "zst_sha256": "a9a03e5760d978579d235dd440c9a36fc5365ca884dba11ff8842b29c2c5404b",
+  "zst_bytes": 126656,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184F67--65515672.xdr.zst",
+   "compressed_bytes": 148232,
+   "batch_sha256": "5778d791ce4730a2abd62b0a4195accb03886267b36fc2b1ec42865c62d0b5ef",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 21:26:45 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_deep_auth_nesting",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "7b65ee9953246a0f0428bd7fbbd5b8e79280138302d324d78d660da58dfeb573",
+    "tx_apply_index": 394,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][0]",
+     "result": ".v2.tx_processing[394].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][0].tx.tx.operations[0].body.invoke_host_function.auth"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CCBVCCNPIFMCXW7S3GBM6IOQBD5TEUCSQ6WWJGB5VIXZCRVJJQHQQE23",
+     "function": "yeet",
+     "result": "success",
+     "auth_entries": 1,
+     "max_invocation_depth": 3,
+     "total_invocations": 3,
+     "credential_kinds": [
+      "source_account"
+     ]
+    }
+   }
+  ],
+  "why_readers_break": "SorobanAuthorizedInvocation is recursive (sub_invocations three levels deep here); non-recursive walkers miss the inner contract calls and the assets they move."
+ },
+ {
+  "id": "soroban-event-deep-scval@pubnet-65516072",
+  "shape_slug": "soroban-event-deep-scval",
+  "network": "pubnet",
+  "ledger_seq": 65516072,
+  "protocol_version": 29,
+  "close_time": "1794866402",
+  "lcm_arm": "v2",
+  "tx_count": 312,
+  "op_count": 757,
+  "file": "mined/ledgers/pubnet-65516072.lcm.xdr.zst",
+  "sha256": "edc91f96799427ae7fb5aa96fa0591d5c522c37b15e98a15dd85c00a21522521",
+  "size_bytes": 1260816,
+  "zst_sha256": "33723d264948e233338954c2f7f1a020230bd9ce828d660a09d5f0dba4eadd37",
+  "zst_bytes": 113889,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184DD7--65516072.xdr.zst",
+   "compressed_bytes": 134267,
+   "batch_sha256": "0e3a949d63026e67364322228f53a19a59772cccc7494b8af05d0cb957b2382f",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 22:00:05 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_event_deep_scval",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "b91b526006ef4786d3ca30e840428b4ef465c2ad0ed220d4aeaf8dae4d04dcf1",
+    "inner_tx_hash": "a5cd623cddaae371bceab9da793562082cb6fbf5d520666310b211d0d2975e1c",
+    "tx_apply_index": 305,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][1]",
+     "result": ".v2.tx_processing[305].result",
+     "shape": ".v2.tx_processing[305].tx_apply_processing.v4.operations[0].events[5].body.v0.data"
+    },
+    "expect": {
+     "contract": "CCA2ZJP5BVRXYTQH4FAGHCAUMRYCXVC4CRYC2NXHWMR7TIVX36U7F5HR",
+     "event_type": "contract",
+     "topics": [
+      {
+       "string": "DeFindexVault"
+      },
+      {
+       "symbol": "withdraw"
+      }
+     ],
+     "scval_depth": 5,
+     "data_json_bytes": 1325
+    }
+   }
+  ],
+  "why_readers_break": "The event data is an ScVal nested five containers deep (maps of vecs of maps); readers that convert ScVal to native types with a fixed depth, or that sort or deduplicate map keys, truncate or reorder it."
+ },
+ {
+  "id": "soroban-sac-transfer-muxed@pubnet-65146228",
+  "shape_slug": "soroban-sac-transfer-muxed",
+  "network": "pubnet",
+  "ledger_seq": 65146228,
+  "protocol_version": 29,
+  "close_time": "1793016923",
+  "lcm_arm": "v2",
+  "tx_count": 425,
+  "op_count": 619,
+  "file": "mined/ledgers/pubnet-65146228.lcm.xdr.zst",
+  "sha256": "74cc7d661905d3f5c35e5801c170aa36784f974186027277ffba4b3928e7f437",
+  "size_bytes": 2825428,
+  "zst_sha256": "858c58d545b8c716abf81e3ee716781302627b79901e66dc60245e4172ee974a",
+  "zst_bytes": 215458,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1ED5FF--65088000-65151999/FC1DF28B--65146228.xdr.zst",
+   "compressed_bytes": 243875,
+   "batch_sha256": "da3cde101508f83363725ac66e641e8bfa091405e018b39576398f202c81b75e",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 01 Nov 2026 00:06:06 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q09_soroban_muxed_arg.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_arg_muxed_address",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "b056c765a400e96ce7fbca93d752333ae60e19d41777b70594fe47026c3cc5a4",
+    "inner_tx_hash": "1d668a50d378310e986f1c418afef0757cbe04ab185bd509c658096c77f00b21",
+    "tx_apply_index": 339,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][108]",
+     "result": ".v2.tx_processing[339].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][108].tx_fee_bump.tx.inner_tx.tx.tx.operations[0].body.invoke_host_function.host_function.invoke_contract.args[1].address"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+     "function": "transfer",
+     "result": "success",
+     "muxed_address": "MDAEVJPLJZ25BWIHHZ3DW6I53LFH6CFBL7M4VJDKQDIMMSW5YDBRZP5ID7ZJKIY66K4WY",
+     "args": [
+      {
+       "address": "CDOWCAY3PP33AKTLMAHY5CUV7ZGU24GKZUJXBZTXZ6NZZIWBIK5U6TWB"
+      },
+      {
+       "address": "MDAEVJPLJZ25BWIHHZ3DW6I53LFH6CFBL7M4VJDKQDIMMSW5YDBRZP5ID7ZJKIY66K4WY"
+      },
+      {
+       "i128": "100000"
+      }
+     ]
+    }
+   },
+   {
+    "shape": "sac_transfer_to_muxed_soroban",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "b056c765a400e96ce7fbca93d752333ae60e19d41777b70594fe47026c3cc5a4",
+    "inner_tx_hash": "1d668a50d378310e986f1c418afef0757cbe04ab185bd509c658096c77f00b21",
+    "tx_apply_index": 339,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_success",
+    "inner_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][108]",
+     "result": ".v2.tx_processing[339].result",
+     "shape": ".v2.tx_processing[339].tx_apply_processing.v4.operations[0].events[0].body.v0.data"
+    },
+    "expect": {
+     "contract": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+     "topics": [
+      {
+       "symbol": "transfer"
+      },
+      {
+       "address": "CDOWCAY3PP33AKTLMAHY5CUV7ZGU24GKZUJXBZTXZ6NZZIWBIK5U6TWB"
+      },
+      {
+       "address": "GDAEVJPLJZ25BWIHHZ3DW6I53LFH6CFBL7M4VJDKQDIMMSW5YDBRZYSX"
+      },
+      {
+       "string": "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"
+      }
+     ],
+     "data": {
+      "map": [
+       {
+        "key": {
+         "symbol": "amount"
+        },
+        "val": {
+         "i128": "100000"
+        }
+       },
+       {
+        "key": {
+         "symbol": "to_muxed_id"
+        },
+        "val": {
+         "u64": "13810323384076279538"
+        }
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "why_readers_break": "A contract sends USDC through the SAC to an M-address: the topic holds the base G-account and the id is in a data map as to_muxed_id = 13810323384076279538 (above 2^63), so the data is a map instead of a bare i128 and the id overflows signed 64-bit readers (stellar-etl#460: address_muxed always null)."
+ },
+ {
+  "id": "soroban-sac-transfer-muxed@pubnet-65392674",
+  "shape_slug": "soroban-sac-transfer-muxed",
+  "network": "pubnet",
+  "ledger_seq": 65392674,
+  "protocol_version": 29,
+  "close_time": "1794249412",
+  "lcm_arm": "v2",
+  "tx_count": 318,
+  "op_count": 572,
+  "file": "mined/ledgers/pubnet-65392674.lcm.xdr.zst",
+  "sha256": "4014729f21f404134d8618643dadd1d090ad099960419041576a67916a0fb5e4",
+  "size_bytes": 2082888,
+  "zst_sha256": "1b15e452a641df0097a519e84eaed7ae4e21b302de1a6792b144e81595dfc3ce",
+  "zst_bytes": 152095,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1AEDFF--65344000-65407999/FC1A2FDD--65392674.xdr.zst",
+   "compressed_bytes": 172232,
+   "batch_sha256": "f953318d04d5d10559fb30f59622a6bc9002dca2bfb02483d44a906f9a654321",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 00:05:50 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q09_soroban_muxed_arg.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_arg_muxed_address",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "51f36291f22d477a80ec14fbf0a2c404b7b3bf4dd3719ab92b0107ef208c6b27",
+    "tx_apply_index": 212,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][48]",
+     "result": ".v2.tx_processing[212].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][48].tx.tx.operations[0].body.invoke_host_function.host_function.invoke_contract.args[1].address"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+     "function": "transfer",
+     "result": "success",
+     "muxed_address": "MAWYZK5ROJITUL5VEAHWO7LQELDFMXQCNL2J65HUA6SIETP64ABRQAAAAAAAAAIM5TVLG",
+     "args": [
+      {
+       "address": "GB63AOYJZ56ZKKBRSXDFLWO2NJLS33HQ4VT4PEE6TWMD5VGPW22H5Q2M"
+      },
+      {
+       "address": "MAWYZK5ROJITUL5VEAHWO7LQELDFMXQCNL2J65HUA6SIETP64ABRQAAAAAAAAAIM5TVLG"
+      },
+      {
+       "i128": "1500000"
+      }
+     ]
+    }
+   },
+   {
+    "shape": "sac_transfer_to_muxed_soroban",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "51f36291f22d477a80ec14fbf0a2c404b7b3bf4dd3719ab92b0107ef208c6b27",
+    "tx_apply_index": 212,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][48]",
+     "result": ".v2.tx_processing[212].result",
+     "shape": ".v2.tx_processing[212].tx_apply_processing.v4.operations[0].events[0].body.v0.data"
+    },
+    "expect": {
+     "contract": "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+     "topics": [
+      {
+       "symbol": "transfer"
+      },
+      {
+       "address": "GB63AOYJZ56ZKKBRSXDFLWO2NJLS33HQ4VT4PEE6TWMD5VGPW22H5Q2M"
+      },
+      {
+       "address": "GAWYZK5ROJITUL5VEAHWO7LQELDFMXQCNL2J65HUA6SIETP64ABRQNG2"
+      },
+      {
+       "string": "native"
+      }
+     ],
+     "data": {
+      "map": [
+       {
+        "key": {
+         "symbol": "amount"
+        },
+        "val": {
+         "i128": "1500000"
+        }
+       },
+       {
+        "key": {
+         "symbol": "to_muxed_id"
+        },
+        "val": {
+         "u64": "68844"
+        }
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "why_readers_break": "A native-asset SAC transfer from a G-account to an M-address inside invoke_host_function; the event data changes shape from i128 to a map with amount and to_muxed_id, which breaks readers that expect the pre-CAP-0067 layout."
+ },
+ {
+  "id": "soroban-failed@pubnet-65517387",
+  "shape_slug": "soroban-failed",
+  "network": "pubnet",
+  "ledger_seq": 65517387,
+  "protocol_version": 29,
+  "close_time": "1794872977",
+  "lcm_arm": "v2",
+  "tx_count": 342,
+  "op_count": 668,
+  "file": "mined/ledgers/pubnet-65517387.lcm.xdr.zst",
+  "sha256": "5ca13bdb1654ae22910f921a69817d620cf67e47768b951bf50b2814ae800be8",
+  "size_bytes": 1228904,
+  "zst_sha256": "eb166dfe5f2c34023f9f2561d18280b008df947a0feda9bceadd70d77c241dfa",
+  "zst_bytes": 133686,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1848B4--65517387.xdr.zst",
+   "compressed_bytes": 159445,
+   "batch_sha256": "a1ce09d82d5062deff7cbb91363401b9c71cbc5dce257bb0a2cd6958a273ddb6",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:49:40 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_failed_resource_limit_exceeded",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "d19add7c39cefad16b58a95db3785fddaabed49f98425e468ce11c34a4ef4fb9",
+    "inner_tx_hash": "cb1b6af108f67834a688b46cbcbd37f78a144022610a3b5239ab59d3cd3f9637",
+    "tx_apply_index": 323,
+    "op_index": 0,
+    "tx_result": "tx_fee_bump_inner_failed",
+    "inner_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][15]",
+     "result": ".v2.tx_processing[323].result",
+     "shape": ".v2.tx_processing[323].result.result.result.tx_fee_bump_inner_failed.result.result.tx_failed[0].op_inner.invoke_host_function",
+     "meta": ".v2.tx_processing[323].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CCA2ZJP5BVRXYTQH4FAGHCAUMRYCXVC4CRYC2NXHWMR7TIVX36U7F5HR",
+     "function": "withdraw",
+     "result": "resource_limit_exceeded",
+     "tx_result": "tx_failed",
+     "fee_charged": "15521",
+     "instructions": 4471608,
+     "resource_fee": "299473",
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "15321",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     },
+     "diagnostic_events": 21,
+     "last_diagnostic": {
+      "topics": [
+       {
+        "symbol": "error"
+       },
+       {
+        "error": {
+         "budget": "exceeded_limit"
+        }
+       }
+      ],
+      "data": "{\"vec\": [{\"string\": \"operation instructions exceeds amount specified\"}, {\"u64\": \"4725730\"}, {\"u64\": \"4471608\"}]}"
+     }
+    }
+   },
+   {
+    "shape": "soroban_failed_trapped",
+    "occurrences_in_ledger": 21,
+    "tx_hash": "0248f8631dcc227e25599c35aefe7d7e6cb5f72a40e67351d05c47c91dce210b",
+    "tx_apply_index": 334,
+    "op_index": 0,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][0]",
+     "result": ".v2.tx_processing[334].result",
+     "shape": ".v2.tx_processing[334].result.result.result.tx_failed[0].op_inner.invoke_host_function",
+     "meta": ".v2.tx_processing[334].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CC5NDQ336LIMHYZFP674DI7UAX2JMDJDE2JMROVD6WPRT7XLN52XMC7C",
+     "function": "s",
+     "result": "trapped",
+     "tx_result": "tx_failed",
+     "fee_charged": "29657",
+     "instructions": 21389696,
+     "resource_fee": "42301",
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "29557",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     },
+     "diagnostic_events": 24,
+     "last_diagnostic": {
+      "topics": [
+       {
+        "symbol": "error"
+       },
+       {
+        "error": {
+         "contract": 32714
+        }
+       }
+      ],
+      "data": "{\"string\": \"escalating error to VM trap from failed host function call: fail_with_error\"}"
+     }
+    }
+   }
+  ],
+  "why_readers_break": "Failed Soroban transactions still appear in tx_processing with fees charged, a SorobanTransactionMeta ext and diagnostic events but no return value and no contract events; readers that assume soroban_meta implies success, or that count diagnostic events as real events, report phantom transfers."
+ },
+ {
+  "id": "soroban-failed@pubnet-65511929",
+  "shape_slug": "soroban-failed",
+  "network": "pubnet",
+  "ledger_seq": 65511929,
+  "protocol_version": 29,
+  "close_time": "1794845687",
+  "lcm_arm": "v2",
+  "tx_count": 491,
+  "op_count": 763,
+  "file": "mined/ledgers/pubnet-65511929.lcm.xdr.zst",
+  "sha256": "b4ec8499bcc7c0ac38e7b33a565cec2cc0e34e0607012ac0983525f36224b6aa",
+  "size_bytes": 1238984,
+  "zst_sha256": "0a6edb9afd3718bd3aac0ec10a937d20b679c5b9fdcbd4bd6c054ef91bd2625f",
+  "zst_bytes": 158176,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185E06--65511929.xdr.zst",
+   "compressed_bytes": 185694,
+   "batch_sha256": "c7015ae5b29340d5c53a21813942bba59f1b9e336dd54887c9004e759c9b71ce",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 16:14:51 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_failed_entry_archived",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "4053402e0856e7234d26e943d69dfc0cf4d153df1562adf3a78c1b502ad577d6",
+    "tx_apply_index": 485,
+    "op_index": 0,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][5]",
+     "result": ".v2.tx_processing[485].result",
+     "shape": ".v2.tx_processing[485].result.result.result.tx_failed[0].op_inner.invoke_host_function",
+     "meta": ".v2.tx_processing[485].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CCBVCCNPIFMCXW7S3GBM6IOQBD5TEUCSQ6WWJGB5VIXZCRVJJQHQQE23",
+     "function": "yeet",
+     "result": "entry_archived",
+     "tx_result": "tx_failed",
+     "fee_charged": "42032",
+     "instructions": 45221482,
+     "resource_fee": "406073",
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "41932",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     },
+     "diagnostic_events": 20,
+     "last_diagnostic": {
+      "topics": [
+       {
+        "symbol": "error"
+       },
+       {
+        "error": {
+         "value": "invalid_input"
+        }
+       }
+      ],
+      "data": "{\"vec\": [{\"string\": \"trying to access an archived contract data entry\"}, {\"address\": \"CBIJBDNZNF4X35BJ4FFZWCDBSCKOP5NB4PLG4SNENRMLAPYG4P5FM6VN\"}, {\"vec\": [{\"symbol\": \"Balance\"}, {\"address\": \"GDCRZPZYBZ24RHRO3WBPJGFDL7NDFKUQBS3ZDB6YGBJB3TGKMFYBQ3LD\"}]}]}"
+     }
+    }
+   },
+   {
+    "shape": "soroban_failed_trapped",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "e5fe13de0946507cae1c3e6b45fe228b334292d01445dd3b9a0c3861c2da714d",
+    "tx_apply_index": 484,
+    "op_index": 0,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][0]",
+     "result": ".v2.tx_processing[484].result",
+     "shape": ".v2.tx_processing[484].result.result.result.tx_failed[0].op_inner.invoke_host_function",
+     "meta": ".v2.tx_processing[484].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CDSQUXKEM3PGOB3VNOP25JJB26JUZFQ4DN2GF727HL6UVJC22DWFYZF7",
+     "function": "run",
+     "result": "trapped",
+     "tx_result": "tx_failed",
+     "fee_charged": "42271",
+     "instructions": 24746997,
+     "resource_fee": "63740",
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "42171",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     },
+     "diagnostic_events": 69,
+     "last_diagnostic": {
+      "topics": [
+       {
+        "symbol": "error"
+       },
+       {
+        "error": {
+         "contract": 6
+        }
+       }
+      ],
+      "data": "{\"string\": \"escalating error to VM trap from failed host function call: call\"}"
+     }
+    }
+   }
+  ],
+  "why_readers_break": "The result code is entry_archived, a code many enum tables lack; the transaction failed because a footprint entry had been evicted to the hot archive."
+ },
+ {
+  "id": "soroban-failed@pubnet-65516072",
+  "shape_slug": "soroban-failed",
+  "network": "pubnet",
+  "ledger_seq": 65516072,
+  "protocol_version": 29,
+  "close_time": "1794866402",
+  "lcm_arm": "v2",
+  "tx_count": 312,
+  "op_count": 757,
+  "file": "mined/ledgers/pubnet-65516072.lcm.xdr.zst",
+  "sha256": "edc91f96799427ae7fb5aa96fa0591d5c522c37b15e98a15dd85c00a21522521",
+  "size_bytes": 1260816,
+  "zst_sha256": "33723d264948e233338954c2f7f1a020230bd9ce828d660a09d5f0dba4eadd37",
+  "zst_bytes": 113889,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184DD7--65516072.xdr.zst",
+   "compressed_bytes": 134267,
+   "batch_sha256": "0e3a949d63026e67364322228f53a19a59772cccc7494b8af05d0cb957b2382f",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 22:00:05 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_failed_insufficient_refundable_fee",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "428555ae995b2a83af1a314c4e1b4bbd1085e3540ac49f38e3216e1430e3b3fa",
+    "tx_apply_index": 286,
+    "op_index": 0,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][30]",
+     "result": ".v2.tx_processing[286].result",
+     "shape": ".v2.tx_processing[286].result.result.result.tx_failed[0].op_inner.invoke_host_function",
+     "meta": ".v2.tx_processing[286].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CB3FUMFGCF6DHSFK6N2TOKHRMYXS34HFKQR45UKVORCRUM35AF3ES7WQ",
+     "function": "report",
+     "result": "insufficient_refundable_fee",
+     "tx_result": "tx_failed",
+     "fee_charged": "5021",
+     "instructions": 2874189,
+     "resource_fee": "10141",
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "4921",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     },
+     "diagnostic_events": 26,
+     "last_diagnostic": {
+      "topics": [
+       {
+        "symbol": "error"
+       },
+       {
+        "error": {
+         "budget": "exceeded_limit"
+        }
+       }
+      ],
+      "data": "{\"vec\": [{\"string\": \"refundable resource fee was not sufficient to cover the ledger storage rent: {} > {}\"}, {\"u64\": \"18383\"}, {\"u64\": \"5220\"}]}"
+     }
+    }
+   }
+  ],
+  "why_readers_break": "The invocation ran but failed afterwards with insufficient_refundable_fee; fee accounting (non-refundable charged, refundable zero) differs from a trap and readers that recompute fees from the envelope get the wrong charge."
+ },
+ {
+  "id": "protocol-upgrade@pubnet-64717645",
+  "shape_slug": "protocol-upgrade",
+  "network": "pubnet",
+  "ledger_seq": 64717645,
+  "protocol_version": 29,
+  "close_time": "1790874007",
+  "lcm_arm": "v2",
+  "tx_count": 145,
+  "op_count": 499,
+  "file": "mined/ledgers/pubnet-64717645.lcm.xdr.zst",
+  "sha256": "78500116981ac6b094d1ee4f7afa61a5adbd04dd68d312b79e263a287a7bc2bd",
+  "size_bytes": 881080,
+  "zst_sha256": "7394644544f311dbced261b617db39c0d265d9ed49a9bc52c07e35017b1bce61",
+  "zst_bytes": 81676,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC24B1FF--64704000-64767999/FC247CB2--64717645.xdr.zst",
+   "compressed_bytes": 96889,
+   "batch_sha256": "8f532bb4d6ab4a58cb54b8f7c16fb9f3709d735a240009289b2d081f7b8ee206",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 04 Oct 2026 00:04:05 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q04_ledgers.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "protocol_upgrade_ledger",
+    "json_paths": {
+     "ledger_version": ".v2.ledger_header.header.ledger_version",
+     "header_upgrades": ".v2.ledger_header.header.scp_value.upgrades",
+     "upgrade": ".v2.upgrades_processing[0].upgrade",
+     "first_change_before": ".v2.upgrades_processing[0].changes[0].state.last_modified_ledger_seq",
+     "first_change_after": ".v2.upgrades_processing[0].changes[1].updated.last_modified_ledger_seq",
+     "previous_ledger_hash": ".v2.ledger_header.header.previous_ledger_hash",
+     "ledger_hash": ".v2.ledger_header.hash"
+    },
+    "expect": {
+     "ledger_version": 29,
+     "header_upgrades": [
+      "000000010000001d"
+     ],
+     "upgrade": {
+      "version": 29
+     },
+     "first_change_before": 64717632,
+     "first_change_after": 64717645,
+     "previous_ledger_hash": "3c014c7b31d730b253086cad5618e1f8b7b37557c8bd1625f50a11fed7bd3a69",
+     "ledger_hash": "d763578aafc37490211b0e48ddce57e4d201c4b05d0751f0d9bf52111bfa2c45"
+    }
+   }
+  ],
+  "why_readers_break": "The header already says ledger_version 29 while the upgrade itself is in scp_value.upgrades and upgrades_processing, whose changes (config settings) belong to no transaction; readers that only walk tx_processing miss state changes, and readers that pick the decoder by header version must switch on exactly this ledger."
+ },
+ {
+  "id": "protocol-upgrade@testnet-5540313",
+  "shape_slug": "protocol-upgrade",
+  "network": "testnet",
+  "ledger_seq": 5540313,
+  "protocol_version": 30,
+  "close_time": "1793725205",
+  "lcm_arm": "v2",
+  "tx_count": 28,
+  "op_count": 49,
+  "file": "mined/ledgers/testnet-5540313.lcm.xdr.zst",
+  "sha256": "0f2ed6010b72cc9bf9d26a5d3df522f741c580f7bc3bb6ff0913c58c1089b8e3",
+  "size_bytes": 345344,
+  "zst_sha256": "8a5d330a5e043f665539607059e83802e213d509ffd3c039e02ab26bde4c7599",
+  "zst_bytes": 18838,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFAC03FF--5504000-5567999/FFAB7626--5540313.xdr.zst",
+   "compressed_bytes": 23152,
+   "batch_sha256": "6cfd958e8d5b0d5fc10728e0f423d5a88f9fedd8485c5ca3338edcdd92b5e9aa",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Tue, 03 Nov 2026 17:00:08 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "lake-binary-search",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "protocol_upgrade_ledger",
+    "json_paths": {
+     "ledger_version": ".v2.ledger_header.header.ledger_version",
+     "header_upgrades": ".v2.ledger_header.header.scp_value.upgrades",
+     "upgrade": ".v2.upgrades_processing[0].upgrade",
+     "scp_value_ext_node": ".v2.ledger_header.header.scp_value.ext.signed.node_id",
+     "first_change_after": ".v2.upgrades_processing[0].changes[1].updated.last_modified_ledger_seq",
+     "previous_ledger_hash": ".v2.ledger_header.header.previous_ledger_hash",
+     "ledger_hash": ".v2.ledger_header.hash"
+    },
+    "expect": {
+     "ledger_version": 30,
+     "header_upgrades": [
+      "000000010000001e"
+     ],
+     "upgrade": {
+      "version": 30
+     },
+     "scp_value_ext_node": "GDKXE2OZMJIPOSLNA6N6F2BVCI3O777I2OOC4BV7VOYUEHYX7RTRYA7Y",
+     "first_change_after": 5540313,
+     "previous_ledger_hash": "966aabcba275604dab2aec53e55322698e4a12cba6567247a4a8ddfc3460659e",
+     "ledger_hash": "c4535ccebca623d8c0b032869dd4f23b0e97f48979e5543bd17ba5af2015e742"
+    }
+   }
+  ],
+  "why_readers_break": "Testnet's upgrade to Protocol 30: ledger_version is 30 but StellarValue.ext is still the old `signed` arm (the next ledger is the first with `signed_ms`), and the upgrade rewrites three config-setting entries outside any transaction."
+ },
+ {
+  "id": "protocol-30-signed-ms@testnet-5540314",
+  "shape_slug": "protocol-30-signed-ms",
+  "network": "testnet",
+  "ledger_seq": 5540314,
+  "protocol_version": 30,
+  "close_time": "1793725210",
+  "lcm_arm": "v2",
+  "tx_count": 14,
+  "op_count": 14,
+  "file": "mined/ledgers/testnet-5540314.lcm.xdr.zst",
+  "sha256": "ee742912551436ce338747a1428c5917c589dbeaa415000f8de768493c82bb71",
+  "size_bytes": 168364,
+  "zst_sha256": "608155dd39a5320a133b7be73cac207180adb0b0f8c079041fb340c220623934",
+  "zst_bytes": 14321,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFAC03FF--5504000-5567999/FFAB7625--5540314.xdr.zst",
+   "compressed_bytes": 16869,
+   "batch_sha256": "79caf2c48b41e7b0b37cf2ffb70df2ffdcfc03cb5d69677fe38c36534e43f1b4",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Tue, 03 Nov 2026 17:00:12 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "lake-binary-search",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "stellar_value_ext_signed_ms",
+    "json_paths": {
+     "ledger_version": ".v2.ledger_header.header.ledger_version",
+     "close_time": ".v2.ledger_header.header.scp_value.close_time",
+     "close_time_ms": ".v2.ledger_header.header.scp_value.ext.signed_ms.close_time_ms",
+     "signer_node": ".v2.ledger_header.header.scp_value.ext.signed_ms.lc_value_signature.node_id",
+     "tx_meta_arm_keys": ".v2.tx_processing[0].tx_apply_processing"
+    },
+    "expect": {
+     "ledger_version": 30,
+     "close_time": "1793725210",
+     "close_time_ms": "1793725210000",
+     "signer_node": "GCUCJTIYXSOXKBSNFGNFWW5MUQ54HKRPGJUTQFJ5RQXZXNOLNXYDHRAP",
+     "tx_meta_arm_keys": [
+      "v4"
+     ]
+    }
+   }
+  ],
+  "why_readers_break": "First testnet ledger whose StellarValue.ext uses the Protocol 30 `signed_ms` arm (CAP-0088 millisecond close time); every decoder generated from XDR older than v30 fails the whole ledger with 'xdr value invalid' (stellar CLI 27 measured in 01-corpus-capture.md)."
+ },
+ {
+  "id": "largest-ledger@pubnet-65167655",
+  "shape_slug": "largest-ledger",
+  "network": "pubnet",
+  "ledger_seq": 65167655,
+  "protocol_version": 29,
+  "close_time": "1793124058",
+  "lcm_arm": "v2",
+  "tx_count": 1184,
+  "op_count": 1478,
+  "file": "mined/ledgers/pubnet-65167655.lcm.xdr.zst",
+  "sha256": "f32809fefd5a57bae750fc35120f73a364f1e9e56fd97d3f79b4af96b42b6572",
+  "size_bytes": 5574024,
+  "zst_sha256": "834dccf6950fc3d2cdc523c59ecf2e47715f35b76204e74585a9baf8bd470969",
+  "zst_bytes": 532491,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1DDBFF--65152000-65215999/FC1D9ED8--65167655.xdr.zst",
+   "compressed_bytes": 592489,
+   "batch_sha256": "db5e36ebd5eeabb35caf3b611d5ac8125c58097c264eca32de2da0948c6849d3",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 01 Nov 2026 00:05:10 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q04_ledgers.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "largest_ledger_30d",
+    "json_paths": {
+     "ledger_seq": ".v2.ledger_header.header.ledger_seq",
+     "max_tx_set_size": ".v2.ledger_header.header.max_tx_set_size",
+     "base_fee": ".v2.ledger_header.header.base_fee",
+     "tx_set_hash": ".v2.ledger_header.header.scp_value.tx_set_hash",
+     "classic_phase_base_fee": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.base_fee",
+     "soroban_phase_base_fee": ".v2.tx_set.v1.phases[1].v1.base_fee",
+     "live_soroban_state_bytes": ".v2.total_byte_size_of_live_soroban_state"
+    },
+    "expect": {
+     "ledger_seq": 65167655,
+     "max_tx_set_size": 1000,
+     "base_fee": 100,
+     "tx_set_hash": "2762bca2ad69ec5a402dc10fa2af544e33ecf7b1b7421e84ce55a483aa82afad",
+     "classic_phase_base_fee": "202",
+     "soroban_phase_base_fee": "100",
+     "live_soroban_state_bytes": "1825149793"
+    }
+   }
+  ],
+  "why_readers_break": "The largest ledger of the last 30 days by operation count (1,478 operations in 1,184 transactions, 5.57 MB of LedgerCloseMeta); readers with message-size caps, per-ledger timeouts or quadratic change matching fail or stall on it."
+ },
+ {
+  "id": "alphanum12-asset@pubnet-65517511",
+  "shape_slug": "alphanum12-asset",
+  "network": "pubnet",
+  "ledger_seq": 65517511,
+  "protocol_version": 29,
+  "close_time": "1794873597",
+  "lcm_arm": "v2",
+  "tx_count": 365,
+  "op_count": 840,
+  "file": "mined/ledgers/pubnet-65517511.lcm.xdr.zst",
+  "sha256": "7d14f1b328e0422f2d144fa131089bcc8cc4593169bbfc8a2c0de8c5d73b1d3c",
+  "size_bytes": 1039808,
+  "zst_sha256": "02072a258e0546aefcf1b98bf0331eb554b40538be1f804e2954e7b539d754c4",
+  "zst_bytes": 138602,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184838--65517511.xdr.zst",
+   "compressed_bytes": 162251,
+   "batch_sha256": "402c1b55d4a563fe6474007bc0403e143bbd7b53421d08da41fc334a1ea21f47",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Tue, 17 Nov 2026 00:00:00 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "alphanum12_payment",
+    "occurrences_in_ledger": 225,
+    "tx_hash": "ba8134eaed787556573cdf221d39292082c8e10badda821153818c0eb07a3254",
+    "tx_apply_index": 294,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[174]",
+     "result": ".v2.tx_processing[294].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[174].tx.tx.operations[0].body.payment.asset.credit_alphanum12"
+    },
+    "expect": {
+     "asset": {
+      "credit_alphanum12": {
+       "asset_code": "UltraDOGE",
+       "issuer": "GDDYZYJ2DSHIFLSKH5PKCESDE67FOJWV3CXIAFOOHOCOCAEV7DK3BGV7"
+      }
+     },
+     "destination": "GC3EUBISAPMQVFIEAQZTAUWMMYBLM2FYA2EUQ256LPSYLDODPIEPZX4Y",
+     "amount": "228140000000",
+     "result": "success"
+    }
+   },
+   {
+    "shape": "alphanum12_change_trust",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "5d343766c0821067a8c1252ba8a3fc8c4d0e94397cefb47da8631ba59f49b777",
+    "tx_apply_index": 165,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[296]",
+     "result": ".v2.tx_processing[165].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[296].tx.tx.operations[0].body.change_trust.line.credit_alphanum12"
+    },
+    "expect": {
+     "line": {
+      "credit_alphanum12": {
+       "asset_code": "COPPER",
+       "issuer": "GBKH45V6XGE46Z4JPARO77PCVMOCL5T6YAVV2UJL2ETVHBUUTKM3LNEW"
+      }
+     },
+     "limit": "9223372036854775807",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "Asset codes of 5 to 12 characters use the 12-byte AlphaNum12 arm, zero-padded; readers that assume 4-byte codes, or that do not strip or keep the padding consistently, split one asset into two."
+ },
+ {
+  "id": "offer-crosses-many@pubnet-65488299",
+  "shape_slug": "offer-crosses-many",
+  "network": "pubnet",
+  "ledger_seq": 65488299,
+  "protocol_version": 29,
+  "close_time": "1794727537",
+  "lcm_arm": "v2",
+  "tx_count": 158,
+  "op_count": 430,
+  "file": "mined/ledgers/pubnet-65488299.lcm.xdr.zst",
+  "sha256": "e3e01f5afbd3c9f147ec15601193ec9b841a0ce84d8aa95f015e6a33ba328769",
+  "size_bytes": 1809416,
+  "zst_sha256": "450394f9da2886bc15670959bfc50a3e848f94c2b2e5602db58c9c441524df47",
+  "zst_bytes": 152587,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18BA54--65488299.xdr.zst",
+   "compressed_bytes": 182031,
+   "batch_sha256": "66c28405bda5d9525cb677349721cb7e5324ffdb7cf891e4306657823fc377b5",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 07:25:40 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q03_misc.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "offer_crosses_many_manage_sell_offer",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "b769a9f83907e711cc99027bc5bf52f372ef70ef289814cdabdff5fe54dd0aaf",
+    "tx_apply_index": 117,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[88]",
+     "result": ".v2.tx_processing[117].result",
+     "shape": ".v2.tx_processing[117].result.result.result.tx_success[0].op_inner.manage_sell_offer.success.offers_claimed"
+    },
+    "expect": {
+     "offers_claimed": 638,
+     "atom_kinds": [
+      "order_book"
+     ],
+     "selling": {
+      "credit_alphanum12": {
+       "asset_code": "NEWCASH",
+       "issuer": "GAOYM24LLPZAPCZTD63AXYNFAUF5JLEFMCH6NU2TEZ6EVIG4PYB6CASH"
+      }
+     },
+     "buying": "native",
+     "amount": "200100000000000",
+     "price": {
+      "n": 1,
+      "d": 100
+     },
+     "offer_id": "0",
+     "first_atom": {
+      "order_book": {
+       "seller_id": "GAJLO6SLP37RIHUKL7ZCTGE776MYCMONFH7S3Y7WVCJ2BJPETFIABKHP",
+       "offer_id": "1865982755",
+       "asset_sold": "native",
+       "amount_sold": "500000000",
+       "asset_bought": {
+        "credit_alphanum12": {
+         "asset_code": "NEWCASH",
+         "issuer": "GAOYM24LLPZAPCZTD63AXYNFAUF5JLEFMCH6NU2TEZ6EVIG4PYB6CASH"
+        }
+       },
+       "amount_bought": "5000000"
+      }
+     },
+     "last_atom": {
+      "order_book": {
+       "seller_id": "GCSBUYYZ3OVHNIJSABUFA7IDMU3MVUSXP2RD5HDIS4LE34IOAC24AXHO",
+       "offer_id": "1866159425",
+       "asset_sold": "native",
+       "amount_sold": "1001000000",
+       "asset_bought": {
+        "credit_alphanum12": {
+         "asset_code": "NEWCASH",
+         "issuer": "GAOYM24LLPZAPCZTD63AXYNFAUF5JLEFMCH6NU2TEZ6EVIG4PYB6CASH"
+        }
+       },
+       "amount_bought": "100100000000"
+      }
+     },
+     "offer_after": {
+      "created": {
+       "seller_id": "GAFTKKNL6UDKPD2UFC7L4DJUCKAWWA4XKLCU6BIGA727LKNU6JHII66M",
+       "offer_id": "1866163092",
+       "selling": {
+        "credit_alphanum12": {
+         "asset_code": "NEWCASH",
+         "issuer": "GAOYM24LLPZAPCZTD63AXYNFAUF5JLEFMCH6NU2TEZ6EVIG4PYB6CASH"
+        }
+       },
+       "buying": "native",
+       "amount": "60420529439200",
+       "price": {
+        "n": 1,
+        "d": 100
+       },
+       "flags": 0,
+       "ext": "v0"
+      }
+     },
+     "op_source": "GAFTKKNL6UDKPD2UFC7L4DJUCKAWWA4XKLCU6BIGA727LKNU6JHII66M"
+    }
+   }
+  ],
+  "why_readers_break": "One manage_sell_offer claims 638 order-book offers in a single operation result and leaves a residual offer; readers that expect one trade per operation, or cap offers_claimed, lose trades and get balances wrong."
+ },
+ {
+  "id": "signed-payload-signer@testnet-4437357",
+  "shape_slug": "signed-payload-signer",
+  "network": "testnet",
+  "ledger_seq": 4437357,
+  "protocol_version": 28,
+  "close_time": "1788210372",
+  "lcm_arm": "v2",
+  "tx_count": 12,
+  "op_count": 12,
+  "file": "mined/ledgers/testnet-4437357.lcm.xdr.zst",
+  "sha256": "582e694b96bf69f894763909a1b058c1a2523d5634f2e0947393cee9765f4e0e",
+  "size_bytes": 58256,
+  "zst_sha256": "99e559ca7d8f8b9c7fbf86460b8e7afe9b1a7d0d95e2a4468046d269c7d07933",
+  "zst_bytes": 8349,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFBC9DFF--4416000-4479999/FFBC4A92--4437357.xdr.zst",
+   "compressed_bytes": 9816,
+   "batch_sha256": "e9fe329be8a0c0a035db0dcbf0a5a01fdb99b9b14237cdc1a9fddae8a56c1846",
+   "core_version": "stellar-core 28.0.1 (947aad8413c189d85504acf72207e85eeda9b021)",
+   "object_last_modified": "Mon, 31 Aug 2026 21:06:14 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "sighting wallet-backend#729",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "signer_signed_payload_added",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "d9f78749cd01297cd5f22c7f2c798c9eec93d56f399e1c4cc2f8977ca52b9fed",
+    "tx_apply_index": 0,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[0]",
+     "result": ".v2.tx_processing[0].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[0].tx.tx.operations[0].body.set_options.signer"
+    },
+    "expect": {
+     "signer_key": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS",
+     "weight": 1,
+     "account": "GBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSBB7B",
+     "result": "success"
+    }
+   }
+  ],
+  "why_readers_break": "The signer key is an ed25519 signed-payload key (P..., key plus up to 64 payload bytes); wallet-backend's fixed 32-byte address column could not encode it and ingestion retried this ledger forever (wallet-backend#729, #716)."
+ },
+ {
+  "id": "signed-payload-signer@pubnet-65483028",
+  "shape_slug": "signed-payload-signer",
+  "network": "pubnet",
+  "ledger_seq": 65483028,
+  "protocol_version": 29,
+  "close_time": "1794701182",
+  "lcm_arm": "v2",
+  "tx_count": 634,
+  "op_count": 866,
+  "file": "mined/ledgers/pubnet-65483028.lcm.xdr.zst",
+  "sha256": "699a322e080f6416314a8aa51dbe8ea2d197ecce13dd680197dec5f19e0417cb",
+  "size_bytes": 2294668,
+  "zst_sha256": "6494f94739b2f04bf0375aabd0a43986f4f378582f91dc8c00c26c2053a9875a",
+  "zst_bytes": 242605,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18CEEB--65483028.xdr.zst",
+   "compressed_bytes": 279248,
+   "batch_sha256": "e44dce680a1dbc53972757f8379ab8fae617b86f9a1ecde9cca18f98d9956d24",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 15 Nov 2026 00:06:25 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q03_misc.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "extra_signers",
+    "occurrences_in_ledger": 7,
+    "tx_hash": "5ca1bbecab9be2e2f635d112ee317e346f09ccb1232fe8b0a2b581dca8b74af3",
+    "tx_apply_index": 57,
+    "tx_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[59]",
+     "result": ".v2.tx_processing[57].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[59].tx.tx.cond.v2.extra_signers"
+    },
+    "expect": {
+     "extra_signers": [
+      "PABSQ37P6FNTA4VKJIO54BR4BKXXMRKU6EFO7RVQD6Y4ACKBH2ZBUAAAAAOHG5DFNRWGC4RNMVXHMZLMN5YGKLLTMVQXEY3IFV3DCLYAALMA",
+      "PANKAXT5ZIGT35PS2POIKXW35GYJNMRYTYOPW3ZESGL6RWR5WJ2JGAAAAAOHG5DFNRWGC4RNMVXHMZLMN5YGKLLTMVQXEY3IFV3DCLYBX2CA"
+     ]
+    }
+   },
+   {
+    "shape": "muxed_fee_source",
+    "occurrences_in_ledger": 5,
+    "tx_hash": "5e78b3d6778f7a913a4ecde43f1d27609c4c94280928bcd632ed185a8bd78303",
+    "inner_tx_hash": "0f5775992b5494d2cbf2ebdf14ad6d99f3dca7b9a8724ec80cc2bfd7354febe9",
+    "tx_apply_index": 503,
+    "tx_result": "tx_fee_bump_inner_failed",
+    "inner_result": "tx_failed",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[506]",
+     "result": ".v2.tx_processing[503].result",
+     "shape": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[506].tx_fee_bump.tx.fee_source"
+    },
+    "expect": {
+     "fee_source": "MBCZJ6DNE3DLU6INNH5EMM2HAWETNLFRDV33KJKDLUC7W5TGTDVJKAAAAAAAAAAAAATLG"
+    }
+   }
+  ],
+  "why_readers_break": "PreconditionsV2.extra_signers holds two signed-payload (P...) signer keys on a mainnet transaction; Hubble's account_signers table shows no P-keys at all, so this precondition field is the only mainnet place the type appears."
+ },
+ {
+  "id": "soroban-auth-address-v2@pubnet-65517506",
+  "shape_slug": "soroban-auth-address-v2",
+  "network": "pubnet",
+  "ledger_seq": 65517506,
+  "protocol_version": 29,
+  "close_time": "1794873572",
+  "lcm_arm": "v2",
+  "tx_count": 260,
+  "op_count": 777,
+  "file": "mined/ledgers/pubnet-65517506.lcm.xdr.zst",
+  "sha256": "5ff88af6a5144d9253ea6e96ea209e7f0559a541de2b1d1141365dc9330be260",
+  "size_bytes": 1646740,
+  "zst_sha256": "9efa3942ff00567a07c99f79abbf4f5239a35b1db699a7570152dd7a286f5510",
+  "zst_bytes": 122423,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18483D--65517506.xdr.zst",
+   "compressed_bytes": 146012,
+   "batch_sha256": "3ca99295870b799ca3ea445606001d76736c51d7d370ef42e092b5e219d8b7a7",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:59:36 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_auth_credentials_address_v2",
+    "occurrences_in_ledger": 3,
+    "tx_hash": "26ce057962f6dfd3ee602393ec463b168fc0589849b8cb4f1860ed7ff80ba1c6",
+    "tx_apply_index": 245,
+    "op_index": 0,
+    "tx_result": "tx_success",
+    "json_paths": {
+     "envelope": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][4]",
+     "result": ".v2.tx_processing[245].result",
+     "shape": ".v2.tx_set.v1.phases[1].v1.execution_stages[0][0][4].tx.tx.operations[0].body.invoke_host_function.auth"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CDJALYGXIYSTNMBQIK3BNQ5UTGVUEINQUZB6CWMJC65CAA4I4OVFXFDM",
+     "function": "s",
+     "result": "success",
+     "credentials": "address_v2"
+    }
+   }
+  ],
+  "why_readers_break": "The auth entry uses the `address_v2` credentials arm instead of `address`; readers with a two-arm switch (source_account, address) skip the signer or fail to decode the entry."
+ },
+ {
+  "id": "int64-max-limit@pubnet-65517506",
+  "shape_slug": "int64-max-limit",
+  "network": "pubnet",
+  "ledger_seq": 65517506,
+  "protocol_version": 29,
+  "close_time": "1794873572",
+  "lcm_arm": "v2",
+  "tx_count": 260,
+  "op_count": 777,
+  "file": "mined/ledgers/pubnet-65517506.lcm.xdr.zst",
+  "sha256": "5ff88af6a5144d9253ea6e96ea209e7f0559a541de2b1d1141365dc9330be260",
+  "size_bytes": 1646740,
+  "zst_sha256": "9efa3942ff00567a07c99f79abbf4f5239a35b1db699a7570152dd7a286f5510",
+  "zst_bytes": 122423,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18483D--65517506.xdr.zst",
+   "compressed_bytes": 146012,
+   "batch_sha256": "3ca99295870b799ca3ea445606001d76736c51d7d370ef42e092b5e219d8b7a7",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Mon, 16 Nov 2026 23:59:36 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q01_ops_shapes.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "change_trust_limit_int64_max",
+    "json_paths": {
+     "limit": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[61].tx.tx.operations[0].body.change_trust.limit",
+     "line": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[61].tx.tx.operations[0].body.change_trust.line",
+     "tx_source": ".v2.tx_set.v1.phases[0].v0[0].txset_comp_txs_maybe_discounted_fee.txs[61].tx.tx.source_account"
+    },
+    "expect": {
+     "limit": "9223372036854775807",
+     "line": {
+      "credit_alphanum4": {
+       "asset_code": "AFR",
+       "issuer": "GBX6YI45VU7WNAAKA3RBFDR3I3UKNFHTJPQ5F6KOOKSGYIAM4TRQN54W"
+      }
+     },
+     "tx_source": "GA3EXW2DI7MJA3MT7U7RRNL2OYFSDRSJ3CHYXG5R3GVC5VDCCEWERORN"
+    }
+   }
+  ],
+  "why_readers_break": "A trustline limit of 9223372036854775807 stroops (INT64_MAX) cannot be held in a float64; stellar-etl converts amounts to float and loses stroop precision (stellar-etl#454), and JavaScript numbers round it to 9223372036854775808."
+ },
+ {
+  "id": "evicted-keys-at-cap@pubnet-65460631",
+  "shape_slug": "evicted-keys-at-cap",
+  "network": "pubnet",
+  "ledger_seq": 65460631,
+  "protocol_version": 29,
+  "close_time": "1794589197",
+  "lcm_arm": "v2",
+  "tx_count": 162,
+  "op_count": null,
+  "file": "mined/ledgers/pubnet-65460631.lcm.xdr.zst",
+  "sha256": "6be00191ddc9109958aa51575b0a993bd1e0c73affaedd07784dedf125bad430",
+  "size_bytes": 1156180,
+  "zst_sha256": "5edaa72983ed69e6cbd5013eb39d7bca1b78401fbeb7e90d86b6e63f2ffeb57c",
+  "zst_bytes": 127629,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC19F3FF--65408000-65471999/FC192668--65460631.xdr.zst",
+   "compressed_bytes": 144602,
+   "batch_sha256": "480b7b1339add065dc43abe01ad0e7fe624d4fb8777055ffa4e34ef4035f506c",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Fri, 13 Nov 2026 17:00:00 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q13_evicted_keys.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "evicted_keys",
+    "occurrences_in_ledger": 2000,
+    "json_paths": {
+     "shape": ".v2.evicted_keys"
+    },
+    "expect": {
+     "evicted_keys": 2000,
+     "by_type": {
+      "contract_data": 1000,
+      "ttl": 1000
+     },
+     "transactions_in_ledger": 162
+    }
+   }
+  ],
+  "why_readers_break": "Entries leave the live state with no transaction: 1000 contract-data keys (archived to the hot archive if persistent, deleted if temporary) and their 1000 TTL keys, the per-ledger cap maxEntriesToArchive. A reader that derives state only from transaction meta keeps 1000 entries that no longer exist."
+ },
+ {
+  "id": "config-upgrade-settings-vote@pubnet-65080525",
+  "shape_slug": "config-upgrade-settings-vote",
+  "network": "pubnet",
+  "ledger_seq": 65080525,
+  "protocol_version": 29,
+  "close_time": "1792688408",
+  "lcm_arm": "v2",
+  "tx_count": 568,
+  "op_count": null,
+  "file": "mined/ledgers/pubnet-65080525.lcm.xdr.zst",
+  "sha256": "cb1eadc528e439cacc1899963f84454884527e02a342cd6d4c7a01854aa866e7",
+  "size_bytes": 2116128,
+  "zst_sha256": "64ad902f5cb2a3b3b3e1ae46d2548a786c3547f13ede7177bf433f3b3f63832a",
+  "zst_bytes": 208119,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1EF332--65080525.xdr.zst",
+   "compressed_bytes": 241750,
+   "batch_sha256": "0dccea9c61e864c5d7c4cc009b800f82cd1d24eae67d1074b220d5dae0274d5a",
+   "core_version": "stellar-core 29.0.0 (4eb83337380a29ad0907f4e32196ce97b8dc7649)",
+   "object_last_modified": "Sun, 25 Oct 2026 00:04:18 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q14_config_settings.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "ledger_upgrade_config",
+    "occurrences_in_ledger": 7,
+    "json_paths": {
+     "shape": ".v2.upgrades_processing[0]"
+    },
+    "expect": {
+     "upgrade": "config",
+     "config_upgrade_set_hash": "53b8f9d3a4e442107ec26b481e005d4332a45a8c4d52e3b13d7eb0fb9880d79c",
+     "settings_updated": [
+      "contract_ledger_cost_ext_v0",
+      "contract_parallel_compute_v0",
+      "contract_bandwidth_v0",
+      "contract_events_v0",
+      "contract_compute_v0",
+      "contract_historical_data_v0",
+      "contract_ledger_cost_v0"
+     ],
+     "ledger_max_dependent_tx_clusters": 3
+    }
+   }
+  ],
+  "why_readers_break": "A validator vote changes seven Soroban network settings in one LEDGER_UPGRADE_CONFIG; the new values appear only in upgradesProcessing, not in any transaction. Fee and limit calculations that cache settings go stale here."
+ },
+ {
+  "id": "config-upgrade-frozen-keys@pubnet-65273932",
+  "shape_slug": "config-upgrade-frozen-keys",
+  "network": "pubnet",
+  "ledger_seq": 65273932,
+  "protocol_version": 29,
+  "close_time": "1793655698",
+  "lcm_arm": "v2",
+  "tx_count": 268,
+  "op_count": null,
+  "file": "mined/ledgers/pubnet-65273932.lcm.xdr.zst",
+  "sha256": "c0b22acfabfbe0ff4e068abc603bc3239713aab6956db637d4912bfe0ddf8f06",
+  "size_bytes": 1276284,
+  "zst_sha256": "512e16cfb3dba43c7e8b5839aa6e0625a1bd25901af917e61fe092a4ecb390d5",
+  "zst_bytes": 125376,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1CE1FF--65216000-65279999/FC1BFFB3--65273932.xdr.zst",
+   "compressed_bytes": 146584,
+   "batch_sha256": "3e849ee85277a58c4ac7448d57ba8289d3d9f15574c6abac159f096dcee7f300",
+   "core_version": "stellar-core 30.0.0 (0e49751aa9ddf892302cca02cea7f3f5d97df9f1)",
+   "object_last_modified": "Sun, 08 Nov 2026 00:07:34 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q14_config_settings.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "frozen_ledger_keys_upgrade",
+    "occurrences_in_ledger": 1,
+    "json_paths": {
+     "shape": ".v2.upgrades_processing[0].changes[1]"
+    },
+    "expect": {
+     "frozen_keys_before": 3,
+     "frozen_keys_after": 4,
+     "added_encoded_key": "0000000000000000ef88a3c873600ee2668ae1e76ca64e836bbd339c1f4b95f225e515072b2a9999"
+    }
+   }
+  ],
+  "why_readers_break": "CAP-0077 on mainnet: a config upgrade grows the frozen-key list from 3 to 4 accounts. Transactions touching those accounts are refused from the next ledger; the change is visible only in upgradesProcessing (config setting frozen_ledger_keys), as encoded LedgerKey bytes."
+ },
+ {
+  "id": "p22-refunds-in-tx-changes-after@pubnet-56085459",
+  "shape_slug": "p22-refunds-in-tx-changes-after",
+  "network": "pubnet",
+  "ledger_seq": 56085459,
+  "protocol_version": 22,
+  "close_time": "1741598769",
+  "lcm_arm": "v1",
+  "tx_count": 222,
+  "op_count": null,
+  "file": "mined/ledgers/pubnet-56085459.lcm.xdr.zst",
+  "sha256": "ba8961760204861f773dfc133c1827680a242a89b94aa49c4b4d43b5768688cb",
+  "size_bytes": 1713432,
+  "zst_sha256": "8c99906b618cf122dfdcb7c6a07cea3c4e008f5333884c87f765cc088cd29343",
+  "zst_bytes": 159858,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FCA887FF--56064000-56127999/FCA8342C--56085459.xdr.zst",
+   "compressed_bytes": 179855,
+   "batch_sha256": "5e6fd1ee1f48c5e544c548d28b8e25a5000510106aca40b937a11638e40128e1",
+   "core_version": "stellar-core 23.0.1 (050eacf11a15afb2e95560dfb5723dfdcf78070f)",
+   "object_last_modified": "Thu, 18 Sep 2025 17:57:21 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q15_p21_p22.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "soroban_refund_in_tx_changes_after",
+    "occurrences_in_ledger": 53,
+    "tx_hash": "c49ab33e23ebe5c40971c4ac098d756799553c50074adfa08acb52bd80c4b6c5",
+    "tx_apply_index": 169,
+    "tx_result": "tx_fee_bump_inner_success",
+    "json_paths": {
+     "result": ".v1.tx_processing[169].result",
+     "shape": ".v1.tx_processing[169].tx_apply_processing.v4.tx_changes_after"
+    },
+    "expect": {
+     "lcm_arm": "v1",
+     "transaction_meta": "v4",
+     "post_tx_apply_fee_processing_present": false
+    }
+   }
+  ],
+  "why_readers_break": "Protocol 22: the Soroban fee refund is a change in txChangesAfter of each transaction, not in postTxApplyFeeProcessing as from protocol 23. LedgerCloseMeta is v1. In the public lake the TransactionMeta is v4 even at protocol 22, because Galexie sets BACKFILL_STELLAR_ASSET_EVENTS (stellar-core TransactionMeta.cpp: v4 from protocol 23 or with that flag); a default node writes v3 for the same ledger."
+ },
+ {
+  "id": "p12-v0-envelopes@pubnet-26588352",
+  "shape_slug": "p12-v0-envelopes",
+  "network": "pubnet",
+  "ledger_seq": 26588352,
+  "protocol_version": 12,
+  "close_time": "1572632133",
+  "lcm_arm": "v0",
+  "tx_count": 532,
+  "op_count": null,
+  "file": "mined/ledgers/pubnet-26588352.lcm.xdr.zst",
+  "sha256": "039ba91a4dfd229cbbc58204ce16afed91eb066f4b88219b7d1932f08359b584",
+  "size_bytes": 887884,
+  "zst_sha256": "5a82864b2a4188217831a70cd2807302764b05bf4d8c289aebdf1a3610dd68e2",
+  "zst_bytes": 151584,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FE6AB9FF--26560000-26623999/FE6A4B3F--26588352.xdr.zst",
+   "compressed_bytes": 169512,
+   "batch_sha256": "e6cdde6d0600fb7d6019a25164abbb19468258392faa1f258b2ef457ff4a0749",
+   "core_version": "stellar-core 23.0.1 (050eacf11a15afb2e95560dfb5723dfdcf78070f)",
+   "object_last_modified": "Fri, 19 Sep 2025 13:42:33 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q16_pre_p13.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "transaction_envelope_v0",
+    "occurrences_in_ledger": 532,
+    "tx_hash": "44aca175be4d51c1282466f8dd37d7e5a0e5b1acef74e453e5fb6cba92070df8",
+    "json_paths": {
+     "envelope": ".v0.tx_set.txs[0]",
+     "result": ".v0.tx_processing[0].result"
+    },
+    "expect": {
+     "envelope_arm": "tx_v0",
+     "lcm_arm": "v0",
+     "transaction_meta": "v4"
+    }
+   }
+  ],
+  "why_readers_break": "Protocol 12: every envelope is ENVELOPE_TYPE_TX_V0 (a raw ed25519 source, no MuxedAccount) and LedgerCloseMeta is v0 with a classic TransactionSet. Readers written for V1 envelopes fail on backfill. The lake carries TransactionMeta v4 here as well (BACKFILL_STELLAR_ASSET_EVENTS); a default node writes v2."
+ }
+]

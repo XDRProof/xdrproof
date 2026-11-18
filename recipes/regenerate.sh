@@ -32,13 +32,21 @@ xargs -P "${PAR:-6}" -L1 sh -c '
   else NET=$net FLAGS=$flags soroban/trial.sh "$name" "$port" "$proto" >/dev/null; fi \
     && echo "  ran $name" || { echo "  FAILED $name (see $lane/runs/$name/gen.log)"; exit 255; }' < "$JOBS"
 
-FAIL=0
+FAIL=0; CONFIGS=()
 for p in "${PAIRS[@]}"; do
   read -r lane proto net flags tag <<< "$p"
+  CONFIGS+=("$lane $proto $net $flags")
   echo "$lane P$proto $net $flags"
-  # shellcheck disable=SC2046
-  node ../tools/compare.mjs "$lane/runs/g-$tag-1/lcm" "$lane/runs/g-$tag-2/lcm" $(node ../tools/shipped-checks.mjs "$lane" "$proto" "$net" "$flags") \
-    | grep -E "ledgers:|@|DIFFERS|missing" || FAIL=1
-  [ "${PIPESTATUS[0]}" = 0 ] || FAIL=1
+  CHECKS=$(node ../tools/shipped-checks.mjs "$lane" "$proto" "$net" "$flags") || { echo "  shipped-checks failed"; FAIL=1; continue; }
+  # shellcheck disable=SC2086
+  if ! node ../tools/compare.mjs "$lane/runs/g-$tag-1/lcm" "$lane/runs/g-$tag-2/lcm" $CHECKS > "$lane/runs/g-$tag-compare.txt"; then FAIL=1; fi
+  grep -E "ledgers:|@|DIFFERS|missing|only in" "$lane/runs/g-$tag-compare.txt" || true
 done
+# every shipped generated variant must have been checked by some pair (QUICK runs only part of the matrix)
+if [ -z "${QUICK:-}" ]; then node ../tools/shipped-checks.mjs --assigned "${CONFIGS[@]}" || FAIL=1; fi
+# the same ledger under the three flag profiles: same header hash, different meta (H-F9), recorded per lane
+if [ -z "${QUICK:-}" ]; then for lane in classic soroban; do
+  node ../tools/profile-compare.mjs "$lane/profiles/p30-mainnet.json" base="$lane/runs/g-$lane-p30-mainnet-base-1/lcm" \
+    galexie="$lane/runs/g-$lane-p30-mainnet-galexie-1/lcm" bare="$lane/runs/g-$lane-p30-mainnet-bare-1/lcm" || FAIL=1
+done; fi
 [ "$FAIL" = 0 ] && echo "OK: every run reproduced; every shipped generated variant reproduced" || { echo "FAILED"; exit 1; }

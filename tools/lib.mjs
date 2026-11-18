@@ -27,19 +27,38 @@ export const pointer = (doc, p) => p.split('/').slice(1).reduce((node, raw) => {
   return Array.isArray(node) ? node[Number(k)] : node[k];
 }, doc);
 
-// Two things in LedgerCloseMeta vary between runs of the same ledger, so the normalised form removes both:
-// - stellar-core emits an operation's ledger-entry changes in a per-process random order (hash-map iteration
-//   with a random salt): every array whose key ends in "changes" is sorted; everything else keeps its order;
+// Two things in LedgerCloseMeta vary between runs of the same ledger, so the normalised form removes both and
+// nothing else:
+// - stellar-core emits an operation's ledger-entry changes in a per-process random order across ledger keys
+//   (hash-map iteration with a random salt). In every array whose key ends in "changes", the changes are
+//   grouped by ledger key, each group keeps its own order (STATE before UPDATED, RESTORED before UPDATED),
+//   and only the groups are sorted. A reordering inside one key's group is a real difference.
 // - with ENABLE_SOROBAN_DIAGNOSTIC_EVENTS (Galexie's default), each call carries a diagnostic event
-//   ["core_metrics", "invoke_time_nsecs"] whose u64 data is wall-clock execution time: it is set to "0".
-// Ledgers without diagnostic events are unaffected by the second rule.
+//   ["core_metrics", "invoke_time_nsecs"] whose u64 data is wall-clock execution time: in events of type
+//   "diagnostic" only, that value is set to "0". Contract events with the same topics are left alone.
 const isTimingMetric = (v) => v?.topics?.length === 2 && v.topics[0]?.symbol === 'core_metrics' && v.topics[1]?.symbol === 'invoke_time_nsecs' && v.data?.u64 !== undefined;
+const isDiagnosticTiming = (e) => e?.type === 'diagnostic' && isTimingMetric(e.body?.v0) && e.body.v0.data.u64 !== '0';
+// Identity of the ledger entry a change refers to (LedgerKey fields per entry type), or null if unknown.
+const ID_FIELDS = { account: ['account_id'], trustline: ['account_id', 'asset'], offer: ['seller_id', 'offer_id'], data: ['account_id', 'data_name'],
+  claimable_balance: ['balance_id'], liquidity_pool: ['liquidity_pool_id'], contract_data: ['contract', 'key', 'durability'], contract_code: ['hash'], ttl: ['key_hash'] };
+function changeKey(change) {
+  const [kind, x] = Object.entries(change ?? {})[0] ?? [];
+  const d = kind === 'removed' ? x : x?.data; const type = d && Object.keys(d)[0]; const e = d?.[type];
+  if (!e) return null;
+  if (type === 'config_setting') return stable({ type, id: e.config_setting_id ?? Object.keys(e)[0] });
+  const fields = ID_FIELDS[type]; if (!fields || fields.some((f) => !(f in e))) return null;
+  return stable({ type, ...Object.fromEntries(fields.map((f) => [f, e[f]])) });
+}
+const groupSort = (items) => {
+  const groups = new Map();
+  items.forEach((c, i) => { const k = changeKey(c) ?? `#unkeyed-${i}`; groups.set(k, [...(groups.get(k) ?? []), c]); });
+  return [...groups.values()].map((g) => [stable(g), g]).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).flatMap(([, g]) => g);
+};
 export const normalise = (v, key = '') => {
-  if (v && typeof v === 'object' && !Array.isArray(v) && isTimingMetric(v)) return { ...v, data: { u64: '0' } };
+  if (isDiagnosticTiming(v)) return normalise({ ...v, body: { ...v.body, v0: { ...v.body.v0, data: { u64: '0' } } } }, key);
   if (Array.isArray(v)) {
     const items = v.map((x) => normalise(x));
-    if (!/changes$/.test(key)) return items;
-    return items.map((x) => [stable(x), x]).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, x]) => x);
+    return /changes$/.test(key) ? groupSort(items) : items;
   }
   if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, normalise(x, k)]));
   return v;

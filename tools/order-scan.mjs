@@ -18,7 +18,9 @@ const manifest = JSON.parse(readFileSync(join(dirname(dirs[0]), 'manifest.json')
 const stepsAt = new Map();
 for (const s of manifest.steps ?? []) if (s.ledger) stepsAt.set(s.ledger, [...(stepsAt.get(s.ledger) ?? []), s.name]);
 
-const files = readdirSync(dirs[0]).filter((f) => /^ledger-\d+\.xdr$/.test(f)).sort();
+const list = (d) => readdirSync(d).filter((f) => /^ledger-\d+\.xdr$/.test(f)).sort();
+const files = list(dirs[0]);
+for (const d of dirs) if (list(d).join() !== files.join()) { console.error(`${d}: different ledger files from ${dirs[0]}`); process.exit(1); }
 const ledgers = []; let bad = 0;
 for (const f of files) {
   const seq = Number(f.match(/\d+/)[0]);

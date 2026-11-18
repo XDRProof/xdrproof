@@ -11,16 +11,20 @@ const alice = kp('alice'), bob = kp('bob');
 const T0 = 1767225600, STEP = 2592000; // 2026-01-01T00:00:00Z, 30 days per ledger (virtual clock outruns small steps)
 const get = async (p) => (await fetch(core + '/' + p)).text();
 let ledger = 1;
-const close = async () => { ledger++; const r = await get(`manualclose?ledgerSeq=${ledger}&closeTime=${T0 + ledger * STEP}`); console.log('  ', r.trim()); };
+// every close must report the ledger it was asked to close; every step's transaction must be accepted
+const close = async () => { ledger++; const r = await get(`manualclose?ledgerSeq=${ledger}&closeTime=${T0 + ledger * STEP}`); console.log('  ', r.trim());
+  if (!r.includes(`sequence number ${ledger} `)) throw new Error(`close of ledger ${ledger} failed: ${r.trim()}`); };
 const TB = { minTime: 0, maxTime: 0 };
 const send = async (name, tx) => {
   const blob = encodeURIComponent(tx.toEnvelope().toXDR('base64'));
   const r = await get('tx?blob=' + blob); console.log(name, Buffer.from(tx.hash()).toString("hex"), r.trim());
+  if (JSON.parse(r).status !== 'PENDING') throw new Error(`${name}: rejected at submission ${r.trim()}`);
   await close();
 };
 const build = (srcId, seq, ops) => { const b = new S.TransactionBuilder(new S.Account(srcId, seq), { fee: '1000', networkPassphrase: passphrase, timebounds: TB }); ops.forEach(o => b.addOperation(o)); return b.build(); };
 console.log(await get('upgrades?mode=set&upgradetime=1970-01-01T00:00:00Z&protocolversion=30&basereserve=5000000'));
 await close(); // ledger 2: protocol upgrade
+{ const v = JSON.parse(await get('info')).info.ledger.version; if (v !== 30) throw new Error(`protocol upgrade did not apply: version ${v}`); }
 let tx = build(root.publicKey(), '0', [S.Operation.createAccount({ destination: alice.publicKey(), startingBalance: '1000' }), S.Operation.createAccount({ destination: bob.publicKey(), startingBalance: '1000' })]);
 tx.sign(root); await send('create-accounts', tx);          // ledger 3
 let aseq = BigInt(3) << 32n;                                // alice created in ledger 3

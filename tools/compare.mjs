@@ -2,24 +2,25 @@
 // Compares two fresh generator runs ledger by ledger (raw bytes, then after change-order
 // normalisation), and checks that each named corpus entry's shipped bytes are reproduced:
 // identical raw bytes, or the same order-normalised content.
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sha256, normalisedSha256 } from './lib.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const [a, b, ...checks] = process.argv.slice(2);
-const files = readdirSync(a).filter((f) => /^ledger-\d+\.xdr$/.test(f)).sort();
-let raw = 0, norm = 0, differ = 0, upgrade = 0;
-for (const f of files) {
-  if (f === 'ledger-002.xdr') { upgrade++; continue; } // protocol-upgrade ledger: never an entry
-  const x = readFileSync(join(a, f)), y = existsSync(join(b, f)) ? readFileSync(join(b, f)) : null;
-  if (!y) { differ++; console.log(`  ${f}: missing in second run`); continue; }
+const list = (d) => readdirSync(d).filter((f) => /^ledger-\d+\.xdr$/.test(f)).sort();
+const files = list(a), inB = new Set(list(b));
+let raw = 0, norm = 0, differ = 0;
+for (const f of inB) if (!files.includes(f)) { differ++; console.log(`  ${f}: only in the second run`); }
+for (const f of files) { // every ledger, the protocol-upgrade ledger included: its order varies, its content must not
+  const x = readFileSync(join(a, f)), y = inB.has(f) ? readFileSync(join(b, f)) : null;
+  if (!y) { differ++; console.log(`  ${f}: only in the first run`); continue; }
   if (x.equals(y)) { raw++; continue; }
   if (normalisedSha256('LedgerCloseMeta', x) === normalisedSha256('LedgerCloseMeta', y)) { norm++; console.log(`  ${f}: same content after normalisation (change order or diagnostic timing)`); continue; }
   differ++; console.log(`  ${f}: CONTENT DIFFERS`);
 }
-console.log(`  ${files.length - upgrade} ledgers: ${raw} byte-identical, ${norm} identical after normalisation, ${differ} different`);
+console.log(`  ${files.length} ledgers: ${raw} byte-identical, ${norm} identical after normalisation, ${differ} different`);
 
 let bad = differ > 0;
 for (const c of checks) {
