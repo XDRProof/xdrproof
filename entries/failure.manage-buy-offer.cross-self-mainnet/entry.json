@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-buy-offer.cross-self-mainnet",
+  "title": "MANAGE_BUY_OFFER fails with CROSS_SELF on mainnet",
+  "pattern": "The buy offer would cross an offer of the same account.",
+  "caps": [
+    "CAP-0006"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageBuyOfferResult.MANAGE_BUY_OFFER_CROSS_SELF on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65024796",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65024796.xdr.zst",
+      "sha256": "d0baaddf24b11ace302b20fe753315686112aa22bfd6166a822c6053288d5c0c",
+      "size": 2405204,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65024796,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1FCCE3--65024796.xdr.zst",
+        "container_sha256": "f962436df8602a6096f2a5a60e12bc9970901cd8608598d03b63f9d32cd7f213"
+      },
+      "focus": {
+        "tx_hash": "d6ef50ecb482d4d9f8388a7eb6be5dd2cb166d68d4259f5893cfbecd5605095a",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with cross_self.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/50/result/result/result/tx_failed/0/op_inner/manage_buy_offer",
+        "equals": "cross_self"
+      }
+    ]
+  }
+}

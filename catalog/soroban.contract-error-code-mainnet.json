@@ -1,0 +1,46 @@
+{
+  "id": "soroban.contract-error-code-mainnet",
+  "title": "A trapped mainnet call whose diagnostic events carry the contract's own error code",
+  "pattern": "The contract fails with its own error (SCError type contract, code 2006). The result only says trapped; the code lives in the diagnostic events SDF's lake keeps. Readers that decode SCError as a fixed set of host error types, or that only read the result, lose the contract's reason.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "SCError.SCE_CONTRACT: the contract's own error code 2006 in the diagnostic events of a trapped call"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-auth-many-entries@pubnet-65167655"
+  },
+  "focus": {
+    "tx_hash": "95915c3552886a8535f9bc41b5896cdc0dba8fbd482780a64bfbe885139101ff",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "A diagnostic event carries contract error 2006.",
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/contract": 2006,
+        "/event/body/v0/data/vec/0/string": "failing with contract error"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

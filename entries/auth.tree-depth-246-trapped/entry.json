@@ -112,6 +112,47 @@
         "tx_hash": "288899dc9a109a6e07a94c1d7711bdafb142e4585db44ce8a3f5686782f05ede",
         "op_index": 0
       }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "0a4f45df3ae2ac262b7ce55f5a4ad27c2efbb9e2f48a387dd50e3da5cbfa093c",
+      "size": 31408,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 23,
+        "recipe": "recipes/soroban/gen/gen.mjs#auth-tree-depth-246-trapped"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "f0d6093325351fd0f123722132bd7ee74d1933979abcc1c762b85847e88aa399",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "0a4f45df3ae2ac262b7ce55f5a4ad27c2efbb9e2f48a387dd50e3da5cbfa093c",
+            "runs": 1
+          },
+          {
+            "sha256": "be8d42c7edb92e6007c9cb03c8f49af2a85dcaee3949485ee076f94e9b2d5b13",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "012706494d908412d0acb70d446eaa8c111340cf063a23db961b1e4f3c472a1e",
+        "op_index": 0
+      }
     }
   ],
   "expected": {
@@ -127,6 +168,21 @@
         ],
         "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/invoke_host_function",
         "equals": "trapped"
+      },
+      {
+        "says": "With diagnostic events (Galexie flags) the cause is shown: host_fn_failed with error context exceeded_limit.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/error/context": "exceeded_limit"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
       }
     ]
   }

@@ -1,0 +1,56 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.path-payment-strict-send.too-few-offers-mainnet",
+  "title": "A strict-send path payment fails with TOO_FEW_OFFERS inside a fee bump on mainnet",
+  "pattern": "No path has enough liquidity: the inner operation fails with too_few_offers.",
+  "caps": [
+    "CAP-0024",
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_TOO_FEW_OFFERS on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65146228",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65146228.xdr.zst",
+      "sha256": "74cc7d661905d3f5c35e5801c170aa36784f974186027277ffba4b3928e7f437",
+      "size": 2825428,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65146228,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1ED5FF--65088000-65151999/FC1DF28B--65146228.xdr.zst",
+        "container_sha256": "da3cde101508f83363725ac66e641e8bfa091405e018b39576398f202c81b75e"
+      },
+      "focus": {
+        "tx_hash": "076e8ee146bd370a4a01c86d8ca69b706f857ccd53d65b6163ff0cba93253409",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner path payment fails with too_few_offers.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/23/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/path_payment_strict_send",
+        "equals": "too_few_offers"
+      }
+    ]
+  }
+}

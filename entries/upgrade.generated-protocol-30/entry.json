@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "upgrade.generated-protocol-30",
+  "title": "A fresh network's upgrade ledger: protocol 0 to 30 and base reserve 0.5 XLM",
+  "pattern": "The first upgrade of a fresh standalone network sets the protocol to 30 and the base reserve in one ledger; crossing the Soroban protocol creates every Soroban config setting at its initial value, all in upgradesProcessing. Its change order differs in every core run (20 of 20), its content never.",
+  "caps": [
+    "pre-cap",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F1",
+      "placement": "LEDGER_UPGRADE_VERSION 0 -> 30 and LEDGER_UPGRADE_BASE_RESERVE in one ledger; initial ConfigSettingEntry rows created"
+    },
+    {
+      "id": "H-F6",
+      "placement": "upgradesProcessing changes in a different order in every core run"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "07e04296cf8b89330a5f699e8a63e7d13b4625cbb5557b07bcbbf904cd1f634e",
+      "size": 5268,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 2,
+        "recipe": "recipes/classic/gen.mjs#create-accounts"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "fc7333cc10b2ec498e65ba2f825a2d9a56781cf7cb082e661423790c36674e12",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "07e04296cf8b89330a5f699e8a63e7d13b4625cbb5557b07bcbbf904cd1f634e",
+            "runs": 1
+          },
+          {
+            "sha256": "0dc496ceb44b805f08e300d0781cb0a262b4f9fe1c572f374c78290246f01240",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "2e0f1363d333d48c65b38d678ac9d2b2c8e8c7c64bd9222d848d120f983589e4",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "2f4a12eda1776a82a0730860b2852df0e20933d3aa099f65d275dd97a7c15458",
+            "runs": 1
+          },
+          {
+            "sha256": "428a14bf5bb87cb36688ab89587a1695c1cda24089592b875d48e3d1f9e70489",
+            "runs": 1
+          },
+          {
+            "sha256": "488ebf32789142684f12b7b70ffd633b4f5fe28c215e27142e9a756fe577da03",
+            "runs": 1
+          },
+          {
+            "sha256": "57a652ede3365e3a7090f20cfe7eb1ac4a7ab59c0708dc6509c296798a7da9a2",
+            "runs": 1
+          },
+          {
+            "sha256": "5c021f7c5ab1bb7c545d930bbea9478450a7d35fa1bd1ed4b193252bd8667494",
+            "runs": 1
+          },
+          {
+            "sha256": "93ade85423d519809721bb6340f2ce2b8a54d5eedd3d033179b208d7c6fbb4a7",
+            "runs": 1
+          },
+          {
+            "sha256": "96e41d139e414a469c98271e66f8a0b277f0420456ca979ec234c5e5dbf26137",
+            "runs": 1
+          },
+          {
+            "sha256": "9ed397d8bbbb68faa5bbd5ce9440ced14df8c98ef8b9424bf40a001b05fee4c6",
+            "runs": 1
+          },
+          {
+            "sha256": "a26e51edca20b9c336dd051f9ccab05e72c6e799e3ef58938197f8366a0188e7",
+            "runs": 1
+          },
+          {
+            "sha256": "ad0858f7680c4130bc73ba94a13108b6d1185700cd8b0181ec8a91250df9639a",
+            "runs": 1
+          },
+          {
+            "sha256": "b41daddc56c07e6d72a1307e52c7a0fa7ac357e744fcb8c2291b52ca1d52f744",
+            "runs": 1
+          },
+          {
+            "sha256": "bdf25204f1d76dea53cc88e1d0219a261a4b5e978d4a20c82fe32bf5e417a5d7",
+            "runs": 1
+          },
+          {
+            "sha256": "dabd11429b299e9524847d11fcd40dabd5630cc425aa99f908eb91ca4a2badac",
+            "runs": 1
+          },
+          {
+            "sha256": "e4f10c487543ec7525d08bb0307bb52d84630c8d34502f7f4d99531f2c999e59",
+            "runs": 1
+          },
+          {
+            "sha256": "f9a6278555aee76ae4df79e9cca3a54802e4817c494597771c5ab1b72aabbec2",
+            "runs": 1
+          },
+          {
+            "sha256": "fa521022e5177f450d5982062a7b22833db39a7ef70fb82196cdcceb25c7dc91",
+            "runs": 1
+          },
+          {
+            "sha256": "fd32d9480e4426173aa66bf4ef13f76d34275ad9af8f151f883c2ab94009d63a",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "3769a1d92d7c8a58fceea6fbe4786fcf656dfef81a993d1e858b43f8699bfc7d",
+      "size": 5268,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 2,
+        "recipe": "recipes/classic/gen.mjs#create-accounts"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "a24ad17c2d853c92511531e4aabf56519b52823d7fa10fd8402f50604a1266fe",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "3769a1d92d7c8a58fceea6fbe4786fcf656dfef81a993d1e858b43f8699bfc7d",
+            "runs": 1
+          },
+          {
+            "sha256": "2885fd5189a0d304302b6f44ba5f4caa45e7a901395759d8f55cccaf29cb5074",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The header's ledger version becomes 30.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/ledger_header/header/ledger_version",
+        "equals": 30
+      },
+      {
+        "says": "One upgrade sets the base reserve to 5000000 stroops.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/upgrades_processing",
+        "some": {
+          "/upgrade/base_reserve": 5000000
+        }
+      },
+      {
+        "says": "The initial contract_max_size_bytes setting is created.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/upgrades_processing",
+        "some": {
+          "/upgrade/version": 30
+        }
+      }
+    ]
+  }
+}

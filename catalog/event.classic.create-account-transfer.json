@@ -1,0 +1,70 @@
+{
+  "id": "event.classic.create-account-transfer",
+  "title": "CREATE_ACCOUNT: the new account appears as a CREATED entry and as a CAP-0067 transfer event",
+  "pattern": "Two CREATE_ACCOUNT operations in one transaction, each funding a new account with 1000 XLM. Each operation's meta holds the funder's state and update and the new account as a created entry, and, since CAP-0067, a transfer event of native XLM from the funder to the new account. Readers that count transfer events as payments double-count account funding; readers that only watch payment operations miss it.",
+  "caps": [
+    "pre-cap",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "CreateAccountOp emits a CAP-0067 transfer event of native XLM to the new account"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "create-accounts",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/create_account",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The new account alice is created with 10000000000 stroops.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/account/account_id": {
+          "$manifest": "accounts.alice"
+        },
+        "/created/data/account/balance": "10000000000"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "A transfer event moves the same 10000000000 stroops of native XLM from root to alice.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "transfer",
+        "/body/v0/topics/1/address": {
+          "$manifest": "accounts.root"
+        },
+        "/body/v0/topics/2/address": {
+          "$manifest": "accounts.alice"
+        },
+        "/body/v0/data/i128": "10000000000"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "failure.path-payment-strict-send.too-few-offers-mainnet",
+  "title": "A strict-send path payment fails with TOO_FEW_OFFERS inside a fee bump on mainnet",
+  "pattern": "No path has enough liquidity: the inner operation fails with too_few_offers.",
+  "caps": [
+    "CAP-0024",
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_TOO_FEW_OFFERS on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-sac-transfer-muxed@pubnet-65146228"
+  },
+  "focus": {
+    "tx_hash": "076e8ee146bd370a4a01c86d8ca69b706f857ccd53d65b6163ff0cba93253409",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The inner path payment fails with too_few_offers.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/path_payment_strict_send",
+      "equals": "too_few_offers",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

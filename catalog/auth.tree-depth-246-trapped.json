@@ -23,7 +23,8 @@
       "p30-mainnet",
       "p28-mainnet",
       "p30-testnet",
-      "p28-testnet"
+      "p28-testnet",
+      "p30-mainnet-galexie"
     ]
   },
   "focus": {
@@ -37,6 +38,20 @@
       "equals": "trapped",
       "evidence": [
         "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With diagnostic events (Galexie flags) the cause is shown: host_fn_failed with error context exceeded_limit.",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/context": "exceeded_limit"
+      },
+      "evidence": [
         "snapshot"
       ]
     }

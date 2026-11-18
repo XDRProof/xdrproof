@@ -1,0 +1,34 @@
+{
+  "id": "soroban.diagnostic-wasm-vm-error-mainnet",
+  "title": "A mainnet contract trap whose diagnostic events carry a Wasm VM error",
+  "pattern": "The call traps inside the Wasm VM; the lake's diagnostic events name the SCError type wasm_vm.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "Soroban trap with SCE_WASM_VM in diagnostic events"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "claimable-balance-claim@pubnet-65517506"
+  },
+  "focus": {
+    "tx_hash": "1843e11721fed515ba066863a2ff92105943bd2da807c253d69397c86e26460d",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "event.classic.create-account-transfer",
+  "title": "CREATE_ACCOUNT: the new account appears as a CREATED entry and as a CAP-0067 transfer event",
+  "pattern": "Two CREATE_ACCOUNT operations in one transaction, each funding a new account with 1000 XLM. Each operation's meta holds the funder's state and update and the new account as a created entry, and, since CAP-0067, a transfer event of native XLM from the funder to the new account. Readers that count transfer events as payments double-count account funding; readers that only watch payment operations miss it.",
+  "caps": [
+    "pre-cap",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "CreateAccountOp emits a CAP-0067 transfer event of native XLM to the new account"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "d386894f0344ae5edff097b5e10a0852027d743d23c79c59c5020d6c4a3b37c0",
+      "size": 2740,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 3,
+        "recipe": "recipes/classic/gen.mjs#create-accounts"
+      },
+      "focus": {
+        "tx_hash": "3cba28f28e8a81b2d5bd7a497954da3b3c955696f4c74649f3f2de1f3358d457",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6479efb2b018cf3bcb6d5d6d6aab32ac6a02bc3eb0b4b106420f66100ad7659b",
+      "size": 2740,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 3,
+        "recipe": "recipes/classic/gen.mjs#create-accounts"
+      },
+      "focus": {
+        "tx_hash": "d7f64705e8e96ca3895e635774ed13bd667cf72dab121194c4a9179bdd8228a8",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/create_account",
+        "equals": "success"
+      },
+      {
+        "says": "The new account alice is created with 10000000000 stroops.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/account/account_id": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+          "/created/data/account/balance": "10000000000"
+        }
+      },
+      {
+        "says": "A transfer event moves the same 10000000000 stroops of native XLM from root to alice.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "transfer",
+          "/body/v0/topics/1/address": "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
+          "/body/v0/topics/2/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+          "/body/v0/data/i128": "10000000000"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "A transfer event moves the same 10000000000 stroops of native XLM from root to alice.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "transfer",
+          "/body/v0/topics/1/address": "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H",
+          "/body/v0/topics/2/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+          "/body/v0/data/i128": "10000000000"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

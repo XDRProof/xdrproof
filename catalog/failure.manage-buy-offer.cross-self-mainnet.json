@@ -1,0 +1,34 @@
+{
+  "id": "failure.manage-buy-offer.cross-self-mainnet",
+  "title": "MANAGE_BUY_OFFER fails with CROSS_SELF on mainnet",
+  "pattern": "The buy offer would cross an offer of the same account.",
+  "caps": [
+    "CAP-0006"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageBuyOfferResult.MANAGE_BUY_OFFER_CROSS_SELF on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "memo-text-non-utf8@pubnet-65024796"
+  },
+  "focus": {
+    "tx_hash": "d6ef50ecb482d4d9f8388a7eb6be5dd2cb166d68d4259f5893cfbecd5605095a",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with cross_self.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_buy_offer",
+      "equals": "cross_self",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

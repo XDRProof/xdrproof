@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.path-payment-strict-send.no-destination-mainnet",
+  "title": "A strict-send path payment to an account that does not exist, on mainnet",
+  "pattern": "The destination account is missing: no_destination.",
+  "caps": [
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_NO_DESTINATION on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65517499",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65517499.xdr.zst",
+      "sha256": "1addcc8a84484f04e361fba105812c3df18dbd8c762eb672691a605f88726113",
+      "size": 920988,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65517499,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184844--65517499.xdr.zst",
+        "container_sha256": "f4dd113a64d0de7dcb9696ed46d3f7b243289a8c1b2fbeb1eb235542b4308d52"
+      },
+      "focus": {
+        "tx_hash": "282fb36a694e2e555283acdf2f8c98ea26c7a705b5f0b361a1c85e61ad3b616e",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with no_destination.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/52/result/result/result/tx_failed/0/op_inner/path_payment_strict_send",
+        "equals": "no_destination"
+      }
+    ]
+  }
+}

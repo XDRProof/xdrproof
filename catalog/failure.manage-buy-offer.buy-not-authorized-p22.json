@@ -1,0 +1,38 @@
+{
+  "id": "failure.manage-buy-offer.buy-not-authorized-p22",
+  "title": "MANAGE_BUY_OFFER fails with BUY_NOT_AUTHORIZED (protocol 22, mainnet)",
+  "pattern": "The offer would buy an asset whose issuer has not authorized the account's trustline: buy_not_authorized. Readers that assume a trustline is usable once it exists miss the authorization flags.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageBuyOfferResult.MANAGE_BUY_OFFER_BUY_NOT_AUTHORIZED on mainnet"
+    },
+    {
+      "id": "H-C10",
+      "placement": "an offer refused because the buying trustline is not authorized"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "p22-refunds-in-tx-changes-after@pubnet-56085459"
+  },
+  "focus": {
+    "tx_hash": "6a1e3135532dd5677fdf1e79cdc095c592167c5faa2c19b792fd2163e940628e",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with buy_not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_buy_offer",
+      "equals": "buy_not_authorized",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

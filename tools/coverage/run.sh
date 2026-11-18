@@ -8,13 +8,19 @@ set -euo pipefail
 cd "$(dirname "$0")"
 DEFS=defs/xdr-v30.0.json
 echo "reachable from LedgerCloseMeta: $(python3 -I xdrcov.py atoms $DEFS LedgerCloseMeta)"
-python3 -I xdrcov.py walk $DEFS LedgerCloseMeta ../../entries/*/*.xdr \
-  | python3 -I summary.py 'XDRProof corpus'
+# entry variants are stored raw (.xdr) or zstd-compressed (.xdr.zst, the mined ones); both are walked, the
+# compressed ones after decompression into .work/entries/<id>/
+rm -rf .work/entries .work/mined && mkdir -p .work/entries .work/mined
+node -e "const fs=require('fs'),z=require('zlib'),p=require('path');for(const id of fs.readdirSync('../../entries'))for(const f of fs.readdirSync('../../entries/'+id))if(f.endsWith('.xdr.zst')){fs.mkdirSync('.work/entries/'+id,{recursive:true});fs.writeFileSync(p.join('.work/entries',id,f.slice(0,-4)),z.zstdDecompressSync(fs.readFileSync(p.join('../../entries',id,f))))}"
+ENTRIES=$( { find ../../entries -name '*.xdr'; find .work/entries -name '*.xdr'; } | sort )
+# one walk per list (paths have no spaces, so word-splitting is safe and keeps it a single invocation)
+# shellcheck disable=SC2086
+python3 -I xdrcov.py walk $DEFS LedgerCloseMeta $ENTRIES | python3 -I summary.py "XDRProof corpus ($(echo "$ENTRIES" | wc -l | tr -d ' ') variant files)"
 # mined ledgers (mined/index.json; stored zstd-compressed, decompressed here first)
-rm -rf .work/mined && mkdir -p .work/mined
 node -e "const fs=require('fs'),z=require('zlib');for(const f of fs.readdirSync('../../mined/ledgers'))fs.writeFileSync('.work/mined/'+f.replace(/\.zst$/,''),z.zstdDecompressSync(fs.readFileSync('../../mined/ledgers/'+f)))"
 python3 -I xdrcov.py walk $DEFS LedgerCloseMeta .work/mined/*.xdr | python3 -I summary.py 'XDRProof mined ledgers'
-python3 -I xdrcov.py walk $DEFS LedgerCloseMeta ../../entries/*/*.xdr .work/mined/*.xdr | python3 -I summary.py 'entries + mined'
+# shellcheck disable=SC2086
+python3 -I xdrcov.py walk $DEFS LedgerCloseMeta $ENTRIES .work/mined/*.xdr | python3 -I summary.py 'entries + mined'
 if [ "${GOLDENS:-0}" = 1 ]; then
   G=.work/stellar-core; SHA=f2b91947fb20fc8174cca38bf320eda7baa3edbb
   if [ ! -d "$G/test-lcm-current" ]; then

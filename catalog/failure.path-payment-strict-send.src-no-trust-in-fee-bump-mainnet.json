@@ -1,0 +1,61 @@
+{
+  "id": "failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet",
+  "title": "Four path payments in a fee bump: two succeed through a liquidity pool, then NO_TRUST and SRC_NO_TRUST",
+  "pattern": "Inside a fee bump, operations 0 and 1 report success with liquidity-pool claim atoms, operation 2 fails with no_trust and operation 3 with src_no_trust (the source holds no trustline for the asset it sends). The inner transaction failed: none of the pool trades happened.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_SRC_NO_TRUST at op 3 of a failed inner tx"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED whose inner results mix pool trades and two failure codes"
+    },
+    {
+      "id": "H-C8",
+      "placement": "liquidity-pool claim atoms in the success result of an op inside a failed transaction"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "signer-hashx-preauth@pubnet-65485185"
+  },
+  "focus": {
+    "tx_hash": "e8cd369837922d1c55e94a4abfcba6f8ec63d62f7b92fb6fe75238231a18c734",
+    "op_index": 3
+  },
+  "facts": [
+    {
+      "says": "Operation 3 fails with src_no_trust.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/3/op_inner/path_payment_strict_send",
+      "equals": "src_no_trust",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 2 fails with no_trust.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/2/op_inner/path_payment_strict_send",
+      "equals": "no_trust",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 reports a trade through pool LAGSLLBP…, which did not happen.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/path_payment_strict_send/success/offers/0/liquidity_pool/liquidity_pool_id",
+      "equals": "LAGSLLBP6I6A6H52VL7ZNGOSO6PU45Z5B5SZSWVICT7ZACK4PXCFDGA3",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -24,7 +24,8 @@
       "p30-mainnet",
       "p28-mainnet",
       "p30-testnet",
-      "p28-testnet"
+      "p28-testnet",
+      "p30-mainnet-galexie"
     ]
   },
   "focus": {
@@ -48,6 +49,21 @@
       "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAFITJA",
       "evidence": [
         "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With diagnostic events the host says why: storage error invalid_input, \"muxed addresses should not be used in the storage keys\".",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/storage": "invalid_input",
+        "/event/body/v0/data/vec/0/string": "muxed addresses should not be used in the storage keys"
+      },
+      "evidence": [
         "snapshot"
       ]
     }

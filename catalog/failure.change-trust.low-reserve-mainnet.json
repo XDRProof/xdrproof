@@ -1,0 +1,34 @@
+{
+  "id": "failure.change-trust.low-reserve-mainnet",
+  "title": "CHANGE_TRUST fails with LOW_RESERVE on mainnet",
+  "pattern": "A trustline needs another 0.5 XLM of reserve the account does not have: the operation fails with low_reserve and the fee is charged.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ChangeTrustResult.CHANGE_TRUST_LOW_RESERVE on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "memo-text-non-utf8@pubnet-65024796"
+  },
+  "focus": {
+    "tx_hash": "dfa6603eacafb6142f7021cb2d879c4a740ecaa33e421c605f42593753e74efc",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/change_trust",
+      "equals": "low_reserve",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

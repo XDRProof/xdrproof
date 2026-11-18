@@ -1,0 +1,68 @@
+{
+  "id": "backfill.claim-atom-v0-p12",
+  "title": "An offer match in a protocol-12 result decodes as ClaimOfferAtomV0: the seller is a raw ed25519 key",
+  "pattern": "Before protocol 18 an offer claim was a ClaimOfferAtom whose seller was an AccountID. CAP-0038 turned it into the ClaimAtom union and kept old bytes readable: the AccountID discriminant (0) now reads as CLAIM_ATOM_TYPE_V0, and the seller as a bare 32-byte ed25519 key (Stellar-transaction.x, \"ClaimOfferAtomV0 is a ClaimOfferAtom with the AccountID discriminant stripped\"). Old results in SDF's lake still carry it. Readers that only handle ORDER_BOOK and LIQUIDITY_POOL claim atoms, or that print the seller without converting it to a G address, fail on every pre-P18 trade.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-F8",
+      "placement": "ClaimAtom.CLAIM_ATOM_TYPE_V0 in a P12 result: the seller as raw ed25519, not an AccountID"
+    },
+    {
+      "id": "H-C7",
+      "placement": "an offer claim recorded as ClaimOfferAtomV0 (pre-P18 result bytes)"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "p12-v0-envelopes@pubnet-26588352"
+  },
+  "focus": {
+    "tx_hash": "afb08b34acd7052eff9d62356df9dd8f848bdb420d1af3124008fd2c050c4034",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The claimed offer's seller is a raw ed25519 key in a V0 claim atom.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_sell_offer/success/offers_claimed/0/v0/seller_ed25519",
+      "equals": "ad0713a07a84a069367932edf2b6155c69aed69446e564168ab8fcd78d728785",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The claimed offer is offer 127478113.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_sell_offer/success/offers_claimed/0/v0/offer_id",
+      "equals": "127478113",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The same seller, as the offer's ledger entry names it, is the G address of that key.",
+      "at": "op.changes",
+      "some": {
+        "/state/data/offer/offer_id": "127478113",
+        "/state/data/offer/seller_id": "GCWQOE5APKCKA2JWPEZO34VWCVOGTLWWSRDOKZAWRK4PZV4NOKDYLFUL"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The seller's account entry carries liabilities in extension v1 with no v2 extension.",
+      "at": "op.changes",
+      "some": {
+        "/state/data/account/ext/v1/ext": "v0"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

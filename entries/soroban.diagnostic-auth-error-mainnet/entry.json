@@ -1,0 +1,61 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "soroban.diagnostic-auth-error-mainnet",
+  "title": "A mainnet Soroban failure whose diagnostic events carry an auth error",
+  "pattern": "The lake keeps diagnostic events (Galexie's flags): this failed call reports SCError type auth, the class of error behind it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "Soroban failure with SCE_AUTH in diagnostic events"
+    },
+    {
+      "id": "H-E3",
+      "placement": "diagnostic events kept in the public lake"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65024796",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65024796.xdr.zst",
+      "sha256": "d0baaddf24b11ace302b20fe753315686112aa22bfd6166a822c6053288d5c0c",
+      "size": 2405204,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65024796,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1FCCE3--65024796.xdr.zst",
+        "container_sha256": "f962436df8602a6096f2a5a60e12bc9970901cd8608598d03b63f9d32cd7f213"
+      },
+      "focus": {
+        "tx_hash": "4c1ea3381aa6c730114212fd529e7c87babc84ba9eb78efaa09f8c540116c224",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "A diagnostic event carries an auth error.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/279/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/0/symbol": "error"
+        }
+      }
+    ]
+  }
+}

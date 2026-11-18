@@ -25,7 +25,8 @@
       "p30-mainnet",
       "p28-mainnet",
       "p30-testnet",
-      "p28-testnet"
+      "p28-testnet",
+      "p30-mainnet-galexie"
     ]
   },
   "focus": {
@@ -49,6 +50,21 @@
       "equals": "LCB3UXMKOPZLTZLD7U5FCWNVE2UHZWG7CWQAFSLJYM5YXHRMS37MMOAE",
       "evidence": [
         "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With diagnostic events: object error invalid_input, \"encountered ScAddress variant not supported by AddressObject: LiquidityPool\".",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/object": "invalid_input",
+        "/event/body/v0/data/string": "encountered ScAddress variant not supported by AddressObject: LiquidityPool"
+      },
+      "evidence": [
         "snapshot"
       ]
     }

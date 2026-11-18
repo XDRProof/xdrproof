@@ -1,7 +1,7 @@
 {
   "$schema": "https://xdrproof.dev/schema/v1/registry.schema.json",
   "note": "XDRProof hazard registry: each hazard is a named way Stellar ledger readers break. Source of the design: research blueprint (2026-11-18). Checks: R replay probe, C conformance, L linter, G guide, V verify facts. In `test`, c-base/s-base step names are recipe steps: generated, reproducible ledgers that become corpus entries in B4; \"todo\" marks placements not built yet; \"planned\" marks later stages.",
-  "count": 76,
+  "count": 77,
   "hazards": [
     {
       "id": "H-A1",
@@ -369,6 +369,22 @@
       "test": "Custom accounts that authenticate only by delegation (kit2 __check_auth with delegate_auth): CA1 -> CA2 -> CA3 -> bob, three levels of nestedDelegates in SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES, payload bound to CA1: s-base `custom-account-nested-delegates`; XP002 recursive types include it",
       "checks": [
         "C",
+        "L"
+      ]
+    },
+    {
+      "id": "H-B15",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "SorobanCredentials arms beyond ADDRESS (CAP-0071): ADDRESS_V2 binds the signature payload to the address",
+      "evidence": "CAP-0071-02 (SOROBAN_CREDENTIALS_ADDRESS_V2 = 2); measured on s-base address-v2-credentials. Readers that parse credentials as source-account or ADDRESS only, or recompute the payload without the address, fail",
+      "refs": [
+        "CAP-0071"
+      ],
+      "test": "s-base `address-v2-credentials`; ADDRESS_WITH_DELEGATES in `custom-account-nested-delegates` (H-B14)",
+      "checks": [
+        "C",
+        "R",
         "L"
       ]
     },

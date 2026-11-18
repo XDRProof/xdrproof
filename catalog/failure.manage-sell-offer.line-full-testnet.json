@@ -1,0 +1,34 @@
+{
+  "id": "failure.manage-sell-offer.line-full-testnet",
+  "title": "MANAGE_SELL_OFFER fails with LINE_FULL on testnet",
+  "pattern": "The account could not receive what the offer buys: its trustline for the bought asset has no room left within its limit. The offer is refused although the account holds what it sells.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageSellOfferResult.MANAGE_SELL_OFFER_LINE_FULL on testnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "protocol-upgrade@testnet-5540313"
+  },
+  "focus": {
+    "tx_hash": "33388e46862cfa054c15926ed2a4c9fe55d797d78e00ea782a0c4683768e409a",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with line_full.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_sell_offer",
+      "equals": "line_full",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

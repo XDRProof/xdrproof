@@ -1,0 +1,56 @@
+{
+  "id": "failure.create-claimable-balance.no-trust-100-ops-mainnet",
+  "title": "A failed 100-operation transaction: claimable balances fail with NO_TRUST between payments that report success",
+  "pattern": "A 100-operation airdrop-style transaction mixes CREATE_CLAIMABLE_BALANCE and PAYMENT. The balances fail with no_trust (the source holds no trustline for the asset) while the payments between them report success; the whole transaction failed, so no payment happened.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_NO_TRUST at ops 0-6 with payments reporting success at op 7 of the same failed tx"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claimable-balance creation that fails at apply"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-wasm-upgrade@pubnet-65514477"
+  },
+  "focus": {
+    "tx_hash": "7a81023526ecf62e25a9b83634c41aff0de2a3ce685679853e626035e5d263b8",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with no_trust.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/create_claimable_balance",
+      "equals": "no_trust",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 7, a payment, reports success in the failed transaction.",
+      "at": "tx.result",
+      "path": "/tx_failed/7/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "There are 100 operation results.",
+      "at": "tx.result",
+      "path": "/tx_failed",
+      "length": 100,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.set-options.low-reserve-in-fee-bump-mainnet",
+  "title": "SET_OPTIONS fails with LOW_RESERVE inside a sponsorship sandwich in a fee bump, on mainnet",
+  "pattern": "A fee bump whose inner transaction is a sponsorship sandwich: begin sponsoring, remove one signer, add another, end sponsoring. The sponsor lacks the reserve for the new signer, so operation 2 fails with low_reserve and the whole inner transaction fails (txFEE_BUMP_INNER_FAILED). The inner result still lists every operation's code: the three others report success, although none of their effects were kept.",
+  "caps": [
+    "pre-cap",
+    "CAP-0015",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "SetOptionsResult.SET_OPTIONS_LOW_RESERVE at op index 2; the other ops report success in a failed tx"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED with a four-op inner result on mainnet"
+    },
+    {
+      "id": "H-C3",
+      "placement": "sponsorship sandwich whose sponsored signer add fails for the sponsor's reserve"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65024796",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65024796.xdr.zst",
+      "sha256": "d0baaddf24b11ace302b20fe753315686112aa22bfd6166a822c6053288d5c0c",
+      "size": 2405204,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65024796,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1FCCE3--65024796.xdr.zst",
+        "container_sha256": "f962436df8602a6096f2a5a60e12bc9970901cd8608598d03b63f9d32cd7f213"
+      },
+      "focus": {
+        "tx_hash": "143ae9caf70d7c3fc91a46bd79afd5af14912c2ae4f20872fc3ac2e575cc0d86",
+        "op_index": 2
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner SET_OPTIONS at op index 2 fails with low_reserve.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/45/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/2/op_inner/set_options",
+        "equals": "low_reserve"
+      },
+      {
+        "says": "Op 0 (begin sponsoring) still reports success in the failed inner transaction.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/45/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/begin_sponsoring_future_reserves",
+        "equals": "success"
+      },
+      {
+        "says": "The failing op adds a signer with weight 20.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/41/tx_fee_bump/tx/inner_tx/tx/tx/operations/2/body/set_options/signer/weight",
+        "equals": 20
+      },
+      {
+        "says": "The inner result has four operation results.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/45/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed",
+        "length": 4
+      }
+    ]
+  }
+}

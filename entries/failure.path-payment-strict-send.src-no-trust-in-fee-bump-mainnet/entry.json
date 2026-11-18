@@ -1,0 +1,84 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet",
+  "title": "Four path payments in a fee bump: two succeed through a liquidity pool, then NO_TRUST and SRC_NO_TRUST",
+  "pattern": "Inside a fee bump, operations 0 and 1 report success with liquidity-pool claim atoms, operation 2 fails with no_trust and operation 3 with src_no_trust (the source holds no trustline for the asset it sends). The inner transaction failed: none of the pool trades happened.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_SRC_NO_TRUST at op 3 of a failed inner tx"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED whose inner results mix pool trades and two failure codes"
+    },
+    {
+      "id": "H-C8",
+      "placement": "liquidity-pool claim atoms in the success result of an op inside a failed transaction"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65485185",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65485185.xdr.zst",
+      "sha256": "fc6b3e4907991b6d568d0fb6096551348de8e2d062ad836b91f56b773dced1e0",
+      "size": 2495988,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65485185,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18C67E--65485185.xdr.zst",
+        "container_sha256": "088efd0bc5fdc0a5a01666f2495dd86aaa12ee8fb548da43609dbdda5a15b7c4"
+      },
+      "focus": {
+        "tx_hash": "e8cd369837922d1c55e94a4abfcba6f8ec63d62f7b92fb6fe75238231a18c734",
+        "op_index": 3
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 3 fails with src_no_trust.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/79/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/3/op_inner/path_payment_strict_send",
+        "equals": "src_no_trust"
+      },
+      {
+        "says": "Operation 2 fails with no_trust.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/79/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/2/op_inner/path_payment_strict_send",
+        "equals": "no_trust"
+      },
+      {
+        "says": "Operation 0 reports a trade through pool LAGSLLBP…, which did not happen.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/79/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/path_payment_strict_send/success/offers/0/liquidity_pool/liquidity_pool_id",
+        "equals": "LAGSLLBP6I6A6H52VL7ZNGOSO6PU45Z5B5SZSWVICT7ZACK4PXCFDGA3"
+      }
+    ]
+  }
+}

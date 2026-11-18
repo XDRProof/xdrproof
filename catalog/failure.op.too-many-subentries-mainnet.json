@@ -1,0 +1,34 @@
+{
+  "id": "failure.op.too-many-subentries-mainnet",
+  "title": "An operation fails with opTOO_MANY_SUBENTRIES on mainnet",
+  "pattern": "The account already has the maximum 1000 subentries: the operation fails at the operation level with opTOO_MANY_SUBENTRIES, not an op-specific code.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.opTOO_MANY_SUBENTRIES on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "manage-data-binary@pubnet-65506631"
+  },
+  "focus": {
+    "tx_hash": "2ea2f9e04d41701dd108f5f5773c0e9f8b26f99482494b484879df1d075b824d",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The result is txFAILED with opTOO_MANY_SUBENTRIES.",
+      "at": "tx.result",
+      "path": "/tx_failed/0",
+      "equals": "op_too_many_subentries",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

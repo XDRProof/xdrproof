@@ -1,0 +1,77 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.create-claimable-balance.no-trust-100-ops-mainnet",
+  "title": "A failed 100-operation transaction: claimable balances fail with NO_TRUST between payments that report success",
+  "pattern": "A 100-operation airdrop-style transaction mixes CREATE_CLAIMABLE_BALANCE and PAYMENT. The balances fail with no_trust (the source holds no trustline for the asset) while the payments between them report success; the whole transaction failed, so no payment happened.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_NO_TRUST at ops 0-6 with payments reporting success at op 7 of the same failed tx"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claimable-balance creation that fails at apply"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65514477",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65514477.xdr.zst",
+      "sha256": "e29beaedb0b4b1919f5ddcf0239b5a382d624cccd07a1ae4a61ffc0b6e24f868",
+      "size": 1536208,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65514477,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185412--65514477.xdr.zst",
+        "container_sha256": "c003d0e2d7452b08fc765551ed942ce15fb81a588cf47828d29811a6ae0278cd"
+      },
+      "focus": {
+        "tx_hash": "7a81023526ecf62e25a9b83634c41aff0de2a3ce685679853e626035e5d263b8",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with no_trust.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/173/result/result/result/tx_failed/0/op_inner/create_claimable_balance",
+        "equals": "no_trust"
+      },
+      {
+        "says": "Operation 7, a payment, reports success in the failed transaction.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/173/result/result/result/tx_failed/7/op_inner/payment",
+        "equals": "success"
+      },
+      {
+        "says": "There are 100 operation results.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/173/result/result/result/tx_failed",
+        "length": 100
+      }
+    ]
+  }
+}

@@ -2,30 +2,34 @@
 
 **Test your Stellar indexer and SDK against the ledger's rarest shapes.**
 
-XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stellar-core actually emitted. Each entry is tagged with the CAP that introduced it and carries the values a correct reader must return. Around the corpus sit tools that replay it into indexers, run it through the JavaScript, Go and Rust SDKs, and lint indexer code for three known ingestion mistakes.
+XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stellar-core actually emitted. Each entry is tagged with the CAP that introduced it and carries the values a correct reader must return. Around the corpus sit tools that check it with independent readers, replay it into real indexers, and run JavaScript, Go and Rust SDK builds against test vectors for the same shapes. A linter for three known ingestion mistakes is planned.
 
-> **Status: early, built in public.** This repository backs our proposal to the Stellar Community Fund's RFP *XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide* (SCF #46). It holds the manifest schema, the hazard registry, the first corpus entries, the generator recipes and runnable reproductions of real upstream bugs. The corpus grows entry by entry from here; every number below is re-measured by the command next to it.
+> **Status: early, built in public.** This repository backs our proposal to the Stellar Community Fund's RFP *XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide* (SCF #46). It holds the manifest schema, the hazard registry, 201 corpus entries, the generator recipes and runnable reproductions of real upstream bugs. Every number below is re-measured by the command next to it.
 
 ## Built from a failure-mode blueprint
 
-[`caps/registry.json`](caps/registry.json) lists **75 hazards**: named ways readers of the Stellar ledger break, in eight layers. Examples: a muxed account stored without its ID, a contract call that creates a trustline with no event, a failed transaction that still changes state, a valid ledger a decoder refuses. Each hazard carries its evidence: an upstream issue, a protocol rule or a measurement. Every corpus entry names the hazards it targets and where in the XDR they sit, so the corpus grows by purpose, not by volume.
+[`caps/registry.json`](caps/registry.json) lists **77 hazards**: named ways readers of the Stellar ledger break, in eight layers. Examples: a muxed account stored without its ID, a contract call that creates a trustline with no event, a failed transaction that still changes state, a valid ledger a decoder refuses. Each hazard carries its evidence: an upstream issue, a protocol rule or a measurement. Every corpus entry names the hazards it targets and where in the XDR they sit, so the corpus grows by purpose, not by volume. 71 hazards are targeted by entries; the other 6 are about invalid input, prose or release policy, which no valid ledger can carry, and belong to conformance, the guide and the release channel.
 
 ## Check every claim yourself
 
 | Command | What it proves | Needs | Time |
 |---|---|---|---|
-| `make verify` | Every entry matches the schema and names known hazards; sha256 and size match; every variant **round-trips byte-for-byte through native rs-stellar-xdr 30.0.0** (depth limit 1500); its focus transaction is present; every expected fact holds; `manifest.json` is current. A second reader, the WASM build `@stellar/stellar-xdr-json`, must agree wherever it can decode | Node ≥ 22.15, Rust | seconds (first build ~1 min) |
-| `make oracle` | Every value-checkable fact is **confirmed by stellar-core's own decoder** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK); a planted one-digit error in a 64-bit value is caught by both | Docker | seconds |
-| `make coverage` | 499 XDR union arms are reachable from `LedgerCloseMeta` at v30.0; the three entries here reach 78; the 37 mined mainnet and testnet ledgers in `mined/` reach **289** | Python 3 | seconds |
+| `make verify` | All **201 entries (481 variants)**: every entry matches the schema and names known hazards; sha256 and size match; every variant **round-trips byte-for-byte through native rs-stellar-xdr 30.0.0** (depth limit 1500); its focus transaction is present; every expected fact holds; `manifest.json` is current. A second reader, the WASM build `@stellar/stellar-xdr-json`, must agree wherever it can decode | Node ≥ 22.15, Rust | seconds (first build ~1 min) |
+| `make oracle` | Every value-checkable fact is **confirmed by stellar-core's own decoder** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK): 513 values. Each of the 49 expected 64-bit values, changed in its last digit, is **rejected by both readers** | Docker | seconds |
+| `make novelty` | **No entry is redundant.** Leave-one-out over 975 atoms: the arms and enum members an entry's own transaction reaches, its hazards, sightings and placements. Every entry holds at least one atom no other entry holds | Rust | seconds |
+| `make coverage` | 499 XDR union arms are reachable from `LedgerCloseMeta` at v30.0. The corpus entries reach **350**, including all 289 that the 37 mined mainnet and testnet ledgers in `mined/` reach | Python 3 | seconds |
+| `make coverage-report` | [`COVERAGE.md`](COVERAGE.md): **350 arms reached by an entry's own transaction**, and each of the other 149 classified with the stellar-core source line that decides it (68 still to generate, 8 network-only, 17 historical, 39 validation-only, 17 never emitted). Fails if any arm is unclassified | Rust | seconds |
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach **254 of 499** | + git (downloads ~76 MB once) | ~1 min |
 | `make generate` | Every recipe run is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0, pinned by image digest (no RPC, no network, no keys or funds): both lanes, mainnet and testnet passphrases, Soroban at P30 and P28, three emitter-flag profiles. Every pair agrees, byte for byte or after normalisation, and every shipped generated variant is reproduced | Docker | ~10 min (`make generate-quick` ~3 min) |
 | `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | ~15 min |
 | `make conformance` | js-stellar-sdk **#1766, #1785, #1789 fail on pre-fix tags and pass on fixed ones**, and #1766's twin fails on go-stellar-sdk v0.7.1 and passes on v0.7.2 | Node, Rust, Docker | ~5 min cold |
 | `make replay` | Real wallet-backend builds fed corpus ledgers through a mock stellar-rpc. Testnet 4437356–4437359: **#729 halts** before the fix, **#716 stores the signer as 33 bytes**, the fix stores the full 41-byte key. Our own CAP-0073 entry: **#731 drops the trustline** (no TRUSTLINE/ADD) before the fix, records it after | Docker | ~10 min cold |
 
-Verdicts come from state (process exit, ingest cursor, stored bytes), never from log text.
+Verdicts come from state (the ingest cursor and the rows stored), never from log text; the process exit code is printed alongside but does not decide.
 
-## The three sample entries
+## The corpus
+
+201 entries: 164 generated on a bare stellar-core, 36 mined from SDF's public data lake (mainnet and testnet, protocols 12 to 30), one both. Families include failed transactions (61, one per result code and position), muxed accounts, Stellar Asset Contract calls, protocol and config upgrades, Soroban authorization, maximum lengths, ScVal edges, archival and eviction, frozen keys, fee bumps, sponsorship, offers and pools, and backfilled old-era ledgers. Three of them, each reproducing a real upstream bug:
 
 | Entry | CAP | Why readers break on it | Reproduces | Variants |
 |---|---|---|---|---|
@@ -55,7 +59,7 @@ Beyond the RFP's fields, each entry names its `hazards` (with the `placement` in
 ## Found while building this
 
 - **stellar-core emits some operation changes in a random order.** Across 20 fresh runs of each recipe lane (`make order-scan`), 18 of 80 classic ledgers and 13 of 80 Soroban ledgers came out in more than one byte order, with identical headers and identical content; two classic ledgers (offers, claimable balances and pool shares changing together) had a different order in every run. The cause is hash-map iteration with a per-process random salt. Entries whose order varies pin an order-normalised hash and list every raw ordering seen (`recipes/*/order-scan/`). An indexer must never depend on change order.
-- **stellar-core's own golden ledgers reach 254 of the 499 arms** a `LedgerCloseMeta` reader can meet. Many of the missing arms are result codes that never appear in a closed ledger. The corpus will publish which of the rest it covers, and why the others are unreachable.
+- **stellar-core's own golden ledgers reach 254 of the 499 arms** a `LedgerCloseMeta` reader can meet. Many of the missing arms are result codes that never appear in a closed ledger. [`COVERAGE.md`](COVERAGE.md) now accounts for all 499: of the arms the corpus does not reach, 39 are set only when a transaction is validated for inclusion and 17 are never written by core 30, so no protocol-30 ledger carries them; 17 appear only in older protocols (every `*_NO_ISSUER` code, for example, stopped at protocol 13).
 - **Soroban authorization trees up to 245 levels deep apply at Protocol 30; at 246 the transaction is included but traps.** So any indexer cap below about 246 meets real, valid ledgers.
 - **The WASM build of rs-stellar-xdr (`@stellar/stellar-xdr-json` 30.0.0) cannot decode those 245-deep ledgers** (`depth limit exceeded`), while native rs-stellar-xdr decodes them. To be reported upstream once checked for duplicates.
 - **Order across ledger keys is unstable between core processes; the STATE → UPDATED pairing for one key is stable.** Readers can rely on the pairing, never on the order between keys.
@@ -68,15 +72,17 @@ Beyond the RFP's fields, each entry names its `hazards` (with the `placement` in
 
 ```
 schema/v1/            manifest schema (v1.1)
-caps/registry.json    the 75 hazards
-entries/<id>/         entry.json + one raw XDR file per variant
+caps/registry.json    the 77 hazards
+catalog/<id>.json     hand-written entry sources: intent, focus, hazards, facts (format in catalog/README.md)
+entries/<id>/         GENERATED by make build: entry.json + one XDR file per variant (zstd for large mined ones)
 manifest.json         generated index
+COVERAGE.md           generated: every arm reached or classified; coverage/exclusions.json holds the classifications
 recipes/classic/      classic recipes for a bare standalone stellar-core (incl. a failure suite)
 recipes/soroban/      Soroban recipes + two test contracts (kit, kit2)
 recipes/flags/        emitter-flag profiles: base, galexie, bare
 recipes/core-image    the stellar-core image, pinned by digest
 mined/                37 ledgers from SDF's public lake (zstd), index.json with provenance and findings, queries/ that located them
-tools/                verify.mjs, lib.mjs, compare/summarize, native/ (rs-stellar-xdr reader), coverage/ (schema walker)
+tools/                build, verify, oracle (core-facts + walker), novelty, coverage-report, order-scan, native/ (rs-stellar-xdr reader)
 conformance/          orchestrator + JS/Rust/Go testees + vectors + recorded matrix
 replay/               wallet-backend replay through a mock stellar-rpc (#729, #716, #731) + recorded runs
 ```

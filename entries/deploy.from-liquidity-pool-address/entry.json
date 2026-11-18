@@ -114,6 +114,47 @@
         "tx_hash": "109ae69c153f695cd49d4cf2cd101d75b34a2ad9c78fa391f6eba243571a610d",
         "op_index": 0
       }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "e648b3af46005e7f5a7e07de36c6331644c413f429ecb04dfb594b24c4eac69e",
+      "size": 3996,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 38,
+        "recipe": "recipes/soroban/gen/gen.mjs#deploy-from-liquidity-pool-address"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "3c408a55e692655b8491105386d51aae6ea51af321afedede34a3614245718fe",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "e648b3af46005e7f5a7e07de36c6331644c413f429ecb04dfb594b24c4eac69e",
+            "runs": 1
+          },
+          {
+            "sha256": "ddf684b7b82b6713e420ded1b7b89b119ab371ecfdeaca0b9466130bf2b04433",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "e091595559d35488fb6f9aeb18c11bccc3822f8efbd807f7455fc97e5dcec314",
+        "op_index": 0
+      }
     }
   ],
   "expected": {
@@ -140,6 +181,22 @@
         ],
         "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/create_contract_v2/contract_id_preimage/address/address",
         "equals": "LCB3UXMKOPZLTZLD7U5FCWNVE2UHZWG7CWQAFSLJYM5YXHRMS37MMOAE"
+      },
+      {
+        "says": "With diagnostic events: object error invalid_input, \"encountered ScAddress variant not supported by AddressObject: LiquidityPool\".",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/error/object": "invalid_input",
+          "/event/body/v0/data/string": "encountered ScAddress variant not supported by AddressObject: LiquidityPool"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
       }
     ]
   }

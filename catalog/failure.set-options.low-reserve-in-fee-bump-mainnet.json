@@ -1,0 +1,71 @@
+{
+  "id": "failure.set-options.low-reserve-in-fee-bump-mainnet",
+  "title": "SET_OPTIONS fails with LOW_RESERVE inside a sponsorship sandwich in a fee bump, on mainnet",
+  "pattern": "A fee bump whose inner transaction is a sponsorship sandwich: begin sponsoring, remove one signer, add another, end sponsoring. The sponsor lacks the reserve for the new signer, so operation 2 fails with low_reserve and the whole inner transaction fails (txFEE_BUMP_INNER_FAILED). The inner result still lists every operation's code: the three others report success, although none of their effects were kept.",
+  "caps": [
+    "pre-cap",
+    "CAP-0015",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "SetOptionsResult.SET_OPTIONS_LOW_RESERVE at op index 2; the other ops report success in a failed tx"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED with a four-op inner result on mainnet"
+    },
+    {
+      "id": "H-C3",
+      "placement": "sponsorship sandwich whose sponsored signer add fails for the sponsor's reserve"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "memo-text-non-utf8@pubnet-65024796"
+  },
+  "focus": {
+    "tx_hash": "143ae9caf70d7c3fc91a46bd79afd5af14912c2ae4f20872fc3ac2e575cc0d86",
+    "op_index": 2
+  },
+  "facts": [
+    {
+      "says": "The inner SET_OPTIONS at op index 2 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/2/op_inner/set_options",
+      "equals": "low_reserve",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Op 0 (begin sponsoring) still reports success in the failed inner transaction.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/begin_sponsoring_future_reserves",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The failing op adds a signer with weight 20.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/operations/2/body/set_options/signer/weight",
+      "equals": 20,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The inner result has four operation results.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed",
+      "length": 4,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

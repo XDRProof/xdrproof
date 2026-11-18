@@ -1,0 +1,47 @@
+{
+  "id": "failure.claim-claimable-balance.no-trust-mainnet",
+  "title": "CLAIM_CLAIMABLE_BALANCE fails with NO_TRUST on mainnet",
+  "pattern": "The claimant has no trustline for the balance's asset: the claim fails and the balance stays. Readers that mark a balance claimed when they see the claim operation are wrong.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ClaimClaimableBalanceResult.CLAIM_CLAIMABLE_BALANCE_NO_TRUST on mainnet"
+    },
+    {
+      "id": "H-C9",
+      "placement": "a claim that fails for a missing trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "signer-hashx-preauth@pubnet-65485185"
+  },
+  "focus": {
+    "tx_hash": "c8cccd89ae5d122a744cac027fcb58571fbff12e52700b8c49a9a0f2e867e78d",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The claim fails with no_trust.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/claim_claimable_balance",
+      "equals": "no_trust",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The claimed balance is named by its B strkey.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/claim_claimable_balance/balance_id",
+      "equals": "BAACM5XEF6PUQ3KKWQGAMNHA2G7G3E4GI4WKUYY6ICQSJI7U7GCFO5DKBY",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

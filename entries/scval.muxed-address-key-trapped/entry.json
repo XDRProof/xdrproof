@@ -113,6 +113,47 @@
         "tx_hash": "ccf27ac917289185ef37b1b512e2858d5c76a62bc9fdeca7fbb94bfa3d89b20a",
         "op_index": 0
       }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "1dc6b90999646e8b936e67752eac26a142e1c0edef12a3d409ac2bdfac8a18c8",
+      "size": 4820,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 34,
+        "recipe": "recipes/soroban/gen/gen.mjs#kit-put-muxed-address-key-trapped"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "351345983759825d364c1c43e147cbafec7dfb3bf44f78674beb3d821eb5470a",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "1dc6b90999646e8b936e67752eac26a142e1c0edef12a3d409ac2bdfac8a18c8",
+            "runs": 1
+          },
+          {
+            "sha256": "33637ad23ca288050beaed83d52d90f3e1ed9845e688f506aeaf60c450f8a221",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "166b8f609668bae097755fa341316e7928073d13bc92a00930e53971d20adaf6",
+        "op_index": 0
+      }
     }
   ],
   "expected": {
@@ -139,6 +180,22 @@
         ],
         "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/ext/v1/resources/footprint/read_write/0/contract_data/key/address",
         "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAFITJA"
+      },
+      {
+        "says": "With diagnostic events the host says why: storage error invalid_input, \"muxed addresses should not be used in the storage keys\".",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/error/storage": "invalid_input",
+          "/event/body/v0/data/vec/0/string": "muxed addresses should not be used in the storage keys"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
       }
     ]
   }

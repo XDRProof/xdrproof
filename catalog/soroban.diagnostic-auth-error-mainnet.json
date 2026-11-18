@@ -1,0 +1,40 @@
+{
+  "id": "soroban.diagnostic-auth-error-mainnet",
+  "title": "A mainnet Soroban failure whose diagnostic events carry an auth error",
+  "pattern": "The lake keeps diagnostic events (Galexie's flags): this failed call reports SCError type auth, the class of error behind it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "Soroban failure with SCE_AUTH in diagnostic events"
+    },
+    {
+      "id": "H-E3",
+      "placement": "diagnostic events kept in the public lake"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "memo-text-non-utf8@pubnet-65024796"
+  },
+  "focus": {
+    "tx_hash": "4c1ea3381aa6c730114212fd529e7c87babc84ba9eb78efaa09f8c540116c224",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "A diagnostic event carries an auth error.",
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/0/symbol": "error"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

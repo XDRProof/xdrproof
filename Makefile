@@ -1,7 +1,7 @@
 # XDRProof. Each target re-runs a claim and prints its result.
-# Fast and offline:   make verify   make coverage
+# Fast and offline:   make verify   make novelty   make coverage   make coverage-report
 # Need Docker:        make generate   make conformance   make replay
-.PHONY: verify oracle coverage coverage-goldens generate generate-quick order-scan conformance replay replay-729 replay-731 native all
+.PHONY: verify oracle novelty coverage coverage-report coverage-goldens build generate generate-quick order-scan conformance replay replay-729 replay-731 native all
 
 NATIVE := tools/native/target/release/xdrproof-native
 
@@ -13,8 +13,17 @@ verify: tools/node_modules $(NATIVE)  ## schema, hazards, sha256, native rs-stel
 oracle: tools/node_modules             ## facts confirmed by stellar-core's own decoder and the schema walker (needs Docker; seconds)
 	node tools/oracle.mjs
 
-coverage:                             ## arms reachable from LedgerCloseMeta vs arms the entries reach (seconds)
+novelty: tools/node_modules $(NATIVE) ## leave-one-out: no entry whose every arm, enum, hazard, sighting and placement another entry already holds (seconds)
+	node tools/novelty.mjs
+
+coverage:                             ## arms reachable from LedgerCloseMeta vs arms in the corpus bytes and the mined ledgers (seconds)
 	tools/coverage/run.sh
+
+coverage-report: tools/node_modules $(NATIVE) ## COVERAGE.md: every arm reached by an entry's own transaction or classified with a core source line; fails if any is neither
+	node tools/coverage-report.mjs
+
+build: tools/node_modules $(NATIVE)   ## compile catalog/ into entries/ from the runs of make generate and mined/ (minutes)
+	node tools/build.mjs
 
 coverage-goldens:                     ## same, plus stellar-core's own golden ledgers (downloads ~76 MB once)
 	GOLDENS=1 tools/coverage/run.sh

@@ -1,0 +1,68 @@
+{
+  "id": "upgrade.generated-protocol-30",
+  "title": "A fresh network's upgrade ledger: protocol 0 to 30 and base reserve 0.5 XLM",
+  "pattern": "The first upgrade of a fresh standalone network sets the protocol to 30 and the base reserve in one ledger; crossing the Soroban protocol creates every Soroban config setting at its initial value, all in upgradesProcessing. Its change order differs in every core run (20 of 20), its content never.",
+  "caps": [
+    "pre-cap",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F1",
+      "placement": "LEDGER_UPGRADE_VERSION 0 -> 30 and LEDGER_UPGRADE_BASE_RESERVE in one ledger; initial ConfigSettingEntry rows created"
+    },
+    {
+      "id": "H-F6",
+      "placement": "upgradesProcessing changes in a different order in every core run"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "create-accounts",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ],
+    "ledger_offset": -1
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The header's ledger version becomes 30.",
+      "at": "ledger",
+      "path": "/ledger_header/header/ledger_version",
+      "equals": 30,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "One upgrade sets the base reserve to 5000000 stroops.",
+      "at": "ledger",
+      "path": "/upgrades_processing",
+      "some": {
+        "/upgrade/base_reserve": 5000000
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The initial contract_max_size_bytes setting is created.",
+      "at": "ledger",
+      "path": "/upgrades_processing",
+      "some": {
+        "/upgrade/version": 30
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

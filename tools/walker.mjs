@@ -45,8 +45,11 @@ export function escapeBytes(buf) {
 }
 
 export class Walker {
-  constructor(defs, maxDepth = 1500) {
-    this.d = defs; this.maxDepth = maxDepth;
+  // segTypes (optional): type names whose values are walked as segments. Every arm and enum hit is then also
+  // attributed to the innermost segment it falls in (or to the root segment `ledger`), so a caller can tell
+  // what one transaction's envelope or result meta reaches inside a shared ledger.
+  constructor(defs, maxDepth = 1500, segTypes = null) {
+    this.d = defs; this.maxDepth = maxDepth; this.segTypes = segTypes ? new Set(segTypes) : null;
     this.consts = Object.fromEntries(Object.values(defs).filter((x) => x.kind === 'const').map((x) => [x.name, x.value]));
     this.enumv = Object.fromEntries(Object.values(defs).filter((x) => x.kind === 'enum').map((x) => [x.name, new Map(x.members.map((m) => [m.value, m.name]))]));
     this.cases = Object.fromEntries(Object.values(defs).filter((x) => x.kind === 'union').map((x) => [x.name, new Map(x.arms.flatMap((a) => a.cases.map((c) => [c.value, [c.name ?? c.value, a]])))]));
@@ -66,12 +69,13 @@ export class Walker {
     this.o += n + pad; return v;
   }
   limit(t, key) { const m = t[key]; return typeof m === 'string' ? this.consts[m] : m; }
-  emit(v) { this.values.add(String(v)); }
+  emit(v) { this.values.add(String(v)); if (this.seg.first === undefined) this.seg.first = String(v); }
+  hit(k) { this.hits.add(k); this.seg.hits.add(k); }
   hitUnion(name, value) {
     const c = this.cases[name].get(value); if (!c) throw new Error(`bad union case ${name}=${value}`);
-    this.hits.add(`U:${name}.${c[0]}`);
+    this.hit(`U:${name}.${c[0]}`);
     const dt = this.d[name].discriminant.type; // the discriminant's enum member counts as reached too
-    if (dt.kind === 'ref' && this.enumv[dt.name]?.has(value)) this.hits.add(`E:${dt.name}.${this.enumv[dt.name].get(value)}`);
+    if (dt.kind === 'ref' && this.enumv[dt.name]?.has(value)) this.hit(`E:${dt.name}.${this.enumv[dt.name].get(value)}`);
     return c;
   }
 
@@ -107,26 +111,34 @@ export class Walker {
     }
   }
 
-  // Walk one value of `root`; returns the set of values read.
+  // Walk one value of `root`; returns the set of values read. With segTypes, this.segments lists the root
+  // segment and one segment per value of a segment type: {type, index (per type, in byte order), hits, first}.
   run(buf, root) {
     this.b = buf; this.o = 0; this.values = new Set();
+    this.seg = { type: 'ledger', index: 0, hits: new Set() }; this.segments = [this.seg]; const count = new Map();
     const stack = [{ t: { kind: 'ref', name: root }, depth: 0 }];
     while (stack.length) {
-      const { t, depth } = stack.pop();
+      const item = stack.pop();
+      if (item.end) { this.seg = item.prev; continue; }
+      const { t, depth } = item;
       if (depth > this.maxDepth) throw new Error('depth limit');
       const k = t.kind;
       if (k === 'ref') {
         const n = t.name;
+        if (this.segTypes?.has(n) && !t.seg) { // open a segment; the end marker below it closes it
+          const s = { type: n, index: count.get(n) ?? 0, hits: new Set() }; count.set(n, s.index + 1); this.segments.push(s);
+          stack.push({ end: true, prev: this.seg }, { t: { kind: 'ref', name: n, seg: true }, depth }); this.seg = s; continue;
+        }
         if (n in BASE) { this.emit(n === 'int32' ? this.i32() : n === 'uint32' ? this.u32() : n === 'int64' ? this.i64() : this.u64()); continue; }
         if (this.semantic(n)) continue;
         const x = this.d[n]; if (!x) throw new Error(`unknown type ${n}`);
         if (x.kind === 'typedef') { stack.push({ t: x.type, depth }); continue; }
-        if (x.kind === 'enum') { const v = this.i32(); const m = this.enumv[n].get(v); if (m === undefined) throw new Error(`bad enum ${n}=${v}`); this.hits.add(`E:${n}.${m}`); continue; }
+        if (x.kind === 'enum') { const v = this.i32(); const m = this.enumv[n].get(v); if (m === undefined) throw new Error(`bad enum ${n}=${v}`); this.hit(`E:${n}.${m}`); continue; }
         if (x.kind === 'struct') { for (let i = x.fields.length - 1; i >= 0; i--) stack.push({ t: x.fields[i].type, depth: depth + 1 }); continue; }
         if (x.kind === 'union') {
           const dt = x.discriminant.type;
           let v;
-          if (dt.kind === 'ref' && this.enumv[dt.name]) { v = this.i32(); const m = this.enumv[dt.name].get(v); if (m !== undefined) this.hits.add(`E:${dt.name}.${m}`); }
+          if (dt.kind === 'ref' && this.enumv[dt.name]) { v = this.i32(); const m = this.enumv[dt.name].get(v); if (m !== undefined) this.hit(`E:${dt.name}.${m}`); }
           else v = dt.kind === 'unsigned_int' || dt.name === 'uint32' ? this.u32() : this.i32();
           const [, arm] = this.hitUnion(n, v);
           if (arm.type) stack.push({ t: arm.type, depth: depth + 1 });

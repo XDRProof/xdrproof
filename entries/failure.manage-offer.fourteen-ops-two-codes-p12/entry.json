@@ -1,0 +1,91 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-offer.fourteen-ops-two-codes-p12",
+  "title": "A failed 14-operation offer transaction with two failure codes and twelve successes that changed nothing",
+  "pattern": "One transaction manages 14 offers. Operation 4 fails with not_found and operation 13 with underfunded; the other twelve report success, some with the offer deleted. The transaction failed, so none of it happened: the meta has no operation changes. Each operation still has its own result, including results evaluated after the first failure. Readers that take the first failing code as the only one, or that apply \"success\" results of a failed transaction, get both wrong.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "two failure codes (not_found at op 4, underfunded at op 13) in one failed tx; twelve other ops report success"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p12-mainnet-mined-l26588352",
+      "protocol": 12,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p12-mainnet-mined-l26588352.xdr.zst",
+      "sha256": "039ba91a4dfd229cbbc58204ce16afed91eb066f4b88219b7d1932f08359b584",
+      "size": 887884,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 26588352,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FE6AB9FF--26560000-26623999/FE6A4B3F--26588352.xdr.zst",
+        "container_sha256": "e6cdde6d0600fb7d6019a25164abbb19468258392faa1f258b2ef457ff4a0749"
+      },
+      "focus": {
+        "tx_hash": "bc935385efd9ae7137dab1358411c8c2d1fb48e547c9eac727b6b81d84f7fea6",
+        "op_index": 4
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 4 fails with not_found.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/tx_processing/293/result/result/result/tx_failed/4/op_inner/manage_buy_offer",
+        "equals": "not_found"
+      },
+      {
+        "says": "Operation 13 fails with underfunded.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/tx_processing/293/result/result/result/tx_failed/13/op_inner/manage_buy_offer",
+        "equals": "underfunded"
+      },
+      {
+        "says": "Operation 0 reports success with its offer deleted, in the failed transaction.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/tx_processing/293/result/result/result/tx_failed/0/op_inner/manage_buy_offer/success/offer",
+        "equals": "deleted"
+      },
+      {
+        "says": "There are 14 operation results.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v0/tx_processing/293/result/result/result/tx_failed",
+        "length": 14
+      },
+      {
+        "says": "No operation meta is recorded for the failed transaction.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v0/tx_processing/293/tx_apply_processing/v4/operations",
+        "length": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "contract.sac-deploy-from-asset",
+  "title": "A Stellar Asset Contract deployed from a classic asset",
+  "pattern": "CREATE_CONTRACT (v1 host function) with a contract-ID preimage from the asset XPF: the instance's executable is stellar_asset, not a Wasm hash. Readers that expect every contract to have Wasm code fail on SACs.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "HostFunction.CREATE_CONTRACT from ContractIdPreimage.FROM_ASSET; executable STELLAR_ASSET"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "sac-deploy-classic-asset",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The preimage is from the asset XPF.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/create_contract/contract_id_preimage/asset/credit_alphanum4/asset_code",
+      "equals": "XPF",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The created instance's executable is stellar_asset.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/val/contract_instance/executable": "stellar_asset"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

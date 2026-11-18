@@ -1,7 +1,7 @@
 {
   "$schema": "../../schema/v1/entry.schema.json",
   "id": "failure.payment.line-full-by-buying-liabilities",
-  "title": "PAYMENT fails with PAYMENT_LINE_FULL",
+  "title": "PAYMENT fails with PAYMENT_LINE_FULL although the trustline has room: buying liabilities reserve it",
   "pattern": "A transaction whose PAYMENT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (line_full). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened. The trustline limit is 100 and the balance 0, but an offer buying 90 reserves the room: receiving 11 fails.",
   "caps": [
     "pre-cap",

@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-sell-offer.low-reserve-mainnet",
+  "title": "MANAGE_SELL_OFFER fails with LOW_RESERVE on mainnet",
+  "pattern": "A new sell offer needs another 0.5 XLM of reserve the account does not have: low_reserve, no offer.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageSellOfferResult.MANAGE_SELL_OFFER_LOW_RESERVE on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65460631",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65460631.xdr.zst",
+      "sha256": "6be00191ddc9109958aa51575b0a993bd1e0c73affaedd07784dedf125bad430",
+      "size": 1156180,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65460631,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC19F3FF--65408000-65471999/FC192668--65460631.xdr.zst",
+        "container_sha256": "480b7b1339add065dc43abe01ad0e7fe624d4fb8777055ffa4e34ef4035f506c"
+      },
+      "focus": {
+        "tx_hash": "e02ab9491191dbd9bd61c79886e40c3e5555c7028d7f73d07d587b1fd130aeee",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with low_reserve.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/16/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "low_reserve"
+      }
+    ]
+  }
+}

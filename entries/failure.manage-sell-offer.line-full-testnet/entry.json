@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-sell-offer.line-full-testnet",
+  "title": "MANAGE_SELL_OFFER fails with LINE_FULL on testnet",
+  "pattern": "The account could not receive what the offer buys: its trustline for the bought asset has no room left within its limit. The offer is refused although the account holds what it sells.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "ManageSellOfferResult.MANAGE_SELL_OFFER_LINE_FULL on testnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-testnet-mined-l5540313",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-mined-l5540313.xdr.zst",
+      "sha256": "0f2ed6010b72cc9bf9d26a5d3df522f741c580f7bc3bb6ff0913c58c1089b8e3",
+      "size": 345344,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 5540313,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFAC03FF--5504000-5567999/FFAB7626--5540313.xdr.zst",
+        "container_sha256": "6cfd958e8d5b0d5fc10728e0f423d5a88f9fedd8485c5ca3338edcdd92b5e9aa"
+      },
+      "focus": {
+        "tx_hash": "33388e46862cfa054c15926ed2a4c9fe55d797d78e00ea782a0c4683768e409a",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with line_full.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "line_full"
+      }
+    ]
+  }
+}
