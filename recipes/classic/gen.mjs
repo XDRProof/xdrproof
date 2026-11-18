@@ -254,4 +254,97 @@ await closeGroup('failed-set-trustline-flags', 'set trustline flags where there 
 await queue('CLAWBACK_CLAIMABLE_BALANCE_DOES_NOT_EXIST', one(issuer, [S.Operation.clawbackClaimableBalance({ balanceId: cb1 })]), issuer);
 await closeGroup('failed-clawback-claimable-balance', 'clawback of a claimable balance that no longer exists');                    // 49
 
-if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2] }, null, 1));
+// ---- Ledgers 50+: blueprint additions (H-B1, H-A1/A2/A3/A8/A9/A10, H-B3, H-B9, H-C15, H-C17, H-B11, H-C8, H-F4) ----
+const newAccounts = async (name, list, balance = '1000') => {
+  const x = txb(root, list.map((k) => S.Operation.createAccount({ destination: k.publicKey(), startingBalance: typeof balance === 'function' ? balance(k) : balance })));
+  x.sign(root); await submit(name, x, root);
+  for (const k of list) cur.set(k.publicKey(), BigInt(ledger) << 32n);
+};
+// H-B1: two issuers whose strkeys sort one way as text and the other way as raw key bytes (base32 digits
+// sort before letters in ASCII but after them in value). Found deterministically by name.
+const cands = Array.from({ length: 400 }, (_, i) => kp('pool-issuer-' + i));
+let pair = null;
+outer: for (let i = 0; i < cands.length; i++) for (let j = i + 1; j < cands.length; j++) {
+  const ta = cands[i].publicKey(), tb = cands[j].publicKey();
+  if ((ta < tb) !== (Buffer.compare(cands[i].rawPublicKey(), cands[j].rawPublicKey()) < 0)) { pair = [cands[i], cands[j]]; break outer; }
+}
+const [pi1, pi2] = pair;
+const ARST1 = new S.Asset('ARST', pi1.publicKey()), ARST2 = new S.Asset('ARST', pi2.publicKey());
+const [aLo, aHi] = S.Asset.compare(ARST1, ARST2) < 0 ? [ARST1, ARST2] : [ARST2, ARST1];
+await newAccounts('create-pool-issuers-text-vs-byte-order', [pi1, pi2]);                                       // 50
+t = txb(mm, [S.Operation.changeTrust({ asset: ARST1 }), S.Operation.changeTrust({ asset: ARST2 })]); t.sign(mm);
+await submit('trust-both-arst', t, mm);                                                                         // 51
+await queue('issue-arst-1', one(pi1, [S.Operation.payment({ destination: mm.publicKey(), asset: ARST1, amount: '1000' })]), pi1);
+await queue('issue-arst-2', one(pi2, [S.Operation.payment({ destination: mm.publicKey(), asset: ARST2, amount: '1000' })]), pi2);
+await closeGroup('issue-both-arst', 'two issuers in one ledger');                                                // 52
+const lp2 = new S.LiquidityPoolAsset(aLo, aHi, S.LiquidityPoolFeeV18);
+const pool2 = Buffer.from(S.getLiquidityPoolId('constant_product', lp2.getLiquidityPoolParameters())).toString('hex');
+t = txb(mm, [S.Operation.changeTrust({ asset: lp2 }), S.Operation.liquidityPoolDeposit({ liquidityPoolId: pool2, maxAmountA: '100', maxAmountB: '100', minPrice: '0.5', maxPrice: '2' })]);
+t.sign(mm); await submit('pool-issuers-sort-differently-by-text-and-bytes', t, mm,
+  `pool ${pool2}; strkey text order ${pi1.publicKey() < pi2.publicKey() ? 'issuer1<issuer2' : 'issuer2<issuer1'}, byte order the opposite (js-stellar-sdk#1766)`); // 53
+
+// H-A8: fee-bump whose fee source is a muxed account
+let innerT = txb(alice, [S.Operation.payment({ destination: bob.publicKey(), asset: S.Asset.native(), amount: '1' })]); innerT.sign(alice);
+t = S.TransactionBuilder.buildFeeBumpTransaction(muxed(frank, '12345'), '2000', innerT, passphrase); t.sign(frank);
+await submit('fee-bump-muxed-fee-source', t, alice, 'fee source M-address (frank, id 12345)');                     // 54
+// H-A1 (#693): two different muxed IDs over one base account in the same ledger
+await queue('muxed-bob-100', one(alice, [S.Operation.payment({ destination: muxed(bob, '100'), asset: S.Asset.native(), amount: '1' })]), alice);
+await queue('muxed-bob-200', one(frank, [S.Operation.payment({ destination: muxed(bob, '200'), asset: S.Asset.native(), amount: '1' })]), frank);
+await closeGroup('two-muxed-ids-one-base-account-one-ledger', 'payments to M(bob,100) and M(bob,200) in one ledger (wallet-backend#693)'); // 55
+// H-A2: muxed ID 0
+t = txb(alice, [S.Operation.payment({ destination: muxed(bob, '0'), asset: S.Asset.native(), amount: '1' })]); t.sign(alice);
+await submit('muxed-id-zero', t, alice, 'destination M-address with id 0');                                      // 56
+// H-A3: signed-payload signer with a 1-byte payload (3 bytes of padding)
+const sp1 = S.StrKey.encodeSignedPayload(new S.xdr.SignerKeyEd25519SignedPayload({ ed25519: bob.rawPublicKey(), payload: Buffer.from([0x2a]) }).toXDR());
+t = txb(frank, [S.Operation.setOptions({ signer: { ed25519SignedPayload: sp1, weight: 1 } })]); t.sign(frank);
+await submit('signed-payload-length-1', t, frank, 'payload 0x2a');                                               // 57
+// H-A9: clawback from a muxed account
+t = txb(issuer, [S.Operation.clawback({ asset: XPF, from: muxed(mm, '7'), amount: '1' })]); t.sign(issuer);
+await submit('clawback-from-muxed', t, issuer, 'ClawbackOp.from = M(mm, 7)');                                    // 58
+// H-A10: claimable balance created at op index 1, muxed op source, inside a fee bump
+innerT = txb(alice, [S.Operation.payment({ destination: bob.publicKey(), asset: S.Asset.native(), amount: '1' }),
+  S.Operation.createClaimableBalance({ source: muxed(alice, '9'), asset: S.Asset.native(), amount: '1', claimants: [new P(bob.publicKey(), P.predicateUnconditional())] })]);
+const cb4 = innerT.getClaimableBalanceId(1); innerT.sign(alice);
+t = S.TransactionBuilder.buildFeeBumpTransaction(frank, '2000', innerT, passphrase); t.sign(frank);
+await submit('claimable-balance-op-index-1-muxed-source-in-fee-bump', t, alice, 'expected id ' + cb4);           // 59
+// H-B3: balances and amounts above 2^53 stroops
+const whale = kp('whale');
+await newAccounts('create-whale-1e9-xlm', [whale], '1000000000');                                                // 60
+t = txb(whale, [S.Operation.payment({ destination: alice.publicKey(), asset: S.Asset.native(), amount: '950000000' })]); t.sign(whale);
+await submit('payment-above-2-pow-53-stroops', t, whale, '9.5e15 stroops > 2^53');                                // 61
+// H-B9: an issued asset whose code is "xlm"
+const XLMCODE = new S.Asset('xlm', issuer.publicKey());
+t = txb(alice, [S.Operation.changeTrust({ asset: XLMCODE })]); t.sign(alice);
+await submit('trust-issued-xlm-code', t, alice);                                                                  // 62
+t = txb(issuer, [S.Operation.payment({ destination: alice.publicKey(), asset: XLMCODE, amount: '1' })]); t.sign(issuer);
+await submit('payment-issued-xlm-code', t, issuer, 'credit_alphanum4 "xlm", not native');                         // 63
+// H-C15: a pre-authorized transaction that FAILS still removes its pre-auth signer
+const failingPre = new S.TransactionBuilder(new S.Account(frank.publicKey(), (cur.get(frank.publicKey()) + 1n).toString()), { fee: '1000', networkPassphrase: passphrase, timebounds: TB })
+  .addOperation(S.Operation.payment({ destination: alice.publicKey(), asset: XPF, amount: '1' })).build();
+t = txb(frank, [S.Operation.setOptions({ signer: { preAuthTx: failingPre.hash(), weight: 1 } })]); t.sign(frank);
+await submit('add-preauth-signer-for-a-failing-tx', t, frank);                                                    // 64
+await submit('preauth-tx-fails-signer-still-removed', failingPre, frank, 'payment of XPF without a trustline fails; signer removed anyway (CAP-0028)'); // 65
+// H-C17: liabilities: available balance is not the balance
+const liab = kp('liab');
+await newAccounts('create-liabilities-account', [liab]);                                                         // 66
+t = txb(liab, [S.Operation.changeTrust({ asset: XPF }), S.Operation.changeTrust({ asset: XPF12, limit: '100' })]); t.sign(liab);
+await submit('liab-trustlines', t, liab);                                                                        // 67
+t = txb(issuer, [S.Operation.payment({ destination: liab.publicKey(), asset: XPF, amount: '100' })]); t.sign(issuer);
+await submit('liab-funded', t, issuer);                                                                          // 68
+t = txb(liab, [S.Operation.manageSellOffer({ selling: XPF, buying: S.Asset.native(), amount: '60', price: '1000' }),
+  S.Operation.manageBuyOffer({ selling: S.Asset.native(), buying: XPF12, buyAmount: '90', price: '0.0001' })]); t.sign(liab);
+await submit('liab-offers', t, liab, 'selling liabilities 60 XPF; buying liabilities 90 XPF12 (limit 100)');       // 69
+await queue('PAYMENT_UNDERFUNDED_BY_SELLING_LIABILITIES', one(liab, [S.Operation.payment({ destination: alice.publicKey(), asset: XPF, amount: '41' })]), liab);
+await queue('PAYMENT_LINE_FULL_BY_BUYING_LIABILITIES', one(issuer, [S.Operation.payment({ destination: liab.publicKey(), asset: XPF12, amount: '11' })]), issuer);
+await closeGroup('liabilities-edges', 'balance 100, selling liabilities 60: paying 41 fails; limit 100, buying liabilities 90: receiving 11 fails'); // 70
+// H-B11: offer prices at int32 extremes
+t = txb(mm, [S.Operation.manageSellOffer({ selling: XPF, buying: S.Asset.native(), amount: '1', price: { n: 2147483647, d: 1 } }),
+  S.Operation.manageSellOffer({ selling: XPF, buying: S.Asset.native(), amount: '1', price: { n: 1, d: 2147483647 } })]); t.sign(mm);
+await submit('offer-price-int32-extremes', t, mm, 'price 2147483647/1 and 1/2147483647');                         // 71
+// H-C8 (#755): limit-only ChangeTrust on a pool-share trustline
+t = txb(mm, [S.Operation.changeTrust({ asset: lp, limit: '100000' })]); t.sign(mm);
+await submit('pool-share-limit-only-change-trust', t, mm, 'pool-share trustline limit changed, nothing else');     // 72
+// H-F4: an empty ledger (no transactions)
+await close(); steps.push({ name: 'empty-ledger', ledger, note: 'no transactions: the cursor must still advance' }); console.log('empty-ledger', ledger); // 73
+
+if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2, cb3, cb4], pool2, poolIssuers: [pi1.publicKey(), pi2.publicKey()] }, null, 1));
