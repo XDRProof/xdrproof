@@ -702,7 +702,7 @@
         "CAP-0062",
         "stellar-etl#461"
       ],
-      "test": "Mine a mainnet ledger with non-empty `evicted_keys`; generated variant in the `s-archival` run",
+      "test": "Generated: after a config upgrade to the minimum lifetimes and an eviction scan from level 1, ledgers with no transactions carry evicted_keys: three persistent entries archived to the hot archive 10 ledgers after creation, temporary entries deleted (including older ones the scan reached): s-base `archival-empty-ledgers`; mine a mainnet ledger with non-empty evicted_keys (B3)",
       "checks": [
         "R"
       ]
@@ -716,7 +716,7 @@
       "refs": [
         "CAP-0066"
       ],
-      "test": "`s-archival` run with `TESTING_MINIMUM_PERSISTENT_ENTRY_LIFETIME`",
+      "test": "One ledger, two restores of evicted persistent entries: an InvokeHostFunction whose SorobanTransactionDataExt v1 marks readWrite[0] archived, giving restored then updated changes for the same key in one operation (CAP-0066), and a RestoreFootprint giving restored changes only: s-base `archival-automatic-restore-in-invoke`, `archival-restore-footprint`",
       "checks": [
         "R"
       ]

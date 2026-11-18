@@ -490,6 +490,40 @@ await enqueue('soroban-surge-bid-2000', bidCall(bob, sym('surge_2000'), 2000));
 await configUpgrade('config-upgrade-restore-and-unfreeze', [lanes(maxTxCount), freezeDelta([], frozen)],
   `LEDGER_UPGRADE_CONFIG: Soroban ledgerMaxTxCount back to ${maxTxCount}; unfreeze the three trustlines`);
 
+// ---- B2d: state archival: eviction with no transaction (H-D6), automatic restore vs RestoreFootprint (H-D7)
+// U3 shortens lifetimes to the protocol minimums (persistent 10, temporary 16 ledgers) and starts the eviction
+// scan at bucket level 1, where new entries live. U4 puts the settings back: every field from sorobaninfo,
+// except the sample period, which sorobaninfo misreports (CommandHandler.cpp:930 prints the sample size
+// twice), so it takes core's initial value (NetworkConfig.h:131, 64).
+const sa = JSON.parse(await get('sorobaninfo')).state_archival;
+const archival = (o) => xdr.ConfigSettingEntry.configSettingStateArchival(new xdr.StateArchivalSettings({
+  maxEntryTtl: o.max_entry_ttl, minTemporaryTtl: o.min_temporary_ttl, minPersistentTtl: o.min_persistent_ttl,
+  persistentRentRateDenominator: i64(String(o.persistent_rent_rate_denominator)), tempRentRateDenominator: i64(String(o.temp_rent_rate_denominator)),
+  maxEntriesToArchive: o.max_entries_to_archive, liveSorobanStateSizeWindowSampleSize: o.bucketlist_size_window_sample_size,
+  liveSorobanStateSizeWindowSamplePeriod: 64, evictionScanSize: o.eviction_scan_size, startingEvictionScanLevel: o.starting_eviction_scan_level }));
+await configUpgrade('config-upgrade-short-lifetimes', [archival({ ...sa, min_temporary_ttl: 16, min_persistent_ttl: 10, starting_eviction_scan_level: 1, max_entries_to_archive: Math.max(100, sa.max_entries_to_archive) })],
+  'LEDGER_UPGRADE_CONFIG: minPersistentTTL 10, minTemporaryTTL 16, eviction scan from level 1');
+const [kAuto, kOp, kTmp] = [sym('archived_auto'), sym('archived_op'), sym('archived_tmp')];
+await enqueue('archival-put-persistent-auto', soroban(alice, invoke(K0, 'put', [kAuto, xdr.ScVal.scvU32(1)]), { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, kAuto)] }), 'persistent, lives 10 ledgers');
+await enqueue('archival-put-persistent-op', soroban(bob, invoke(K0, 'put', [kOp, xdr.ScVal.scvU32(2)]), { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, kOp)] }), 'persistent, lives 10 ledgers');
+await enqueue('archival-put-all-temporary', soroban(issuer, invoke(CA1, 'put_all', [kTmp, xdr.ScVal.scvU32(3)]),
+  { ro: [kCode(wasm2Hash)], rw: [kInstance(CA1), kData(CA1, kTmp, DUR.persistent), kData(CA1, kTmp, DUR.temporary)] }), 'temporary lives 16 ledgers; its persistent twin 10');
+await closeGroup('archival-entries-created');
+const WAIT = Number(process.env.ARCHIVE_WAIT || 16); // empty ledgers: persistent entries evict 10 ledgers after creation, the temporary 16 (measured)
+for (let i = 0; i < WAIT; i++) await close();
+manifest.steps.push({ name: 'archival-empty-ledgers', ledger, note: `${WAIT} ledgers with no transactions; evicted_keys appear in some of them` });
+console.log(String(ledger).padStart(3), `archival-empty-ledgers x${WAIT}`);
+// The persistent entries now sit in the hot archive. A call restores one automatically when the transaction
+// marks it in SorobanTransactionDataExt.v1 archivedSorobanEntries (CAP-0066); RestoreFootprint restores the other.
+{ const data = new S.SorobanDataBuilder().setFootprint([kInstance(K0), kCode(wasmHash)], [kData(K0, kAuto)]).setResources(RES.ins, RES.read, RES.write).setResourceFee(RES.fee).build();
+  data.ext = xdr.SorobanTransactionDataExt.resourceExt(new xdr.SorobanResourcesExtV0({ archivedSorobanEntries: [0] }));
+  const t = new S.TransactionBuilder(new S.Account(alice.publicKey(), seq.get(alice.publicKey()).toString()), { fee: String(1000 + RES.fee), networkPassphrase: passphrase, timebounds: TB })
+    .addOperation(invoke(K0, 'put', [kAuto, xdr.ScVal.scvU32(11)])).setSorobanData(data).build(); t.sign(alice);
+  await enqueue('archival-automatic-restore-in-invoke', t, 'readWrite[0] is archived; the call restores it, then overwrites it'); }
+await enqueue('archival-restore-footprint', soroban(bob, S.Operation.restoreFootprint({}), { rw: [kData(K0, kOp)] }), 'RESTORE_FOOTPRINT of an evicted persistent entry');
+await closeGroup('archival-restores');
+await configUpgrade('config-upgrade-restore-lifetimes', [archival(sa)], 'LEDGER_UPGRADE_CONFIG: state archival settings back');
+
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {
   const big = { ins: 240_000_000, read: 200_000, write: 20_000, fee: 400_000_000 };
