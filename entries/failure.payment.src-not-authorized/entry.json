@@ -1,0 +1,164 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.payment.src-not-authorized",
+  "title": "PAYMENT fails with PAYMENT_SRC_NOT_AUTHORIZED",
+  "pattern": "A transaction whose PAYMENT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (src_not_authorized). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.payment.src_not_authorized in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "cc9c8837677de9a08fd7dc6f2e1ab6ced5b3e967b5192b6b398a75e35b9ce0e7",
+      "size": 7668,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 41,
+        "recipe": "recipes/classic/gen.mjs#PAYMENT_SRC_NOT_AUTHORIZED"
+      },
+      "focus": {
+        "tx_hash": "9fe9ee4895c293417f22bfbe00723f9bf3180df91acb3fb6e577088b0a73b144",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "93e8487b8926e91bfdbaf545889ca22f1f06b6d2a7767828299341f0e20bbaf0",
+      "size": 7668,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 41,
+        "recipe": "recipes/classic/gen.mjs#PAYMENT_SRC_NOT_AUTHORIZED"
+      },
+      "focus": {
+        "tx_hash": "8fe533cb8d81326057ee771c7d1859e8d665f5563c8e91a5401a4794ec4fb768",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with src_not_authorized.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/payment",
+        "equals": "src_not_authorized",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with src_not_authorized.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_failed/0/op_inner/payment",
+        "equals": "src_not_authorized",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "pool.deposit-l-address-event",
+  "title": "A pool deposit: transfer events to an L… address",
+  "pattern": "CHANGE_TRUST to pool shares creates the liquidity-pool entry (not the deposit, which only updates it), and LIQUIDITY_POOL_DEPOSIT emits transfer events whose destination is the pool, rendered as an L… strkey (CAP-0067). Readers that create pools on deposit, or expect G or C addresses in event topics, get both wrong.",
+  "caps": [
+    "CAP-0038",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "pool entry created by ChangeTrust to pool shares; LiquidityPoolDeposit only updates it"
+    },
+    {
+      "id": "H-A5",
+      "placement": "liquidity-pool address L… in a CAP-0067 event topic"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "pool-share-trustline-and-deposit",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "mm transfers XLM to the pool, whose address is an L… strkey.",
+      "at": "tx.meta",
+      "path": "/operations/1/events",
+      "some": {
+        "/body/v0/topics/1/address": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+        "/body/v0/topics/2/address": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (CHANGE_TRUST) creates the pool entry, keyed by the same L… ID.",
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/created/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 1 (the deposit) only updates it.",
+      "at": "tx.meta",
+      "path": "/operations/1/changes",
+      "some": {
+        "/updated/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

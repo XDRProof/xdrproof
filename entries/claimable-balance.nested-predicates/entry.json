@@ -1,0 +1,130 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "claimable-balance.nested-predicates",
+  "title": "A claimable balance with nested and/or/not predicates and a B… address event",
+  "pattern": "CREATE_CLAIMABLE_BALANCE with predicate and(not(before_relative 60), or(before_absolute 2100-01-01, unconditional)). The result returns the balance ID as a B… strkey, and the event names it as the destination.",
+  "caps": [
+    "CAP-0023",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-C9",
+      "placement": "claimable balance with nested and/or/not predicates"
+    },
+    {
+      "id": "H-A10",
+      "placement": "ClaimableBalanceID returned in the result as a B… strkey"
+    },
+    {
+      "id": "H-A5",
+      "placement": "claimable-balance address B… in a CAP-0067 event topic"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "415a055aba8160c18870e3e76f0f71c8bfcce03218dfe70adb2c68f33345a351",
+      "size": 4068,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 16,
+        "recipe": "recipes/classic/gen.mjs#claimable-balance-nested-predicates"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "47c58e4cd4ad3ffe878069e68d18e4e2276ec882b7e58dff1a2b44b6deae659a",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "415a055aba8160c18870e3e76f0f71c8bfcce03218dfe70adb2c68f33345a351",
+            "runs": 17
+          },
+          {
+            "sha256": "ba955abe1c268c95bb3a548130d007e4078c0499ece92b957f26a228a11bf56a",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "8d377a82a7d09494a955c1ae2fa4f00a96de3918537a4e3198bcd6550bd17fef",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "ada08b7cb996a83833eb48bc45f6be959ed15793ce8fc211dbce8f0f7f488604",
+      "size": 4068,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 16,
+        "recipe": "recipes/classic/gen.mjs#claimable-balance-nested-predicates"
+      },
+      "focus": {
+        "tx_hash": "7063901fe111db4de700e8773f10ae0f23422a995232401a935da5c2fe28d1db",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The result returns the balance ID.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/create_claimable_balance/success",
+        "equals": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4"
+      },
+      {
+        "says": "The first claimant's predicate is an and whose first branch is a not.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/claimable_balance/claimants/0/claimant_type_v0/destination": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+        }
+      },
+      {
+        "says": "The transfer event goes to the B… address.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/2/address": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4"
+        }
+      }
+    ]
+  }
+}

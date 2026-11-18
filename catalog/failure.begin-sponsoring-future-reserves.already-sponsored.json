@@ -1,0 +1,64 @@
+{
+  "id": "failure.begin-sponsoring-future-reserves.already-sponsored",
+  "title": "BEGIN_SPONSORING_FUTURE_RESERVES fails with BEGIN_SPONSORING_FUTURE_RESERVES_ALREADY_SPONSORED",
+  "pattern": "A transaction whose BEGIN_SPONSORING_FUTURE_RESERVES operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (already_sponsored). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.begin_sponsoring_future_reserves.already_sponsored in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "BEGIN_SPONSORING_FUTURE_RESERVES_ALREADY_SPONSORED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "The operation fails with already_sponsored.",
+      "at": "tx.result",
+      "path": "/tx_failed/1/op_inner/begin_sponsoring_future_reserves",
+      "equals": "already_sponsored",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

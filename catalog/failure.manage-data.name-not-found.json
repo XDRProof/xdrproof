@@ -1,0 +1,64 @@
+{
+  "id": "failure.manage-data.name-not-found",
+  "title": "MANAGE_DATA fails with MANAGE_DATA_NAME_NOT_FOUND",
+  "pattern": "A transaction whose MANAGE_DATA operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (name_not_found). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_data.name_not_found in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "MANAGE_DATA_NAME_NOT_FOUND",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with name_not_found.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_data",
+      "equals": "name_not_found",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

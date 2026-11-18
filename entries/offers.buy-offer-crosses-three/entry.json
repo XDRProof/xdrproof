@@ -1,0 +1,204 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "offers.buy-offer-crosses-three",
+  "title": "One buy offer crosses three offers at three prices",
+  "pattern": "MANAGE_BUY_OFFER claims offers 1, 2 and 3 of the same seller at prices 1, 1.1 and 1.2, the last only partly. Two offers are removed, one updated, with no operation naming them.",
+  "caps": [
+    "CAP-0006"
+  ],
+  "hazards": [
+    {
+      "id": "H-C7",
+      "placement": "one ManageBuyOffer claims three offers; offers removed by crossing"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "32d34da4808508ed010b4fd83617cec1575742b166522006e0c4027f86e0e01c",
+      "size": 6228,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 12,
+        "recipe": "recipes/classic/gen.mjs#buy-offer-crosses-three-offers"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "373599000e9dc3da589393feb25b1af0d89768e55587561d9cb373282f9a8776",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "32d34da4808508ed010b4fd83617cec1575742b166522006e0c4027f86e0e01c",
+            "runs": 1
+          },
+          {
+            "sha256": "4396ebf652f1fdc431da8f176c0cb0e2233f36a8d24ae950603d398f7249920f",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "45cad1076ce0d628981e6038ca425ed7e9c3f0f28dc401ca86e95bde1c52e37a",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "4b619a06a285f380661b3699207de098924db237f2fea19d7889db7c88092c6b",
+            "runs": 1
+          },
+          {
+            "sha256": "52c1aa774acbc7e6c132cf53916b8b4f8b05d5de26466c57c2eefd64b60eafa2",
+            "runs": 1
+          },
+          {
+            "sha256": "62ad778011d2c563f39a05a759ff0a8a4b600cbd9e2056ccd094838f92401a81",
+            "runs": 1
+          },
+          {
+            "sha256": "685029f7bc91944ffa3f89eece139786e70ace222f89d924caaf3d0422bd3d6e",
+            "runs": 1
+          },
+          {
+            "sha256": "6ac006d4cc703944d4514ab8a2a5aae2e09312b24d66678e864c8549f24467b0",
+            "runs": 1
+          },
+          {
+            "sha256": "6ee59f68e8ee8b9e5c7ec50e160916ef93d1ac074001131f37188af4aaa64932",
+            "runs": 1
+          },
+          {
+            "sha256": "81caa79d8761fd3f19ba8f76b1385495cd4baefef71d8ad379a7077e6470f7e9",
+            "runs": 1
+          },
+          {
+            "sha256": "8718bb3d4c2133a4db07a860223bf2e962c2a36c7d5c5f81c91b71e850aa64c1",
+            "runs": 1
+          },
+          {
+            "sha256": "8726f2e19c9e8a9b837d853a06300d062004f97567585e5b110208b40e9935a7",
+            "runs": 1
+          },
+          {
+            "sha256": "8764cf9b2eabe2ae57490b8c52f91fd2d3d9642c6575d5488847a4a545dbca83",
+            "runs": 1
+          },
+          {
+            "sha256": "8c84c7daeeafd94c4bd383546fd72bb9eaa48e1634dcf6d9f1967509b68a9df4",
+            "runs": 1
+          },
+          {
+            "sha256": "98fc1c0ca3fac162a2b30f7b2eefbeb741eaca1798468e685477d862d1fdd5bc",
+            "runs": 1
+          },
+          {
+            "sha256": "a79bc9b4c17ecea3f74b5bbf69c1becb81bcb3730a21e6c6acc42573675afc8b",
+            "runs": 1
+          },
+          {
+            "sha256": "adc1363bb206db7e60787fdac4f16262bd8fd3a8c1cc90baa569db3fd5d3381b",
+            "runs": 1
+          },
+          {
+            "sha256": "d8ecd63f772ff3d1e586a2ae702e3e73e994f4f3c799441485a74049e3b8f65b",
+            "runs": 1
+          },
+          {
+            "sha256": "f37860d42bb4483dee5fb788164540a4b37f9e2da392e0f301df31b53ec9460c",
+            "runs": 1
+          },
+          {
+            "sha256": "f812a020e3ce835b6355f244efcbe2cfe52b79c7306ecabd07e710a59d86798e",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "68683fe188f36a396c51717a5446670a557f51e81242c60d96ebb7734357a7aa",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "d6ddb8140c8656158f6cb7ed05093818e5a52d75ef4c143316e32c38a67cb18c",
+      "size": 6228,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 12,
+        "recipe": "recipes/classic/gen.mjs#buy-offer-crosses-three-offers"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "e6687da8479363aaa25da5999f4a2da1fce73f888ea169ed29b5c78488e30d58",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "d6ddb8140c8656158f6cb7ed05093818e5a52d75ef4c143316e32c38a67cb18c",
+            "runs": 1
+          },
+          {
+            "sha256": "02c629735d240c6cbdaef105544cc8387a09741efcb429b1ee785a342e2d0b7e",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "1a9bb235d79c5164de41f04b7671ab8cde40356f2b8606934b706793f7d024b5",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The result lists three claim atoms.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/manage_buy_offer/success/offers_claimed",
+        "length": 3
+      },
+      {
+        "says": "Offer 1 of mm is crossed first.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/manage_buy_offer/success/offers_claimed/0/order_book/offer_id",
+        "equals": "1"
+      },
+      {
+        "says": "Crossed offers are removed from the ledger.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/offer_id": "1"
+        }
+      }
+    ]
+  }
+}

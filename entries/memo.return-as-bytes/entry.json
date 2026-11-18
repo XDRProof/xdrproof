@@ -1,0 +1,94 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "memo.return-as-bytes",
+  "title": "MEMO_RETURN mapped to to_muxed_id bytes, the same as MEMO_HASH",
+  "pattern": "CAP-0067 renders MEMO_RETURN in the transfer event as bytes, exactly as MEMO_HASH: from the event alone the two cannot be told apart.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A6",
+      "placement": "MEMO_RETURN carried into the transfer event as to_muxed_id (bytes), indistinguishable from MEMO_HASH"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "0a8bc9e952094cf18e2ed4cbb2530a1984a4d572a7950cc165d0bb590839c556",
+      "size": 3712,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 29,
+        "recipe": "recipes/classic/gen.mjs#memo-return"
+      },
+      "focus": {
+        "tx_hash": "181572b91efa9b67ef69e996f11f36bf1e58271410f2852ab7e908b620671af4",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "9a2f31668e08958ef36af09a75c76bf44586f3d241246f3a6fa016138de54adc",
+      "size": 3712,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 29,
+        "recipe": "recipes/classic/gen.mjs#memo-return"
+      },
+      "focus": {
+        "tx_hash": "e8c30d38a60d87bfdadb379509144af66bc1e8894ba2b1aaa29c2a0c28bd1109",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The memo is MEMO_RETURN sha256(\"xdrproof:memo-return\").",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/memo/return",
+        "equals": "732f7b35d98a49d5daa20443220652e762b59d7e3829733e8e66ce1eb874b99b"
+      },
+      {
+        "says": "The transfer event carries the same 32 bytes as to_muxed_id bytes.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/data/map/1/val/bytes": "732f7b35d98a49d5daa20443220652e762b59d7e3829733e8e66ce1eb874b99b"
+        }
+      }
+    ]
+  }
+}

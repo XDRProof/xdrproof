@@ -1,0 +1,121 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "pool.withdraw",
+  "title": "A liquidity-pool withdrawal",
+  "pattern": "LIQUIDITY_POOL_WITHDRAW burns pool shares and moves both reserves back to the account.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "LiquidityPoolWithdraw"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "f994c07361146d398c341ab891149691680048fdf664d652eb267ca9fe486492",
+      "size": 3180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 15,
+        "recipe": "recipes/classic/gen.mjs#pool-withdraw"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "c00361111c80919b9111dc516acac02e839b091e40c2786dba1046bcfdfac1b3",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "f994c07361146d398c341ab891149691680048fdf664d652eb267ca9fe486492",
+            "runs": 13
+          },
+          {
+            "sha256": "528d11293c315f484fe13a817c2e80fad0ed4bc9219ca7606e16d8d6775eb523",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "67cfd54934554ce29171772e1e41fbcdb4a23b42dc2908d79b42cecd8091ba5e",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "92ba136c03b39c8437bb8b723dbc2022149091106b6be7bd031ea9df78a84df8",
+            "runs": 2
+          },
+          {
+            "sha256": "bc15705573bc53c3a9dc1e292e2172b028bb4d539de843a661fb4a316a6363a6",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "833cdb968e750ccbc6b2c3db1817228e23797ac80409e7a5b5fe475b16a57677",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5a5b9bff69a431a51c50b98b2accafa7cf78b9fccb50ddd42c17cbaa33f8210e",
+      "size": 3180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 15,
+        "recipe": "recipes/classic/gen.mjs#pool-withdraw"
+      },
+      "focus": {
+        "tx_hash": "0b4de04484dc1ebe93e8d052e3c57f8a5213249767895d51d78b1de9b45aa960",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 (liquidity_pool_withdraw) succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/liquidity_pool_withdraw",
+        "equals": "success"
+      },
+      {
+        "says": "The pool entry, keyed by its L… ID, is updated.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.tx.bad-sponsorship",
+  "title": "A transaction left with an open sponsorship fails txBAD_SPONSORSHIP",
+  "pattern": "BEGIN_SPONSORING_FUTURE_RESERVES without the matching END in the same transaction: every operation succeeds, then the transaction fails with txBAD_SPONSORSHIP and nothing it did is kept. Its fee is charged and its sequence number consumed. Readers that take operation results at face value record sponsorship that never happened.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "TransactionResult.txBAD_SPONSORSHIP"
+    },
+    {
+      "id": "H-C1",
+      "placement": "txBAD_SPONSORSHIP: a failed transaction whose operations report success"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "820df22c82843ee9361c211423eb3ec0f4a6cd5a4ab17d75dfd746618c5db326",
+      "size": 15640,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 45,
+        "recipe": "recipes/classic/gen.mjs#txBAD_SPONSORSHIP"
+      },
+      "focus": {
+        "tx_hash": "eb84c3ffe0d1638239f9268e3857f1f3eaae0b28a28f029f3a31d7e9f1aebaa3",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "ca7d8dc009b7d5359b0d592bbda803767d5d594d5dafc7dd311077c0da456e0b",
+      "size": 15640,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 45,
+        "recipe": "recipes/classic/gen.mjs#txBAD_SPONSORSHIP"
+      },
+      "focus": {
+        "tx_hash": "301401f15303f41206ea2d556b490ca47fd0c759828bc8ce20f8df3801e419d3",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction fails with txBAD_SPONSORSHIP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/4/result/result/result",
+        "equals": "tx_bad_sponsorship",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with txBAD_SPONSORSHIP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/14/result/result/result",
+        "equals": "tx_bad_sponsorship",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/4/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/14/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/4/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/14/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

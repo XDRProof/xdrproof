@@ -1,0 +1,164 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.set-options.auth-revocable-required",
+  "title": "SET_OPTIONS fails with SET_OPTIONS_AUTH_REVOCABLE_REQUIRED",
+  "pattern": "A transaction whose SET_OPTIONS operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (auth_revocable_required). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.set_options.auth_revocable_required in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "042d3371dce2c949973bdb0445d1feefd36c2c6ba759662c4835477ebfdde529",
+      "size": 11708,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/classic/gen.mjs#SET_OPTIONS_AUTH_REVOCABLE_REQUIRED"
+      },
+      "focus": {
+        "tx_hash": "b4e0b0eb82e8ec137226a0dd61051d8f477983919f9456682c479fd765e0f71f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b9439cac36b8114fbd2db432fc68c247f05ad6384b5a73cdd2207a2f7dc5541f",
+      "size": 11708,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/classic/gen.mjs#SET_OPTIONS_AUTH_REVOCABLE_REQUIRED"
+      },
+      "focus": {
+        "tx_hash": "df20235526f2642865269e8d73a8a440a5b0eb39c4a5b53164495b720a0ca994",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with auth_revocable_required.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_failed/0/op_inner/set_options",
+        "equals": "auth_revocable_required",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with auth_revocable_required.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/set_options",
+        "equals": "auth_revocable_required",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

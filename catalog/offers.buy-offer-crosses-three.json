@@ -1,0 +1,56 @@
+{
+  "id": "offers.buy-offer-crosses-three",
+  "title": "One buy offer crosses three offers at three prices",
+  "pattern": "MANAGE_BUY_OFFER claims offers 1, 2 and 3 of the same seller at prices 1, 1.1 and 1.2, the last only partly. Two offers are removed, one updated, with no operation naming them.",
+  "caps": [
+    "CAP-0006"
+  ],
+  "hazards": [
+    {
+      "id": "H-C7",
+      "placement": "one ManageBuyOffer claims three offers; offers removed by crossing"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "buy-offer-crosses-three-offers",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The result lists three claim atoms.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_buy_offer/success/offers_claimed",
+      "length": 3,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Offer 1 of mm is crossed first.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_buy_offer/success/offers_claimed/0/order_book/offer_id",
+      "equals": "1",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Crossed offers are removed from the ledger.",
+      "at": "op.changes",
+      "some": {
+        "/removed/offer/offer_id": "1"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

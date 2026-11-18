@@ -1,0 +1,119 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "preconditions.v2-extra-signer",
+  "title": "Preconditions v2 with ledger bounds, min sequence and an extra signed-payload signer",
+  "pattern": "CAP-0021 preconditions: ledger bounds, a minimum source sequence, and an extra signer that is a signed-payload key (P…) whose signature must be on the transaction.",
+  "caps": [
+    "CAP-0021",
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-C4",
+      "placement": "Preconditions.PRECOND_V2 with ledgerBounds, minSeqNum and extraSigners"
+    },
+    {
+      "id": "H-A3",
+      "placement": "signed-payload key as a CAP-0021 extra signer"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "400cb8b6318c81e9faa0372f992fef71bbbab6287b23e69760141c20fb8aa0b3",
+      "size": 3012,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 33,
+        "recipe": "recipes/classic/gen.mjs#preconditions-v2-extra-signed-payload-signer"
+      },
+      "focus": {
+        "tx_hash": "f3b0675f1eb0ab8fb2a4c809184bea0ade7d9060729d719e684a444a1d87877d",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "308556b407ce580a5b40da42a5ac8f1cf6d0b377ac16d8bcaa0f242de97e15d8",
+      "size": 3012,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 33,
+        "recipe": "recipes/classic/gen.mjs#preconditions-v2-extra-signed-payload-signer"
+      },
+      "focus": {
+        "tx_hash": "322458fa464b3dd767f74c7b95f7a4f82afc9ebe558575f03410e3c301de3905",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The extra signer is eve's key with the 32-byte payload sha256(\"xdrproof:extra-signer\"), a P… strkey.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/cond/v2/extra_signers/0",
+        "equals": "PBS6O4QWCGUCQNWQ4JC6CYQVQQYB5DYHHQ7XO5Q4IM5VM46WKYMQYAAAAAQIIVIEPJYVX7I3RYM55BVCG2UM3H2PHQFR24O3GJZMYLM4ZPOASZUSDE"
+      },
+      {
+        "says": "Ledger bounds are min 1, max 0 (no upper bound).",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/cond/v2/ledger_bounds",
+        "equals": {
+          "min_ledger": 1,
+          "max_ledger": 0
+        }
+      },
+      {
+        "says": "The transaction carries two signatures: bob's and the signed-payload signature for the extra signer.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/signatures",
+        "length": 2
+      },
+      {
+        "says": "The payment succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

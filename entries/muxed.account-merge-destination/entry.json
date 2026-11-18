@@ -1,0 +1,97 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "muxed.account-merge-destination",
+  "title": "An account merged into a muxed destination",
+  "pattern": "ACCOUNT_MERGE whose destination is M(alice, 42): carol's entry is removed and its balance goes to alice's base account.",
+  "caps": [
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "ACCOUNT_MERGE destination as MuxedAccount"
+    },
+    {
+      "id": "H-C11",
+      "placement": "account entry removed by ACCOUNT_MERGE"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "afbd34ddbd03744f1bb097433e3f114c512bb92bf0a3e535cc0aca4e09dadc4f",
+      "size": 2628,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 38,
+        "recipe": "recipes/classic/gen.mjs#account-merge-to-muxed"
+      },
+      "focus": {
+        "tx_hash": "68bd98b93911290255ff1d5aa3aa4243a86e52d4ca384ae1c1d0a5a83616338a",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "0fe41fa55bbe3839abe0ebb1d67a5bc383fd7e303fef4b1f621a101b5df89138",
+      "size": 2628,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 38,
+        "recipe": "recipes/classic/gen.mjs#account-merge-to-muxed"
+      },
+      "focus": {
+        "tx_hash": "6afcac04dbe682cc9795b6db1159a8cf5470465ad58ec93c68dbfcd3cb625a43",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The merge destination is alice muxed with ID 42.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/account_merge",
+        "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAFK4Q4"
+      },
+      {
+        "says": "carol's account entry is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+        }
+      }
+    ]
+  }
+}

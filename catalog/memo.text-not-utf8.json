@@ -1,0 +1,53 @@
+{
+  "id": "memo.text-not-utf8",
+  "title": "A 28-byte text memo that is not valid UTF-8, mapped into the transfer event",
+  "pattern": "MEMO_TEXT holds 28 raw bytes that are not UTF-8 (the maximum length). CAP-0067 copies it into the payment's transfer event as to_muxed_id (a string). Readers that decode either as UTF-8 lose or mangle it.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-B5",
+      "placement": "MEMO_TEXT bytes that are not UTF-8"
+    },
+    {
+      "id": "H-A6",
+      "placement": "MEMO_TEXT carried into the transfer event as to_muxed_id (string)"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "memo-text-not-utf8-28-bytes",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The memo text is 28 bytes, first ff fe 00.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/memo/text",
+      "equals": "\\xff\\xfe\\0\\xc3(\\xed\\xa0\\x80xdrproof-not-utf8-20",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event carries the same bytes as to_muxed_id.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/data/map/1/key/symbol": "to_muxed_id",
+        "/body/v0/data/map/1/val/string": "\\xff\\xfe\\0\\xc3(\\xed\\xa0\\x80xdrproof-not-utf8-20"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

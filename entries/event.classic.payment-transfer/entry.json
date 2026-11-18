@@ -1,0 +1,110 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "event.classic.payment-transfer",
+  "title": "A classic payment emits a transfer event (CAP-0067)",
+  "pattern": "Since CAP-0067, classic operations emit the same events as the Stellar Asset Contract: a native payment emits transfer with from, to and the asset. Readers that take payments only from operations, or only from Soroban events, double-count or miss them.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "PaymentOp emits a CAP-0067 transfer event"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "7436cc49fd42f0e274a86d016b115c6ba2392f12b4d181cbbf8681323ac8eae9",
+      "size": 2180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 4,
+        "recipe": "recipes/classic/gen.mjs#payment"
+      },
+      "focus": {
+        "tx_hash": "55ed38410a66c39e3dd6bf7e6b0e3177fcfb4b994d3f3875dc265f3b2770ad98",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "c3e1a359435cee58bffaf18fcf420993ec221b9868f80f6607fa497b99dd6c89",
+      "size": 2180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 4,
+        "recipe": "recipes/classic/gen.mjs#payment"
+      },
+      "focus": {
+        "tx_hash": "7c1552da46356fd18961b4a2a3392e9114a16573924d3d2f6450769e53ee2996",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation emits a transfer event from alice to bob in native.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "transfer",
+          "/body/v0/topics/1/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+          "/body/v0/topics/2/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+          "/body/v0/topics/3/string": "native"
+        }
+      },
+      {
+        "says": "The amount is 1 XLM (10,000,000 stroops) as an i128.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/data/i128": "10000000"
+        }
+      },
+      {
+        "says": "The transaction-level events carry the fee charge.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/events",
+        "some": {
+          "/event/body/v0/topics/0/symbol": "fee"
+        }
+      }
+    ]
+  }
+}

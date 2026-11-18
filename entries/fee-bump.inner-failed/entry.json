@@ -1,0 +1,97 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "fee-bump.inner-failed",
+  "title": "A fee bump whose inner transaction fails",
+  "pattern": "The inner payment fails (underfunded): the result is txFEE_BUMP_INNER_FAILED, the fee source is still charged, and the inner sequence is consumed.",
+  "caps": [
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "TransactionResult.txFEE_BUMP_INNER_FAILED"
+    },
+    {
+      "id": "H-C1",
+      "placement": "failed inner transaction inside a fee bump"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5907013833a1c641c638d6966edc8bf7366c539dfa8a5bdc30934521fad9ffd9",
+      "size": 2332,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 31,
+        "recipe": "recipes/classic/gen.mjs#fee-bump-inner-failed"
+      },
+      "focus": {
+        "tx_hash": "7c8db7be588f050e5958112d2e2b91cc43b38b10e2ff5bbb77ecfce3047f5363",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "ed3be85b4c588bcee185232ea53fc4f916450120a1c05c356ba1f7899360904d",
+      "size": 2332,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 31,
+        "recipe": "recipes/classic/gen.mjs#fee-bump-inner-failed"
+      },
+      "focus": {
+        "tx_hash": "ee0ca2df9fd1074fe9a40a3093e073541bb087e7cdb00b714cf68c0fbeb76b8e",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner payment fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/payment",
+        "equals": "underfunded"
+      },
+      {
+        "says": "carol is still charged.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "some": {
+          "/updated/data/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+        }
+      }
+    ]
+  }
+}

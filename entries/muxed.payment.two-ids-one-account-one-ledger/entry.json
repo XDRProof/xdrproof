@@ -1,0 +1,142 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "muxed.payment.two-ids-one-account-one-ledger",
+  "title": "Payments to two different muxed IDs of one account in the same ledger",
+  "pattern": "Two payments in one ledger reach M(bob, 100) and M(bob, 200): two muxed addresses, one base account. Readers keyed by base account must keep both IDs; readers keyed by M address must not create two accounts. wallet-backend#693 mishandled two muxed IDs of one account in one ledger.",
+  "caps": [
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "two PaymentOp.destination muxed IDs over one base account in one ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/693"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "8a0b28f5e494a13a7b044a2eaf4249cbc0886afb6f1cf5aebdf9297c22155d78",
+      "size": 5836,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 55,
+        "recipe": "recipes/classic/gen.mjs#muxed-bob-100"
+      },
+      "focus": {
+        "tx_hash": "66afa4fe80337d4f277132afbeaf3d9298d7cedb63373213dd89c22976ee455f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "16c5b3f875217aecbb6325147aac591cd24f51e55178a08846785fc7e0c66ff3",
+      "size": 5836,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 55,
+        "recipe": "recipes/classic/gen.mjs#muxed-bob-100"
+      },
+      "focus": {
+        "tx_hash": "476809d4b90e7746f6fbb994db425d9f067ed27ca623050ae2d0a11d5a9764de",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "This payment goes to bob muxed with ID 100.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/payment/destination",
+        "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAMQWDS",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "This payment goes to bob muxed with ID 100.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/1/tx/tx/operations/0/body/payment/destination",
+        "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAMQWDS",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The same ledger holds the payment to bob muxed with ID 200.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "84a82d805093f3047d3a1853def28cbf3b3a2e3f71d29e597379ede4a5561d70"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The same ledger holds the payment to bob muxed with ID 200.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "30585f220453d9b0ca1fb7891689271dbb5225b0385ba4071d3f25d83ec81384"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

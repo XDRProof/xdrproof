@@ -1,0 +1,62 @@
+{
+  "id": "fee-bump.muxed-fee-source",
+  "title": "A fee bump whose fee source is a muxed account",
+  "pattern": "The outer fee source is M(frank, 12345): frank's base account pays, the inner source alice's sequence is consumed.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A8",
+      "placement": "FeeBumpTransaction.feeSource as MuxedAccount"
+    },
+    {
+      "id": "H-A1",
+      "placement": "fee-bump fee source as MuxedAccount"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "fee-bump-muxed-fee-source",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The fee source is frank muxed with ID 12345.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/fee_source",
+      "equals": "MAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725SAAAAAAAAABQHHSKA",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The inner transaction succeeds.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_success/result/result/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "frank's base account pays the fee.",
+      "at": "tx.fee_processing",
+      "some": {
+        "/updated/data/account/account_id": "GAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725T2NV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

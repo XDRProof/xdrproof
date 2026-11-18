@@ -1,0 +1,164 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-sell-offer.not-found",
+  "title": "MANAGE_SELL_OFFER fails with MANAGE_SELL_OFFER_NOT_FOUND",
+  "pattern": "A transaction whose MANAGE_SELL_OFFER operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (not_found). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_sell_offer.not_found in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "ad676bcd1275b00cb6d6527a2a791190c151a2723ee1463879e7f52a2577d80c",
+      "size": 9920,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 43,
+        "recipe": "recipes/classic/gen.mjs#MANAGE_SELL_OFFER_NOT_FOUND"
+      },
+      "focus": {
+        "tx_hash": "762b77ea0ae60fb46b602ed3fc32b578c929a5da585571788308062e3f12c1db",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "1b6d1e1c5fcb71e380b34e9bfa900eb31cfb671868d0b4cd62c64800e877e464",
+      "size": 9920,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 43,
+        "recipe": "recipes/classic/gen.mjs#MANAGE_SELL_OFFER_NOT_FOUND"
+      },
+      "focus": {
+        "tx_hash": "dc769481cb62f42763da3d60c2d345ace4dd85697eb4d67437c7d3e0d38e2aef",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with not_found.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "not_found",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with not_found.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "not_found",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

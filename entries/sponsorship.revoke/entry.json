@@ -1,0 +1,112 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sponsorship.revoke",
+  "title": "Revoking a sponsorship moves the reserve back",
+  "pattern": "REVOKE_SPONSORSHIP on eve's data entry: the entry stays, its sponsoring ID is cleared, and the reserve moves from sponsor to eve.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "RevokeSponsorship of a data entry"
+    },
+    {
+      "id": "H-D3",
+      "placement": "sponsorship moves between accounts with no create or delete"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "e63311184336b724c41f663eeeecd58a82ebd4b925c8062e07e5a43e25742bf2",
+      "size": 2440,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 23,
+        "recipe": "recipes/classic/gen.mjs#revoke-sponsorship"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "c8bdaabe684704f8238773ac4a891a413d457e3de326076ac1023b4938a23eb2",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "e63311184336b724c41f663eeeecd58a82ebd4b925c8062e07e5a43e25742bf2",
+            "runs": 18
+          },
+          {
+            "sha256": "9f3bb60bec649c826587a4284a36a94a3464d283642fe91ccebdd0e3a7568e4a",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "075816045a0332dc69a035a043b0ba7aece5ea0643199cd63729520a50f2a800",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "bd03404a8f5093eb07454bc2d0dcdc7f193e90015efe06a508a7b25205dc1abf",
+      "size": 2440,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 23,
+        "recipe": "recipes/classic/gen.mjs#revoke-sponsorship"
+      },
+      "focus": {
+        "tx_hash": "64d93f967a12d3b9ea643f2d731a1d5b75711dd51c1798a61b1d641a77333273",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The data entry is updated, not removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/data/data_name": "sponsored"
+        }
+      },
+      {
+        "says": "Operation 0 (revoke_sponsorship) succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/revoke_sponsorship",
+        "equals": "success"
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "manage-data.binary-64",
+  "title": "A data entry whose value is 64 bytes that are not UTF-8",
+  "pattern": "MANAGE_DATA with a 64-byte value (the maximum) alternating 0x00 and 0xff: not text. Readers that decode it as a string corrupt it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B5",
+      "placement": "DataValue bytes that are not UTF-8"
+    },
+    {
+      "id": "H-B6",
+      "placement": "DataValue at its 64-byte maximum"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "manage-data-binary-64-bytes",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The value is 64 bytes, 00ff repeated.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/manage_data/data_value",
+      "equals": "00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

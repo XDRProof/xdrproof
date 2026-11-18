@@ -1,0 +1,64 @@
+{
+  "id": "failure.liquidity-pool-withdraw.underfunded",
+  "title": "LIQUIDITY_POOL_WITHDRAW fails with LIQUIDITY_POOL_WITHDRAW_UNDERFUNDED",
+  "pattern": "A transaction whose LIQUIDITY_POOL_WITHDRAW operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (underfunded). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_withdraw.underfunded in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "LIQUIDITY_POOL_WITHDRAW_UNDERFUNDED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with underfunded.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_withdraw",
+      "equals": "underfunded",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

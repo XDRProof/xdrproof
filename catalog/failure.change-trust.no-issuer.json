@@ -1,0 +1,64 @@
+{
+  "id": "failure.change-trust.no-issuer",
+  "title": "CHANGE_TRUST fails with CHANGE_TRUST_NO_ISSUER",
+  "pattern": "A transaction whose CHANGE_TRUST operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (no_issuer). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.change_trust.no_issuer in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CHANGE_TRUST_NO_ISSUER",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with no_issuer.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/change_trust",
+      "equals": "no_issuer",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

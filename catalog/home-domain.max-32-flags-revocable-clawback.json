@@ -1,0 +1,54 @@
+{
+  "id": "home-domain.max-32-flags-revocable-clawback",
+  "title": "Issuer flags AUTH_REVOCABLE and AUTH_CLAWBACK_ENABLED with a 32-byte home domain",
+  "pattern": "SET_OPTIONS sets issuer flags 10 (revocable | clawback enabled) and a home domain of exactly 32 bytes, the XDR maximum.",
+  "caps": [
+    "pre-cap",
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-B6",
+      "placement": "SetOptionsOp.homeDomain at its 32-byte maximum"
+    },
+    {
+      "id": "H-C10",
+      "placement": "issuer flags AUTH_REVOCABLE | AUTH_CLAWBACK_ENABLED"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "issuer-flags-revocable-clawback-max-home-domain",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The home domain is 32 bytes.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/set_options/home_domain",
+      "equals": "xdrproof.dev/home-domain-is-32ch",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The issuer's flags become 10 (2 revocable + 8 clawback enabled).",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/account/account_id": "GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND",
+        "/updated/data/account/flags": 10
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

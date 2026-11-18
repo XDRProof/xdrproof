@@ -1,0 +1,93 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "event.classic.issuer-payment-is-mint",
+  "title": "A payment from the issuer is a mint event, not a transfer",
+  "pattern": "Under CAP-0067 a payment whose source is the asset issuer emits mint (not transfer). Readers that only follow transfer events miss issuance.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "PaymentOp from the issuer emits a CAP-0067 mint event"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "745322337e925ad2f9fad614d8446263080bffc83f3ac814af79138e6bc71516",
+      "size": 3964,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/classic/gen.mjs#issue-assets"
+      },
+      "focus": {
+        "tx_hash": "0c4a82e800ae977f6552a6d6007418e9ea7606b8f80b1a2d14c6d62834318e38",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "23d5bd422d50de86e4f91aabf97cd18fd8656307d477708d53085b8b1b6a0cf3",
+      "size": 3964,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 10,
+        "recipe": "recipes/classic/gen.mjs#issue-assets"
+      },
+      "focus": {
+        "tx_hash": "b57545e170a0f4f29fabfec9730ce95a8c50e300a99a1cfb66d56353e9bd9a0b",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The first payment emits mint to alice.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "mint",
+          "/body/v0/topics/1/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+        }
+      },
+      {
+        "says": "Operation 0 (payment) succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

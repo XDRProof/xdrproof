@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "muxed.path-payment-destination",
+  "title": "A path payment through an alphanumeric-12 asset to a muxed destination",
+  "pattern": "PATH_PAYMENT_STRICT_SEND from XLM through XPFLONGCODE1 (alphanum-12) to XPF, delivered to M(alice, 7). It crosses offers on two order books.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "PathPaymentStrictSendOp.destination as MuxedAccount"
+    },
+    {
+      "id": "H-B9",
+      "placement": "alphanumeric-12 asset in a payment path"
+    },
+    {
+      "id": "H-C7",
+      "placement": "one path payment crosses offers in two order books"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "7b2d6b5e7081d7eead932050ee0f920c7645d1078ed32a456241bb184dfa4e9b",
+      "size": 5304,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 14,
+        "recipe": "recipes/classic/gen.mjs#path-payment-strict-send-via-alphanum12-to-muxed"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "0d898ab2ff109b9b18ad143aeb81704deb4c435586cb3e8074a33f049311e97e",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "7b2d6b5e7081d7eead932050ee0f920c7645d1078ed32a456241bb184dfa4e9b",
+            "runs": 2
+          },
+          {
+            "sha256": "1523077c15edfc4bf8986c4d24e670e1669546912113572a9dcde125e85b8d97",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "1b5037b1eac6b4d6e2336a2c4b67712d3353bd713738b560db47daa2ea4e32ab",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "1fcc86a4fcbe95497fd2e1f2fadf73ec23acd2c389878703740839b88eb929ea",
+            "runs": 1
+          },
+          {
+            "sha256": "38d86d4d8596a16a14bba5335305f5852bd95fd7d7bbcdc0efb461873ed446c9",
+            "runs": 1
+          },
+          {
+            "sha256": "3edc2030bb0efdf4aad5c70101c1d1ff9a47ec789ddaa69485fc1facba19f72c",
+            "runs": 1
+          },
+          {
+            "sha256": "598290e36dab4d15f867b6ac455e1a22aafeacc69d61d61e7dcb6961fbd999ce",
+            "runs": 1
+          },
+          {
+            "sha256": "6cd2d6def641d62c98c04433faa89b7a9988810c008257c3224390564c4b9a7c",
+            "runs": 1
+          },
+          {
+            "sha256": "7f36a6dc2daf916e244266603e3b74b7b70cf59853d125cdefa8e83586d9f89c",
+            "runs": 1
+          },
+          {
+            "sha256": "8495bf77c80734fe4ff041a47ecb0f9563418ba3a06ff0d747693c3346d78aa8",
+            "runs": 1
+          },
+          {
+            "sha256": "97ac1870bb9392ba7357208761f86ae833d182d72df6b571d8a3144b725bda01",
+            "runs": 1
+          },
+          {
+            "sha256": "9c46033381d2329526bfdf3c442d18743e404099275d4a0e7a2f178a9a116175",
+            "runs": 1
+          },
+          {
+            "sha256": "a1e0a34a016f5deba280d1d4510bf37daa4ab9d0f493d44e47c1159eabcf940b",
+            "runs": 1
+          },
+          {
+            "sha256": "ad6f5c4fea261823b39f2a6d881a19d4d7725f71446eb2edae3a31d38155810d",
+            "runs": 1
+          },
+          {
+            "sha256": "b926426050d4dd6616c1c13ba8772d661a84fe1b0d94ef34269fbb0aef67e112",
+            "runs": 1
+          },
+          {
+            "sha256": "bb86dd78fd4a2578ce0a4e2302844bd300d36b5d98f06d0c0da8182ceb3cf437",
+            "runs": 1
+          },
+          {
+            "sha256": "df35dc22914852847b87d2634fdb9b812b106fbf4b4cf4c6b1ac40f4a28d04f2",
+            "runs": 1
+          },
+          {
+            "sha256": "e01ac3ed20b8a91feffab7f00cbc3d9c3366ea7ec6282b669c189c02a2e9e454",
+            "runs": 1
+          },
+          {
+            "sha256": "fbff49d0eaa5aabc6e0bd9dccffa7f29aaa9d815b46992b54e28de172d739598",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "9d796a43c8fe54b1848f4fd344f518606b6669fae591b9d1fbf4e5a26b877810",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5ba1a392cc7e10a7839c0250c58fc61768dc85cfa44c198b17331064bb22b7e0",
+      "size": 5304,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 14,
+        "recipe": "recipes/classic/gen.mjs#path-payment-strict-send-via-alphanum12-to-muxed"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "5128a6d2da3575babfb77f15f0794cceb0dff75d86c3a775f9cdc4d9a5574c20",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "5ba1a392cc7e10a7839c0250c58fc61768dc85cfa44c198b17331064bb22b7e0",
+            "runs": 1
+          },
+          {
+            "sha256": "616b6b54f3d2130135aa1209f331d059f4d1d9ccce46cd3943f332796994b59c",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "dbb5703dc63dc783bae5863771f45b8bad550e0683301d4e01b875ba30ae5aa2",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The destination is alice muxed with ID 7.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/path_payment_strict_send/destination",
+        "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAA53PW"
+      },
+      {
+        "says": "The path holds the 12-character code XPFLONGCODE1.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/path_payment_strict_send/path/0/credit_alphanum12/asset_code",
+        "equals": "XPFLONGCODE1"
+      },
+      {
+        "says": "The path payment succeeds and its last hop pays alice's base account.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/path_payment_strict_send/success/last/destination",
+        "equals": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+      }
+    ]
+  }
+}

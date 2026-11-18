@@ -1,0 +1,97 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "trustline.maintain-liabilities",
+  "title": "A trustline set to authorized-to-maintain-liabilities",
+  "pattern": "SET_TRUST_LINE_FLAGS clears AUTHORIZED (1) and sets AUTHORIZED_TO_MAINTAIN_LIABILITIES (2) on bob's XPF trustline, which also carries TRUSTLINE_CLAWBACK_ENABLED (4) inherited from the issuer: flags go from 5 to 6. Readers that test flags == 2 instead of the bit miss the state; readers that ignore the clawback bit miss that the balance can be clawed back.",
+  "caps": [
+    "CAP-0018",
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "trustline flag AUTHORIZED_TO_MAINTAIN_LIABILITIES"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "43504f4091c03c7bc5d30a3d2173309c02cb6224ead353eeb094cbf0a088364e",
+      "size": 2260,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 21,
+        "recipe": "recipes/classic/gen.mjs#set-trustline-flags-maintain-liabilities"
+      },
+      "focus": {
+        "tx_hash": "be247bf55c9dcd4f167a30dd57e7e01604017467379e713f976c14ba3f67292b",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "7c4d5b7c9ec8e41ddfc8b921326c8ac8984f8ab61229d68b4203a192bcd8187d",
+      "size": 2260,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 21,
+        "recipe": "recipes/classic/gen.mjs#set-trustline-flags-maintain-liabilities"
+      },
+      "focus": {
+        "tx_hash": "fcb7e0517778902523177ba14cf88e589a0cb2017fffc1ff40f0639098736e30",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Before: flags 5 (authorized, clawback enabled).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/state/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+          "/state/data/trustline/flags": 5
+        }
+      },
+      {
+        "says": "After: flags 6 (maintain liabilities, clawback enabled).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+          "/updated/data/trustline/flags": 6
+        }
+      }
+    ]
+  }
+}

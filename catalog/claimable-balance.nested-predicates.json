@@ -1,0 +1,67 @@
+{
+  "id": "claimable-balance.nested-predicates",
+  "title": "A claimable balance with nested and/or/not predicates and a B… address event",
+  "pattern": "CREATE_CLAIMABLE_BALANCE with predicate and(not(before_relative 60), or(before_absolute 2100-01-01, unconditional)). The result returns the balance ID as a B… strkey, and the event names it as the destination.",
+  "caps": [
+    "CAP-0023",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-C9",
+      "placement": "claimable balance with nested and/or/not predicates"
+    },
+    {
+      "id": "H-A10",
+      "placement": "ClaimableBalanceID returned in the result as a B… strkey"
+    },
+    {
+      "id": "H-A5",
+      "placement": "claimable-balance address B… in a CAP-0067 event topic"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "claimable-balance-nested-predicates",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The result returns the balance ID.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/create_claimable_balance/success",
+      "equals": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The first claimant's predicate is an and whose first branch is a not.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/claimable_balance/claimants/0/claimant_type_v0/destination": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event goes to the B… address.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/2/address": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

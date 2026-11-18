@@ -1,0 +1,51 @@
+{
+  "id": "sponsorship.revoke",
+  "title": "Revoking a sponsorship moves the reserve back",
+  "pattern": "REVOKE_SPONSORSHIP on eve's data entry: the entry stays, its sponsoring ID is cleared, and the reserve moves from sponsor to eve.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "RevokeSponsorship of a data entry"
+    },
+    {
+      "id": "H-D3",
+      "placement": "sponsorship moves between accounts with no create or delete"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "revoke-sponsorship",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The data entry is updated, not removed.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/data/data_name": "sponsored"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (revoke_sponsorship) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/revoke_sponsorship",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

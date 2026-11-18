@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.change-trust.no-issuer",
+  "title": "CHANGE_TRUST fails with CHANGE_TRUST_NO_ISSUER",
+  "pattern": "A transaction whose CHANGE_TRUST operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (no_issuer). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.change_trust.no_issuer in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "042d3371dce2c949973bdb0445d1feefd36c2c6ba759662c4835477ebfdde529",
+      "size": 11708,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/classic/gen.mjs#CHANGE_TRUST_NO_ISSUER"
+      },
+      "focus": {
+        "tx_hash": "c26cea039dd6e1e0bb906a3f592985df1e23aaf902a5645dcc8d7cb24d0e4960",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b9439cac36b8114fbd2db432fc68c247f05ad6384b5a73cdd2207a2f7dc5541f",
+      "size": 11708,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/classic/gen.mjs#CHANGE_TRUST_NO_ISSUER"
+      },
+      "focus": {
+        "tx_hash": "8833de55babff5a178daef8d3542c0134a7225b0b195013f1941cd4617bd208f",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with no_issuer.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result/tx_failed/0/op_inner/change_trust",
+        "equals": "no_issuer"
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/tx_apply_processing/v4/tx_changes_before",
+        "length": 2
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/fee_processing",
+        "length": 2
+      }
+    ]
+  }
+}

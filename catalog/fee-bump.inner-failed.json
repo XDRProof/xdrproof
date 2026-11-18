@@ -1,0 +1,52 @@
+{
+  "id": "fee-bump.inner-failed",
+  "title": "A fee bump whose inner transaction fails",
+  "pattern": "The inner payment fails (underfunded): the result is txFEE_BUMP_INNER_FAILED, the fee source is still charged, and the inner sequence is consumed.",
+  "caps": [
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "TransactionResult.txFEE_BUMP_INNER_FAILED"
+    },
+    {
+      "id": "H-C1",
+      "placement": "failed inner transaction inside a fee bump"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "fee-bump-inner-failed",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The inner payment fails with underfunded.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/payment",
+      "equals": "underfunded",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "carol is still charged.",
+      "at": "tx.fee_processing",
+      "some": {
+        "/updated/data/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

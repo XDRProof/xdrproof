@@ -1,0 +1,149 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "pool.deposit-l-address-event",
+  "title": "A pool deposit: transfer events to an L… address",
+  "pattern": "CHANGE_TRUST to pool shares creates the liquidity-pool entry (not the deposit, which only updates it), and LIQUIDITY_POOL_DEPOSIT emits transfer events whose destination is the pool, rendered as an L… strkey (CAP-0067). Readers that create pools on deposit, or expect G or C addresses in event topics, get both wrong.",
+  "caps": [
+    "CAP-0038",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "pool entry created by ChangeTrust to pool shares; LiquidityPoolDeposit only updates it"
+    },
+    {
+      "id": "H-A5",
+      "placement": "liquidity-pool address L… in a CAP-0067 event topic"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "52a9b11a883ec1af69e89e8d8b2f7ae86cd6c76b0013c1fde8aec69adee2471a",
+      "size": 4120,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 13,
+        "recipe": "recipes/classic/gen.mjs#pool-share-trustline-and-deposit"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "f5abeccff28810b687087c29b5d6f3ab701663c56e2e0e64f37b2d15a4650845",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "52a9b11a883ec1af69e89e8d8b2f7ae86cd6c76b0013c1fde8aec69adee2471a",
+            "runs": 11
+          },
+          {
+            "sha256": "584e6449e3015e2cdf13ac2b2759f74bd15b491d3c9e541dfd0caf977cf34fc6",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "6912892eb54c47131db37aad32d2476529ecebbecb9a620e53b424b74fa99b38",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "77244224ee2efc308d6d8b5cdf46a3c2928fff45f8dd9a6b066767ea7b6bc4a9",
+            "runs": 2
+          },
+          {
+            "sha256": "207eb20509d3472f0843d2739d98ac3cf5d906506cab75c99592ea3183c46530",
+            "runs": 1
+          },
+          {
+            "sha256": "2ab3d3215f76e86b843d6a7104902143a0feb3d5ff74c0ae055133c09fe14576",
+            "runs": 1
+          },
+          {
+            "sha256": "7da299803e00adfb68f820322f9f5450b934361d29c454cbdd69b707db97ec56",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "b9d2cba2c6a698407b9048553b7f02f84513a8ca3bee8172210a9ac43d3ea91d",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "886eea358d19aa336abad940526dd68cf4756952c1d10b225f923fbc6bb24a13",
+      "size": 4120,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 13,
+        "recipe": "recipes/classic/gen.mjs#pool-share-trustline-and-deposit"
+      },
+      "focus": {
+        "tx_hash": "c2d3d862504e64c70e4057bf4ceea7b50c9fae8e7d2c193c7a309429d8a49f29",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "mm transfers XLM to the pool, whose address is an L… strkey.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/1/events",
+        "some": {
+          "/body/v0/topics/1/address": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+          "/body/v0/topics/2/address": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+        }
+      },
+      {
+        "says": "Operation 0 (CHANGE_TRUST) creates the pool entry, keyed by the same L… ID.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+        }
+      },
+      {
+        "says": "Operation 1 (the deposit) only updates it.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/1/changes",
+        "some": {
+          "/updated/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+        }
+      }
+    ]
+  }
+}

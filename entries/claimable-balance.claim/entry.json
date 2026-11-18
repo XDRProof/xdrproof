@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "claimable-balance.claim",
+  "title": "A claimable balance is claimed: the entry is removed",
+  "pattern": "CLAIM_CLAIMABLE_BALANCE removes the balance entry and credits the claimant.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C9",
+      "placement": "ClaimClaimableBalance removes the entry"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "0efbbee9de79ef1b1b407de7267138450213891e3b1ba7033747dc29eeee8902",
+      "size": 3920,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 17,
+        "recipe": "recipes/classic/gen.mjs#claim-claimable-balance"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "dda14f8ef11a755460b514a652f7fa00150a5411784e4c4ac30e257d33341982",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "0efbbee9de79ef1b1b407de7267138450213891e3b1ba7033747dc29eeee8902",
+            "runs": 17
+          },
+          {
+            "sha256": "853ed852ded07e4e3bdd7e0e009b095623f208ac503c830984c33fccc98d6881",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "fb2b569dc3810fa3c7092332782c4857556efbffd3955821c3831e0549972ff9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "84e3815227d948ecc8349546003d2b06b7eee7bbd0c1f74d9a80ad8c842519c4",
+      "size": 3920,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 17,
+        "recipe": "recipes/classic/gen.mjs#claim-claimable-balance"
+      },
+      "focus": {
+        "tx_hash": "14627842a5f71ea09790b22c98efa88d7ba016a814825cb698c629940ea7be75",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The balance entry is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/claimable_balance/balance_id": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4"
+        }
+      },
+      {
+        "says": "Operation 0 (claim_claimable_balance) succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/claim_claimable_balance",
+        "equals": "success"
+      }
+    ]
+  }
+}

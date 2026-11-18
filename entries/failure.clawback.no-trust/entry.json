@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.clawback.no-trust",
+  "title": "CLAWBACK fails with CLAWBACK_NO_TRUST",
+  "pattern": "A transaction whose CLAWBACK operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (no_trust). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.clawback.no_trust in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "c7a5a4085675a82c07d9530acee2ab4491281ad77b0bf132b408a1f8cef893a8",
+      "size": 1812,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 47,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_NO_TRUST"
+      },
+      "focus": {
+        "tx_hash": "147489deeaa3e77827822914deb20be77339cb9e313acb879ddc975d404a5e40",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "109b4eda832baed52a524922685c1795f2581dc4c791cc556af8979dc743aa75",
+      "size": 1812,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 47,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_NO_TRUST"
+      },
+      "focus": {
+        "tx_hash": "1f4ca6cb5910ff3dffff317ed008175335d3acc39946e699aff37290feba8533",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with no_trust.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/clawback",
+        "equals": "no_trust"
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/tx_changes_before",
+        "length": 2
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2
+      }
+    ]
+  }
+}

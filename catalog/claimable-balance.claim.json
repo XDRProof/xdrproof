@@ -1,0 +1,47 @@
+{
+  "id": "claimable-balance.claim",
+  "title": "A claimable balance is claimed: the entry is removed",
+  "pattern": "CLAIM_CLAIMABLE_BALANCE removes the balance entry and credits the claimant.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C9",
+      "placement": "ClaimClaimableBalance removes the entry"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "claim-claimable-balance",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The balance entry is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/claimable_balance/balance_id": "BAADXOS52AXMP4SWKB46PTNCCATHNNIMAUC7T4EPIACH5CZRN6HIK4BKR4"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (claim_claimable_balance) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/claim_claimable_balance",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

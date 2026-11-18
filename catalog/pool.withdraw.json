@@ -1,0 +1,47 @@
+{
+  "id": "pool.withdraw",
+  "title": "A liquidity-pool withdrawal",
+  "pattern": "LIQUIDITY_POOL_WITHDRAW burns pool shares and moves both reserves back to the account.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "LiquidityPoolWithdraw"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "pool-withdraw",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 (liquidity_pool_withdraw) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/liquidity_pool_withdraw",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The pool entry, keyed by its L… ID, is updated.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "id": "muxed.payment.every-position",
+  "title": "One payment with a muxed transaction source, operation source and destination",
+  "pattern": "A payment where the transaction source, the operation source and the destination are all muxed accounts (M…), with IDs 1, 2^64-1 and 2^63. Each M address is a base account plus a 64-bit ID: the ID must be kept, and balances belong to the base account. Readers that store the M string as the account, or drop the ID, misattribute or lose the payment.",
+  "caps": [
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "Transaction.sourceAccount, Operation.sourceAccount and PaymentOp.destination as MuxedAccount"
+    },
+    {
+      "id": "H-A2",
+      "placement": "muxed IDs 1, 2^63 (above int64 max) and 2^64-1"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "muxed-payment",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction source is alice muxed with ID 1.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/source_account",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAAGYJW",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The operation source is alice muxed with ID 2^64-1.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/source_account",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJ7777777777775YC2",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The destination is bob muxed with ID 2^63, above the int64 maximum.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/payment/destination",
+      "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5BAAAAAAAAAAAACH6Q",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

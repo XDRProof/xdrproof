@@ -1,0 +1,110 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.payment.underfunded-by-selling-liabilities",
+  "title": "PAYMENT fails with PAYMENT_UNDERFUNDED",
+  "pattern": "A transaction whose PAYMENT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (underfunded). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened. The account holds 100 XPF but has an offer selling 60, so only 40 is available: a payment of 41 fails although the balance covers it.",
+  "caps": [
+    "pre-cap",
+    "CAP-0003"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.payment.underfunded in a closed ledger"
+    },
+    {
+      "id": "H-C17",
+      "placement": "PAYMENT_UNDERFUNDED with balance 100 > amount 41: 60 of it is selling liabilities"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "1fe54eff6d733d9f1b37efd4be52102ad1ccc0593b0fb4f00e62490b503b0b25",
+      "size": 2908,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 70,
+        "recipe": "recipes/classic/gen.mjs#PAYMENT_UNDERFUNDED_BY_SELLING_LIABILITIES"
+      },
+      "focus": {
+        "tx_hash": "768fe24dd26174273efe9421b7aa516589a49b8244b76979ca719c2aaaef3e06",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b2019fd2bf585a394f4ebc5fe83ab899ad3290bdde57b8bfeaeae4dfd9d3b260",
+      "size": 2908,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 70,
+        "recipe": "recipes/classic/gen.mjs#PAYMENT_UNDERFUNDED_BY_SELLING_LIABILITIES"
+      },
+      "focus": {
+        "tx_hash": "8e8894b3422ca517a7f811f040cbb8a7c1db25622ab899e2c5f7499b7e5f0e11",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/payment",
+        "equals": "underfunded"
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/tx_changes_before",
+        "length": 2
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2
+      }
+    ]
+  }
+}

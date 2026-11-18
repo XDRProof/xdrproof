@@ -15,11 +15,13 @@ let ledger = 1;
 const close = async () => { ledger++; const r = await get(`manualclose?ledgerSeq=${ledger}&closeTime=${T0 + ledger * STEP}`); console.log('  ', r.trim());
   if (!r.includes(`sequence number ${ledger} `)) throw new Error(`close of ledger ${ledger} failed: ${r.trim()}`); };
 const TB = { minTime: 0, maxTime: 0 };
+const steps = []; // every step, in order: the build reads the focus transaction of an entry from here
 const send = async (name, tx) => {
   const blob = encodeURIComponent(tx.toEnvelope().toXDR('base64'));
   const r = await get('tx?blob=' + blob); console.log(name, Buffer.from(tx.hash()).toString("hex"), r.trim());
   if (JSON.parse(r).status !== 'PENDING') throw new Error(`${name}: rejected at submission ${r.trim()}`);
   await close();
+  steps.push({ name, ledger, tx: Buffer.from(tx.hash()).toString('hex'), status: 'PENDING' });
 };
 const build = (srcId, seq, ops) => { const b = new S.TransactionBuilder(new S.Account(srcId, seq), { fee: '1000', networkPassphrase: passphrase, timebounds: TB }); ops.forEach(o => b.addOperation(o)); return b.build(); };
 console.log(await get('upgrades?mode=set&upgradetime=1970-01-01T00:00:00Z&protocolversion=30&basereserve=5000000'));
@@ -43,7 +45,6 @@ tx.sign(alice); await send('add-signed-payload-signers', tx); // ledger 6
 
 // ---- Ledgers 7+: the rest of the classic catalogue. Ledgers 3-6 above are unchanged. ----
 const cur = new Map([[alice.publicKey(), aseq + 1n], [bob.publicKey(), 3n << 32n], [root.publicKey(), 1n]]);
-const steps = [];
 const acct = (k) => new S.Account(k.publicKey(), cur.get(k.publicKey()).toString());
 const txb = (k, ops, opts = {}) => { const b = new S.TransactionBuilder(acct(k), { fee: '1000', networkPassphrase: passphrase, timebounds: TB, ...opts }); for (const o of ops) b.addOperation(o); return b.build(); };
 const submit = async (name, tx, src, note = '') => {

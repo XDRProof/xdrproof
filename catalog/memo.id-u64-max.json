@@ -1,0 +1,52 @@
+{
+  "id": "memo.id-u64-max",
+  "title": "MEMO_ID at u64 max, mapped to to_muxed_id",
+  "pattern": "MEMO_ID 2^64-1 (above int64): JSON as a string, and CAP-0067 copies it into the transfer event as to_muxed_id (u64).",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A6",
+      "placement": "MEMO_ID carried into the transfer event as to_muxed_id (u64)"
+    },
+    {
+      "id": "H-B10",
+      "placement": "u64 above int64 max in JSON"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "memo-id-u64-max",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The memo ID is 18446744073709551615.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/memo/id",
+      "equals": "18446744073709551615",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event carries it as to_muxed_id u64.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/data/map/1/val/u64": "18446744073709551615"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

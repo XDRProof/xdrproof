@@ -1,0 +1,68 @@
+{
+  "id": "trustline.multi-source-alphanum12-max-limit",
+  "title": "Four trustlines from three operation sources in one transaction, one alphanum-12 at the int64-max limit",
+  "pattern": "One transaction, three operation sources (alice, bob, mm), alphanum-4 and alphanum-12 assets, and a trustline limit of 922337203685.4775807 (int64 max stroops). Readers that attribute every operation to the transaction source, or parse the limit as a float, get it wrong.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C5",
+      "placement": "one transaction with operations from three different sources"
+    },
+    {
+      "id": "H-B9",
+      "placement": "CHANGE_TRUST to an alphanumeric-12 asset"
+    },
+    {
+      "id": "H-B3",
+      "placement": "trustline limit at int64 max"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "multi-source-change-trust-alphanum4-alphanum12",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 1 has source bob.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/1/source_account",
+      "equals": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 3 trusts the alphanum-12 code XPFLONGCODE1 with limit 9223372036854775807 stroops.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/3/body/change_trust/limit",
+      "equals": "9223372036854775807",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "A trustline for XPFLONGCODE1 is created for mm.",
+      "at": "tx.meta",
+      "path": "/operations/3/changes",
+      "some": {
+        "/created/data/trustline/account_id": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+        "/created/data/trustline/asset/credit_alphanum12/asset_code": "XPFLONGCODE1"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

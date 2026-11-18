@@ -1,0 +1,93 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "trustline.clawback",
+  "title": "A trustline balance is clawed back",
+  "pattern": "CLAWBACK burns 10 XPF from mm's trustline and emits a clawback event.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "ClawbackOp on a trustline"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "8fe41be7a172546368e4d0cf559c9d470fc2c89957bc0e375a0f6206186a94da",
+      "size": 2320,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 20,
+        "recipe": "recipes/classic/gen.mjs#clawback"
+      },
+      "focus": {
+        "tx_hash": "fd6cb9627902eb55b8c8b5c71eb56122e7210ac96f97bb3d3bcd79a4bcfcca50",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "1717d19cde918b1b3892cc7c6f0c6edb2fa99ca61657f92e5aece22af7af4098",
+      "size": 2320,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 20,
+        "recipe": "recipes/classic/gen.mjs#clawback"
+      },
+      "focus": {
+        "tx_hash": "a03b38e55ae701cea92e5e5c7b8b1627b315aaa1d0dbb07876d2cc86a2e2ce8d",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The clawback event names mm and XPF.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/0/symbol": "clawback",
+          "/body/v0/topics/1/address": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB"
+        }
+      },
+      {
+        "says": "Operation 0 (clawback) succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/clawback",
+        "equals": "success"
+      }
+    ]
+  }
+}

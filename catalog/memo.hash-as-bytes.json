@@ -1,0 +1,50 @@
+{
+  "id": "memo.hash-as-bytes",
+  "title": "MEMO_HASH mapped to to_muxed_id bytes",
+  "pattern": "CAP-0067 renders MEMO_HASH in the transfer event as bytes, indistinguishable from MEMO_RETURN.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A6",
+      "placement": "MEMO_HASH carried into the transfer event as to_muxed_id (bytes)"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "memo-hash",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The memo is MEMO_HASH sha256(\"xdrproof:memo-hash\").",
+      "at": "tx.envelope",
+      "path": "/tx/tx/memo/hash",
+      "equals": "a01ecbb5d9870ec923a9f9750a7a87faae4913aedcb97154305f01f1a5180796",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event carries the same 32 bytes as to_muxed_id, as bytes: the memo type is gone.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/data/map/1/key/symbol": "to_muxed_id",
+        "/body/v0/data/map/1/val/bytes": "a01ecbb5d9870ec923a9f9750a7a87faae4913aedcb97154305f01f1a5180796"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

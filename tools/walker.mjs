@@ -35,10 +35,12 @@ export function atoms(defs, roots) {
   return { arms, enums };
 }
 
-// SEP-0051-style string rendering: printable ASCII kept, backslash doubled, other bytes as \xNN.
+// SEP-0051 string rendering, as the escape-bytes crate (0.1.1) that rs-stellar-xdr uses does it: backslash
+// doubled; NUL, tab, CR and LF as \0 \t \r \n; other printable ASCII kept; every other byte as lowercase \xNN.
+const NAMED = { 0x00: '\\0', 0x09: '\\t', 0x0d: '\\r', 0x0a: '\\n', 0x5c: '\\\\' };
 export function escapeBytes(buf) {
   let s = '';
-  for (const b of buf) s += b === 0x5c ? '\\\\' : b >= 0x20 && b <= 0x7e ? String.fromCharCode(b) : '\\x' + b.toString(16).padStart(2, '0');
+  for (const b of buf) s += NAMED[b] ?? (b >= 0x20 && b <= 0x7e ? String.fromCharCode(b) : '\\x' + b.toString(16).padStart(2, '0'));
   return s;
 }
 

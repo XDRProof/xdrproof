@@ -1,0 +1,122 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "fee-bump.inner-success",
+  "title": "A fee bump: outer and inner hashes, fee source and inner source",
+  "pattern": "carol pays the fee for alice's payment. The result pair carries the outer (fee-bump) hash; the inner result carries the inner transaction's hash; alice's sequence is consumed and carol is charged.",
+  "caps": [
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "TransactionResult.txFEE_BUMP_INNER_SUCCESS"
+    },
+    {
+      "id": "H-C14",
+      "placement": "outer hash in TransactionResultPair, inner hash in InnerTransactionResultPair"
+    },
+    {
+      "id": "H-A8",
+      "placement": "fee source carol, inner source alice"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "76bab0883afcfc19ce3a9482dbc650977cef116a9d545aecca2f0aa205ac5304",
+      "size": 3472,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 30,
+        "recipe": "recipes/classic/gen.mjs#fee-bump"
+      },
+      "focus": {
+        "tx_hash": "a4dd8a5836117b8c1742598ed6ecfaad1af25f5ce2bc83cd7998328373b31bfa",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "f443ceb120fea7f4c2339cb71d9df94e36aec1ae8b55aa03bcff79c14fde71fd",
+      "size": 3472,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 30,
+        "recipe": "recipes/classic/gen.mjs#fee-bump"
+      },
+      "focus": {
+        "tx_hash": "adcfe88601c7b48e729348a270068158fc1063e1dfe979e333eb69b1391c1bfc",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The fee source is carol.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx_fee_bump/tx/fee_source",
+        "equals": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+      },
+      {
+        "says": "The inner source is alice.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+        "equals": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+      },
+      {
+        "says": "The inner payment succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_fee_bump_inner_success/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      },
+      {
+        "says": "carol is charged the fee.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "some": {
+          "/updated/data/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+        }
+      }
+    ]
+  }
+}

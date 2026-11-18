@@ -1,0 +1,59 @@
+{
+  "id": "failure.tx.bad-sponsorship",
+  "title": "A transaction left with an open sponsorship fails txBAD_SPONSORSHIP",
+  "pattern": "BEGIN_SPONSORING_FUTURE_RESERVES without the matching END in the same transaction: every operation succeeds, then the transaction fails with txBAD_SPONSORSHIP and nothing it did is kept. Its fee is charged and its sequence number consumed. Readers that take operation results at face value record sponsorship that never happened.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "TransactionResult.txBAD_SPONSORSHIP"
+    },
+    {
+      "id": "H-C1",
+      "placement": "txBAD_SPONSORSHIP: a failed transaction whose operations report success"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "txBAD_SPONSORSHIP",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction fails with txBAD_SPONSORSHIP.",
+      "at": "tx.result",
+      "equals": "tx_bad_sponsorship",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is consumed.",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

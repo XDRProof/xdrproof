@@ -1,0 +1,117 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "muxed.payment.every-position",
+  "title": "One payment with a muxed transaction source, operation source and destination",
+  "pattern": "A payment where the transaction source, the operation source and the destination are all muxed accounts (M…), with IDs 1, 2^64-1 and 2^63. Each M address is a base account plus a 64-bit ID: the ID must be kept, and balances belong to the base account. Readers that store the M string as the account, or drop the ID, misattribute or lose the payment.",
+  "caps": [
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "Transaction.sourceAccount, Operation.sourceAccount and PaymentOp.destination as MuxedAccount"
+    },
+    {
+      "id": "H-A2",
+      "placement": "muxed IDs 1, 2^63 (above int64 max) and 2^64-1"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "fd9d0c246bf3504336ce6c6d6ce1ca8506d76fba4983ffa85ec2d63e49bfda23",
+      "size": 2456,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 5,
+        "recipe": "recipes/classic/gen.mjs#muxed-payment"
+      },
+      "focus": {
+        "tx_hash": "e789c6146d92616b7ff7196eda35e8340a94dc36f23dce29f425dfa1e54576f2",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "c4d525c058996f2f9dd83b97328e362a72c9322594128b9a2a764e41035e217c",
+      "size": 2456,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 5,
+        "recipe": "recipes/classic/gen.mjs#muxed-payment"
+      },
+      "focus": {
+        "tx_hash": "d3035cfa58d3e5238f7a3af3ccf778ee0d86ffbfbd6511f843b60edde7d3617b",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction source is alice muxed with ID 1.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/source_account",
+        "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAAGYJW"
+      },
+      {
+        "says": "The operation source is alice muxed with ID 2^64-1.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/source_account",
+        "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJ7777777777775YC2"
+      },
+      {
+        "says": "The destination is bob muxed with ID 2^63, above the int64 maximum.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/payment/destination",
+        "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5BAAAAAAAAAAAACH6Q"
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

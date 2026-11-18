@@ -1,0 +1,52 @@
+{
+  "id": "muxed.account-merge-destination",
+  "title": "An account merged into a muxed destination",
+  "pattern": "ACCOUNT_MERGE whose destination is M(alice, 42): carol's entry is removed and its balance goes to alice's base account.",
+  "caps": [
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "ACCOUNT_MERGE destination as MuxedAccount"
+    },
+    {
+      "id": "H-C11",
+      "placement": "account entry removed by ACCOUNT_MERGE"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "account-merge-to-muxed",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The merge destination is alice muxed with ID 42.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/account_merge",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAFK4Q4",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "carol's account entry is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

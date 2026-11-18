@@ -1,0 +1,48 @@
+{
+  "id": "event.classic.issuer-payment-is-mint",
+  "title": "A payment from the issuer is a mint event, not a transfer",
+  "pattern": "Under CAP-0067 a payment whose source is the asset issuer emits mint (not transfer). Readers that only follow transfer events miss issuance.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "PaymentOp from the issuer emits a CAP-0067 mint event"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "issue-assets",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The first payment emits mint to alice.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "mint",
+        "/body/v0/topics/1/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (payment) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

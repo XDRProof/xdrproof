@@ -1,0 +1,113 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "trustline.multi-source-alphanum12-max-limit",
+  "title": "Four trustlines from three operation sources in one transaction, one alphanum-12 at the int64-max limit",
+  "pattern": "One transaction, three operation sources (alice, bob, mm), alphanum-4 and alphanum-12 assets, and a trustline limit of 922337203685.4775807 (int64 max stroops). Readers that attribute every operation to the transaction source, or parse the limit as a float, get it wrong.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C5",
+      "placement": "one transaction with operations from three different sources"
+    },
+    {
+      "id": "H-B9",
+      "placement": "CHANGE_TRUST to an alphanumeric-12 asset"
+    },
+    {
+      "id": "H-B3",
+      "placement": "trustline limit at int64 max"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "95f6d76bd916a7f6a8005de4c38c88aff37e3695189583ac2b83877947b179d8",
+      "size": 4684,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 9,
+        "recipe": "recipes/classic/gen.mjs#multi-source-change-trust-alphanum4-alphanum12"
+      },
+      "focus": {
+        "tx_hash": "1cd021052c25b4a0dcf61c897702c0d6f402e186f4bd2d594ae1bff3bda606c2",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "fadfc19e878c141435ffea95d0b093b856b5782cb3506ce23c46d6a296c395bf",
+      "size": 4684,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 9,
+        "recipe": "recipes/classic/gen.mjs#multi-source-change-trust-alphanum4-alphanum12"
+      },
+      "focus": {
+        "tx_hash": "729f51a2755bf206d34f2e748e3eb984e119c161743bb782174aeb1f0ea8aaca",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 1 has source bob.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/1/source_account",
+        "equals": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      {
+        "says": "Operation 3 trusts the alphanum-12 code XPFLONGCODE1 with limit 9223372036854775807 stroops.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/3/body/change_trust/limit",
+        "equals": "9223372036854775807"
+      },
+      {
+        "says": "A trustline for XPFLONGCODE1 is created for mm.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/3/changes",
+        "some": {
+          "/created/data/trustline/account_id": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+          "/created/data/trustline/asset/credit_alphanum12/asset_code": "XPFLONGCODE1"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "event.classic.payment-transfer",
+  "title": "A classic payment emits a transfer event (CAP-0067)",
+  "pattern": "Since CAP-0067, classic operations emit the same events as the Stellar Asset Contract: a native payment emits transfer with from, to and the asset. Readers that take payments only from operations, or only from Soroban events, double-count or miss them.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-E1",
+      "placement": "PaymentOp emits a CAP-0067 transfer event"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "payment",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation emits a transfer event from alice to bob in native.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "transfer",
+        "/body/v0/topics/1/address": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+        "/body/v0/topics/2/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+        "/body/v0/topics/3/string": "native"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The amount is 1 XLM (10,000,000 stroops) as an i128.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/data/i128": "10000000"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction-level events carry the fee charge.",
+      "at": "tx.meta",
+      "path": "/events",
+      "some": {
+        "/event/body/v0/topics/0/symbol": "fee"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

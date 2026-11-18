@@ -1,0 +1,51 @@
+{
+  "id": "trustline.maintain-liabilities",
+  "title": "A trustline set to authorized-to-maintain-liabilities",
+  "pattern": "SET_TRUST_LINE_FLAGS clears AUTHORIZED (1) and sets AUTHORIZED_TO_MAINTAIN_LIABILITIES (2) on bob's XPF trustline, which also carries TRUSTLINE_CLAWBACK_ENABLED (4) inherited from the issuer: flags go from 5 to 6. Readers that test flags == 2 instead of the bit miss the state; readers that ignore the clawback bit miss that the balance can be clawed back.",
+  "caps": [
+    "CAP-0018",
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "trustline flag AUTHORIZED_TO_MAINTAIN_LIABILITIES"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "set-trustline-flags-maintain-liabilities",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Before: flags 5 (authorized, clawback enabled).",
+      "at": "op.changes",
+      "some": {
+        "/state/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+        "/state/data/trustline/flags": 5
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "After: flags 6 (maintain liabilities, clawback enabled).",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+        "/updated/data/trustline/flags": 6
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

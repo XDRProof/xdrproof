@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.clawback-claimable-balance.does-not-exist",
+  "title": "CLAWBACK_CLAIMABLE_BALANCE fails with CLAWBACK_CLAIMABLE_BALANCE_DOES_NOT_EXIST",
+  "pattern": "A transaction whose CLAWBACK_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and none of its operations change state. The result carries the operation's result code (does_not_exist). Readers that skip failed transactions lose the fee and sequence change; readers that assume a failed transaction changed something record effects that never happened.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.clawback_claimable_balance.does_not_exist in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5986986cb4a79334cb7e23932e56537ab4232d5e33c196d6a85136f7b6152a42",
+      "size": 1760,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 49,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_CLAIMABLE_BALANCE_DOES_NOT_EXIST"
+      },
+      "focus": {
+        "tx_hash": "e4e7db7524b285fc3126c142b066e2a3b2bf5ab0412ef1281d6e96944ed04383",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6fbf1f0d139d6cb356ffb4e433b19dc18999efbfaf11e13c1a8ef0a65670c926",
+      "size": 1760,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 49,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_CLAIMABLE_BALANCE_DOES_NOT_EXIST"
+      },
+      "focus": {
+        "tx_hash": "9b7a016499d63f4bb613b44b70f645767042e07d2c6d5aeb1f33f95de334e2e3",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with does_not_exist.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/clawback_claimable_balance",
+        "equals": "does_not_exist"
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The sequence number is still consumed: the source account changes before apply (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/tx_changes_before",
+        "length": 2
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "id": "preconditions.v2-extra-signer",
+  "title": "Preconditions v2 with ledger bounds, min sequence and an extra signed-payload signer",
+  "pattern": "CAP-0021 preconditions: ledger bounds, a minimum source sequence, and an extra signer that is a signed-payload key (P…) whose signature must be on the transaction.",
+  "caps": [
+    "CAP-0021",
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-C4",
+      "placement": "Preconditions.PRECOND_V2 with ledgerBounds, minSeqNum and extraSigners"
+    },
+    {
+      "id": "H-A3",
+      "placement": "signed-payload key as a CAP-0021 extra signer"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "preconditions-v2-extra-signed-payload-signer",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The extra signer is eve's key with the 32-byte payload sha256(\"xdrproof:extra-signer\"), a P… strkey.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/cond/v2/extra_signers/0",
+      "equals": "PBS6O4QWCGUCQNWQ4JC6CYQVQQYB5DYHHQ7XO5Q4IM5VM46WKYMQYAAAAAQIIVIEPJYVX7I3RYM55BVCG2UM3H2PHQFR24O3GJZMYLM4ZPOASZUSDE",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Ledger bounds are min 1, max 0 (no upper bound).",
+      "at": "tx.envelope",
+      "path": "/tx/tx/cond/v2/ledger_bounds",
+      "equals": {
+        "min_ledger": 1,
+        "max_ledger": 0
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction carries two signatures: bob's and the signed-payload signature for the extra signer.",
+      "at": "tx.envelope",
+      "path": "/tx/signatures",
+      "length": 2,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The payment succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

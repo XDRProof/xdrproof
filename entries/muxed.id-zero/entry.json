@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "muxed.id-zero",
+  "title": "A payment to a muxed address with ID 0",
+  "pattern": "A muxed destination whose ID is 0: still an M address, distinct from the plain G account. Readers that treat ID 0 as \"no ID\" collapse it into the base account.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A2",
+      "placement": "PaymentOp.destination muxed ID 0"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "97127c4b5e2b7549d19273aa2bdffc2ddbe427cc52f730bec910aac2c3345712",
+      "size": 3660,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 56,
+        "recipe": "recipes/classic/gen.mjs#muxed-id-zero"
+      },
+      "focus": {
+        "tx_hash": "29936c39aa3550769ee46dbebb59637aed03df69db7b890fe587733c706831f4",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "71736f78b456dce079aa6c514cd531e2bc18e4a2e21817ca132e851b49dc8493",
+      "size": 3660,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 56,
+        "recipe": "recipes/classic/gen.mjs#muxed-id-zero"
+      },
+      "focus": {
+        "tx_hash": "8df8ae107db501575f077b0e9190f23dc4cdf95402f047e2e3831bdae7db3090",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The destination is bob muxed with ID 0, an M address.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/payment/destination",
+        "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAAAHBK"
+      },
+      {
+        "says": "The transfer event names bob's base account and carries to_muxed_id 0.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/body/v0/topics/2/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+          "/body/v0/data/map/1/val/u64": "0"
+        }
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

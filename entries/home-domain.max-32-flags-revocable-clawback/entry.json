@@ -1,0 +1,99 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "home-domain.max-32-flags-revocable-clawback",
+  "title": "Issuer flags AUTH_REVOCABLE and AUTH_CLAWBACK_ENABLED with a 32-byte home domain",
+  "pattern": "SET_OPTIONS sets issuer flags 10 (revocable | clawback enabled) and a home domain of exactly 32 bytes, the XDR maximum.",
+  "caps": [
+    "pre-cap",
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-B6",
+      "placement": "SetOptionsOp.homeDomain at its 32-byte maximum"
+    },
+    {
+      "id": "H-C10",
+      "placement": "issuer flags AUTH_REVOCABLE | AUTH_CLAWBACK_ENABLED"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9f2a4f03e1468cbfdb2d6244e22a433a55ff25bf2cd669eea4f990148751b715",
+      "size": 1856,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/classic/gen.mjs#issuer-flags-revocable-clawback-max-home-domain"
+      },
+      "focus": {
+        "tx_hash": "618ac5fdd301f8f0507fa50c797beda8871d6cee8871a271734cefecc554edc0",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "00f253d53e81d0c57f26ea72b819f499337bbe6c1e0d3e8ec06982289031211b",
+      "size": 1856,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 8,
+        "recipe": "recipes/classic/gen.mjs#issuer-flags-revocable-clawback-max-home-domain"
+      },
+      "focus": {
+        "tx_hash": "3e5bb1a5c0ac8b6a2f1fcf35f9b20717ca111af0b9d75ef3eebe218faae494fc",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The home domain is 32 bytes.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/set_options/home_domain",
+        "equals": "xdrproof.dev/home-domain-is-32ch"
+      },
+      {
+        "says": "The issuer's flags become 10 (2 revocable + 8 clawback enabled).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/account/account_id": "GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND",
+          "/updated/data/account/flags": 10
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "id": "fee-bump.inner-success",
+  "title": "A fee bump: outer and inner hashes, fee source and inner source",
+  "pattern": "carol pays the fee for alice's payment. The result pair carries the outer (fee-bump) hash; the inner result carries the inner transaction's hash; alice's sequence is consumed and carol is charged.",
+  "caps": [
+    "CAP-0015"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "TransactionResult.txFEE_BUMP_INNER_SUCCESS"
+    },
+    {
+      "id": "H-C14",
+      "placement": "outer hash in TransactionResultPair, inner hash in InnerTransactionResultPair"
+    },
+    {
+      "id": "H-A8",
+      "placement": "fee source carol, inner source alice"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "fee-bump",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The fee source is carol.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/fee_source",
+      "equals": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The inner source is alice.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+      "equals": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The inner payment succeeds.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_success/result/result/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "carol is charged the fee.",
+      "at": "tx.fee_processing",
+      "some": {
+        "/updated/data/account/account_id": "GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

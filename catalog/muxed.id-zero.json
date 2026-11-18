@@ -1,0 +1,59 @@
+{
+  "id": "muxed.id-zero",
+  "title": "A payment to a muxed address with ID 0",
+  "pattern": "A muxed destination whose ID is 0: still an M address, distinct from the plain G account. Readers that treat ID 0 as \"no ID\" collapse it into the base account.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-A2",
+      "placement": "PaymentOp.destination muxed ID 0"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "muxed-id-zero",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The destination is bob muxed with ID 0, an M address.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/payment/destination",
+      "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAAAHBK",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transfer event names bob's base account and carries to_muxed_id 0.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/2/address": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+        "/body/v0/data/map/1/val/u64": "0"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

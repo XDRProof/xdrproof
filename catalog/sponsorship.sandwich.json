@@ -1,0 +1,51 @@
+{
+  "id": "sponsorship.sandwich",
+  "title": "A sponsorship sandwich: entries created under another account's reserve",
+  "pattern": "BEGIN_SPONSORING / manage_data and change_trust by eve / END_SPONSORING: the data entry and trustline are eve's, their reserve is sponsor's.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "BeginSponsoringFutureReserves … EndSponsoringFutureReserves around two entries"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "sponsorship-sandwich",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 1 creates eve's data entry \"sponsored\".",
+      "at": "tx.meta",
+      "path": "/operations/1/changes",
+      "some": {
+        "/created/data/data/account_id": "GBS6O4QWCGUCQNWQ4JC6CYQVQQYB5DYHHQ7XO5Q4IM5VM46WKYMQZK3X",
+        "/created/data/data/data_name": "sponsored"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The created data entry names sponsor as its sponsor.",
+      "at": "tx.meta",
+      "path": "/operations/1/changes",
+      "some": {
+        "/created/ext/v1/sponsoring_id": "GBILXTIGUOKNED4RCMJWQUDVTDGXJM3TBDUIK7FDJVX72ZPO32CKIJ66"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

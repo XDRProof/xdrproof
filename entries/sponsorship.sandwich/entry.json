@@ -1,0 +1,131 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sponsorship.sandwich",
+  "title": "A sponsorship sandwich: entries created under another account's reserve",
+  "pattern": "BEGIN_SPONSORING / manage_data and change_trust by eve / END_SPONSORING: the data entry and trustline are eve's, their reserve is sponsor's.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "BeginSponsoringFutureReserves … EndSponsoringFutureReserves around two entries"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "cd573c9fc562186e985d625979fb5dd85e4e9542c9d17e009bef46f66ba980fd",
+      "size": 3216,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/classic/gen.mjs#sponsorship-sandwich"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "8e081238071acf2af59d3c7a48b84e25f44eeffb771f65c68a7c143ae9b7877b",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "cd573c9fc562186e985d625979fb5dd85e4e9542c9d17e009bef46f66ba980fd",
+            "runs": 14
+          },
+          {
+            "sha256": "046bb9b9aeedf100cbab46c49f98f170198fd37d07a6a62a0b2f2876aec42e40",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "90f24bec2fed48016d6b838bca6be57236211e6bc4209b36def09fa03eae7084",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "ef6330c98ce5cd159b339eb00918aa53a32d15531cb9d8fb963d1d316606785f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "942e4cab42a8f3f1b61c040666b4a4a456bd331a22af8b5158c311dc542229bd",
+      "size": 3216,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 22,
+        "recipe": "recipes/classic/gen.mjs#sponsorship-sandwich"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "fd92918dbb421adcb1cbf454ba9bfa6abd5f928c955fa975175042fb6293cc18",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "942e4cab42a8f3f1b61c040666b4a4a456bd331a22af8b5158c311dc542229bd",
+            "runs": 1
+          },
+          {
+            "sha256": "df550eba0ce0566fb1e11d8037d0781d893e55fd795487cf820000bc7e0f7c53",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "784ee8fd4bd3eebbf52e7a88284e374112029b116b3ffc3b4349dc630acaeebb",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 1 creates eve's data entry \"sponsored\".",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/1/changes",
+        "some": {
+          "/created/data/data/account_id": "GBS6O4QWCGUCQNWQ4JC6CYQVQQYB5DYHHQ7XO5Q4IM5VM46WKYMQZK3X",
+          "/created/data/data/data_name": "sponsored"
+        }
+      },
+      {
+        "says": "The created data entry names sponsor as its sponsor.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/1/changes",
+        "some": {
+          "/created/ext/v1/sponsoring_id": "GBILXTIGUOKNED4RCMJWQUDVTDGXJM3TBDUIK7FDJVX72ZPO32CKIJ66"
+        }
+      }
+    ]
+  }
+}

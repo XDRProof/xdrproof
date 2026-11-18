@@ -1,0 +1,52 @@
+{
+  "id": "claimable-balance.clawback",
+  "title": "A claimable balance is clawed back by the issuer",
+  "pattern": "CLAWBACK_CLAIMABLE_BALANCE removes a balance that inherited CLAIMABLE_BALANCE_CLAWBACK_ENABLED; the issuer burns it.",
+  "caps": [
+    "CAP-0023",
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C9",
+      "placement": "ClawbackClaimableBalance"
+    },
+    {
+      "id": "H-C10",
+      "placement": "clawback of a claimable balance"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "clawback-claimable-balance",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The balance entry is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/claimable_balance/balance_id": "BAAJGTGV2ERE7FAFG2MYAX4FLGRZVMXYXQ6ZZKWZGQS6KERCUCIGRAVS4U"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (clawback_claimable_balance) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/clawback_claimable_balance",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

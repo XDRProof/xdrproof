@@ -1,0 +1,48 @@
+{
+  "id": "trustline.clawback",
+  "title": "A trustline balance is clawed back",
+  "pattern": "CLAWBACK burns 10 XPF from mm's trustline and emits a clawback event.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "ClawbackOp on a trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "clawback",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The clawback event names mm and XPF.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/0/symbol": "clawback",
+        "/body/v0/topics/1/address": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 (clawback) succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/clawback",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "id": "muxed.path-payment-destination",
+  "title": "A path payment through an alphanumeric-12 asset to a muxed destination",
+  "pattern": "PATH_PAYMENT_STRICT_SEND from XLM through XPFLONGCODE1 (alphanum-12) to XPF, delivered to M(alice, 7). It crosses offers on two order books.",
+  "caps": [
+    "CAP-0027",
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-A1",
+      "placement": "PathPaymentStrictSendOp.destination as MuxedAccount"
+    },
+    {
+      "id": "H-B9",
+      "placement": "alphanumeric-12 asset in a payment path"
+    },
+    {
+      "id": "H-C7",
+      "placement": "one path payment crosses offers in two order books"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "path-payment-strict-send-via-alphanum12-to-muxed",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The destination is alice muxed with ID 7.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/path_payment_strict_send/destination",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAAA53PW",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The path holds the 12-character code XPFLONGCODE1.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/path_payment_strict_send/path/0/credit_alphanum12/asset_code",
+      "equals": "XPFLONGCODE1",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The path payment succeeds and its last hop pays alice's base account.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/path_payment_strict_send/success/last/destination",
+      "equals": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}
