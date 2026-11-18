@@ -702,7 +702,7 @@
         "CAP-0062",
         "stellar-etl#461"
       ],
-      "test": "Generated: after a config upgrade to the minimum lifetimes and an eviction scan from level 1, ledgers with no transactions carry evicted_keys: three persistent entries archived to the hot archive 10 ledgers after creation, temporary entries deleted (including older ones the scan reached): s-base `archival-empty-ledgers`; mine a mainnet ledger with non-empty evicted_keys (B3)",
+      "test": "Generated: after a config upgrade to the minimum lifetimes and an eviction scan from level 1, ledgers with no transactions carry evicted_keys: three persistent entries archived to the hot archive 10 ledgers after creation, temporary entries deleted (including older ones the scan reached): s-base `archival-empty-ledgers`; mined: pubnet 65460631, 2000 evicted keys (1000 contract data and their 1000 TTLs), the per-ledger cap maxEntriesToArchive, in a ledger with 162 transactions",
       "checks": [
         "R"
       ]
@@ -792,7 +792,7 @@
         "CAP-0077",
         "wallet-backend#754"
       ],
-      "test": "CAP-0077 apply-time paths after freezing three trustlines: CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN, LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN, LIQUIDITY_POOL_WITHDRAW_TRUSTLINE_FROZEN, and a path payment that removes an offer whose seller trustline is frozen (nothing moved; the frozen trustline is still updated to release liabilities): s-base `frozen-*`. txFROZEN_KEY_ACCESSED is unreachable in a closed ledger: the check (TransactionFrame.cpp:1485) uses the same last-closed-ledger config at validation and apply, and queued transactions are re-validated after every close",
+      "test": "CAP-0077 apply-time paths after freezing three trustlines: CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN, LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN, LIQUIDITY_POOL_WITHDRAW_TRUSTLINE_FROZEN, and a path payment that removes an offer whose seller trustline is frozen (nothing moved; the frozen trustline is still updated to release liabilities): s-base `frozen-*`. txFROZEN_KEY_ACCESSED is unreachable in a closed ledger: the check (TransactionFrame.cpp:1485) uses the same last-closed-ledger config at validation and apply, and queued transactions are re-validated after every close. Mined: pubnet 65273932, a mainnet config upgrade that freezes a fourth account",
       "checks": [
         "R",
         "V"
@@ -937,7 +937,7 @@
       "title": "Meta version polymorphism on backfill: LCM v0/v1, TxMeta v2/v3, V0 envelopes, refunds in `txChangesAfter` (P20–22)",
       "evidence": "ledger-close-meta.md:85-105",
       "refs": [],
-      "test": "Mine one P20–22 Soroban ledger and one pre-P13 ledger",
+      "test": "Mined: pubnet 26588352 (P12: LedgerCloseMeta v0, 532 TransactionEnvelope V0) and pubnet 56085459 (P22: LedgerCloseMeta v1, Soroban fee refunds in txChangesAfter for 53 transactions). In the public lake TransactionMeta is v4 at every protocol: Galexie sets BACKFILL_STELLAR_ASSET_EVENTS, which makes stellar-core emit v4 (TransactionMeta.cpp:532-536; the lake objects name stellar-core 23.0.1 as writer); a default node writes v2 before protocol 20 and v3 for 20-22, for the same ledgers",
       "checks": [
         "R"
       ]
@@ -961,7 +961,7 @@
       "title": "Config-settings upgrade ledgers (`LEDGER_UPGRADE_CONFIG`; changes in `upgradesProcessing`)",
       "evidence": "18 ConfigSettingEntry arms uncovered",
       "refs": [],
-      "test": "Generated: two LEDGER_UPGRADE_CONFIG ledgers whose upgradesProcessing updates contract_execution_lanes and frozen_ledger_keys, staged by kit2 as a temporary entry (Upgrades.cpp ConfigUpgradeSetFrame::makeFromKey): s-base `config-upgrade-lanes-and-freeze`, `config-upgrade-restore-and-unfreeze`; mine a mainnet settings-vote ledger (B3)",
+      "test": "Generated: two LEDGER_UPGRADE_CONFIG ledgers whose upgradesProcessing updates contract_execution_lanes and frozen_ledger_keys, staged by kit2 as a temporary entry (Upgrades.cpp ConfigUpgradeSetFrame::makeFromKey): s-base `config-upgrade-lanes-and-freeze`, `config-upgrade-restore-and-unfreeze`; mined: pubnet 65080525, a settings vote updating 7 entries in one upgrade (including ledger_max_dependent_tx_clusters 3), and pubnet 65273932, whose upgrade grows the frozen-key list from 3 to 4 accounts",
       "checks": [
         "R"
       ]
