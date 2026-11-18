@@ -2,7 +2,7 @@
   "$schema": "../../schema/v1/entry.schema.json",
   "id": "auth.create-contract-v1-signed-over-own-bytes",
   "title": "A v1 create-contract authorization signed over its own bytes fails verification",
-  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps.",
+  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps. This is by design since protocol 22: the host keeps one valid payload per action (github.com/orgs/stellar/discussions/1501). Transactions built through RPC simulation carry the V2 payload; offline signers must sign the V2 rendering.",
   "caps": [
     "CAP-0046",
     "CAP-0058"
@@ -115,7 +115,7 @@
       "protocol": 30,
       "network_passphrase": "Public Global Stellar Network ; September 2015",
       "file": "p30-mainnet-generated-galexie.xdr",
-      "sha256": "3fba1afab9483879c754df93a2625e5aa925e449884a4f0fa0989b933fda6262",
+      "sha256": "5e6f9051a7189cde3b6ff71930e111278cea0b51e1fc185c7ea49a49a29eede1",
       "size": 4568,
       "synthetic": false,
       "source": {
@@ -137,11 +137,11 @@
         "runs": 2,
         "raw": [
           {
-            "sha256": "3fba1afab9483879c754df93a2625e5aa925e449884a4f0fa0989b933fda6262",
+            "sha256": "5e6f9051a7189cde3b6ff71930e111278cea0b51e1fc185c7ea49a49a29eede1",
             "runs": 1
           },
           {
-            "sha256": "97e0947ee3cd36e2ce76418f3fe96d66f11c078e927d6ec6df2dfc9228c99582",
+            "sha256": "e786c631597d3459e1205612007b1976d5b33bc5c944eace0756534d72236f8e",
             "runs": 1
           }
         ]

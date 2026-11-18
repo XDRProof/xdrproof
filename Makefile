@@ -9,6 +9,7 @@ verify: tools/node_modules $(NATIVE)  ## schema, hazards, sha256, native rs-stel
 	node tools/strkey.test.mjs
 	node tools/verify.mjs
 	node tools/mined-verify.mjs
+	node tools/auth-payload-check.mjs
 
 oracle: tools/node_modules             ## facts confirmed by stellar-core's own decoder and the schema walker (needs Docker; seconds)
 	node tools/oracle.mjs

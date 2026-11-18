@@ -57,7 +57,7 @@ Classification method: First pass by an independent reviewer (Codex) over stella
 | H-B13 A valid ledger common decoders cannot read (depth) | 2: `auth.deploy-with-tree-depth-245`, `auth.tree-depth-245-max` |
 | H-B14 Recursive delegate signatures (CAP-0071 `nestedDelegates`) | 1: `auth.nested-delegates` |
 | H-B15 SorobanCredentials arms beyond ADDRESS (CAP-0071): ADDRESS_V2 binds the signature payload to the address | 1: `auth.address-v2-credentials` |
-| H-B16 An auth entry's signature does not cover its own bytes: a CREATE_CONTRACT_HOST_FN invocation is hashed in its V2 rendering | 2: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` |
+| H-B16 An auth entry's signature does not cover its own bytes: a CREATE_CONTRACT_HOST_FN authorization is signed over its V2 rendering (by design since protocol 22) | 2: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` |
 | H-C1 Failed transactions in ledgers (fees charged, no effects, result codes) | 113: `failure.account-merge.dest-full`, `failure.account-merge.has-sub-entries` (+111) |
 | H-C2 Fee-bump inner success and failure | 10: `failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet`, `failure.set-options.low-reserve-in-fee-bump-mainnet` (+8) |
 | H-C3 Sponsorship sandwiches, revocation, `txBAD_SPONSORSHIP` | 11: `failure.allow-trust.low-reserve`, `failure.begin-sponsoring-future-reserves.recursive` (+9) |

@@ -1,7 +1,7 @@
 {
   "id": "auth.create-contract-v1-signed-over-own-bytes",
   "title": "A v1 create-contract authorization signed over its own bytes fails verification",
-  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps.",
+  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps. This is by design since protocol 22: the host keeps one valid payload per action (github.com/orgs/stellar/discussions/1501). Transactions built through RPC simulation carry the V2 payload; offline signers must sign the V2 rendering.",
   "caps": [
     "CAP-0046",
     "CAP-0058"

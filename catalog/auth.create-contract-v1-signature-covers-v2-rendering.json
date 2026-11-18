@@ -1,7 +1,7 @@
 {
   "id": "auth.create-contract-v1-signature-covers-v2-rendering",
   "title": "A valid v1 create-contract authorization whose signature covers bytes it does not contain",
-  "pattern": "The same v1 create, its auth entry still carrying SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, but signed over the CREATE_CONTRACT_V2_HOST_FN rendering (empty constructor arguments) the host hashes: the contract is created. A verifier that recomputes the payload from the entry's bytes rejects a signature core accepted. Under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) the same call writes Soroban meta extension v0, without the fee breakdown base writes in v1.",
+  "pattern": "The same v1 create, its auth entry still carrying SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, but signed over the CREATE_CONTRACT_V2_HOST_FN rendering (empty constructor arguments) the host hashes: the contract is created. A verifier that recomputes the payload from the entry's bytes rejects a signature core accepted. Under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) the same call writes Soroban meta extension v0, without the fee breakdown base writes in v1. By design since protocol 22 (one valid payload per action; github.com/orgs/stellar/discussions/1501). tools/auth-payload-check.mjs re-checks the signatures with hand-encoded preimages.",
   "caps": [
     "CAP-0046",
     "CAP-0058"

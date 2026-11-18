@@ -2,7 +2,7 @@
   "$schema": "../../schema/v1/entry.schema.json",
   "id": "auth.create-contract-v1-signature-covers-v2-rendering",
   "title": "A valid v1 create-contract authorization whose signature covers bytes it does not contain",
-  "pattern": "The same v1 create, its auth entry still carrying SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, but signed over the CREATE_CONTRACT_V2_HOST_FN rendering (empty constructor arguments) the host hashes: the contract is created. A verifier that recomputes the payload from the entry's bytes rejects a signature core accepted. Under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) the same call writes Soroban meta extension v0, without the fee breakdown base writes in v1.",
+  "pattern": "The same v1 create, its auth entry still carrying SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, but signed over the CREATE_CONTRACT_V2_HOST_FN rendering (empty constructor arguments) the host hashes: the contract is created. A verifier that recomputes the payload from the entry's bytes rejects a signature core accepted. Under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) the same call writes Soroban meta extension v0, without the fee breakdown base writes in v1. By design since protocol 22 (one valid payload per action; github.com/orgs/stellar/discussions/1501). tools/auth-payload-check.mjs re-checks the signatures with hand-encoded preimages.",
   "caps": [
     "CAP-0046",
     "CAP-0058"
@@ -51,21 +51,25 @@
         "raw": [
           {
             "sha256": "2cb0e94e62f88eda331973e154f98620ffd03dc6671c023cbda6fa4ea16b7c30",
-            "runs": 12
+            "runs": 10
           },
           {
-            "sha256": "950754433a149d490eb46e24310a7f869a68dc789349ff151bfe5ad9e99dbbf6",
+            "sha256": "904dd20ca27b1c4296e292c172576812ed9e894acd6fdbb50a5cd151c153aa86",
             "runs": 4,
             "file": "p30-mainnet-generated.order-1.xdr"
           },
           {
-            "sha256": "b4f6825b76cfd3f36a6998d5428f3633ad37ef311bad41b4c15e1c9d92e3e696",
-            "runs": 2,
+            "sha256": "950754433a149d490eb46e24310a7f869a68dc789349ff151bfe5ad9e99dbbf6",
+            "runs": 3,
             "file": "p30-mainnet-generated.order-2.xdr"
           },
           {
             "sha256": "d9af8e1516fb15e20931f0a48b312ffa2c6a583797daf91f141cceb08f0cc975",
             "runs": 2
+          },
+          {
+            "sha256": "b4f6825b76cfd3f36a6998d5428f3633ad37ef311bad41b4c15e1c9d92e3e696",
+            "runs": 1
           }
         ]
       },
@@ -92,6 +96,21 @@
         "ledger_seq": 87,
         "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-v2-rendering"
       },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "f3561362fff360fce94ca8e22488ca4809862c37583a3a6ea9c39728a375d708",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "24b6946a97bb222be0e9345fe93709417bcc4ad740c823878f58f391c5d0531d",
+            "runs": 1
+          },
+          {
+            "sha256": "bb45d2421040397b4a5d574b7ecc30db4d72c77697fc4dea218266a5b111de18",
+            "runs": 1
+          }
+        ]
+      },
       "focus": {
         "tx_hash": "fa07cc838c16f0d824fd92df59eb514a332ec9ac24fd42ebef0e8d5ab4afe252",
         "op_index": 0
@@ -102,7 +121,7 @@
       "protocol": 30,
       "network_passphrase": "Test SDF Network ; September 2015",
       "file": "p30-testnet-generated.xdr",
-      "sha256": "aafbd1b212e3157a9715824071aab8c16881130eca3df467185303f32c2cde55",
+      "sha256": "adeb3bbb662120886fc6b2816805326fa3e02c6edd0013334b4dc626708fd309",
       "size": 3120,
       "synthetic": false,
       "source": {
@@ -121,7 +140,7 @@
         "runs": 2,
         "raw": [
           {
-            "sha256": "aafbd1b212e3157a9715824071aab8c16881130eca3df467185303f32c2cde55",
+            "sha256": "adeb3bbb662120886fc6b2816805326fa3e02c6edd0013334b4dc626708fd309",
             "runs": 1
           },
           {
@@ -140,7 +159,7 @@
       "protocol": 28,
       "network_passphrase": "Test SDF Network ; September 2015",
       "file": "p28-testnet-generated.xdr",
-      "sha256": "1eabf2f5a7dcda457bd7bc3d198d9ecd660bd31c3d784e74833befadaf3d0360",
+      "sha256": "aca7aaf128b44ad5f73696cd3497d6d57a1124ddac1264d03a03296f0281c2f2",
       "size": 3112,
       "synthetic": false,
       "source": {
@@ -152,6 +171,21 @@
         ],
         "ledger_seq": 87,
         "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-v2-rendering"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "28a0bdeab57c85f4698a7b67472760286efd549097132183ae87e550f2e18863",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "aca7aaf128b44ad5f73696cd3497d6d57a1124ddac1264d03a03296f0281c2f2",
+            "runs": 1
+          },
+          {
+            "sha256": "0ff948ea7c5bbbe7fe3231bcf560486c37c178b8a01f2b3d6444cb3da827439a",
+            "runs": 1
+          }
+        ]
       },
       "focus": {
         "tx_hash": "8d892942d86407b1b5dcb2a19455258135bf526170fdd4cc5e5f895ded9b0acb",
@@ -174,6 +208,21 @@
         ],
         "ledger_seq": 88,
         "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-v2-rendering"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "ed64e0e2d7626f0d6f554b9e5b48ef5ae2680518c9b88fae6f2e93ecb4470a63",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "c6d200c3def943fed1465d360534aa0f226272fc835fe94c4abf72e0f5af3d50",
+            "runs": 1
+          },
+          {
+            "sha256": "a673cfdd20926ae6079422ade087b9d3a61a9c21375429c6ea0ee15802a88cec",
+            "runs": 1
+          }
+        ]
       },
       "focus": {
         "tx_hash": "8b60036faec95de77253e94214d028ea87dfd77d4d7cb1eb59a5a2aed641b49a",

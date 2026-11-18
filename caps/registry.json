@@ -392,8 +392,8 @@
       "id": "H-B16",
       "layer": "B",
       "layer_name": "Values and encodings",
-      "title": "An auth entry's signature does not cover its own bytes: a CREATE_CONTRACT_HOST_FN invocation is hashed in its V2 rendering",
-      "evidence": "soroban-env-host auth.rs as stellar-core v30 links it (30.0.0 @6e6c4a87 for protocol 30, 28.0.0 @ba37ea5f for protocol 28; same code at lines 778, 803 and 2641): from_xdr reads SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN into CreateContractArgsV2 with empty constructor arguments, to_xdr writes CREATE_CONTRACT_V2_HOST_FN, and get_signature_payload hashes root_invocation_to_xdr. Measured on stellar-core v30 at protocols 28 and 30: a v1 entry signed over its own bytes (as js-stellar-base authorizeEntry signs it) fails ed25519 verification; the same entry with a signature over the V2 rendering creates the contract. Signers, and readers that verify signatures from the entry bytes, get v1 creates wrong.",
+      "title": "An auth entry's signature does not cover its own bytes: a CREATE_CONTRACT_HOST_FN authorization is signed over its V2 rendering (by design since protocol 22)",
+      "evidence": "By design since protocol 22: to keep one valid payload per action, the host hashes a v1 create authorization in its CREATE_CONTRACT_V2_HOST_FN rendering (maintainer reasoning in github.com/orgs/stellar/discussions/1501; CAP-0058 keeps the v1 arm usable for zero-argument creations). Code: soroban-env-host auth.rs as stellar-core v30 links it (30.0.0 @6e6c4a87 for protocol 30, 28.0.0 @ba37ea5f for protocol 28; lines 778, 803, 2641). Measured on core v30 at protocols 28 and 30, and re-checked by tools/auth-payload-check.mjs with hand-encoded preimages and node:crypto: the entry signed over its own bytes (as js-stellar-base authorizeEntry signs it) verifies only as v1 and core fails it; the entry core accepts verifies only as V2. Offline signers that sign the entry bytes, and verifiers that recompute the payload from them, get v1 creates wrong; transactions built through RPC simulation get the V2 payload.",
       "refs": [
         "CAP-0058"
       ],
