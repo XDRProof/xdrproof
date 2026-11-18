@@ -1,0 +1,49 @@
+{
+  "id": "muxed.clawback-from",
+  "title": "CLAWBACK from a muxed account",
+  "pattern": "ClawbackOp.from is a MuxedAccount: M(mm, 7). The trustline belongs to mm's base account.",
+  "caps": [
+    "CAP-0035",
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A9",
+      "placement": "ClawbackOp.from as MuxedAccount"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "clawback-from-muxed",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "from is mm muxed with ID 7.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/clawback/from",
+      "equals": "MCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOAAAAAAAAAAAA7XSQ",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The event names mm's base account.",
+      "at": "op.events",
+      "some": {
+        "/body/v0/topics/1/address": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

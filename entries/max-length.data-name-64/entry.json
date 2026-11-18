@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "max-length.data-name-64",
+  "title": "A data entry whose name and value are both 64 bytes",
+  "pattern": "string64 dataName and DataValue<64> both full. Core requires the name to be printable ASCII (ManageDataOpFrame.cpp:115).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "ManageDataOp.dataName at its 64-byte maximum"
+    },
+    {
+      "id": "H-B6",
+      "placement": "DataValue at its 64-byte maximum"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "0ec4a1c8d0a25f4c42a05a31d9c36c0f24bb40ac817a963926b2078c52f0c366",
+      "size": 21176,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 78,
+        "recipe": "recipes/classic/gen.mjs#data-name-64-value-64"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "4cdd2e40d9a17317cc5df747022063879bb07c7359d658fe08dc9ee007a3f371",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "0ec4a1c8d0a25f4c42a05a31d9c36c0f24bb40ac817a963926b2078c52f0c366",
+            "runs": 1
+          },
+          {
+            "sha256": "1b019f44ee5777d64318e87e5ad474b20dce24c1bf5ee2e09c73cd0d220034f6",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "372793c71208999165efb65fe6ec70e3000919985612a4bd58bbc3d282341908",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "397c5906cb80392866a6ea65331b01d8a82da5cd26c7fbaedceca88defe69318",
+            "runs": 1
+          },
+          {
+            "sha256": "3f3589e538d7134eb6358a50c819e98fe311b9c1e40f8087e594fb1df3ff5e7f",
+            "runs": 1
+          },
+          {
+            "sha256": "5061279f3c4e23f30b001da98173ee56c72a0c1274d0655f3f06b7dca4d9bef1",
+            "runs": 1
+          },
+          {
+            "sha256": "557b9afeb3561b2784594c5fdd8b71a50790c34aab924c6235d9a65a1ff2a1f1",
+            "runs": 1
+          },
+          {
+            "sha256": "636fd4035e44fe7937e0aea5973cb4639143ae7f154ece4aa98f559290277bdd",
+            "runs": 1
+          },
+          {
+            "sha256": "65909dfbab9b68595153d025444fc35c3ebacb4bbb98c1fd565081a4aaab377b",
+            "runs": 1
+          },
+          {
+            "sha256": "6860797db93637ace885a77e38d17b0cf3fd1be54bffc0937f991e82888e3f14",
+            "runs": 1
+          },
+          {
+            "sha256": "6d1346337ef877e8e3cdf0376739c7cf63c9dab22efe3562ac39e7257f146e0d",
+            "runs": 1
+          },
+          {
+            "sha256": "8dc426e33533296697d24e04d1faeb68922155e98bd203761f96e8759df9e204",
+            "runs": 1
+          },
+          {
+            "sha256": "96eed53b7a21925bbe9130c7a3c07ce9a5bb71b830825d5044b489b035a0408b",
+            "runs": 1
+          },
+          {
+            "sha256": "9ba42beaff3e05b3ea09eee5a74d14931db93c09355c151256fbd6d4638040cd",
+            "runs": 1
+          },
+          {
+            "sha256": "a4df4a7f30c45007031c7315c9fe7531b86e8813b9ff510de008c7443c53b005",
+            "runs": 1
+          },
+          {
+            "sha256": "c66943e430d5355246c1eb0171bd532934422d0654c08c66d51d6a009c080a82",
+            "runs": 1
+          },
+          {
+            "sha256": "cb03bfcac57a8d4585cb189e409d8293d264d00dbdfe1f937b88971f27ff512d",
+            "runs": 1
+          },
+          {
+            "sha256": "dc4c8b6b5a1c4db153fe1da6a5d05bec18953bf0d2312a1eb198b49f52f66df7",
+            "runs": 1
+          },
+          {
+            "sha256": "f805a44c549e4c59972427afdf5a6b0755495f0dc52aecd4f2d8b98056aa3d1f",
+            "runs": 1
+          },
+          {
+            "sha256": "fa5693e8e7d67518bb831daf4df8ab21b1453b5bc13258a1517099c1cf6046cd",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "c5e8e14163f6604b6df055a2ac96f9077ccf1928ae9d2e4e32a893af512e6039",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "38004ed92e2d47389f55488492de6eece7b6f979aaedf60a45cea5e5085de927",
+      "size": 21176,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 78,
+        "recipe": "recipes/classic/gen.mjs#data-name-64-value-64"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "cdf44ca24462b058f14d769957fe1853d22ff638f2064b70f25ec5bef7af4f58",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "38004ed92e2d47389f55488492de6eece7b6f979aaedf60a45cea5e5085de927",
+            "runs": 1
+          },
+          {
+            "sha256": "5aa6ece6bc0e58d7af9020e6413c6bee643b50ffa91ea3aab5686656caddd32d",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "6d9761d928eab7c98b82a90536b244a3ce4073e8f8e225a354ff53f795a86f20",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The name is 64 characters.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/4/tx/tx/operations/0/body/manage_data/data_name",
+        "equals": "xdrproof.data-name-at-the-64-byte-maximum.xxxxxxxxxxxxxxxxxxxxxx"
+      },
+      {
+        "says": "The value is 64 bytes of 0x5a.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/4/tx/tx/operations/0/body/manage_data/data_value",
+        "equals": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+      }
+    ]
+  }
+}

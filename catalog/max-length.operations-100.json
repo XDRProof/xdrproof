@@ -1,0 +1,63 @@
+{
+  "id": "max-length.operations-100",
+  "title": "A transaction with the maximum 100 operations, each to a different muxed ID",
+  "pattern": "operations<100> full: 100 payments to M(bob, 1) … M(bob, 100). The classic transaction set holds exactly 100 operations, so this transaction fills its ledger alone.",
+  "caps": [
+    "pre-cap",
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "Transaction.operations at its maximum of 100"
+    },
+    {
+      "id": "H-A1",
+      "placement": "100 muxed destination IDs of one account in one transaction"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "operations-100-muxed-ids",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction has 100 operations.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations",
+      "length": 100,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The last pays bob muxed with ID 100.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/99/body/payment/destination",
+      "equals": "MCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAAAAAAAMQWDS",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "All 100 succeed; the ledger holds only this transaction.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 1,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

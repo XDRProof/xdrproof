@@ -1,0 +1,67 @@
+{
+  "id": "surge.classic-oversubscribed",
+  "title": "An oversubscribed ledger: the transaction set's base fee is 2000, not the header's 100",
+  "pattern": "101 operations queued for a 100-operation set, bids 3000, 2000 and 1000 per operation: core keeps the two highest and sets the component base fee to the lowest kept bid. The 3000 bidder pays 2000 per operation, less than it bid, more than the header base_fee of 100.",
+  "caps": [
+    "CAP-0005"
+  ],
+  "hazards": [
+    {
+      "id": "H-C18",
+      "placement": "GeneralizedTransactionSet component baseFee 2000 against header base_fee 100"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "surge-bid-3000-per-op",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The classic component's base fee is 2000.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/base_fee",
+      "equals": "2000",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The header base fee stays 100.",
+      "at": "ledger",
+      "path": "/ledger_header/header/base_fee",
+      "equals": 100,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The 3000-per-operation bidder is charged 100000 for 50 operations: 2000 each.",
+      "at": "tx.fee_charged",
+      "equals": "100000",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "It bid 150000.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/fee",
+      "equals": 150000,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

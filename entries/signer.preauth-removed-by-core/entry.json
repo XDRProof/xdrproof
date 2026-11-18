@@ -1,0 +1,101 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "signer.preauth-removed-by-core",
+  "title": "The pre-authorized transaction runs and core removes its signer, with no operation",
+  "pattern": "When a transaction authorized by a T… signer applies, core removes that signer from the account in tx_changes_before. No SET_OPTIONS names it. Readers that track signers only from operations keep a signer that is gone.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-A4",
+      "placement": "pre-auth signer removed by core in tx_changes_before"
+    },
+    {
+      "id": "H-D3",
+      "placement": "signer removed with no operation"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "b299e49eb0153f8ca4d5339033921aeae0b7c3058bb5ad95f40b9860d4ecbf0d",
+      "size": 3148,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 35,
+        "recipe": "recipes/classic/gen.mjs#preauth-tx-executes-and-signer-disappears"
+      },
+      "focus": {
+        "tx_hash": "4e4301bf9373721f5c285686adfc2220010a5ef696541095a04fb317e5af111d",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b47364503756816329588b1da6a23608184ebd5fc75f48ac9b6837e3f2a16b40",
+      "size": 3148,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 35,
+        "recipe": "recipes/classic/gen.mjs#preauth-tx-executes-and-signer-disappears"
+      },
+      "focus": {
+        "tx_hash": "43831a79ad31ddc3e2631d5530801494ad89f27f34e11f2470cac246be4418e5",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction has no signatures: the pre-auth signer authorizes it.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/signatures",
+        "length": 0
+      },
+      {
+        "says": "Before apply, frank has two signers (T… and X…); after, only the X… signer.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/tx_changes_before/1/updated/data/account/signers",
+        "length": 1
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

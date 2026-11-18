@@ -1,0 +1,88 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "ledger.empty",
+  "title": "A ledger with no transactions",
+  "pattern": "A closed ledger with an empty transaction set: no transactions, no results. Ingestion must still advance its cursor past it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F4",
+      "placement": "LedgerCloseMeta with no transactions"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "92a89b66bc579a709e4b49de774f60e9ff9f448b55d56d42e00dc506e8435716",
+      "size": 576,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 73,
+        "recipe": "recipes/classic/gen.mjs#empty-ledger"
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b63e33d8e7a72a55f5f9623e6e66ef3e612961f84e65d45da0a0e17e09bdf13d",
+      "size": 576,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 73,
+        "recipe": "recipes/classic/gen.mjs#empty-ledger"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "tx_processing is empty.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing",
+        "length": 0
+      },
+      {
+        "says": "The ledger sequence is 73.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/header/ledger_seq",
+        "equals": 73
+      }
+    ]
+  }
+}

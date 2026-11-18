@@ -1,0 +1,47 @@
+{
+  "id": "preconditions.none",
+  "title": "A transaction with no preconditions at all (PRECOND_NONE)",
+  "pattern": "The SDKs always write time bounds; this transaction has none. Readers that assume cond.time exist fail.",
+  "caps": [
+    "CAP-0021"
+  ],
+  "hazards": [
+    {
+      "id": "H-C4",
+      "placement": "Preconditions.PRECOND_NONE"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "PRECOND_NONE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "cond is none.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/cond",
+      "equals": "none",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

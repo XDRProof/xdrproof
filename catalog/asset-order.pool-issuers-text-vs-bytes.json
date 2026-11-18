@@ -1,0 +1,54 @@
+{
+  "id": "asset-order.pool-issuers-text-vs-bytes",
+  "title": "A pool whose two issuers sort one way as strkeys and the other as bytes",
+  "pattern": "Two ARST assets whose issuers order oppositely as strkey text and as raw key bytes. The pool ID and the asset order in the pool use XDR byte order. js-stellar-sdk#1766 compared strkey text and computed the wrong pool ID.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-B1",
+      "placement": "LiquidityPoolParameters asset order by XDR bytes, not strkey text"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/js-stellar-sdk/issues/1766"
+  ],
+  "source": {
+    "lane": "classic",
+    "step": "pool-issuers-sort-differently-by-text-and-bytes",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "asset_a is the ARST whose issuer comes first by bytes (GCUXRL…), not first by text (GC7VO2…).",
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/created/data/liquidity_pool/body/liquidity_pool_constant_product/params/asset_a/credit_alphanum4/issuer": "GCUXRLTOJWTR3ISVCGYLARRCRJ6GV2HC2Y2UGUE4PGUWY66KHPPKCGNL"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The pool is created with the ID from the byte-ordered parameters.",
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/created/data/liquidity_pool/liquidity_pool_id": "LCEWPZIZDM6LNNGPCRFHUVQLTFGGCBL436NMVISXG62RYHCTLB3SNM3U"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

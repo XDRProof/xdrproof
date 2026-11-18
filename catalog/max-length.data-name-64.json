@@ -1,0 +1,52 @@
+{
+  "id": "max-length.data-name-64",
+  "title": "A data entry whose name and value are both 64 bytes",
+  "pattern": "string64 dataName and DataValue<64> both full. Core requires the name to be printable ASCII (ManageDataOpFrame.cpp:115).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "ManageDataOp.dataName at its 64-byte maximum"
+    },
+    {
+      "id": "H-B6",
+      "placement": "DataValue at its 64-byte maximum"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "data-name-64-value-64",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The name is 64 characters.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/manage_data/data_name",
+      "equals": "xdrproof.data-name-at-the-64-byte-maximum.xxxxxxxxxxxxxxxxxxxxxx",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The value is 64 bytes of 0x5a.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/manage_data/data_value",
+      "equals": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

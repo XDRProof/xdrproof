@@ -1,0 +1,51 @@
+{
+  "id": "max-length.allow-trust-alphanum12",
+  "title": "ALLOW_TRUST with a 12-character asset code",
+  "pattern": "AllowTrustOp.asset is an AssetCode union whose arm here is ASSET_TYPE_CREDIT_ALPHANUM12 with XPFLONGCODE1. SEP-0051 JSON renders the union as the bare code string, so the arm shows only in the string's length (5 to 12 characters is alphanum-12).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "AllowTrustOp.asset as a 12-character code"
+    },
+    {
+      "id": "H-B9",
+      "placement": "alphanumeric-12 code in AllowTrust"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "allow-trust-alphanum12-code",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The asset code is the 12-character XPFLONGCODE1, rendered as a bare string.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/allow_trust/asset",
+      "equals": "XPFLONGCODE1",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/allow_trust",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

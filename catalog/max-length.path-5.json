@@ -1,0 +1,52 @@
+{
+  "id": "max-length.path-5",
+  "title": "A path payment through the maximum 5 intermediate assets",
+  "pattern": "PATH_PAYMENT_STRICT_SEND from XLM through HOP1…HOP5 to HOP6: path<5> full, one offer crossed per hop, six claim atoms.",
+  "caps": [
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "PathPaymentStrictSendOp.path at its maximum of 5"
+    },
+    {
+      "id": "H-C7",
+      "placement": "one path payment crosses six order books"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "path-5-assets",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The path holds 5 assets.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/path_payment_strict_send/path",
+      "length": 5,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Six offers are crossed, one per hop.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/path_payment_strict_send/success/offers",
+      "length": 6,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "asset.issued-xlm-code",
+  "title": "An issued asset with code \"xlm\" is not XLM",
+  "pattern": "A credit_alphanum4 asset whose code is \"xlm\": readers that match on the code instead of the asset type treat it as native.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B9",
+      "placement": "credit_alphanum4 asset code \"xlm\""
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "payment-issued-xlm-code",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The asset is credit_alphanum4 with code xlm, issued by the issuer.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/payment/asset",
+      "equals": {
+        "credit_alphanum4": {
+          "asset_code": "xlm",
+          "issuer": "GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

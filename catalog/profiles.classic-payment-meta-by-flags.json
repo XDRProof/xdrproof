@@ -1,0 +1,77 @@
+{
+  "id": "profiles.classic-payment-meta-by-flags",
+  "title": "The same classic payment under three node-flag profiles",
+  "pattern": "The same ledger as written by a node with base flags, with Galexie's six flags, and with none. The ledger is identical; the metadata is not: with no flags the classic transfer event and the fee events are absent and LedgerCloseMeta has no ext v1.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-F9",
+      "placement": "same ledger, three emitter-flag profiles"
+    },
+    {
+      "id": "H-F7",
+      "placement": "LedgerCloseMetaExt v1 under base and galexie flags, v0 under bare"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "payment",
+    "variants": [
+      "p30-mainnet",
+      "p30-mainnet-galexie",
+      "p30-mainnet-bare"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "With base or Galexie flags the payment emits one transfer event.",
+      "variants": [
+        "p30-mainnet",
+        "p30-mainnet-galexie"
+      ],
+      "at": "op.events",
+      "length": 1,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With no flags it emits none.",
+      "variants": [
+        "p30-mainnet-bare"
+      ],
+      "at": "op.events",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With no flags LedgerCloseMeta ext is v0.",
+      "variants": [
+        "p30-mainnet-bare"
+      ],
+      "at": "ledger",
+      "path": "/ext",
+      "equals": "v0",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The ledger header hash is identical under all three profiles: the same ledger.",
+      "at": "ledger",
+      "path": "/ledger_header/hash",
+      "equals": "177573c752d0bc49ca452cc142a3ea39d7c730cee78987d67c89b58992d715f8",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

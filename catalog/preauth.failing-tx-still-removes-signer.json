@@ -1,0 +1,60 @@
+{
+  "id": "preauth.failing-tx-still-removes-signer",
+  "title": "A pre-authorized transaction that fails still removes its signer",
+  "pattern": "The payment fails (no trustline), yet core removes the T… signer in tx_changes_before: a failed transaction changed state.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C15",
+      "placement": "failed transaction removes its pre-auth signer"
+    },
+    {
+      "id": "H-A4",
+      "placement": "pre-auth signer removed by a failing transaction"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "preauth-tx-fails-signer-still-removed",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The payment fails with src_no_trust.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/payment",
+      "equals": "src_no_trust",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The account changes before apply (sequence and signer).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "After the signer is removed, frank has 2 signers (it had 3).",
+      "at": "tx.meta",
+      "path": "/tx_changes_before/1/updated/data/account/signers",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

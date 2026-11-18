@@ -1,0 +1,47 @@
+{
+  "id": "trustline.allow-trust",
+  "title": "ALLOW_TRUST authorizes a trustline",
+  "pattern": "The deprecated but valid ALLOW_TRUST operation sets AUTHORIZED on bob's XPF trustline.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "AllowTrustOp"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "ALLOW_TRUST",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/allow_trust",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "bob's trustline is updated.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "asset-order.pool-issuers-text-vs-bytes",
+  "title": "A pool whose two issuers sort one way as strkeys and the other as bytes",
+  "pattern": "Two ARST assets whose issuers order oppositely as strkey text and as raw key bytes. The pool ID and the asset order in the pool use XDR byte order. js-stellar-sdk#1766 compared strkey text and computed the wrong pool ID.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-B1",
+      "placement": "LiquidityPoolParameters asset order by XDR bytes, not strkey text"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/js-stellar-sdk/issues/1766"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9ad012318d868d5834e1b9f57cb92b9ec558b8d0f70203dc35e0fca40aebc32c",
+      "size": 4588,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 53,
+        "recipe": "recipes/classic/gen.mjs#pool-issuers-sort-differently-by-text-and-bytes"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "7a60ca902064874dfc765a840493d7d87b6f28853a07a7a94758f098173e6124",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "9ad012318d868d5834e1b9f57cb92b9ec558b8d0f70203dc35e0fca40aebc32c",
+            "runs": 5
+          },
+          {
+            "sha256": "17b4ec861c59380c34c97753be3b528133b934ea34c664b1e3b3cd1f0146ffee",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "74c242a9fe19026a87e0e292982028e2c2ce78fe498c7a2603dbb0cb797808a5",
+            "runs": 2,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "13d7b1fa3f5b9747d34f51f1a68b0a7723705c874ff6c91f842894c5d3996338",
+            "runs": 1
+          },
+          {
+            "sha256": "618c1fdb3d29c301fba858fa993e250f5f0dcb7078832082b99023c3178a6bb1",
+            "runs": 1
+          },
+          {
+            "sha256": "62f1e2abbfcfe8d61908cc15ec5a6dcfc8678f72ead1dbf6142b666e4d1a8511",
+            "runs": 1
+          },
+          {
+            "sha256": "725aeb251f5f258815e88c9c40ad8ec2cc5872c060497254c77a830b365726ac",
+            "runs": 1
+          },
+          {
+            "sha256": "7f60c74701f70aa71b98620b520bbd05d3c61c0432e4538483aba619f6b9508f",
+            "runs": 1
+          },
+          {
+            "sha256": "96008d4eb5712603eef2010d9dcb81d53e40597c98ccee0b05f8962a991dc0c4",
+            "runs": 1
+          },
+          {
+            "sha256": "bb229a1bffdb9c1d303a00c21547a4487b92afe189102f43c1831205db7dd2aa",
+            "runs": 1
+          },
+          {
+            "sha256": "c7effa1eb17aed13acfbf66f85948ed1785c5ff87a28a29aceb2b4c3bec9df5e",
+            "runs": 1
+          },
+          {
+            "sha256": "dca431c2f5ba23051f67f8b0d7bfd0d011e8c32ec1557d50e8f1f90269eeaf55",
+            "runs": 1
+          },
+          {
+            "sha256": "dfecb022eb38b7c14643d7dacd428c88ebd3ce756e1d465ef44990b43d6946a6",
+            "runs": 1
+          },
+          {
+            "sha256": "e964b94967b5f0fe4852c109b955a7007d8398437b0a62293f814567dc7fdd06",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "0063deeefa30dbaf1708d8ed34716471a4dc648a694d36b0c239eb36cf052cbe",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "cd15eeecf1833074a1839f80ac0051d3a9e5e024d13bb03f29fddcb0dc6da71a",
+      "size": 4588,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 53,
+        "recipe": "recipes/classic/gen.mjs#pool-issuers-sort-differently-by-text-and-bytes"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "a7ea0f90c3c70d66fc94333e129cceaba80e9ecf4fca1c6291b29e3582eb637b",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "cd15eeecf1833074a1839f80ac0051d3a9e5e024d13bb03f29fddcb0dc6da71a",
+            "runs": 1
+          },
+          {
+            "sha256": "7df85beed27b87fbd87d7c0f77a22a6cb749f0acbf82b46efddea106b710acb4",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "55f944c6cc4d7faef03aa63da0cd1fd144b19d7de4baef311c46b6708bc25413",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "asset_a is the ARST whose issuer comes first by bytes (GCUXRL…), not first by text (GC7VO2…).",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/liquidity_pool/body/liquidity_pool_constant_product/params/asset_a/credit_alphanum4/issuer": "GCUXRLTOJWTR3ISVCGYLARRCRJ6GV2HC2Y2UGUE4PGUWY66KHPPKCGNL"
+        }
+      },
+      {
+        "says": "The pool is created with the ID from the byte-ordered parameters.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/liquidity_pool/liquidity_pool_id": "LCEWPZIZDM6LNNGPCRFHUVQLTFGGCBL436NMVISXG62RYHCTLB3SNM3U"
+        }
+      }
+    ]
+  }
+}

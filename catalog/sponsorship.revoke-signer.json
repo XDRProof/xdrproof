@@ -1,0 +1,47 @@
+{
+  "id": "sponsorship.revoke-signer",
+  "title": "Revoking the sponsorship of a signer",
+  "pattern": "REVOKE_SPONSORSHIP of a sponsored signer: no entry changes type; the account's signer sponsorship list changes.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C3",
+      "placement": "RevokeSponsorship of a signer"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "REVOKE_SPONSORSHIP_SIGNER",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/revoke_sponsorship",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "eve's account is updated.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/account/account_id": "GBS6O4QWCGUCQNWQ4JC6CYQVQQYB5DYHHQ7XO5Q4IM5VM46WKYMQZK3X"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "pool.share-limit-only-change-trust",
+  "title": "CHANGE_TRUST that only changes a pool-share trustline's limit",
+  "pattern": "A pool-share trustline's limit changes and nothing else: no pool row is touched. wallet-backend#755 assumed a pool-share change always meant a pool update.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "ChangeTrust on a pool-share asset that only updates the limit"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/755"
+  ],
+  "source": {
+    "lane": "classic",
+    "step": "pool-share-limit-only-change-trust",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Only the trustline changes (state, updated).",
+      "at": "op.changes",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The new limit is 1000000000000 stroops (100000).",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/trustline/limit": "1000000000000"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

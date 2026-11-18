@@ -54,7 +54,8 @@ for (const [i, j] of jobs.entries()) {
   j.entry.expected.facts.forEach((f, k) => {
     if (f.variants && !f.variants.includes(j.v.key)) return;
     const vals = expectedValues(f);
-    const checkable = vals;
+    // v<n> is the SEP-0051 name of a void arm of an int-discriminated union (e.g. ext "v0"): structure, not a value
+    const checkable = vals.filter((x) => !/^v[0-9]+$/.test(x));
     const per = verdicts.get(j.id) ?? new Map(); verdicts.set(j.id, per);
     const rec = per.get(k) ?? { core: [], walker: [], checkable: checkable.length }; per.set(k, rec);
     const wMissing = checkable.filter((x) => !walkerHas(w, hits, x));

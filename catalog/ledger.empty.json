@@ -1,0 +1,48 @@
+{
+  "id": "ledger.empty",
+  "title": "A ledger with no transactions",
+  "pattern": "A closed ledger with an empty transaction set: no transactions, no results. Ingestion must still advance its cursor past it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F4",
+      "placement": "LedgerCloseMeta with no transactions"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "empty-ledger",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "tx_processing is empty.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 0,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The ledger sequence is 73.",
+      "at": "ledger",
+      "path": "/ledger_header/header/ledger_seq",
+      "equals": 73,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

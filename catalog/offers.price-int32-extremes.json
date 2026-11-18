@@ -1,0 +1,50 @@
+{
+  "id": "offers.price-int32-extremes",
+  "title": "Offers at price 2147483647/1 and 1/2147483647",
+  "pattern": "The first offer is created at the int32 maximum price. The second, 1 XPF at 1/2147483647, would buy less than one stroop and is deleted as it is made: the result says deleted with nothing created.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B11",
+      "placement": "Price{n,d} at the int32 extremes"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "offer-price-int32-extremes",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Offer 1 is created with price n 2147483647, d 1.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_sell_offer/success/offer/created/price",
+      "equals": {
+        "n": 2147483647,
+        "d": 1
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Offer 2 is deleted at creation.",
+      "at": "tx.result",
+      "path": "/tx_success/1/op_inner/manage_sell_offer/success/offer",
+      "equals": "deleted",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

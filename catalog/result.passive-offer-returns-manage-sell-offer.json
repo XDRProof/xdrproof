@@ -1,0 +1,47 @@
+{
+  "id": "result.passive-offer-returns-manage-sell-offer",
+  "title": "CREATE_PASSIVE_SELL_OFFER returns a MANAGE_SELL_OFFER result",
+  "pattern": "The operation is create_passive_sell_offer, but core turns it into a manage-sell-offer internally (CreatePassiveSellOfferOpFrame.cpp:13), so the result arm is manage_sell_offer. Readers that pair results with operations by type break on every passive offer.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C19",
+      "placement": "OperationResult arm manage_sell_offer for a CREATE_PASSIVE_SELL_OFFER operation"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CREATE_PASSIVE_SELL_OFFER",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation body is create_passive_sell_offer.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/create_passive_sell_offer/amount",
+      "equals": "100000000",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The result arm is manage_sell_offer, and the offer is created.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_sell_offer/success/offers_claimed",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

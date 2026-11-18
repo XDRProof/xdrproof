@@ -1,0 +1,46 @@
+{
+  "id": "surge.left-over-next-ledger",
+  "title": "The transaction left out of an oversubscribed ledger applies in the next one at the normal fee",
+  "pattern": "The 1000 bidder did not fit the previous ledger; it applies here, where the set is not full, at base fee 100.",
+  "caps": [
+    "CAP-0005"
+  ],
+  "hazards": [
+    {
+      "id": "H-C18",
+      "placement": "a transaction excluded by surge pricing applies one ledger later at the header base fee"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "surge-bid-1000-per-op",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "It is charged 100.",
+      "at": "tx.fee_charged",
+      "equals": "100",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The component base fee is the header's 100.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/base_fee",
+      "equals": "100",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

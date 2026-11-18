@@ -1,0 +1,136 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "trustline.allow-trust",
+  "title": "ALLOW_TRUST authorizes a trustline",
+  "pattern": "The deprecated but valid ALLOW_TRUST operation sets AUTHORIZED on bob's XPF trustline.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C10",
+      "placement": "AllowTrustOp"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "06ee8ae31b00cb7726e48a47f67a769e63b1bbc27d6c9895dcd418378129ec46",
+      "size": 14268,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 44,
+        "recipe": "recipes/classic/gen.mjs#ALLOW_TRUST"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "b7420e05def7bdd83155e9626c8424e9651b87c07a4e3760aa379da4d901005c",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "06ee8ae31b00cb7726e48a47f67a769e63b1bbc27d6c9895dcd418378129ec46",
+            "runs": 11
+          },
+          {
+            "sha256": "730b049afbebd1832b9aa8fa4e200011da4bfe8eb01fc72bd3c1e09bd0849932",
+            "runs": 4,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "7daba237310dc4b479ed47febdf8da996c9efabdb50f515a533c8ed0efbb53c2",
+            "runs": 3,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "f4d4261ea90f6cf51680cd8b00def647d20da2b25de56086313d6d010f78a7c2",
+            "runs": 1
+          },
+          {
+            "sha256": "fa29df0569eba4d6085743da579db8196011a8866ddcfcb4ee9227816b72212b",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "d0440836124d271f256e4366853f7832ef7fe55e17919f317e236de43a1553fb",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "422cec0f73f168b1f17a97ef3c64f4355f4a6a1a596fd213d5dab7e957c5321b",
+      "size": 14268,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 44,
+        "recipe": "recipes/classic/gen.mjs#ALLOW_TRUST"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "ecac2e113a0f2d0767507a49c765a5e1e65fa09bb8e0311957bb0004cac4bbac",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "422cec0f73f168b1f17a97ef3c64f4355f4a6a1a596fd213d5dab7e957c5321b",
+            "runs": 1
+          },
+          {
+            "sha256": "577d44df3a91f78f860d124aa744ea665bb85478ce86681506a4a079af6d75f8",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "02fa0a8e5ef38eb222376f9934c22221f074e396b7c351a0cefc4137545b75cf",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/result/result/result/tx_success/0/op_inner/allow_trust",
+        "equals": "success"
+      },
+      {
+        "says": "bob's trustline is updated.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF"
+        }
+      }
+    ]
+  }
+}

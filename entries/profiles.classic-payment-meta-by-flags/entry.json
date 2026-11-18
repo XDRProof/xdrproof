@@ -1,0 +1,151 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "profiles.classic-payment-meta-by-flags",
+  "title": "The same classic payment under three node-flag profiles",
+  "pattern": "The same ledger as written by a node with base flags, with Galexie's six flags, and with none. The ledger is identical; the metadata is not: with no flags the classic transfer event and the fee events are absent and LedgerCloseMeta has no ext v1.",
+  "caps": [
+    "CAP-0067"
+  ],
+  "hazards": [
+    {
+      "id": "H-F9",
+      "placement": "same ledger, three emitter-flag profiles"
+    },
+    {
+      "id": "H-F7",
+      "placement": "LedgerCloseMetaExt v1 under base and galexie flags, v0 under bare"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "7436cc49fd42f0e274a86d016b115c6ba2392f12b4d181cbbf8681323ac8eae9",
+      "size": 2180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 4,
+        "recipe": "recipes/classic/gen.mjs#payment"
+      },
+      "focus": {
+        "tx_hash": "55ed38410a66c39e3dd6bf7e6b0e3177fcfb4b994d3f3875dc265f3b2770ad98",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "7436cc49fd42f0e274a86d016b115c6ba2392f12b4d181cbbf8681323ac8eae9",
+      "size": 2180,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS"
+        ],
+        "ledger_seq": 4,
+        "recipe": "recipes/classic/gen.mjs#payment"
+      },
+      "focus": {
+        "tx_hash": "55ed38410a66c39e3dd6bf7e6b0e3177fcfb4b994d3f3875dc265f3b2770ad98",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-mainnet-generated-bare",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-bare.xdr",
+      "sha256": "b77b8058d2c1939c4bfd786ecc0a455fe26f1e0211b00c5d1d7c29cd7f2afcc0",
+      "size": 1844,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [],
+        "ledger_seq": 4,
+        "recipe": "recipes/classic/gen.mjs#payment"
+      },
+      "focus": {
+        "tx_hash": "55ed38410a66c39e3dd6bf7e6b0e3177fcfb4b994d3f3875dc265f3b2770ad98",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "With base or Galexie flags the payment emits one transfer event.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "length": 1,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "With base or Galexie flags the payment emits one transfer event.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "length": 1,
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
+      },
+      {
+        "says": "With no flags it emits none.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated-bare"
+        ]
+      },
+      {
+        "says": "With no flags LedgerCloseMeta ext is v0.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/ext",
+        "equals": "v0",
+        "variants": [
+          "p30-mainnet-generated-bare"
+        ]
+      },
+      {
+        "says": "The ledger header hash is identical under all three profiles: the same ledger.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/hash",
+        "equals": "177573c752d0bc49ca452cc142a3ea39d7c730cee78987d67c89b58992d715f8"
+      }
+    ]
+  }
+}

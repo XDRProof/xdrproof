@@ -1,0 +1,47 @@
+{
+  "id": "sequence.bump",
+  "title": "BUMP_SEQUENCE jumps the sequence number by 1001",
+  "pattern": "BUMP_SEQUENCE sets the source sequence far ahead; the next transaction must use bumpTo + 1.",
+  "caps": [
+    "CAP-0001"
+  ],
+  "hazards": [
+    {
+      "id": "H-C11",
+      "placement": "BumpSequenceOp"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "bump-sequence",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/bump_sequence",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "alice's sequence number becomes bumpTo.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/account/account_id": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

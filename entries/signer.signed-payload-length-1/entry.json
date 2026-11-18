@@ -1,0 +1,91 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "signer.signed-payload-length-1",
+  "title": "A signed-payload signer with a 1-byte payload",
+  "pattern": "The shortest payload, 1 byte (0x2a), padded with 3 zero bytes in XDR; its P… strkey is 69 characters.",
+  "caps": [
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-A3",
+      "placement": "SignerKey ED25519_SIGNED_PAYLOAD with a 1-byte payload"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "864a6fb76ea4daaee86bfe673bba106117f02d36e56e04986ea2f69b6aadde27",
+      "size": 2304,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 57,
+        "recipe": "recipes/classic/gen.mjs#signed-payload-length-1"
+      },
+      "focus": {
+        "tx_hash": "30ac33f01d3153c16d6d37117f6f1d6cf0e9be1ed357e3e8aa14f20d3755bb6c",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "e63bd9fcf2b1a787e238acc2fa251ade08b53b566f4c9239b1428775dd38b48d",
+      "size": 2304,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 57,
+        "recipe": "recipes/classic/gen.mjs#signed-payload-length-1"
+      },
+      "focus": {
+        "tx_hash": "4a44380f0980ef60e8fb5b88324b3c7ed6abdd97ec08f2115e13ec25f40d3f38",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The signer is bob's key with payload 2a.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/set_options/signer/key",
+        "equals": "PCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAASUAAAAB2EQ"
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/set_options",
+        "equals": "success"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "signer.hashx-signed",
+  "title": "A transaction whose only signature is a hash-x preimage",
+  "pattern": "The signature is the preimage itself, not an ed25519 signature: readers that verify every signature as ed25519 reject it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-A4",
+      "placement": "DecoratedSignature carrying a hash-x preimage"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "hashx-signed-transaction",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The only signature is the 32-byte preimage sha256(\"xdrproof:hashx-preimage\").",
+      "at": "tx.envelope",
+      "path": "/tx/signatures/0/signature",
+      "equals": "4f111d18b68babb2e582ba6c37086fea75ee08a979694d779a7e18d3326004b7",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

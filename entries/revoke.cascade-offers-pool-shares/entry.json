@@ -1,0 +1,232 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "revoke.cascade-offers-pool-shares",
+  "title": "Deauthorizing a trustline removes offers, redeems pool shares into claimable balances and deletes the pool",
+  "pattern": "SET_TRUST_LINE_FLAGS clears every authorization on mm's XPF trustline. Core removes mm's three XPF offers, redeems mm's pool shares into two claimable balances for mm (no CREATE_CLAIMABLE_BALANCE), removes the pool-share trustline and, mm being the last shareholder, the pool itself. Readers that only create balances and pools from their own operations miss all of it.",
+  "caps": [
+    "CAP-0035",
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-D9",
+      "placement": "revocation creates claimable balances from pool shares and removes offers"
+    },
+    {
+      "id": "H-C10",
+      "placement": "trustline fully deauthorized (flags 4: only the clawback bit)"
+    },
+    {
+      "id": "H-C8",
+      "placement": "pool entry removed by a revocation"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "02f5b6e95f4314b836a9319cbc5d8083b3350bf95618ff70ce8030c3b98d908d",
+      "size": 4672,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 80,
+        "recipe": "recipes/classic/gen.mjs#revoke-trustline-with-offers-and-pool-shares"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "4a7a5819bbd0030935d046ebbfb93a4d927fbb77e127a264668aeadc9f4309f4",
+        "runs": 20,
+        "raw": [
+          {
+            "sha256": "02f5b6e95f4314b836a9319cbc5d8083b3350bf95618ff70ce8030c3b98d908d",
+            "runs": 1
+          },
+          {
+            "sha256": "0e50c7a38bca95fc75a4ee9d361a4c4f9c0749c2267ff6089071ca7e5d765c97",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-1.xdr"
+          },
+          {
+            "sha256": "102c1a27b7742762de84838fa4c1061ada99b6f723295ce452b1dc1f0e3f26da",
+            "runs": 1,
+            "file": "p30-mainnet-generated.order-2.xdr"
+          },
+          {
+            "sha256": "1b0a4a99f5e9cbe6df5080af56d18662e014a1da337addd2b512a13d2e8c4905",
+            "runs": 1
+          },
+          {
+            "sha256": "1fdb41ce12522004cb10effee4f42bdf4f789e5e0422de21fd42865aa53289e2",
+            "runs": 1
+          },
+          {
+            "sha256": "254707ead3773a427d3a54b0764b96fd9b2d6605a240d12687bd112ea407cdb7",
+            "runs": 1
+          },
+          {
+            "sha256": "29ed4fcfff7093113f548cde7402551680899f2dab2388751183f98cb568d0f7",
+            "runs": 1
+          },
+          {
+            "sha256": "3a93f6f2530e52cf540b20bc5a4633f89c73b2e5c6b2986f10fd0dc6b32fe80e",
+            "runs": 1
+          },
+          {
+            "sha256": "3e7185803d49c1e93f6200d6a8afd81a3863048669cb3998db4c1ea42a7011da",
+            "runs": 1
+          },
+          {
+            "sha256": "3f8d9e82e08e776a4cd302a2633be82809d583cfc89b9722c487932d8bf595f6",
+            "runs": 1
+          },
+          {
+            "sha256": "5dd41cf72dd773496e17a955bf4d79dd34a055885e4b72c4acf6f2a9ad6fb73a",
+            "runs": 1
+          },
+          {
+            "sha256": "7c0396064c71e201688ee43ff6daa10b81b7f533e6da59328a7b900c29850fd5",
+            "runs": 1
+          },
+          {
+            "sha256": "9665c5c4c298bbeae665af3085e5c5593049048f7d1dc353dc6e84fc817bbea2",
+            "runs": 1
+          },
+          {
+            "sha256": "a6a99124952737608c1532c1444dc9ca925ef3b375d3aff468cc12f643373ace",
+            "runs": 1
+          },
+          {
+            "sha256": "a9c0ba8982e1405c61beec9b52e9093669dd886b2e9dba35d105aeacd2e3a6af",
+            "runs": 1
+          },
+          {
+            "sha256": "ae70bd465e793fdc31522dee7ae111b13a7ab70c56eaf9223d7e939b2dec5840",
+            "runs": 1
+          },
+          {
+            "sha256": "b60affe5fcf28437c990550fa9aaadacea97d678b1602fe1afeff25d98589029",
+            "runs": 1
+          },
+          {
+            "sha256": "d0b196b2e8ade8f737b253482977f015cb1b756361947d22f052393fa98fe66c",
+            "runs": 1
+          },
+          {
+            "sha256": "e46a3fc4f696d5f3f31b561b9e7183cda699a5f296945a0faf2897f0c52e55af",
+            "runs": 1
+          },
+          {
+            "sha256": "fca7c4265aae5cb999bcb8119d237ddcb91656c3d4de535ce1082b98cb6e8b18",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "26d6033133ec2dc867f7aac1b864b7bbfe3cc5568b087f170127e2f2332b1990",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "4875825271f25added5f632c2798bc635717b2dc997d78a348dd71498f0454e6",
+      "size": 4672,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 80,
+        "recipe": "recipes/classic/gen.mjs#revoke-trustline-with-offers-and-pool-shares"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "d347e49b533385a8d5ec4238b52c16374c550588738682b166ba2fbb1d1366ca",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "4875825271f25added5f632c2798bc635717b2dc997d78a348dd71498f0454e6",
+            "runs": 1
+          },
+          {
+            "sha256": "0718e3a6fae7f9b5f08b6ca68ba7b4785b129923f1674f95b2d97bc4521bee1c",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "7d03a8a11de02ce6523f56100d644ca6be541030927b9ed3c8e62e9f7de53105",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Two claimable balances are created, each for mm.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/claimable_balance/claimants/0/claimant_type_v0/destination": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB"
+        }
+      },
+      {
+        "says": "The pool is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+        }
+      },
+      {
+        "says": "Offer 3 of mm is removed.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/removed/offer/offer_id": "3"
+        }
+      },
+      {
+        "says": "mm's XPF trustline keeps only the clawback bit (flags 4).",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/trustline/account_id": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+          "/updated/data/trustline/flags": 4
+        }
+      }
+    ]
+  }
+}

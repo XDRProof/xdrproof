@@ -1,0 +1,37 @@
+{
+  "id": "pool.path-payment-through-pool",
+  "title": "A path payment filled by a liquidity pool, not the order book",
+  "pattern": "The claim atom is CLAIM_ATOM_TYPE_LIQUIDITY_POOL: readers that expect order-book atoms with a seller and offer ID fail.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "ClaimAtom of type LIQUIDITY_POOL in a path payment"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "PATH_PAYMENT_STRICT_RECEIVE_THROUGH_POOL",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The claim atom is the pool's.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/path_payment_strict_receive/success/offers/0/liquidity_pool/liquidity_pool_id",
+      "equals": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

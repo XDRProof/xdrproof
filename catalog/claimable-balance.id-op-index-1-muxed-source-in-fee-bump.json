@@ -1,0 +1,50 @@
+{
+  "id": "claimable-balance.id-op-index-1-muxed-source-in-fee-bump",
+  "title": "A claimable balance created by operation 1 with a muxed operation source, inside a fee bump",
+  "pattern": "The balance ID is the hash of (inner source base account, inner sequence number, operation index 1); the muxed operation source and the fee bump must not change it. Readers that derive it from the fee source, the M address or index 0 get another ID.",
+  "caps": [
+    "CAP-0023",
+    "CAP-0015",
+    "CAP-0027"
+  ],
+  "hazards": [
+    {
+      "id": "H-A10",
+      "placement": "ClaimableBalanceID from inner source + seq + op index 1, muxed op source, fee bump"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "claimable-balance-op-index-1-muxed-source-in-fee-bump",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "The result returns the ID derived from alice, her sequence and index 1.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_success/result/result/tx_success/1/op_inner/create_claimable_balance/success",
+      "equals": "BAAANG6COYO3EGDOKHVFLH4J7DBXNOQ73V45ZEGHS56ELW7KYCF4IVW6NE",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 1's source is alice muxed with ID 9.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/operations/1/source_account",
+      "equals": "MBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQIAAAAAAAAAAABG4BU",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

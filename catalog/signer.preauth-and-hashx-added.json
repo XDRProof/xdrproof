@@ -1,0 +1,56 @@
+{
+  "id": "signer.preauth-and-hashx-added",
+  "title": "A pre-authorized-transaction signer (T…) and a hash-x signer (X…) are added",
+  "pattern": "SET_OPTIONS adds a T… signer (the hash of a future transaction) and an X… signer (the sha256 of a secret).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-A4",
+      "placement": "SetOptionsOp.signer as SIGNER_KEY_TYPE_PRE_AUTH_TX and SIGNER_KEY_TYPE_HASH_X"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "add-preauth-and-hashx-signers",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The second signer added is the hash-x key of sha256(preimage).",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/1/body/set_options/signer/key",
+      "equals": "XBEWNSQKIIV7YZZTX5UDCAQ4Q2SMJVGM5LKQEYMHEGMZ7HAAP7EYJFQO",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/set_options",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 1 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/1/op_inner/set_options",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

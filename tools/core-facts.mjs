@@ -31,6 +31,9 @@ function collect(node, out) {
       const raw = node.accountID ? K.decode(node.accountID).payload : Buffer.from(node.ed25519, 'hex');
       out.add(K.muxed(raw, BigInt(node.id)));
     }
+    // signer keys print as their union arm: {"type": "SIGNER_KEY_TYPE_HASH_X", "hashX": hex} (and preAuthTx)
+    if (typeof node.hashX === 'string' && HEX64.test(node.hashX)) out.add(K.hashX(Buffer.from(node.hashX, 'hex')));
+    if (typeof node.preAuthTx === 'string' && HEX64.test(node.preAuthTx)) out.add(K.preAuthTx(Buffer.from(node.preAuthTx, 'hex')));
     // muxed contract (CAP-0084): {id, contractId: C…}
     if ('id' in node && 'contractId' in node && keys.length === 2) out.add(K.muxedContract(K.decode(node.contractId).payload, BigInt(node.id)));
     // signed-payload signer: {ed25519: hex, payload: hex}

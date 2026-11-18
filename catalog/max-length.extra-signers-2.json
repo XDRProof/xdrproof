@@ -1,0 +1,62 @@
+{
+  "id": "max-length.extra-signers-2",
+  "title": "A transaction with the maximum 2 extra signers",
+  "pattern": "Preconditions v2 extraSigners<2> full: two signed-payload keys, each needing its own signature; the transaction carries three.",
+  "caps": [
+    "CAP-0021",
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "PreconditionsV2.extraSigners at its maximum of 2"
+    },
+    {
+      "id": "H-C4",
+      "placement": "two signed-payload extra signers"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "extra-signers-2",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "There are two extra signers.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/cond/v2/extra_signers",
+      "length": 2,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction carries three signatures.",
+      "at": "tx.envelope",
+      "path": "/tx/signatures",
+      "length": 3,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

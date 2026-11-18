@@ -1,0 +1,48 @@
+{
+  "id": "offers.update-existing",
+  "title": "MANAGE_SELL_OFFER updates an existing offer",
+  "pattern": "An offer ID in the operation updates that offer in place: the result says updated.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C7",
+      "placement": "ManageSellOffer updates an existing offer"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "MANAGE_OFFER_UPDATED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation names offer 4.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/manage_sell_offer/offer_id",
+      "equals": "4",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Offer 4 is updated.",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/offer/offer_id": "4"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

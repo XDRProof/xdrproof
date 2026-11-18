@@ -1,0 +1,52 @@
+{
+  "id": "max-length.claimants-10-predicate-depth-4",
+  "title": "A claimable balance with the maximum 10 claimants and a predicate at the maximum depth",
+  "pattern": "claimants<10> full; the first claimant's predicate nests and/or/not to depth 4, the deepest core accepts (CreateClaimableBalanceOpFrame.cpp:78).",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "CreateClaimableBalanceOp.claimants at its maximum of 10"
+    },
+    {
+      "id": "H-C9",
+      "placement": "ClaimPredicate at the maximum nesting depth 4"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "claimants-10-predicate-depth-4",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The balance has 10 claimants.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/create_claimable_balance/claimants",
+      "length": 10,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The first claimant's predicate is and(or(not(before_absolute), before_relative), not(not(unconditional))).",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/create_claimable_balance/claimants/0/claimant_type_v0/predicate/and/1/not/not",
+      "equals": "unconditional",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

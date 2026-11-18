@@ -1,0 +1,91 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "signer.hashx-signed",
+  "title": "A transaction whose only signature is a hash-x preimage",
+  "pattern": "The signature is the preimage itself, not an ed25519 signature: readers that verify every signature as ed25519 reject it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-A4",
+      "placement": "DecoratedSignature carrying a hash-x preimage"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "4c8ce12d1990ef30ebacc634353a73a047a4d02d633579d82be8514bc324850e",
+      "size": 3056,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 36,
+        "recipe": "recipes/classic/gen.mjs#hashx-signed-transaction"
+      },
+      "focus": {
+        "tx_hash": "8d1ca081778cf18f442449b4b1fa4f04e6f8bd9e4b1fd645217218a2a4b5a1a7",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "18ccbffbffba101310aff20457fc57f5c9037c3c8a563be3e8dc6ef2b5f7e9f0",
+      "size": 3056,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 36,
+        "recipe": "recipes/classic/gen.mjs#hashx-signed-transaction"
+      },
+      "focus": {
+        "tx_hash": "0e1ba14461e97492e83373422c81325b3fa117300a5e2dfa7e7d6d141d7a1721",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The only signature is the 32-byte preimage sha256(\"xdrproof:hashx-preimage\").",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/signatures/0/signature",
+        "equals": "4f111d18b68babb2e582ba6c37086fea75ee08a979694d779a7e18d3326004b7"
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

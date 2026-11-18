@@ -1,0 +1,93 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "pool.share-limit-only-change-trust",
+  "title": "CHANGE_TRUST that only changes a pool-share trustline's limit",
+  "pattern": "A pool-share trustline's limit changes and nothing else: no pool row is touched. wallet-backend#755 assumed a pool-share change always meant a pool update.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C8",
+      "placement": "ChangeTrust on a pool-share asset that only updates the limit"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/755"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "94fa2cd2b9cdb89708ed7873f76dce341888abcd25ee403f4484f3359de6dd1d",
+      "size": 1900,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 72,
+        "recipe": "recipes/classic/gen.mjs#pool-share-limit-only-change-trust"
+      },
+      "focus": {
+        "tx_hash": "ce254557e2feb2247f338f63caddad9d27ceb3e2947a4cf28ed9542f6f4a71c9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "2389c6b2d7c878ab39ee0d24b20a0e6974930ecc771b4b8ea8ee3fcb855b889c",
+      "size": 1900,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 72,
+        "recipe": "recipes/classic/gen.mjs#pool-share-limit-only-change-trust"
+      },
+      "focus": {
+        "tx_hash": "5332b056d6bcbaa6cbef2803757a951509dff6f5a25e6691342ae171868e666c",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Only the trustline changes (state, updated).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "length": 2
+      },
+      {
+        "says": "The new limit is 1000000000000 stroops (100000).",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/trustline/limit": "1000000000000"
+        }
+      }
+    ]
+  }
+}

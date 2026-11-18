@@ -1,0 +1,92 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "sequence.bump",
+  "title": "BUMP_SEQUENCE jumps the sequence number by 1001",
+  "pattern": "BUMP_SEQUENCE sets the source sequence far ahead; the next transaction must use bumpTo + 1.",
+  "caps": [
+    "CAP-0001"
+  ],
+  "hazards": [
+    {
+      "id": "H-C11",
+      "placement": "BumpSequenceOp"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "b47bf0366d98fa9928052c07a0b5e80a35227e75bc9f0b4ba8951f2039607a47",
+      "size": 3064,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 37,
+        "recipe": "recipes/classic/gen.mjs#bump-sequence"
+      },
+      "focus": {
+        "tx_hash": "2a9a3acca20793dd7f771178aaf925e58e2f1491d76ce9e57eb287efa7310f88",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "10b6de8980edf9d02cb27a769ec45802f346f6429c5983b8ec96b2f09e82fc1f",
+      "size": 3064,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 37,
+        "recipe": "recipes/classic/gen.mjs#bump-sequence"
+      },
+      "focus": {
+        "tx_hash": "e7228b70e6f4c62f7255a0d8d87c479524e043ed3674d31ce05de66f956431eb",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/bump_sequence",
+        "equals": "success"
+      },
+      {
+        "says": "alice's sequence number becomes bumpTo.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/updated/data/account/account_id": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3"
+        }
+      }
+    ]
+  }
+}

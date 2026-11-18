@@ -1,0 +1,47 @@
+{
+  "id": "signer.signed-payload-length-1",
+  "title": "A signed-payload signer with a 1-byte payload",
+  "pattern": "The shortest payload, 1 byte (0x2a), padded with 3 zero bytes in XDR; its P… strkey is 69 characters.",
+  "caps": [
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-A3",
+      "placement": "SignerKey ED25519_SIGNED_PAYLOAD with a 1-byte payload"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "signed-payload-length-1",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The signer is bob's key with payload 2a.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/set_options/signer/key",
+      "equals": "PCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAASUAAAAB2EQ",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/set_options",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

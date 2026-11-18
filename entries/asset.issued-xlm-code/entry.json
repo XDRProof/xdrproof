@@ -1,0 +1,96 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "asset.issued-xlm-code",
+  "title": "An issued asset with code \"xlm\" is not XLM",
+  "pattern": "A credit_alphanum4 asset whose code is \"xlm\": readers that match on the code instead of the asset type treat it as native.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B9",
+      "placement": "credit_alphanum4 asset code \"xlm\""
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "66c0fa98668327415079e99f1054da4696b190b343a4eaf3e31b5adee23474fe",
+      "size": 2260,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 63,
+        "recipe": "recipes/classic/gen.mjs#payment-issued-xlm-code"
+      },
+      "focus": {
+        "tx_hash": "d2e4ed8829e36e4d95e1f7783ed43c6ae525a205c2fb79ff4704ce68a1fe85f4",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "b2f9e56ddb4293559bb0491edac391d3ab1ac53611fd12238f154c78cafc2692",
+      "size": 2260,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 63,
+        "recipe": "recipes/classic/gen.mjs#payment-issued-xlm-code"
+      },
+      "focus": {
+        "tx_hash": "67399da97c5dfc68fbd294bde44f5963edb2ed2c39499e7b293882991ff1e5a1",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The asset is credit_alphanum4 with code xlm, issued by the issuer.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/0/tx/tx/operations/0/body/payment/asset",
+        "equals": {
+          "credit_alphanum4": {
+            "asset_code": "xlm",
+            "issuer": "GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
+          }
+        }
+      },
+      {
+        "says": "Operation 0 succeeds.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/payment",
+        "equals": "success"
+      }
+    ]
+  }
+}

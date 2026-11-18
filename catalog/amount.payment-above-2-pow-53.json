@@ -1,0 +1,47 @@
+{
+  "id": "amount.payment-above-2-pow-53",
+  "title": "A payment of 9.5e15 stroops, above 2^53",
+  "pattern": "An amount above 2^53 cannot be held exactly by a double: JavaScript numbers and float JSON parsers round it.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-B3",
+      "placement": "PaymentOp.amount above 2^53 stroops"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "payment-above-2-pow-53-stroops",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The amount is 9500000000000000 stroops.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/payment/amount",
+      "equals": "9500000000000000",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

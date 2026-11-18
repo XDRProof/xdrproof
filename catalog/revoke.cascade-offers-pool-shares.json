@@ -1,0 +1,78 @@
+{
+  "id": "revoke.cascade-offers-pool-shares",
+  "title": "Deauthorizing a trustline removes offers, redeems pool shares into claimable balances and deletes the pool",
+  "pattern": "SET_TRUST_LINE_FLAGS clears every authorization on mm's XPF trustline. Core removes mm's three XPF offers, redeems mm's pool shares into two claimable balances for mm (no CREATE_CLAIMABLE_BALANCE), removes the pool-share trustline and, mm being the last shareholder, the pool itself. Readers that only create balances and pools from their own operations miss all of it.",
+  "caps": [
+    "CAP-0035",
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-D9",
+      "placement": "revocation creates claimable balances from pool shares and removes offers"
+    },
+    {
+      "id": "H-C10",
+      "placement": "trustline fully deauthorized (flags 4: only the clawback bit)"
+    },
+    {
+      "id": "H-C8",
+      "placement": "pool entry removed by a revocation"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "revoke-trustline-with-offers-and-pool-shares",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Two claimable balances are created, each for mm.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/claimable_balance/claimants/0/claimant_type_v0/destination": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The pool is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/liquidity_pool/liquidity_pool_id": "LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Offer 3 of mm is removed.",
+      "at": "op.changes",
+      "some": {
+        "/removed/offer/offer_id": "3"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "mm's XPF trustline keeps only the clawback bit (flags 4).",
+      "at": "op.changes",
+      "some": {
+        "/updated/data/trustline/account_id": "GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB",
+        "/updated/data/trustline/flags": 4
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

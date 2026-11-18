@@ -1,0 +1,60 @@
+{
+  "id": "signer.preauth-removed-by-core",
+  "title": "The pre-authorized transaction runs and core removes its signer, with no operation",
+  "pattern": "When a transaction authorized by a T… signer applies, core removes that signer from the account in tx_changes_before. No SET_OPTIONS names it. Readers that track signers only from operations keep a signer that is gone.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-A4",
+      "placement": "pre-auth signer removed by core in tx_changes_before"
+    },
+    {
+      "id": "H-D3",
+      "placement": "signer removed with no operation"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "preauth-tx-executes-and-signer-disappears",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction has no signatures: the pre-auth signer authorizes it.",
+      "at": "tx.envelope",
+      "path": "/tx/signatures",
+      "length": 0,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Before apply, frank has two signers (T… and X…); after, only the X… signer.",
+      "at": "tx.meta",
+      "path": "/tx_changes_before/1/updated/data/account/signers",
+      "length": 1,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 succeeds.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/payment",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}
