@@ -618,7 +618,7 @@
       "refs": [
         "stellar-etl#465"
       ],
-      "test": "Oversubscribed classic ledger with distinct bids (equal bids are broken by a random seed, SurgePricingUtils.cpp:122, so they are not reproducible): component baseFee 2000 against header base_fee 100, the 3000 bidder charged below its bid, the 1000 bidder applied one ledger later: c-base `surge-priced-oversubscribed`, `surge-left-over-applies-next-ledger`",
+      "test": "Classic: oversubscribed ledger with distinct bids: component baseFee 2000 against header base_fee 100, the 3000 bidder charged below its bid, the 1000 bidder applied one ledger later: c-base `surge-priced-oversubscribed`, `surge-left-over-applies-next-ledger` (equal bids are broken by a random seed, SurgePricingUtils.cpp:122). Soroban: ledgerMaxTxCount 2 with bids 3000/2000/1000: phase base_fee 2000, both kept transactions charged the same, the third one ledger later at 100: s-base `soroban-surge-priced`, `soroban-surge-left-over-applies-next-ledger`",
       "checks": [
         "V"
       ]
@@ -792,7 +792,7 @@
         "CAP-0077",
         "wallet-backend#754"
       ],
-      "test": "`s-settings` run (route B) installs FrozenLedgerKeys; claim, deposit and path payment against it",
+      "test": "CAP-0077 apply-time paths after freezing three trustlines: CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN, LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN, LIQUIDITY_POOL_WITHDRAW_TRUSTLINE_FROZEN, and a path payment that removes an offer whose seller trustline is frozen (nothing moved; the frozen trustline is still updated to release liabilities): s-base `frozen-*`. txFROZEN_KEY_ACCESSED is unreachable in a closed ledger: the check (TransactionFrame.cpp:1485) uses the same last-closed-ledger config at validation and apply, and queued transactions are re-validated after every close",
       "checks": [
         "R",
         "V"
@@ -900,7 +900,7 @@
       "title": "Parallel Soroban execution stages (several stages, several clusters)",
       "evidence": "R08 objection 3",
       "refs": [],
-      "test": "Recipe with many Soroban txs in one ledger todo",
+      "test": "Mined mainnet: pubnet 65485185 has 3 stages with 1, 2 and 1 clusters; pubnet 65506631 and 65517506 have 2 clusters in one stage. Generated ledgers put independent transactions in one cluster unless instruction budgets force bins apart, and equal bids make that split depend on a random tie-break (ParallelTxSetBuilder.cpp:717)",
       "checks": [
         "R"
       ]
@@ -961,7 +961,7 @@
       "title": "Config-settings upgrade ledgers (`LEDGER_UPGRADE_CONFIG`; changes in `upgradesProcessing`)",
       "evidence": "18 ConfigSettingEntry arms uncovered",
       "refs": [],
-      "test": "Mine a mainnet settings-vote ledger",
+      "test": "Generated: two LEDGER_UPGRADE_CONFIG ledgers whose upgradesProcessing updates contract_execution_lanes and frozen_ledger_keys, staged by kit2 as a temporary entry (Upgrades.cpp ConfigUpgradeSetFrame::makeFromKey): s-base `config-upgrade-lanes-and-freeze`, `config-upgrade-restore-and-unfreeze`; mine a mainnet settings-vote ledger (B3)",
       "checks": [
         "R"
       ]

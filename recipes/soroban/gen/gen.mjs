@@ -416,6 +416,80 @@ await submit('kit2-set-executable-ref', soroban(alice, invoke(CA1, 'set_ref', [x
   await submit('invoke-external-ref-contract', soroban(alice, invoke(XR, 'put', [sym('via_ref'), xdr.ScVal.scvU32(85)]),
     { ro: [kInstance(XR), kData(CA1, tagKey), kCode(wasmHash)], rw: [kData(XR, sym('via_ref'))] }), 'the external-ref contract runs the v1 kit code: put("via_ref", 85)'); }
 
+// ---- B2d: network settings upgrades (H-F10), frozen keys (H-D12), Soroban surge pricing (H-C18) --------
+// Core reads a ConfigUpgradeSet from any contract's TEMPORARY entry keyed by SCV_BYTES(sha256(set)) whose
+// value is SCV_BYTES(set) (Upgrades.cpp, ConfigUpgradeSetFrame::makeFromKey and getLedgerKey). kit2's
+// put_all writes one, so upgrades are staged deterministically; core's get-settings-upgrade-txs would pick
+// a random salt. The upgrade applies at the end of the ledger it is armed for, after that ledger's txs.
+const configUpgrade = async (name, entries, note) => {
+  const set = new xdr.ConfigUpgradeSet({ updatedEntry: entries }).toXDR(); const hash = sha(set);
+  const k = xdr.ScVal.scvBytes(hash), v = xdr.ScVal.scvBytes(set);
+  await submit(name + '-staged', soroban(alice, invoke(CA1, 'put_all', [k, v]),
+    { ro: [kCode(wasm2Hash)], rw: [kInstance(CA1), kData(CA1, k, DUR.persistent), kData(CA1, k, DUR.temporary)] }), 'ConfigUpgradeSet bytes in a temporary entry of CA1');
+  const key = new xdr.ConfigUpgradeSetKey({ contractId: new xdr.ContractId(S.StrKey.decodeContract(CA1)), contentHash: hash }).toXDR('base64');
+  const r = (await get('upgrades?mode=set&upgradetime=1970-01-01T00:00:00Z&configupgradesetkey=' + encodeURIComponent(key))).trim();
+  await close(); manifest.steps.push({ name, ledger, note, config_upgrade_set: hash.toString('hex') }); console.log(String(ledger).padStart(3), name, r.slice(0, 60));
+};
+const [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB] = ['issuer', 'holder', 'maker', 'taker', 'pool-a', 'pool-b'].map((n) => kp('freeze-' + n));
+const fzAll = [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB];
+const FRZ = new S.Asset('FRZ', fzIssuer.publicKey()), FRP = new S.Asset('FRP', fzIssuer.publicKey());
+await submit('freeze-setup-accounts', classic(root, fzAll.map((k) => S.Operation.createAccount({ destination: k.publicKey(), startingBalance: '1000' }))));
+for (const k of fzAll) seq.set(k.publicKey(), BigInt(ledger) << 32n);
+await submit('freeze-setup-trustlines', classic(fzIssuer, [[fzHolder, FRZ], [fzMaker, FRZ], [fzTaker, FRZ], [fzPoolA, FRP], [fzPoolB, FRP]]
+  .map(([k, a]) => S.Operation.changeTrust({ asset: a, source: k.publicKey() })), fzAll));
+const fzPay = (k, a) => S.Operation.payment({ destination: k.publicKey(), asset: a, amount: '100' });
+const issueTx = classic(fzIssuer, [fzPay(fzHolder, FRZ), fzPay(fzMaker, FRZ), fzPay(fzPoolA, FRP), fzPay(fzPoolB, FRP),
+  S.Operation.createClaimableBalance({ asset: FRZ, amount: '10', claimants: [new S.Claimant(fzHolder.publicKey(), S.Claimant.predicateUnconditional())] })]);
+const fzBalance = issueTx.getClaimableBalanceId(4);
+await submit('freeze-setup-issue-and-claimable-balance', issueTx);
+const lpFRP = new S.LiquidityPoolAsset(S.Asset.native(), FRP, S.LiquidityPoolFeeV18);
+const lpFRPId = Buffer.from(S.getLiquidityPoolId('constant_product', lpFRP.getLiquidityPoolParameters())).toString('hex');
+const deposit = (amount) => S.Operation.liquidityPoolDeposit({ liquidityPoolId: lpFRPId, maxAmountA: amount, maxAmountB: amount, minPrice: '0.5', maxPrice: '2' });
+await enqueue('freeze-setup-offer-holder', classic(fzHolder, [S.Operation.manageSellOffer({ selling: FRZ, buying: S.Asset.native(), amount: '10', price: '1' })]));
+await enqueue('freeze-setup-offer-maker', classic(fzMaker, [S.Operation.manageSellOffer({ selling: FRZ, buying: S.Asset.native(), amount: '10', price: '2' })]));
+await enqueue('freeze-setup-pool-a', classic(fzPoolA, [S.Operation.changeTrust({ asset: lpFRP }), deposit('50')]));
+await enqueue('freeze-setup-pool-b', classic(fzPoolB, [S.Operation.changeTrust({ asset: lpFRP }), deposit('50')]));
+await closeGroup('freeze-setup-market');
+manifest.freeze = { accounts: Object.fromEntries(['issuer', 'holder', 'maker', 'taker', 'pool_a', 'pool_b'].map((n, i) => [n, fzAll[i].publicKey()])), pool: lpFRPId, claimable: fzBalance };
+
+// U1: Soroban ledgerMaxTxCount 2, and freeze three trustlines (CAP-0077), in one upgrade (entries sorted by ID)
+const maxTxCount = JSON.parse(await get('sorobaninfo')).ledger.max_tx_count;
+const frozen = [kTrust(fzHolder, FRZ), kTrust(fzPoolA, FRP), kTrust(fzPoolB, FRP)].map((lk) => lk.toXDR());
+const lanes = (n) => xdr.ConfigSettingEntry.configSettingContractExecutionLanes(new xdr.ConfigSettingContractExecutionLanesV0({ ledgerMaxTxCount: n }));
+const freezeDelta = (keysToFreeze, keysToUnfreeze) => xdr.ConfigSettingEntry.configSettingFrozenLedgerKeysDelta(new xdr.FrozenLedgerKeysDelta({ keysToFreeze, keysToUnfreeze }));
+await configUpgrade('config-upgrade-lanes-and-freeze', [lanes(2), freezeDelta(frozen, [])],
+  'LEDGER_UPGRADE_CONFIG: Soroban ledgerMaxTxCount 2; freeze the holder FRZ, pool-a FRP and pool-b FRP trustlines');
+
+// Frozen trustlines reached only at apply time (CAP-0077 "Apply time validation"): opaque claimable-balance
+// and pool operations fail; the DEX removes an offer whose seller trustline is frozen and moves nothing.
+await enqueue('frozen-claim-claimable-balance', classic(fzHolder, [S.Operation.claimClaimableBalance({ balanceId: fzBalance })]), 'CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN');
+await enqueue('frozen-pool-deposit', classic(fzPoolA, [deposit('10')]), 'LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN');
+await enqueue('frozen-pool-withdraw', classic(fzPoolB, [S.Operation.liquidityPoolWithdraw({ liquidityPoolId: lpFRPId, amount: '10', minAmountA: '0', minAmountB: '0' })]), 'LIQUIDITY_POOL_WITHDRAW_TRUSTLINE_FROZEN');
+await enqueue('frozen-offer-removed-by-path-payment', classic(fzTaker, [S.Operation.pathPaymentStrictSend({ sendAsset: S.Asset.native(), sendAmount: '5',
+  destination: fzTaker.publicKey(), destAsset: FRZ, destMin: '0.0000001', path: [] })]), 'the holder offer (frozen seller trustline) is removed with nothing moved; the maker offer fills');
+await closeGroup('frozen-keys-at-apply-time');
+
+// Soroban surge: three calls bid 3000, 2000 and 1000 per op for a two-transaction phase. Distinct bids keep
+// the selection deterministic (equal bids are tie-broken by a random seed, ParallelTxSetBuilder.cpp:717).
+const bidCall = (src, key, bid) => {
+  const data = new S.SorobanDataBuilder().setFootprint([kInstance(K0), kCode(wasmHash)], [kData(K0, key)]).setResources(RES.ins, RES.read, RES.write).setResourceFee(RES.fee).build();
+  const t = new S.TransactionBuilder(new S.Account(src.publicKey(), seq.get(src.publicKey()).toString()), { fee: String(bid), networkPassphrase: passphrase, timebounds: TB })
+    .addOperation(invoke(K0, 'put', [key, xdr.ScVal.scvU32(bid)])).setSorobanData(data).build();
+  t.sign(src); return t;
+};
+await enqueue('soroban-surge-bid-3000', bidCall(alice, sym('surge_3000'), 3000));
+await enqueue('soroban-surge-bid-2000', bidCall(bob, sym('surge_2000'), 2000));
+{ const late = bidCall(issuer, sym('surge_1000'), 1000);
+  const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(late.toEnvelope().toXDR('base64'))));
+  if (r.status === 'PENDING') seq.set(issuer.publicKey(), seq.get(issuer.publicKey()) + 1n);
+  await closeGroup('soroban-surge-priced');
+  await close(); manifest.steps.push({ name: 'soroban-surge-left-over-applies-next-ledger', ledger, tx: Buffer.from(late.hash()).toString('hex'), status: r.status });
+  console.log(String(ledger).padStart(3), 'soroban-surge-left-over-applies-next-ledger'); }
+
+// U2: restore the transaction count and unfreeze the three trustlines, so later recipes see normal limits
+await configUpgrade('config-upgrade-restore-and-unfreeze', [lanes(maxTxCount), freezeDelta([], frozen)],
+  `LEDGER_UPGRADE_CONFIG: Soroban ledgerMaxTxCount back to ${maxTxCount}; unfreeze the three trustlines`);
+
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {
   const big = { ins: 240_000_000, read: 200_000, write: 20_000, fee: 400_000_000 };
