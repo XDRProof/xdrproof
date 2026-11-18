@@ -1,0 +1,16 @@
+[package]
+name = "xdrproof-native"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Native rs-stellar-xdr reader for XDRProof: decode, re-encode and SEP-0051 JSON, with explicit limits."
+license = "Apache-2.0"
+
+[dependencies]
+stellar-xdr = { version = "=30.0.0", features = ["std", "serde", "serde_json", "base64", "type_enum"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+
+[workspace]

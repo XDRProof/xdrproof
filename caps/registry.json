@@ -1,0 +1,1063 @@
+{
+  "$schema": "https://xdrproof.dev/schema/v1/registry.schema.json",
+  "note": "XDRProof hazard registry: each hazard is a named way Stellar ledger readers break. Source of the design: research blueprint (2026-11-18). Checks: R replay probe, C conformance, L linter, G guide, V verify facts.",
+  "count": 75,
+  "hazards": [
+    {
+      "id": "H-A1",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Muxed account (`M…`) treated as a plain account: ID dropped, truncated, or used as identity",
+      "evidence": "wallet-backend#716 (AddressBytea truncation), #693 (two muxed over one base → PK collision), stellar-etl#263/#477 (fee account muxed)",
+      "refs": [
+        "stellar-etl#263",
+        "wallet-backend#716"
+      ],
+      "test": "Muxed in every position: tx source C5, op source C5, payment dest C5, path-payment dest C14, account-merge dest C38, fee-bump fee source todo, SAC transfer dest S11, muxed contract `W` S27; two different muxed IDs over one base account in one ledger todo",
+      "checks": [
+        "C",
+        "L",
+        "R"
+      ]
+    },
+    {
+      "id": "H-A2",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Muxed ID extremes and non-canonical forms",
+      "evidence": "js-stellar-sdk#1785 (IDs that encode a different ID)",
+      "refs": [
+        "js-stellar-sdk#1785"
+      ],
+      "test": "IDs 0, 1, 2^63, 2^64−1 (C5 has 1, 2^63, 2^64−1; 0 todo); non-canonical strings as API vectors (exists in conformance)",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-A3",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Signed-payload signer (`P…`) stored as 32/33 bytes, payload lost, or halts ingestion",
+      "evidence": "wallet-backend#729 (halt), #716 (33 bytes)",
+      "refs": [
+        "wallet-backend#729"
+      ],
+      "test": "Payload lengths 1 todo, 4 (mined testnet 4437357), 29 (needs padding, C6), 64 (max, C6); as account signer C6 + mined mainnet `M:signed-payload-signer`; as extra signer (CAP-21) C33",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-A4",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Hash-x (`X…`) and pre-auth (`T…`) signers; pre-auth signer removed by core with no operation",
+      "evidence": "CAP-0021/CAP-0019; removal is a state change no op explains",
+      "refs": [
+        "CAP-0019",
+        "CAP-0021"
+      ],
+      "test": "Add both C34; pre-auth tx executes and the signer disappears C35; hash-x-signed tx C36; mainnet `M:signer-hashx-preauth`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-A5",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Contract (`C…`), liquidity-pool (`L…`) and claimable-balance (`B…`) addresses where readers expect accounts",
+      "evidence": "wallet-backend#745 (CB/LP ScAddress as deployer), #756 (CB/LP address in event topic)",
+      "refs": [
+        "wallet-backend#745"
+      ],
+      "test": "Contract addresses throughout S-recipes; CB/LP `ScAddress` as deployer and in an event topic todo (needs a recipe passing those address kinds)",
+      "checks": [
+        "C",
+        "L",
+        "R"
+      ]
+    },
+    {
+      "id": "H-A6",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Fabricated muxed destination from a text or hash memo",
+      "evidence": "stellar-etl#450 (token_transfer invents muxed id=0)",
+      "refs": [
+        "stellar-etl#450"
+      ],
+      "test": "Memo text, hash, return and id on payments C26–C29; memo text on a SAC-transfer-like path todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-A7",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Forged auth entries put a transaction into an unrelated address's history",
+      "evidence": "wallet-backend#739",
+      "refs": [
+        "wallet-backend#739"
+      ],
+      "test": "A Soroban tx whose envelope auth names an address the meta never touches todo",
+      "checks": [
+        "L",
+        "R"
+      ]
+    },
+    {
+      "id": "H-A8",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Fee-bump: fee source vs inner source confusion; inner signers captured nowhere",
+      "evidence": "stellar-etl#464, #453, #263",
+      "refs": [
+        "stellar-etl#464"
+      ],
+      "test": "Fee bump success C30, inner failed C31 + mainnet `M:fee-bump-inner-failed`; muxed fee source todo; Soroban fee bump todo",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-A9",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Muxed placements missing: `Clawback.from` (MuxedAccount); muxed source and text memo on ExtendFootprintTTL/RestoreFootprint (valid; wallet-backend#753 halted on them; the JS builder refuses them)",
+      "evidence": "strkey-sep-0023.md:268; stellar-core-validation.md:217-218",
+      "refs": [
+        "wallet-backend#753"
+      ],
+      "test": "Clawback from M; ExtendFootprintTTL with M source + memo (envelope built by hand)",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-A10",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Claimable-balance ID forms (union vs B strkey vs hex); derived from base account + seq + op index",
+      "evidence": "strkey-sep-0023.md §2",
+      "refs": [],
+      "test": "Claimable balance at op index 1, muxed op source, inside a fee bump",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-A11",
+      "layer": "A",
+      "layer_name": "Addresses and identities",
+      "title": "Muxed `ScAddress` rejected inside a contract-data key; events split M into `to` + `to_muxed_id` (u64, bytes or string)",
+      "evidence": "strkey-sep-0023.md:275-300; measured C26 (string), C28 (bytes)",
+      "refs": [],
+      "test": "Trapped kit `put` with a muxed key; facts on C26/C28",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B1",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Asset ordering by strkey text instead of XDR bytes",
+      "evidence": "js-stellar-sdk#1766, go-stellar-sdk#5974, py-stellar-base#1246",
+      "refs": [
+        "go-stellar-sdk#5974",
+        "js-stellar-sdk#1766",
+        "py-stellar-base#1246"
+      ],
+      "test": "API vectors (exist); a pool whose issuers sort differently by text and bytes, as a real ledger todo",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B2",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "ScMap keys that collide after native conversion",
+      "evidence": "js-stellar-sdk#1789",
+      "refs": [
+        "js-stellar-sdk#1789"
+      ],
+      "test": "As value S19 (shipped), as key S20, in events, return value",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B3",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Amounts: int64 max, precision beyond 2^53, float conversion",
+      "evidence": "stellar-etl#454; js #1785 (offer id > 2^53)",
+      "refs": [
+        "stellar-etl#454"
+      ],
+      "test": "Trustline limit i64::MAX C9/S5; balances > 2^53 stroops todo; offer ids above 2^53 (API vector)",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B4",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Wide integers (u128/i128/u256/i256), timepoint, duration at extremes",
+      "evidence": "Soroban token amounts are i128 (stellar-etl#454)",
+      "refs": [
+        "stellar-etl#454"
+      ],
+      "test": "S28 (every type at min/max)",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B5",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Bytes that are not valid UTF-8 in \"string\" fields",
+      "evidence": "js-stellar-sdk#1823; core output becomes invalid JSON (R08)",
+      "refs": [
+        "js-stellar-sdk#1823"
+      ],
+      "test": "Memo text C26 + mainnet `M:memo-text-non-utf8`; ScString S28; manage-data binary C24 + mainnet; home domain non-UTF-8 todo (if core allows), data name todo",
+      "checks": [
+        "C",
+        "G",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B6",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Maximum lengths (VecM limits), and one past them",
+      "evidence": "rs-stellar-xdr#581, #598",
+      "refs": [
+        "rs-stellar-xdr#581"
+      ],
+      "test": "20 signatures + 32-byte symbol S26; 64-byte data value C24; 32-byte home domain C8; 28-byte memo C26; max ops per tx todo; max signers 20 S25; over-length as lane S (SDK only) todo",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B7",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Nesting depth: auth trees, nested ScVal; caps that fail the ledger",
+      "evidence": "wallet-backend#820; R03 depth ladders",
+      "refs": [
+        "wallet-backend#820"
+      ],
+      "test": "Auth depth 6 S21, 245 S22, 246 S23; nested ScVal ladder (API vectors exist); deep tree + contract deploy todo (exercises the patched walk)",
+      "checks": [
+        "C",
+        "L",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B8",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Non-canonical encodings decoders disagree on",
+      "evidence": "rs-stellar-xdr#622 / stellar-core#5509 (bool word 2), js-xdr#165 (float discriminants)",
+      "refs": [
+        "js-xdr#165",
+        "rs-stellar-xdr#622",
+        "stellar-core#5509"
+      ],
+      "test": "Lane S synthetic vectors, SDK-only todo",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B9",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Alphanumeric-12 asset codes; codes like \"xlm\"",
+      "evidence": "js-stellar-sdk#1787",
+      "refs": [
+        "js-stellar-sdk#1787"
+      ],
+      "test": "Alphanum-12 C9, C11, C14; mainnet `M:alphanum12-asset`; issued \"xlm\" code todo",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-B10",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "JSON number vs string for 64-bit values",
+      "evidence": "rs-stellar-xdr#625; stellar-etl#455",
+      "refs": [
+        "rs-stellar-xdr#625",
+        "stellar-etl#455"
+      ],
+      "test": "Covered by facts on 64-bit fields (exact strings)",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B11",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Offer price edges: `Price{n,d}` at int32 extremes; prices as floats",
+      "evidence": "js-stellar-sdk#1843/#1750; stellar-etl#454",
+      "refs": [
+        "js-stellar-sdk#1843",
+        "stellar-etl#454"
+      ],
+      "test": "manageSellOffer at n = 2^31−1/d = 1 and n = 1/d = 2^31−1",
+      "checks": [
+        "C",
+        "V"
+      ]
+    },
+    {
+      "id": "H-B12",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Maximum lengths not yet tested: `path<5>`, `claimants<10>`, `extraSigners<2>`, `dataName` 64, `operations<100>`, AllowTrust 12-char code",
+      "evidence": "RFP F14 \"vectors at their maximum length\"",
+      "refs": [],
+      "test": "One max-lengths ledger",
+      "checks": [
+        "C",
+        "V"
+      ]
+    },
+    {
+      "id": "H-B13",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "A valid ledger common decoders cannot read (depth)",
+      "evidence": "measured: stellar-xdr-json WASM fails on S22/S23; Python 512 and Java 200 default depths",
+      "refs": [],
+      "test": "S22/S23 as entries; expected divergences pre-registered",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-B14",
+      "layer": "B",
+      "layer_name": "Values and encodings",
+      "title": "Recursive delegate signatures (CAP-0071 `nestedDelegates`)",
+      "evidence": "cap-index.md:120; randxdr preset",
+      "refs": [
+        "CAP-0071"
+      ],
+      "test": "Kit v2 custom account with `__check_auth` delegates; XP002 recursive types include it",
+      "checks": [
+        "C",
+        "L"
+      ]
+    },
+    {
+      "id": "H-C1",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Failed transactions in ledgers (fees charged, no effects, result codes)",
+      "evidence": "stellar-etl#455",
+      "refs": [
+        "stellar-etl#455"
+      ],
+      "test": "Failure suite C41–C49: one result code per tx, about 45 codes; `tx_failed` C32",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-C2",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Fee-bump inner success and failure",
+      "evidence": "stellar-etl#464",
+      "refs": [
+        "stellar-etl#464"
+      ],
+      "test": "C30, C31, mainnet",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-C3",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Sponsorship sandwiches, revocation, `txBAD_SPONSORSHIP`",
+      "evidence": "stellar-etl#323 (sponsor missing in state tables)",
+      "refs": [
+        "stellar-etl#323"
+      ],
+      "test": "C22, C23, C40 (signer), C44 revoke signer, C45 failures, mainnet `M:sponsorship`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C4",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Preconditions v2 (ledger bounds, min seq, extra signers) and no preconditions",
+      "evidence": "CAP-0021",
+      "refs": [
+        "CAP-0021"
+      ],
+      "test": "C33, PRECOND_NONE C44",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-C5",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Several operations with different sources in one tx",
+      "evidence": "participants-from-envelope rule",
+      "refs": [],
+      "test": "C9 (three op sources), C22",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C6",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Soroban failures: trapped, resource exceeded, archived entry",
+      "evidence": "stellar-etl#452 (`in_successful_contract_call` hard-coded true)",
+      "refs": [
+        "stellar-etl#452"
+      ],
+      "test": "Trapped S23; mainnet `M:soroban-failed` (3 ledgers); archived entry todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C7",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Order-book matching: one op claims many offers; offers removed by crossing",
+      "evidence": "stellar-etl#456 (spurious offer effects)",
+      "refs": [
+        "stellar-etl#456"
+      ],
+      "test": "C12 (3 offers), C14, mainnet `M:offer-crosses-many`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C8",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Liquidity pools: deposit, withdraw, pool claim atoms, pool-share trustline without pool row",
+      "evidence": "stellar-etl#451, wallet-backend#755",
+      "refs": [
+        "stellar-etl#451",
+        "wallet-backend#755"
+      ],
+      "test": "C13, C15, C44 (strict receive through pool), mainnet; pool-share limit-only ChangeTrust todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C9",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Claimable balances: nested predicates, claim, clawback, flags",
+      "evidence": "stellar-etl#441",
+      "refs": [
+        "stellar-etl#441"
+      ],
+      "test": "C16–C19, C40 (expired predicate) + C45 cannot-claim, mainnet",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C10",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Clawback and trustline authorization states (authorized, maintain-liabilities, deauthorized)",
+      "evidence": "stellar-etl#457 (allow_trust effect types)",
+      "refs": [
+        "stellar-etl#457"
+      ],
+      "test": "C20, C21, allow_trust C44, mainnet `M:clawback-and-trustline-flags`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C11",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Sequence bumps and account merges (entry removed)",
+      "evidence": "",
+      "refs": [],
+      "test": "C37, C38, mainnet",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C12",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Transaction apply order differs from transaction-set order",
+      "evidence": "R02",
+      "refs": [],
+      "test": "Multi-tx ledgers C40–C45, mainnet",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C13",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Soroban fee charged at the maximum, refunded in `post_tx_apply_fee_processing`; `fee_charged` is net",
+      "evidence": "stellar-etl#453, #511; CAP-0063; measured on S10",
+      "refs": [
+        "CAP-0063",
+        "stellar-etl#453"
+      ],
+      "test": "Facts on existing S-ledgers; new: Soroban fee bump with a muxed fee source",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-C14",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Fee-bump identity: outer hash in `TransactionResultPair`, inner hash in `InnerTransactionResultPair`; inner source seq consumed even on failure, fee source seq not",
+      "evidence": "stellar-etl#464, #477, #465; measured on C31",
+      "refs": [
+        "stellar-etl#464"
+      ],
+      "test": "Facts on C30/C31",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C15",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Failed transactions still change state: sequence bump in `tx_changes_before`; pre-auth signer removed even when the transaction fails (CAP-0028)",
+      "evidence": "measured on C32, C35; wallet-backend.md:143",
+      "refs": [
+        "CAP-0028"
+      ],
+      "test": "New: a pre-auth transaction that fails",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-C16",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Transaction-level failures at apply time: `txBAD_SEQ`, `txNO_ACCOUNT`, `txBAD_AUTH`, `opBAD_AUTH` (state changed earlier in the same ledger or tx)",
+      "evidence": "15 TransactionResultResult arms uncovered",
+      "refs": [],
+      "test": "Multi-tx ledgers in failure-suite style; each code proven reachable or unreachable with a core apply-path line",
+      "checks": [
+        "V"
+      ]
+    },
+    {
+      "id": "H-C17",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Liabilities: available ≠ balance (`UNDERFUNDED` with balance > amount; `LINE_FULL` from buying liabilities)",
+      "evidence": "CAP-0003",
+      "refs": [
+        "CAP-0003"
+      ],
+      "test": "Account with an open offer pays balance − liabilities + 1",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-C18",
+      "layer": "C",
+      "layer_name": "Transaction lifecycle and results",
+      "title": "Fee paid ≠ fee bid: generalized tx-set component `baseFee` (surge pricing)",
+      "evidence": "stellar-etl#465",
+      "refs": [
+        "stellar-etl#465"
+      ],
+      "test": "`s-settings`/`c-surge` run: oversubscribed ledger after a `maxtxsetsize` upgrade",
+      "checks": [
+        "V"
+      ]
+    },
+    {
+      "id": "H-D1",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Contract call creates a classic trustline (no CHANGE_TRUST, no event)",
+      "evidence": "wallet-backend#731, stellar-etl#460",
+      "refs": [
+        "stellar-etl#460",
+        "wallet-backend#731"
+      ],
+      "test": "S5 (source auth), S6 (address auth), S7 (no-op on existing), P28 variants",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D2",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "XLM SAC transfer creates an account",
+      "evidence": "CAP-0073",
+      "refs": [
+        "CAP-0073"
+      ],
+      "test": "S10",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D3",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Pre-auth signer disappears; sponsorship moves between accounts",
+      "evidence": "",
+      "refs": [],
+      "test": "C35, C23, C44",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D4",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "TTL extend and restore change entries with no value change",
+      "evidence": "stellar-etl#461 (misnamed restored-key hash)",
+      "refs": [
+        "stellar-etl#461"
+      ],
+      "test": "S29, S30, mainnet extend/restore; archived → restored (`LEDGER_ENTRY_RESTORED`) todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D5",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Contract wasm upgrade, contract creation (constructor args, salt)",
+      "evidence": "stellar-etl#462 (salt omitted)",
+      "refs": [
+        "stellar-etl#462"
+      ],
+      "test": "S12–S18, mainnet `M:soroban-wasm-upgrade`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D6",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Entries removed by no transaction: eviction (`evicted_keys`), hot archive",
+      "evidence": "CAP-0062; stellar-etl#461",
+      "refs": [
+        "CAP-0062",
+        "stellar-etl#461"
+      ],
+      "test": "Mine a mainnet ledger with non-empty `evicted_keys`; generated variant in the `s-archival` run",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D7",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Automatic restore inside InvokeHostFunction (`archivedSorobanEntries`, `SorobanTransactionDataExt.1`) vs RestoreFootprint",
+      "evidence": "CAP-0066",
+      "refs": [
+        "CAP-0066"
+      ],
+      "test": "`s-archival` run with `TESTING_MINIMUM_PERSISTENT_ENTRY_LIFETIME`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D8",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "TTL entries name data only by `sha256(LedgerKey)`",
+      "evidence": "stellar-etl#461",
+      "refs": [
+        "stellar-etl#461"
+      ],
+      "test": "Fact on S29: `key_hash = sha256(LedgerKey(...))`; conformance op `ledger_key_hash`",
+      "checks": [
+        "C",
+        "V"
+      ]
+    },
+    {
+      "id": "H-D9",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Revoking authorization removes offers and turns pool shares into new claimable balances (no create op)",
+      "evidence": "wallet-backend#817; stellar-etl#458; go-stellar-sdk#5974",
+      "refs": [
+        "go-stellar-sdk#5974",
+        "stellar-etl#458",
+        "wallet-backend#817"
+      ],
+      "test": "Revoke mm (holds pool shares and offers)",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D10",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Contract-data identity is (contract, key, durability); instance storage; a non-SAC `[\"Balance\", G]` key",
+      "evidence": "stellar-etl#459",
+      "refs": [
+        "stellar-etl#459"
+      ],
+      "test": "Kit v2: `put_temp`, `put_instance`, `put([\"Balance\", bob])`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-D11",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "External-ref executables (CAP-0085): `CONTRACT_EXECUTABLE_EXTERNAL_REF`, `SCV_EXECUTABLE_TAG`",
+      "evidence": "cap-index.md:123; stellar-etl#470",
+      "refs": [
+        "CAP-0085",
+        "stellar-etl#470"
+      ],
+      "test": "Kit v2 deploy with an external-ref executable",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-D12",
+      "layer": "D",
+      "layer_name": "State changes no operation explains",
+      "title": "Frozen keys (CAP-0077): `txFROZEN_KEY_ACCESSED`, `*_TRUSTLINE_FROZEN`, offers removed",
+      "evidence": "wallet-backend#754 halt; cap-index.md:114",
+      "refs": [
+        "CAP-0077",
+        "wallet-backend#754"
+      ],
+      "test": "`s-settings` run (route B) installs FrozenLedgerKeys; claim, deposit and path payment against it",
+      "checks": [
+        "R",
+        "V"
+      ]
+    },
+    {
+      "id": "H-E1",
+      "layer": "E",
+      "layer_name": "Events",
+      "title": "Unified events (CAP-0067): classic ops emit events; fee events before and after all txs",
+      "evidence": "stellar-etl#452",
+      "refs": [
+        "CAP-0067",
+        "stellar-etl#452"
+      ],
+      "test": "Every C-ledger (events counted), S-ledgers (fee events)",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-E2",
+      "layer": "E",
+      "layer_name": "Events",
+      "title": "Event data carrying muxed IDs (`to_muxed_id`), maps, deep ScVal",
+      "evidence": "CAP-0067, wallet-backend#756",
+      "refs": [
+        "CAP-0067",
+        "wallet-backend#756"
+      ],
+      "test": "S11, S19, S28, mainnet `M:soroban-event-deep-scval`",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-E3",
+      "layer": "E",
+      "layer_name": "Events",
+      "title": "Diagnostic events double-emitted",
+      "evidence": "stellar-etl#452",
+      "refs": [
+        "stellar-etl#452"
+      ],
+      "test": "Recipe with diagnostic events enabled todo (core config `ENABLE_SOROBAN_DIAGNOSTIC_EVENTS`)",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F1",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Protocol-upgrade ledgers (config settings, version, StellarValueExt)",
+      "evidence": "R02 (`'3' is not a valid StellarValueType`)",
+      "refs": [],
+      "test": "Mainnet `M:protocol-upgrade` (P→current), testnet P30 upgrade; never generated (non-deterministic)",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F2",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "P30 `StellarValue` signed_ms (CAP-0088)",
+      "evidence": "R01",
+      "refs": [
+        "CAP-0088"
+      ],
+      "test": "Testnet `M:protocol-30-signed-ms`; every P30 recipe ledger",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-F3",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Large ledgers (memory, many transactions)",
+      "evidence": "N4",
+      "refs": [],
+      "test": "Mainnet `M:largest-ledger`",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F4",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Empty ledgers (no transactions)",
+      "evidence": "`STELLAR_VALUE_EMPTY_TX_SET*` arms",
+      "refs": [],
+      "test": "Recipe closing an empty ledger todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F5",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Parallel Soroban execution stages (several stages, several clusters)",
+      "evidence": "R08 objection 3",
+      "refs": [],
+      "test": "Recipe with many Soroban txs in one ledger todo",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F6",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Change order within an operation varies between core processes",
+      "evidence": "R09",
+      "refs": [],
+      "test": "Order-variant raw bytes shipped as variants",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F7",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "`LedgerCloseMetaExt` v1 (Galexie) vs v0 (RPC) for the same ledger",
+      "evidence": "R01",
+      "refs": [],
+      "test": "Same ledger as two variants todo",
+      "checks": [
+        "C",
+        "R"
+      ]
+    },
+    {
+      "id": "H-F8",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Meta version polymorphism on backfill: LCM v0/v1, TxMeta v2/v3, V0 envelopes, refunds in `txChangesAfter` (P20–22)",
+      "evidence": "ledger-close-meta.md:85-105",
+      "refs": [],
+      "test": "Mine one P20–22 Soroban ledger and one pre-P13 ledger",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F9",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Same ledger, different bytes by node flags (six Galexie flags vs RPC defaults)",
+      "evidence": "ledger-close-meta.md:390-406",
+      "refs": [],
+      "test": "`emitter_flags` dimension in variant keys; runs with flags off and with Galexie's six",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-F10",
+      "layer": "F",
+      "layer_name": "Ledger level",
+      "title": "Config-settings upgrade ledgers (`LEDGER_UPGRADE_CONFIG`; changes in `upgradesProcessing`)",
+      "evidence": "18 ConfigSettingEntry arms uncovered",
+      "refs": [],
+      "test": "Mine a mainnet settings-vote ledger",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-G1",
+      "layer": "G",
+      "layer_name": "Protocol and network variants",
+      "title": "Passphrase-dependent bytes (hashes, contract IDs, signatures)",
+      "evidence": "F4; R01",
+      "refs": [],
+      "test": "p30-mainnet and p30-testnet for every generated entry",
+      "checks": [
+        "C",
+        "V"
+      ]
+    },
+    {
+      "id": "H-G2",
+      "layer": "G",
+      "layer_name": "Protocol and network variants",
+      "title": "Older protocol a pre-fix indexer can decode",
+      "evidence": "R02",
+      "refs": [],
+      "test": "P28 variants for sighting entries",
+      "checks": [
+        "R"
+      ]
+    },
+    {
+      "id": "H-G3",
+      "layer": "G",
+      "layer_name": "Protocol and network variants",
+      "title": "Mainnet-only code paths in core (`gIsProductionNetwork`)",
+      "evidence": "`gaps-and-risks` §3.3: P24 key filter, P15→16 offer fix, P24 hot-archive fix, one historical offer",
+      "refs": [],
+      "test": "Documented: none reachable by a standalone P30 generator; mainnet mined entries cover real-network behaviour",
+      "checks": [
+        "G"
+      ]
+    },
+    {
+      "id": "H-G4",
+      "layer": "G",
+      "layer_name": "Protocol and network variants",
+      "title": "Gated CAPs before mainnet (`next/`)",
+      "evidence": "stellar-xdr#317; CAP-0084 slipped P28→P30",
+      "refs": [
+        "CAP-0084",
+        "stellar-xdr#317"
+      ],
+      "test": "`next/` channel per upgrade",
+      "checks": [
+        "V"
+      ]
+    },
+    {
+      "id": "H-H1",
+      "layer": "H",
+      "layer_name": "Reader robustness (SDK-only)",
+      "title": "Depth bombs (nested vecs/maps past each SDK's limit)",
+      "evidence": "R03 ladders",
+      "refs": [],
+      "test": "API vectors (exist)",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-H2",
+      "layer": "H",
+      "layer_name": "Reader robustness (SDK-only)",
+      "title": "Over-length vectors, truncated input, trailing bytes",
+      "evidence": "rs-stellar-xdr#581/#598",
+      "refs": [
+        "rs-stellar-xdr#581"
+      ],
+      "test": "Lane S vectors todo",
+      "checks": [
+        "C"
+      ]
+    },
+    {
+      "id": "H-H3",
+      "layer": "H",
+      "layer_name": "Reader robustness (SDK-only)",
+      "title": "Non-canonical bool/discriminants",
+      "evidence": "rs#622, js-xdr#165",
+      "refs": [
+        "js-xdr#165",
+        "rs#622"
+      ],
+      "test": "Lane S todo",
+      "checks": [
+        "C"
+      ]
+    }
+  ]
+}

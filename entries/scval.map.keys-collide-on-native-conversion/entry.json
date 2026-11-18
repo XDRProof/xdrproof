@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "scval.map.keys-collide-on-native-conversion",
+  "title": "Contract stores and emits a map whose keys all read as \"1\"",
+  "pattern": "An ScMap may hold keys of different types that print the same: u32 1, i32 1, u64 1, the string \"1\" and the symbol \"1\" are five distinct, correctly ordered keys on chain. Converting the map to a native object keyed by text collapses them. js-stellar-sdk's scValToNative silently kept one of them (#1789). This entry is real stellar-core output: a contract wrote the map to storage, returned it and emitted it in an event.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B2",
+      "placement": "ContractDataEntry.val, ContractEvent.body.data, SorobanTransactionMeta.returnValue"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [
+    "https://github.com/stellar/js-stellar-sdk/issues/1789"
+  ],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "744986731d9719b9e03dceb25bef7e56aa2855ce08173c19b7da261d1531cb41",
+      "size": 2972,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "EMIT_SOROBAN_TRANSACTION_META_EXT_V1",
+          "EMIT_LEDGER_CLOSE_META_EXT_V1",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "focus": {
+        "tx_hash": "739fcbf6280db92b3a445597b78b634ea2e84d885d7df1b5f0e649bddcad78e7",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The contract wrote a persistent entry keyed `collide` whose value is a 5-entry map with keys u32 1, i32 1, u64 1, string \"1\", symbol \"1\" (in core's order).",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
+        "some": {
+          "/created/data/contract_data/key/symbol": "collide",
+          "/created/data/contract_data/durability": "persistent",
+          "/created/data/contract_data/val/map/0/key/u32": 1,
+          "/created/data/contract_data/val/map/1/key/i32": 1,
+          "/created/data/contract_data/val/map/2/key/u64": "1",
+          "/created/data/contract_data/val/map/3/key/string": "1",
+          "/created/data/contract_data/val/map/4/key/symbol": "1"
+        }
+      },
+      {
+        "says": "The event emitted by the call carries the same map with all 5 entries.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events/0/body/v0/data/map",
+        "length": 5
+      },
+      {
+        "says": "The return value is the same 5-entry map.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/soroban_meta/return_value/map",
+        "length": 5
+      },
+      {
+        "says": "Each key maps to a different value (10, 20, 30, 40, 50), so a lossy conversion is detectable.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events/0/body/v0/data/map/4/val/u32",
+        "equals": 50
+      }
+    ],
+    "sdk_checks": [
+      {
+        "says": "Native projection of the event's map keeps all five entries or rejects the map; it never silently drops one.",
+        "helper": "native-projection",
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events/0/body/v0/data",
+        "must": "return 5 entries, or raise an error; returning fewer than 5 is a failure (js-stellar-sdk#1789)"
+      }
+    ]
+  }
+}

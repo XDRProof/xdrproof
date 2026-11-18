@@ -1,0 +1,14 @@
+{
+  "name": "@xdrproof/tools",
+  "private": true,
+  "type": "module",
+  "description": "Proof-stage tooling for the XDRProof corpus: schema validation, byte round trip through rs-stellar-xdr (WASM), fact checks, manifest build.",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=22" },
+  "scripts": { "verify": "node verify.mjs", "manifest": "node verify.mjs --write" },
+  "dependencies": {
+    "@stellar/stellar-xdr-json": "30.0.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

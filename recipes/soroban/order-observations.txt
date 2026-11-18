@@ -1,0 +1,44 @@
+# variants.sh p30 (60 runs, TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE)
+== ledger-002.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=60
+== ledger-005.xdr (sac-trust-source-auth)
+  a08d8c7b8db5f37d1df6edc104b17cd6a7b024ceef30e70715a034454c3aabde runs=54 hdr=0e5ed2551f32 normalized=c71e794829c8 order=created:trustline state:account updated:account state:ttl updated:ttl
+  edca160b09677651c7c997af5d7b54814d4588e811a200a5e7db8aa1dd24cafb runs=6 hdr=0e5ed2551f32 normalized=c71e794829c8 order=state:account updated:account created:trustline state:ttl updated:ttl
+== ledger-006.xdr (sac-trust-address-auth)
+  45ed4084708f1fa1a3461f853fa5e0cd400017767149cc74e8dd24708b89adb1 runs=38 hdr=e847de66e814 normalized=dcaae5e30091 order=created:ttl created:contract_data created:trustline state:account updated:account
+  4f308918f887e4338b27ee9f7cf8c8a3da7eb57bc195f6ba72c9b995d3edd1f9 runs=8 hdr=e847de66e814 normalized=dcaae5e30091 order=created:contract_data created:trustline created:ttl state:account updated:account
+  5803bb53e862095dce097af732598cd840e5e0ff49ec7ce2097e010295514a0e runs=7 hdr=e847de66e814 normalized=dcaae5e30091 order=created:contract_data created:ttl created:trustline state:account updated:account
+  2146da991d6f3f1bab532bc381322e2a809e9e01e0f75fc5b4fd941c47bb5876 runs=5 hdr=e847de66e814 normalized=dcaae5e30091 order=created:ttl created:trustline created:contract_data state:account updated:account
+  6d5cae52166e8192735d3e14ffba719e19cf046bb36716b741ce7bd22e044264 runs=2 hdr=e847de66e814 normalized=dcaae5e30091 order=created:trustline created:ttl created:contract_data state:account updated:account
+== ledger-010.xdr (xlm-sac-transfer-creates-account)
+  2192362c16a9877a57069b5adb62aebfdd47e7d218c83bbbd89b46007bce4f9e runs=52 hdr=e47dbc01da98 normalized=87125df7d6f2 order=created:account state:account updated:account state:ttl updated:ttl
+  a7a5766c06f46cf9669fd5d5abf1d9b332acd0dac39cbaf1e77a5f6cd4f52e58 runs=8 hdr=e47dbc01da98 normalized=87125df7d6f2 order=state:account updated:account created:account state:ttl updated:ttl
+== ledger-027.xdr (xlm-sac-transfer-muxed-contract)
+  bff3b27c30e094b791f29bfdbbfe7cd65cd61f43d613631df834cf2662fb73e3 runs=46 hdr=bca3ae6748b7 normalized=185bd7e3b7e6 order=created:ttl created:contract_data state:account updated:account
+  90571d84a9b76652adc3a0250ed884726c0731731187a118a4d83990335b85ff runs=14 hdr=bca3ae6748b7 normalized=185bd7e3b7e6 order=created:contract_data created:ttl state:account updated:account
+# variants.sh p28 (30 runs, TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE)
+== ledger-002.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=30
+== ledger-005.xdr (sac-trust-source-auth)
+  86051026e6f0ab0ea2c3dc3f2ef8da061b0a333f4bdd9a20c5cab0f0bf812628 runs=29 hdr=12ba2c28de06 normalized=c0b9dfd69545 order=created:trustline state:account updated:account state:ttl updated:ttl
+  1c6ffcba7815c2f635c2699e999f239ef3a6247da716efbbf9f8516fde4ad07e runs=1 hdr=12ba2c28de06 normalized=c0b9dfd69545 order=state:account updated:account created:trustline state:ttl updated:ttl
+== ledger-006.xdr (sac-trust-address-auth)
+  7813bbc70cdea3e1faf688ff31f95e0e77bbc0e9e37d98a3bf0b4b52117b22c6 runs=20 hdr=a4393e34d97a normalized=d618499ce79c order=created:ttl created:contract_data created:trustline state:account updated:account
+  60e5f30e3a7d11f75896b44b519d57dfffc627a62a9f0a7408c019b4a61721d8 runs=4 hdr=a4393e34d97a normalized=d618499ce79c order=created:contract_data created:ttl created:trustline state:account updated:account
+  8e501dd026aa9985a07e6ac1bf22526048cb54666107feb30a33c640e9a35b36 runs=3 hdr=a4393e34d97a normalized=d618499ce79c order=created:ttl created:trustline created:contract_data state:account updated:account
+  6ad720713dfcd5cdb38b5cfee135dff96ea6482e4409744bf3bfb94f7b5a59d7 runs=2 hdr=a4393e34d97a normalized=d618499ce79c order=created:contract_data created:trustline created:ttl state:account updated:account
+  fc5ab5190e31fec925cab1f286915f572c3d65e12dbad20e11192e836243aa1f runs=1 hdr=a4393e34d97a normalized=d618499ce79c order=created:trustline created:ttl created:contract_data state:account updated:account
+== ledger-010.xdr (xlm-sac-transfer-creates-account)
+  d8348cf5c6f1711cfe708747624cfc7a88125d0da75328df8477d4053b1a706e runs=26 hdr=f16eb5bf19e3 normalized=843848a61277 order=created:account state:account updated:account state:ttl updated:ttl
+  1466f8a8663cde6b51a7099cee6c0fe12ea4da3ae77500539725b4060f04c13a runs=4 hdr=f16eb5bf19e3 normalized=843848a61277 order=state:account updated:account created:account state:ttl updated:ttl
+# variants.sh r30 (10 runs, pinned testnet ConfigUpgradeSet)
+== ledger-002.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=10
+== ledger-006.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=3
+== ledger-011.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=3
+== ledger-012.xdr (setup: protocol or settings upgrade, not a corpus entry) variants=10
+== ledger-016.xdr (sac-trust-address-auth)
+  9b3af30cc07cf105a2634b71b8f59ff0290ee979bd17012a6b87a92d096504c9 runs=4 hdr=2427665f7adb normalized=b5883f66c7da order=created:ttl created:contract_data created:trustline state:account updated:account
+  443fc410358b8a4d9ca8ef0c54dceb8c512fd98384df6ae95dd758f0ae630c8e runs=3 hdr=2427665f7adb normalized=b5883f66c7da order=created:contract_data created:ttl created:trustline state:account updated:account
+  403dd1c851f81329e7c18597e5c28ec1015a4ac6808773615982dc42b3a9f481 runs=2 hdr=2427665f7adb normalized=b5883f66c7da order=created:contract_data created:trustline created:ttl state:account updated:account
+  e35d8e108baf96b4f3c21bdd77c2c59a1a92e4b696f9ab1f843cd0b11350ad3a runs=1 hdr=2427665f7adb normalized=b5883f66c7da order=created:ttl created:trustline created:contract_data state:account updated:account
+== ledger-037.xdr (xlm-sac-transfer-muxed-contract)
+  1e77ad9af440c68d5dfa535a36cb521dafa3b8ce5a952bcec1c19fda90183a06 runs=6 hdr=0255ce66fcdb normalized=017573e37fdd order=created:ttl created:contract_data state:account updated:account
+  a3cd58259be93d8c19db719986992541b971b32f047d2d7c0c0d741e7c7f5cce runs=4 hdr=0255ce66fcdb normalized=017573e37fdd order=created:contract_data created:ttl state:account updated:account

@@ -1,0 +1,9 @@
+{
+  "name": "xdrproof-recipes",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@stellar/stellar-sdk": "17.4.0"
+  }
+}
