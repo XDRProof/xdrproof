@@ -366,7 +366,7 @@
       "refs": [
         "CAP-0071"
       ],
-      "test": "Kit v2 custom account with `__check_auth` delegates; XP002 recursive types include it",
+      "test": "Custom accounts that authenticate only by delegation (kit2 __check_auth with delegate_auth): CA1 -> CA2 -> CA3 -> bob, three levels of nestedDelegates in SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES, payload bound to CA1: s-base `custom-account-nested-delegates`; XP002 recursive types include it",
       "checks": [
         "C",
         "L"
@@ -761,7 +761,7 @@
       "refs": [
         "stellar-etl#459"
       ],
-      "test": "Kit v2: `put_temp`, `put_instance`, `put([\"Balance\", bob])`",
+      "test": "One contract, one key, two durabilities: (CA1, \"dup\", persistent) and (CA1, \"dup\", temporary), plus the same key in instance storage: s-base `kit2-same-key-three-durabilities`; a non-SAC contract storing a SAC-shaped [\"Balance\", bob] key: `kit-put-sac-shaped-balance-key`",
       "checks": [
         "R"
       ]
@@ -776,7 +776,7 @@
         "CAP-0085",
         "stellar-etl#470"
       ],
-      "test": "Kit v2 deploy with an external-ref executable",
+      "test": "Executable-reference entry keyed by SCV_EXECUTABLE_TAG \"kit\" in CA1: s-base `kit2-set-executable-ref`; CreateContractV2 with CONTRACT_EXECUTABLE_EXTERNAL_REF: `deploy-external-ref-executable`; that contract running the referenced Wasm: `invoke-external-ref-contract`",
       "checks": [
         "C",
         "R"

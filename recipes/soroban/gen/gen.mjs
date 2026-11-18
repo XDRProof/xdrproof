@@ -341,6 +341,81 @@ const closeGroup = async (group) => {
   await closeGroup('apply-time-failures');
   manifest.accounts.race = Object.fromEntries(Object.entries({ x1, x2, x3, x4, vA, vB, vC, vD, vF, vG, y1, y2, sC, sD }).map(([n, k]) => [n, k.publicKey()])); }
 
+// ---- B2d: kit v2 (recipes/soroban/kit2, soroban-sdk 28) ---------------------------
+const wasm2 = readFileSync(new URL('../wasm/xdrproof_kit2.wasm', import.meta.url));
+const wasm2Hash = sha(wasm2); manifest.contracts.kit2_wasm_hash = wasm2Hash.toString('hex');
+await submit('kit2-upload-wasm', soroban(alice, S.Operation.uploadContractWasm({ wasm: wasm2 }), { rw: [kCode(wasm2Hash)] }));
+const kSigner = (who) => xdr.ScVal.scvVec([sym('Signer'), A(who)]); // kit2's Key::Signer(Address)
+const deployKit2 = (deployer, salt, owner, tag, signers) => {
+  const preimage = xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(deployer.publicKey()), salt: sha('xdrproof:kit2:' + salt) }));
+  const id = contractId(preimage);
+  const args = new xdr.CreateContractArgsV2({ contractIdPreimage: preimage, executable: xdr.ContractExecutable.contractExecutableWasm(wasm2Hash),
+    constructorArgs: [A(owner), sym(tag), xdr.ScVal.scvVec(signers.map(A))] });
+  const auth = srcAuth(new xdr.SorobanAuthorizedInvocation({ function: xdr.SorobanAuthorizedFunction.sorobanAuthorizedFunctionTypeCreateContractV2HostFn(args), subInvocations: [] }));
+  const tx = soroban(deployer, S.Operation.invokeHostFunction({ func: xdr.HostFunction.hostFunctionTypeCreateContractV2(args), auth: [auth] }),
+    { ro: [kCode(wasm2Hash)], rw: [kInstance(id), ...signers.map((s) => kData(id, kSigner(s)))] });
+  return { id, tx };
+};
+// H-B14 setup: three custom accounts, each accepting the next as its only delegate: CA1 -> CA2 -> CA3 -> bob (G).
+// Contract IDs are known before deployment, so the three deploys are independent and share one ledger.
+const ids = {}; ids.CA1 = contractId(xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(alice.publicKey()), salt: sha('xdrproof:kit2:ca1') })));
+ids.CA2 = contractId(xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(bob.publicKey()), salt: sha('xdrproof:kit2:ca2') })));
+const ca3 = deployKit2(issuer, 'ca3', alice.publicKey(), 'ca3', [bob.publicKey()]);
+const ca2 = deployKit2(bob, 'ca2', alice.publicKey(), 'ca2', [ca3.id]);
+const ca1 = deployKit2(alice, 'ca1', alice.publicKey(), 'ca1', [ca2.id]);
+if (ca1.id !== ids.CA1 || ca2.id !== ids.CA2) throw new Error('contract id derivation');
+await enqueue('kit2-deploy-ca3-constructor-args', ca3.tx, 'constructor(owner, tag, [bob])');
+await enqueue('kit2-deploy-ca2-constructor-args', ca2.tx, 'constructor(owner, tag, [CA3])');
+await enqueue('kit2-deploy-ca1-constructor-args', ca1.tx, 'constructor(owner, tag, [CA2])');
+await closeGroup('kit2-deploys');
+const [CA1, CA2, CA3] = [ca1.id, ca2.id, ca3.id]; manifest.contracts.kit2 = { CA1, CA2, CA3 };
+
+// H-D10: one contract holds (CA1, "dup", persistent) and (CA1, "dup", temporary): same contract and key,
+// two ledger entries; the same key also lands in instance storage. And a non-SAC contract writes a
+// SAC-shaped ["Balance", bob] key.
+await enqueue('kit2-same-key-three-durabilities', soroban(alice, invoke(CA1, 'put_all', [sym('dup'), xdr.ScVal.scvU32(10)]),
+  { ro: [kCode(wasm2Hash)], rw: [kInstance(CA1), kData(CA1, sym('dup'), DUR.persistent), kData(CA1, sym('dup'), DUR.temporary)] }),
+  'put_all("dup", 10): persistent and temporary entries with one key, and an instance-storage map entry');
+{ const k = xdr.ScVal.scvVec([sym('Balance'), A(bob.publicKey())]);
+  await enqueue('kit-put-sac-shaped-balance-key', soroban(bob, invoke(K0, 'put', [k, i128(1234)]), { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, k)] }),
+    'a plain contract stores ["Balance", bob] -> i128 1234: the key shape of a SAC balance, but no token'); }
+await closeGroup('kit2-storage');
+
+// H-B14: K0.nest(CA1, []) requires CA1's authorization. CA1's auth entry uses address credentials with
+// delegates (CAP-0071-01): CA1 delegates to CA2, CA2 to CA3, CA3 to bob, whose ed25519 signature is the only
+// real one. Every level signs the same payload, bound to the top-level address CA1.
+{ const nonce = 7101001, nargs = [A(CA1), xdr.ScVal.scvVec([])];
+  const inv = fnInv(K0, 'nest', nargs);
+  const payload = sha(xdr.HashIdPreimage.envelopeTypeSorobanAuthorizationWithAddress(new xdr.HashIdPreimageSorobanAuthorizationWithAddress({
+    networkId, nonce: i64(String(nonce)), signatureExpirationLedger: EXPIRES, address: addr(CA1), invocation: inv })).toXDR());
+  const bobSig = xdr.ScVal.scvVec([xdr.ScVal.scvMap([
+    new xdr.ScMapEntry({ key: sym('public_key'), val: xdr.ScVal.scvBytes(bob.rawPublicKey()) }),
+    new xdr.ScMapEntry({ key: sym('signature'), val: xdr.ScVal.scvBytes(bob.sign(payload)) })])]);
+  const del = (address, signature, nestedDelegates = []) => new xdr.SorobanDelegateSignature({ address, signature, nestedDelegates });
+  const credentials = xdr.SorobanCredentials.sorobanCredentialsAddressWithDelegates(new xdr.SorobanAddressCredentialsWithDelegates({
+    addressCredentials: new xdr.SorobanAddressCredentials({ address: addr(CA1), nonce: i64(String(nonce)), signatureExpirationLedger: EXPIRES, signature: xdr.ScVal.scvVoid() }),
+    delegates: [del(addr(CA2), xdr.ScVal.scvVoid(), [del(addr(CA3), xdr.ScVal.scvVoid(), [del(addr(bob.publicKey()), bobSig)])])] }));
+  await submit('custom-account-nested-delegates', soroban(alice, invoke(K0, 'nest', nargs, [new xdr.SorobanAuthorizationEntry({ credentials, rootInvocation: inv })]),
+    { ro: [kInstance(K0), kCode(wasmHash), kInstance(CA1), kInstance(CA2), kInstance(CA3), kCode(wasm2Hash),
+      kData(CA1, kSigner(CA2)), kData(CA2, kSigner(CA3)), kData(CA3, kSigner(bob.publicKey())), kAccount(bob)],
+    rw: [kData(CA1, xdr.ScVal.scvLedgerKeyNonce(new xdr.ScNonceKey({ nonce: i64(String(nonce)) })), DUR.temporary)] }),
+    'SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES: CA1 -> CA2 -> CA3 -> bob, three levels of nestedDelegates'); }
+
+// H-D11: CA1 owns an executable-reference entry "kit" (key SCV_EXECUTABLE_TAG) pointing at the v1 kit Wasm;
+// a contract deployed with CONTRACT_EXECUTABLE_EXTERNAL_REF {CA1, "kit"} then runs that Wasm.
+const tagKey = xdr.ScVal.scvExecutableTag('kit');
+await submit('kit2-set-executable-ref', soroban(alice, invoke(CA1, 'set_ref', [xdr.ScVal.scvString('kit'), xdr.ScVal.scvBytes(wasmHash)]),
+  { ro: [kInstance(CA1), kCode(wasm2Hash), kCode(wasmHash)], rw: [kData(CA1, tagKey)] }), 'executable-reference entry (CA1, SCV_EXECUTABLE_TAG "kit") -> v1 kit Wasm hash');
+{ const preimage = xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(alice.publicKey()), salt: sha('xdrproof:kit:external-ref') }));
+  const XR = contractId(preimage); manifest.contracts.kit_external_ref = XR;
+  const args = new xdr.CreateContractArgsV2({ contractIdPreimage: preimage, constructorArgs: [],
+    executable: xdr.ContractExecutable.contractExecutableExternalRef(new xdr.ContractExecutableExternalRef({ executableOwner: addr(CA1), tag: 'kit' })) });
+  const auth = srcAuth(new xdr.SorobanAuthorizedInvocation({ function: xdr.SorobanAuthorizedFunction.sorobanAuthorizedFunctionTypeCreateContractV2HostFn(args), subInvocations: [] }));
+  await submit('deploy-external-ref-executable', soroban(alice, S.Operation.invokeHostFunction({ func: xdr.HostFunction.hostFunctionTypeCreateContractV2(args), auth: [auth] }),
+    { ro: [kData(CA1, tagKey), kCode(wasmHash)], rw: [kInstance(XR)] }), 'CreateContractV2 with CONTRACT_EXECUTABLE_EXTERNAL_REF {owner CA1, tag "kit"}');
+  await submit('invoke-external-ref-contract', soroban(alice, invoke(XR, 'put', [sym('via_ref'), xdr.ScVal.scvU32(85)]),
+    { ro: [kInstance(XR), kData(CA1, tagKey), kCode(wasmHash)], rw: [kData(XR, sym('via_ref'))] }), 'the external-ref contract runs the v1 kit code: put("via_ref", 85)'); }
+
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {
   const big = { ins: 240_000_000, read: 200_000, write: 20_000, fee: 400_000_000 };
