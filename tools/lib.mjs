@@ -1,6 +1,7 @@
 // Shared helpers for XDRProof tools.
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as xdrjson from '@stellar/stellar-xdr-json';
@@ -39,7 +40,25 @@ export const normalise = (v, key = '') => {
   return v;
 };
 
-// Decode one raw XDR value to SEP-0051 JSON (string) with rs-stellar-xdr.
-export const decode = (type, bytes) => xdr().decode(type, Buffer.from(bytes).toString('base64'));
+// Native rs-stellar-xdr 30.0.0 (tools/native, depth limit 1500). The WASM build of the same crate
+// refuses some ledgers stellar-core accepted ("depth limit exceeded" on 245-deep auth trees); for
+// every ledger both can read, the two give the same JSON once object keys are sorted (measured on
+// 83 of 83 generated ledgers). Key order differs (native sorts keys), which `stable` ignores.
+const NATIVE = join(HERE, 'native/target/release/xdrproof-native');
+const decodeNative = (type, b64) => {
+  const r = JSON.parse(execFileSync(NATIVE, { input: JSON.stringify({ id: '0', type, xdr: b64 }) + '\n', maxBuffer: 1 << 30 }).toString());
+  if (r.status !== 'ok') throw new Error(`native ${r.stage}: ${r.message}`);
+  return JSON.stringify(r.json);
+};
+
+// Decode one raw XDR value to SEP-0051 JSON (string) with rs-stellar-xdr: WASM first, native when
+// the WASM build hits its depth limit.
+export const decode = (type, bytes) => {
+  const b64 = Buffer.from(bytes).toString('base64');
+  try { return xdr().decode(type, b64); } catch (e) {
+    if (!/depth limit/.test(String(e?.message ?? e))) throw e;
+    return decodeNative(type, b64);
+  }
+};
 export const encode = (type, json) => Buffer.from(xdr().encode(type, json), 'base64');
 export const normalisedSha256 = (type, bytes) => sha256(stable(normalise(JSON.parse(decode(type, bytes)))));

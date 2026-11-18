@@ -25,7 +25,8 @@ const seq = new Map([[root.publicKey(), BigInt(process.env.ROOT_SEQ || 0)]]);
 const TB = { minTime: 0, maxTime: 0 };
 const submit = async (name, tx, note) => {
   const r = JSON.parse(await get('tx?blob=' + encodeURIComponent(tx.toEnvelope().toXDR('base64'))));
-  const src = tx.source.startsWith('M') ? S.MuxedAccount.fromAddress(tx.source, '0').baseAccount().accountId() : tx.source;
+  const inner = tx.innerTransaction ?? tx; // a fee bump consumes the inner source's sequence number
+  const src = inner.source.startsWith('M') ? S.MuxedAccount.fromAddress(inner.source, '0').baseAccount().accountId() : inner.source;
   if (r.status !== 'PENDING') { console.log(name, 'REJECTED', JSON.stringify(r)); manifest.steps.push({ name, rejected: r }); return false; }
   seq.set(src, seq.get(src) + 1n);
   await close();
@@ -206,6 +207,90 @@ await submit('extend-footprint-ttl', soroban(alice, S.Operation.extendFootprintT
   'EXTEND_FOOTPRINT_TTL on contract data');
 await submit('restore-footprint-live-entry', soroban(alice, S.Operation.restoreFootprint({}), { rw: [kData(K0, sym('collide'))] }),
   'RESTORE_FOOTPRINT on a live entry: success, nothing to restore');
+
+// ---- blueprint placements B2b (appended; earlier ledgers unchanged) ----------
+const TWO63 = '9223372036854775808', MAXI = '9223372036854775807';
+const muxedAcct = (k, id) => xdr.MuxedAccount.keyTypeMuxedEd25519(new xdr.MuxedAccountMed25519({ id: u64(id), ed25519: k.rawPublicKey() }));
+// The JS builder refuses a memo or a muxed source on every Soroban operation. stellar-core refuses them
+// only on a single INVOKE_HOST_FUNCTION (TransactionFrame::validateSorobanMemo), so TTL and restore
+// transactions with them are valid. Build unsigned, edit the envelope, then sign with the base key.
+const byHand = (tx, edit, signers) => {
+  const env = tx.toEnvelope(); edit(env.v1.tx);
+  const t = new S.Transaction(env, passphrase); signers.forEach((s) => t.sign(s)); return t;
+};
+// H-A9 + wallet-backend#753: muxed tx source and a text memo on EXTEND_FOOTPRINT_TTL
+await submit('ttl-extend-muxed-source-text-memo', byHand(soroban(alice, S.Operation.extendFootprintTtl({ extendTo: 60000 }), { ro: [kData(K0, sym('collide'))] }, []),
+  (t) => { t.sourceAccount = muxedAcct(alice, '753'); t.memo = xdr.Memo.memoText('xdrproof ttl'); }, [alice]),
+  'EXTEND_FOOTPRINT_TTL from M(alice, 753) with a text memo: valid in core, refused by the JS builder');
+// ...and a muxed OPERATION source plus a text memo on RESTORE_FOOTPRINT
+await submit('restore-muxed-op-source-text-memo', byHand(soroban(alice, S.Operation.restoreFootprint({}), { rw: [kData(K0, sym('types'))] }, []),
+  (t) => { t.operations[0].sourceAccount = muxedAcct(alice, MAXU); t.memo = xdr.Memo.memoText('xdrproof restore'); }, [alice]),
+  'RESTORE_FOOTPRINT whose operation source is M(alice, u64 max), with a text memo');
+
+// H-C13 / H-A8: Soroban fee bump paid by a muxed fee source; the refund goes to the fee source
+{ const args = [sym('feebump'), xdr.ScVal.scvU32(13)];
+  const inner = soroban(alice, invoke(K0, 'put', args), { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, sym('feebump'))] });
+  // soroban() bids 1000 + resource fee as its inclusion fee (the builder adds the resource fee on top),
+  // and a fee bump must bid at least the inner per-operation inclusion fee
+  const bid = (BigInt(inner.fee) - BigInt(RES.fee)).toString();
+  const fb = S.TransactionBuilder.buildFeeBumpTransaction(new S.MuxedAccount(new S.Account(bob.publicKey(), '0'), '13').accountId(), bid, inner, passphrase);
+  fb.sign(bob);
+  await submit('soroban-fee-bump-muxed-fee-source', fb, 'fee bump of a Soroban call, fee source M(bob, 13); resource fee refunded to bob, not alice'); }
+
+// H-A11: a muxed ScAddress inside a contract-data key is refused by the host (CAP-0067), so put traps.
+// The same muxed address sits, valid, in the invoke arguments and in the footprint's ledger key.
+{ const mkey = xdr.ScVal.scvAddress(xdr.ScAddress.scAddressTypeMuxedAccount(new xdr.MuxedEd25519Account({ id: u64('42'), ed25519: bob.rawPublicKey() })));
+  await submit('kit-put-muxed-address-key-trapped', soroban(alice, invoke(K0, 'put', [mkey, xdr.ScVal.scvU32(1)]),
+    { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, mkey)] }),
+    'put(M(bob, 42), 1): included, fails trapped; no contract data written'); }
+
+// H-B4: integer boundaries where a reader that treats the low 64 bits as signed goes wrong
+{ const I128 = (hi, lo) => xdr.ScVal.scvI128(new xdr.Int128Parts({ hi: i64(hi), lo: u64(lo) }));
+  const U128 = (hi, lo) => xdr.ScVal.scvU128(new xdr.Uint128Parts({ hi: u64(hi), lo: u64(lo) }));
+  const I256 = (a, b, c, d) => xdr.ScVal.scvI256(new xdr.Int256Parts({ hiHi: i64(a), hiLo: u64(b), loHi: u64(c), loLo: u64(d) }));
+  const U256 = (a, b, c, d) => xdr.ScVal.scvU256(new xdr.Uint256Parts({ hiHi: u64(a), hiLo: u64(b), loHi: u64(c), loLo: u64(d) }));
+  const wide = xdr.ScVal.scvVec([
+    xdr.ScVal.scvU32(4294967295), xdr.ScVal.scvI32(-2147483648), xdr.ScVal.scvI32(2147483647),
+    xdr.ScVal.scvU64(u64(TWO63)), xdr.ScVal.scvI64(i64(MAXI)),
+    I128('0', TWO63), I128('-1', TWO63), I128('-1', MAXU), I128(MAXI, MAXU),
+    U128('0', TWO63), U128('1', '0'),
+    I256(MAXI, MAXU, MAXU, MAXU), I256('-1', MAXU, MAXU, MAXU), I256('-1', MAXU, MAXU, TWO63),
+    U256('0', '0', '0', TWO63), U256('0', '0', TWO63, '0'),
+    xdr.ScVal.scvTimepoint(u64(TWO63)), xdr.ScVal.scvDuration(u64(TWO63))]);
+  await submit('scval-wide-integer-boundaries', soroban(alice, invoke(K0, 'put', [sym('wide'), wide]),
+    { ro: [kInstance(K0), kCode(wasmHash)], rw: [kData(K0, sym('wide'))] }),
+    'i128 2^63, -2^63, -1, max; u128 2^63, 2^64; i256 max, -1, -2^63; u256 2^63, 2^127; u32/i32/u64/i64 edges; timepoint and duration 2^63');
+  // the same shape in a real token flow: a SAC balance held by a contract is an i128 with no int64 cap
+  const amt = I128('1', TWO63); // 2^64 + 2^63 = 27670116110564327424 stroops of XPF
+  const margs = [A(K0), amt];
+  await submit('sac-mint-to-contract-beyond-int64', soroban(issuer, invoke(sac, 'mint', margs, [srcAuth(fnInv(sac, 'mint', margs))]),
+    { ro: [kInstance(sac), kAccount(issuer)], rw: [kData(sac, xdr.ScVal.scvVec([sym('Balance'), A(K0)]))] }),
+    'SAC mint of 2^64 + 2^63 XPF to a contract: balance entry and mint event carry an i128 above int64 max'); }
+
+// H-B7 + wallet-backend#820: a contract deploy whose authorization tree is 245 invocations deep.
+// The root is the deploy itself (executed); 244 nested nest() sub-invocations are never called.
+{ const preimage = xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(alice.publicKey()), salt: sha('xdrproof:kit:deep-deploy') }));
+  const id = contractId(preimage);
+  const cargs = new xdr.CreateContractArgsV2({ contractIdPreimage: preimage, executable: xdr.ContractExecutable.contractExecutableWasm(wasmHash), constructorArgs: [] });
+  const nargs = [A(alice.publicKey()), xdr.ScVal.scvVec([])];
+  const D = Number(process.env.DEPLOY_TREE || 245);
+  let chain = null; for (let i = 0; i < D - 1; i++) chain = fnInv(kits[1], 'nest', nargs, chain ? [chain] : []);
+  const root = new xdr.SorobanAuthorizedInvocation({ function: xdr.SorobanAuthorizedFunction.sorobanAuthorizedFunctionTypeCreateContractV2HostFn(cargs), subInvocations: chain ? [chain] : [] });
+  const op = S.Operation.invokeHostFunction({ func: xdr.HostFunction.hostFunctionTypeCreateContractV2(cargs), auth: [srcAuth(root)] });
+  await submit('deploy-with-auth-tree-depth-' + D, soroban(alice, op, { ro: [kCode(wasmHash)], rw: [kInstance(id)] }),
+    `CreateContractV2 whose source-credential auth root carries a ${D}-deep chain; a contract instance is created`);
+  manifest.contracts.kit_deep_deploy = id; }
+
+// H-A5 + wallet-backend#745: a liquidity-pool or claimable-balance ScAddress as the deployer.
+// The host refuses both address kinds (CAP-0067), so at most a failed transaction can carry them.
+for (const [kind, address] of [
+  ['liquidity-pool', xdr.ScAddress.scAddressTypeLiquidityPool(new xdr.PoolId(sha('xdrproof:deployer:liquidity-pool')))],
+  ['claimable-balance', xdr.ScAddress.scAddressTypeClaimableBalance(xdr.ClaimableBalanceId.claimableBalanceIdTypeV0(sha('xdrproof:deployer:claimable-balance')))]]) {
+  const preimage = xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address, salt: sha('xdrproof:salt:' + kind) }));
+  const cargs = new xdr.CreateContractArgsV2({ contractIdPreimage: preimage, executable: xdr.ContractExecutable.contractExecutableWasm(wasmHash), constructorArgs: [] });
+  await submit(`deploy-from-${kind}-address`, soroban(alice, S.Operation.invokeHostFunction({ func: xdr.HostFunction.hostFunctionTypeCreateContractV2(cargs), auth: [] }),
+    { ro: [kCode(wasmHash)], rw: [kInstance(contractId(preimage))] }), `CreateContractV2 from a ${kind} ScAddress: included, refused by the host`);
+}
 
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {

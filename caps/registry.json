@@ -73,7 +73,7 @@
       "refs": [
         "wallet-backend#745"
       ],
-      "test": "Contract addresses throughout S-recipes; CB/LP `ScAddress` as deployer and in an event topic todo (needs a recipe passing those address kinds)",
+      "test": "Contract addresses throughout S-recipes; LP and claimable-balance addresses in classic event topics (CAP-0067); CB/LP ScAddress as deployer: s-base `deploy-from-liquidity-pool-address`, `deploy-from-claimable-balance-address` (included, trapped: the host refuses both kinds)",
       "checks": [
         "C",
         "L",
@@ -118,7 +118,7 @@
       "refs": [
         "stellar-etl#464"
       ],
-      "test": "Fee bump success C30, inner failed C31 + mainnet `M:fee-bump-inner-failed`; muxed fee source todo; Soroban fee bump todo",
+      "test": "Fee bump success C30, inner failed C31 + mainnet `M:fee-bump-inner-failed`; muxed fee source: c-base `fee-bump-muxed-fee-source`; Soroban fee bump with a muxed fee source: s-base `soroban-fee-bump-muxed-fee-source`",
       "checks": [
         "R",
         "V"
@@ -133,7 +133,7 @@
       "refs": [
         "wallet-backend#753"
       ],
-      "test": "Clawback from M; ExtendFootprintTTL with M source + memo (envelope built by hand)",
+      "test": "Clawback from M: c-base `clawback-from-muxed`; muxed tx source + text memo on EXTEND_FOOTPRINT_TTL and muxed op source + text memo on RESTORE_FOOTPRINT, envelopes built by hand: s-base `ttl-extend-muxed-source-text-memo`, `restore-muxed-op-source-text-memo`",
       "checks": [
         "C",
         "R"
@@ -158,7 +158,7 @@
       "title": "Muxed `ScAddress` rejected inside a contract-data key; events split M into `to` + `to_muxed_id` (u64, bytes or string)",
       "evidence": "strkey-sep-0023.md:275-300; measured C26 (string), C28 (bytes)",
       "refs": [],
-      "test": "Trapped kit `put` with a muxed key; facts on C26/C28",
+      "test": "Trapped kit `put` with a muxed key (the key also sits in the footprint and the invoke arguments): s-base `kit-put-muxed-address-key-trapped`; facts on C26/C28",
       "checks": [
         "C",
         "R"
@@ -218,7 +218,7 @@
       "refs": [
         "stellar-etl#454"
       ],
-      "test": "S28 (every type at min/max)",
+      "test": "Every type at min/max: s-base `scval-every-number-and-time-type`; boundaries where a signed reading of the low 64 bits goes wrong (i128 2^63, -2^63, -1; u256 2^127; timepoint 2^63): `scval-wide-integer-boundaries`; a SAC balance held by a contract above int64 max: `sac-mint-to-contract-beyond-int64`",
       "checks": [
         "C",
         "R"
@@ -263,7 +263,7 @@
       "refs": [
         "wallet-backend#820"
       ],
-      "test": "Auth depth 6 S21, 245 S22, 246 S23; nested ScVal ladder (API vectors exist); deep tree + contract deploy todo (exercises the patched walk)",
+      "test": "Auth depth 6 S21, 245 S22, 246 S23; nested ScVal ladder (API vectors exist); a contract deploy whose auth root carries a 245-deep chain (the walk patched for #820 runs only when an instance is created): s-base `deploy-with-auth-tree-depth-245`",
       "checks": [
         "C",
         "L",
@@ -548,7 +548,7 @@
         "CAP-0063",
         "stellar-etl#453"
       ],
-      "test": "Facts on existing S-ledgers; new: Soroban fee bump with a muxed fee source",
+      "test": "Facts on existing S-ledgers; Soroban fee bump with a muxed fee source, charge and refund both on the fee source: s-base `soroban-fee-bump-muxed-fee-source`",
       "checks": [
         "R",
         "V"
