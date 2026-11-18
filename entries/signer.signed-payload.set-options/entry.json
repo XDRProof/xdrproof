@@ -94,7 +94,9 @@
       {
         "says": "The transaction succeeded: core applied the signed-payload signer.",
         "evidence": [
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/set_options",
         "equals": "success"

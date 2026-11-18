@@ -1,0 +1,104 @@
+{
+  "id": "tx.apply-time.no-account-fee-not-refunded",
+  "title": "A Soroban transaction fails txNO_ACCOUNT at apply and its fee is never refunded",
+  "pattern": "Core applies a ledger's classic phase before its Soroban phase and re-checks the source account, sequence number, signatures and sequence-age preconditions at apply (TransactionFrame::commonValid; OperationFrame::checkSignature with forApply). Here a classic transaction earlier in the same ledger merges the source account after its fee was charged, so this Soroban transaction fails with txNO_ACCOUNT. The refund has nowhere to go: there is no post-apply fee change and no refund event, and fee_charged is the full declared maximum (TransactionFrame.cpp:998-1001). Readers that compute the fee as charge minus refund, or expect a refund for every Soroban transaction, get it wrong.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "TransactionResult.txNO_ACCOUNT in a closed ledger: source merged earlier in the ledger"
+    },
+    {
+      "id": "H-C13",
+      "placement": "Soroban fee source merged before the refund: fee_charged is the full maximum, no refund change or event"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "race-victim-txNO_ACCOUNT",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction fails with tx_no_account although it was valid when submitted.",
+      "at": "tx.result",
+      "equals": "tx_no_account",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction that caused it is in the same ledger.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "some": {
+        "/result/transaction_hash": {
+          "$step": "race-attacker-merge-tx-source"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is not consumed: no change before apply.",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation was applied: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction source is the account changed earlier in the ledger.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/source_account",
+      "equals": {
+        "$manifest": "accounts.race.vB"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No refund: there is no post-apply fee processing.",
+      "at": "tx.post_apply_fee",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "fee_charged is the full declared maximum: 100 stroops inclusion plus the whole 100,000,000-stroop resource fee.",
+      "at": "tx.fee_charged",
+      "equals": "100000100",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

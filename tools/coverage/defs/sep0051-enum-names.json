@@ -1,0 +1,780 @@
+{
+ "source": "stellar xdr types schema (stellar-cli 30.0.1, stellar-xdr 30.0.0)",
+ "enums": {
+  "SCPStatementType": {
+   "SCP_ST_PREPARE": "prepare",
+   "SCP_ST_CONFIRM": "confirm",
+   "SCP_ST_EXTERNALIZE": "externalize",
+   "SCP_ST_NOMINATE": "nominate"
+  },
+  "ContractCostType": {
+   "WasmInsnExec": "wasm_insn_exec",
+   "MemAlloc": "mem_alloc",
+   "MemCpy": "mem_cpy",
+   "MemCmp": "mem_cmp",
+   "DispatchHostFunction": "dispatch_host_function",
+   "VisitObject": "visit_object",
+   "ValSer": "val_ser",
+   "ValDeser": "val_deser",
+   "ComputeSha256Hash": "compute_sha256_hash",
+   "ComputeEd25519PubKey": "compute_ed25519_pub_key",
+   "VerifyEd25519Sig": "verify_ed25519_sig",
+   "VmInstantiation": "vm_instantiation",
+   "VmCachedInstantiation": "vm_cached_instantiation",
+   "InvokeVmFunction": "invoke_vm_function",
+   "ComputeKeccak256Hash": "compute_keccak256_hash",
+   "DecodeEcdsaCurve256Sig": "decode_ecdsa_curve256_sig",
+   "RecoverEcdsaSecp256k1Key": "recover_ecdsa_secp256k1_key",
+   "Int256AddSub": "int256_add_sub",
+   "Int256Mul": "int256_mul",
+   "Int256Div": "int256_div",
+   "Int256Pow": "int256_pow",
+   "Int256Shift": "int256_shift",
+   "ChaCha20DrawBytes": "cha_cha20_draw_bytes",
+   "ParseWasmInstructions": "parse_wasm_instructions",
+   "ParseWasmFunctions": "parse_wasm_functions",
+   "ParseWasmGlobals": "parse_wasm_globals",
+   "ParseWasmTableEntries": "parse_wasm_table_entries",
+   "ParseWasmTypes": "parse_wasm_types",
+   "ParseWasmDataSegments": "parse_wasm_data_segments",
+   "ParseWasmElemSegments": "parse_wasm_elem_segments",
+   "ParseWasmImports": "parse_wasm_imports",
+   "ParseWasmExports": "parse_wasm_exports",
+   "ParseWasmDataSegmentBytes": "parse_wasm_data_segment_bytes",
+   "InstantiateWasmInstructions": "instantiate_wasm_instructions",
+   "InstantiateWasmFunctions": "instantiate_wasm_functions",
+   "InstantiateWasmGlobals": "instantiate_wasm_globals",
+   "InstantiateWasmTableEntries": "instantiate_wasm_table_entries",
+   "InstantiateWasmTypes": "instantiate_wasm_types",
+   "InstantiateWasmDataSegments": "instantiate_wasm_data_segments",
+   "InstantiateWasmElemSegments": "instantiate_wasm_elem_segments",
+   "InstantiateWasmImports": "instantiate_wasm_imports",
+   "InstantiateWasmExports": "instantiate_wasm_exports",
+   "InstantiateWasmDataSegmentBytes": "instantiate_wasm_data_segment_bytes",
+   "Sec1DecodePointUncompressed": "sec1_decode_point_uncompressed",
+   "VerifyEcdsaSecp256r1Sig": "verify_ecdsa_secp256r1_sig",
+   "Bls12381EncodeFp": "bls12381_encode_fp",
+   "Bls12381DecodeFp": "bls12381_decode_fp",
+   "Bls12381G1CheckPointOnCurve": "bls12381_g1_check_point_on_curve",
+   "Bls12381G1CheckPointInSubgroup": "bls12381_g1_check_point_in_subgroup",
+   "Bls12381G2CheckPointOnCurve": "bls12381_g2_check_point_on_curve",
+   "Bls12381G2CheckPointInSubgroup": "bls12381_g2_check_point_in_subgroup",
+   "Bls12381G1ProjectiveToAffine": "bls12381_g1_projective_to_affine",
+   "Bls12381G2ProjectiveToAffine": "bls12381_g2_projective_to_affine",
+   "Bls12381G1Add": "bls12381_g1_add",
+   "Bls12381G1Mul": "bls12381_g1_mul",
+   "Bls12381G1Msm": "bls12381_g1_msm",
+   "Bls12381MapFpToG1": "bls12381_map_fp_to_g1",
+   "Bls12381HashToG1": "bls12381_hash_to_g1",
+   "Bls12381G2Add": "bls12381_g2_add",
+   "Bls12381G2Mul": "bls12381_g2_mul",
+   "Bls12381G2Msm": "bls12381_g2_msm",
+   "Bls12381MapFp2ToG2": "bls12381_map_fp2_to_g2",
+   "Bls12381HashToG2": "bls12381_hash_to_g2",
+   "Bls12381Pairing": "bls12381_pairing",
+   "Bls12381FrFromU256": "bls12381_fr_from_u256",
+   "Bls12381FrToU256": "bls12381_fr_to_u256",
+   "Bls12381FrAddSub": "bls12381_fr_add_sub",
+   "Bls12381FrMul": "bls12381_fr_mul",
+   "Bls12381FrPow": "bls12381_fr_pow",
+   "Bls12381FrInv": "bls12381_fr_inv",
+   "Bn254EncodeFp": "bn254_encode_fp",
+   "Bn254DecodeFp": "bn254_decode_fp",
+   "Bn254G1CheckPointOnCurve": "bn254_g1_check_point_on_curve",
+   "Bn254G2CheckPointOnCurve": "bn254_g2_check_point_on_curve",
+   "Bn254G2CheckPointInSubgroup": "bn254_g2_check_point_in_subgroup",
+   "Bn254G1ProjectiveToAffine": "bn254_g1_projective_to_affine",
+   "Bn254G1Add": "bn254_g1_add",
+   "Bn254G1Mul": "bn254_g1_mul",
+   "Bn254Pairing": "bn254_pairing",
+   "Bn254FrFromU256": "bn254_fr_from_u256",
+   "Bn254FrToU256": "bn254_fr_to_u256",
+   "Bn254FrAddSub": "bn254_fr_add_sub",
+   "Bn254FrMul": "bn254_fr_mul",
+   "Bn254FrPow": "bn254_fr_pow",
+   "Bn254FrInv": "bn254_fr_inv",
+   "Bn254G1Msm": "bn254_g1_msm",
+   "MlDsa44DecodeVerifyingKey": "ml_dsa44_decode_verifying_key",
+   "MlDsa65DecodeVerifyingKey": "ml_dsa65_decode_verifying_key",
+   "MlDsa87DecodeVerifyingKey": "ml_dsa87_decode_verifying_key",
+   "MlDsa44DecodeSignature": "ml_dsa44_decode_signature",
+   "MlDsa65DecodeSignature": "ml_dsa65_decode_signature",
+   "MlDsa87DecodeSignature": "ml_dsa87_decode_signature",
+   "VerifyMlDsa44Sig": "verify_ml_dsa44_sig",
+   "VerifyMlDsa65Sig": "verify_ml_dsa65_sig",
+   "VerifyMlDsa87Sig": "verify_ml_dsa87_sig"
+  },
+  "ConfigSettingID": {
+   "CONFIG_SETTING_CONTRACT_MAX_SIZE_BYTES": "contract_max_size_bytes",
+   "CONFIG_SETTING_CONTRACT_COMPUTE_V0": "contract_compute_v0",
+   "CONFIG_SETTING_CONTRACT_LEDGER_COST_V0": "contract_ledger_cost_v0",
+   "CONFIG_SETTING_CONTRACT_HISTORICAL_DATA_V0": "contract_historical_data_v0",
+   "CONFIG_SETTING_CONTRACT_EVENTS_V0": "contract_events_v0",
+   "CONFIG_SETTING_CONTRACT_BANDWIDTH_V0": "contract_bandwidth_v0",
+   "CONFIG_SETTING_CONTRACT_COST_PARAMS_CPU_INSTRUCTIONS": "contract_cost_params_cpu_instructions",
+   "CONFIG_SETTING_CONTRACT_COST_PARAMS_MEMORY_BYTES": "contract_cost_params_memory_bytes",
+   "CONFIG_SETTING_CONTRACT_DATA_KEY_SIZE_BYTES": "contract_data_key_size_bytes",
+   "CONFIG_SETTING_CONTRACT_DATA_ENTRY_SIZE_BYTES": "contract_data_entry_size_bytes",
+   "CONFIG_SETTING_STATE_ARCHIVAL": "state_archival",
+   "CONFIG_SETTING_CONTRACT_EXECUTION_LANES": "contract_execution_lanes",
+   "CONFIG_SETTING_LIVE_SOROBAN_STATE_SIZE_WINDOW": "live_soroban_state_size_window",
+   "CONFIG_SETTING_EVICTION_ITERATOR": "eviction_iterator",
+   "CONFIG_SETTING_CONTRACT_PARALLEL_COMPUTE_V0": "contract_parallel_compute_v0",
+   "CONFIG_SETTING_CONTRACT_LEDGER_COST_EXT_V0": "contract_ledger_cost_ext_v0",
+   "CONFIG_SETTING_SCP_TIMING": "scp_timing",
+   "CONFIG_SETTING_FROZEN_LEDGER_KEYS": "frozen_ledger_keys",
+   "CONFIG_SETTING_FROZEN_LEDGER_KEYS_DELTA": "frozen_ledger_keys_delta",
+   "CONFIG_SETTING_FREEZE_BYPASS_TXS": "freeze_bypass_txs",
+   "CONFIG_SETTING_FREEZE_BYPASS_TXS_DELTA": "freeze_bypass_txs_delta"
+  },
+  "SCEnvMetaKind": {
+   "SC_ENV_META_KIND_INTERFACE_VERSION": "sc_env_meta_kind_interface_version"
+  },
+  "SCMetaKind": {
+   "SC_META_V0": "sc_meta_v0"
+  },
+  "SCSpecType": {
+   "SC_SPEC_TYPE_VAL": "val",
+   "SC_SPEC_TYPE_BOOL": "bool",
+   "SC_SPEC_TYPE_VOID": "void",
+   "SC_SPEC_TYPE_ERROR": "error",
+   "SC_SPEC_TYPE_U32": "u32",
+   "SC_SPEC_TYPE_I32": "i32",
+   "SC_SPEC_TYPE_U64": "u64",
+   "SC_SPEC_TYPE_I64": "i64",
+   "SC_SPEC_TYPE_TIMEPOINT": "timepoint",
+   "SC_SPEC_TYPE_DURATION": "duration",
+   "SC_SPEC_TYPE_U128": "u128",
+   "SC_SPEC_TYPE_I128": "i128",
+   "SC_SPEC_TYPE_U256": "u256",
+   "SC_SPEC_TYPE_I256": "i256",
+   "SC_SPEC_TYPE_BYTES": "bytes",
+   "SC_SPEC_TYPE_STRING": "string",
+   "SC_SPEC_TYPE_SYMBOL": "symbol",
+   "SC_SPEC_TYPE_ADDRESS": "address",
+   "SC_SPEC_TYPE_MUXED_ADDRESS": "muxed_address",
+   "SC_SPEC_TYPE_OPTION": "option",
+   "SC_SPEC_TYPE_RESULT": "result",
+   "SC_SPEC_TYPE_VEC": "vec",
+   "SC_SPEC_TYPE_MAP": "map",
+   "SC_SPEC_TYPE_TUPLE": "tuple",
+   "SC_SPEC_TYPE_BYTES_N": "bytes_n",
+   "SC_SPEC_TYPE_UDT": "udt"
+  },
+  "SCSpecUDTUnionCaseV0Kind": {
+   "SC_SPEC_UDT_UNION_CASE_VOID_V0": "void_v0",
+   "SC_SPEC_UDT_UNION_CASE_TUPLE_V0": "tuple_v0"
+  },
+  "SCSpecEventParamLocationV0": {
+   "SC_SPEC_EVENT_PARAM_LOCATION_DATA": "data",
+   "SC_SPEC_EVENT_PARAM_LOCATION_TOPIC_LIST": "topic_list"
+  },
+  "SCSpecEventDataFormat": {
+   "SC_SPEC_EVENT_DATA_FORMAT_SINGLE_VALUE": "single_value",
+   "SC_SPEC_EVENT_DATA_FORMAT_VEC": "vec",
+   "SC_SPEC_EVENT_DATA_FORMAT_MAP": "map"
+  },
+  "SCSpecEntryKind": {
+   "SC_SPEC_ENTRY_FUNCTION_V0": "function_v0",
+   "SC_SPEC_ENTRY_UDT_STRUCT_V0": "udt_struct_v0",
+   "SC_SPEC_ENTRY_UDT_UNION_V0": "udt_union_v0",
+   "SC_SPEC_ENTRY_UDT_ENUM_V0": "udt_enum_v0",
+   "SC_SPEC_ENTRY_UDT_ERROR_ENUM_V0": "udt_error_enum_v0",
+   "SC_SPEC_ENTRY_EVENT_V0": "event_v0"
+  },
+  "SCValType": {
+   "SCV_BOOL": "bool",
+   "SCV_VOID": "void",
+   "SCV_ERROR": "error",
+   "SCV_U32": "u32",
+   "SCV_I32": "i32",
+   "SCV_U64": "u64",
+   "SCV_I64": "i64",
+   "SCV_TIMEPOINT": "timepoint",
+   "SCV_DURATION": "duration",
+   "SCV_U128": "u128",
+   "SCV_I128": "i128",
+   "SCV_U256": "u256",
+   "SCV_I256": "i256",
+   "SCV_BYTES": "bytes",
+   "SCV_STRING": "string",
+   "SCV_SYMBOL": "symbol",
+   "SCV_VEC": "vec",
+   "SCV_MAP": "map",
+   "SCV_ADDRESS": "address",
+   "SCV_CONTRACT_INSTANCE": "contract_instance",
+   "SCV_LEDGER_KEY_CONTRACT_INSTANCE": "ledger_key_contract_instance",
+   "SCV_LEDGER_KEY_NONCE": "ledger_key_nonce",
+   "SCV_EXECUTABLE_TAG": "executable_tag"
+  },
+  "SCErrorType": {
+   "SCE_CONTRACT": "contract",
+   "SCE_WASM_VM": "wasm_vm",
+   "SCE_CONTEXT": "context",
+   "SCE_STORAGE": "storage",
+   "SCE_OBJECT": "object",
+   "SCE_CRYPTO": "crypto",
+   "SCE_EVENTS": "events",
+   "SCE_BUDGET": "budget",
+   "SCE_VALUE": "value",
+   "SCE_AUTH": "auth"
+  },
+  "SCErrorCode": {
+   "SCEC_ARITH_DOMAIN": "arith_domain",
+   "SCEC_INDEX_BOUNDS": "index_bounds",
+   "SCEC_INVALID_INPUT": "invalid_input",
+   "SCEC_MISSING_VALUE": "missing_value",
+   "SCEC_EXISTING_VALUE": "existing_value",
+   "SCEC_EXCEEDED_LIMIT": "exceeded_limit",
+   "SCEC_INVALID_ACTION": "invalid_action",
+   "SCEC_INTERNAL_ERROR": "internal_error",
+   "SCEC_UNEXPECTED_TYPE": "unexpected_type",
+   "SCEC_UNEXPECTED_SIZE": "unexpected_size"
+  },
+  "ContractExecutableType": {
+   "CONTRACT_EXECUTABLE_WASM": "wasm",
+   "CONTRACT_EXECUTABLE_STELLAR_ASSET": "stellar_asset",
+   "CONTRACT_EXECUTABLE_EXTERNAL_REF": "external_ref"
+  },
+  "SCAddressType": {
+   "SC_ADDRESS_TYPE_ACCOUNT": "account",
+   "SC_ADDRESS_TYPE_CONTRACT": "contract",
+   "SC_ADDRESS_TYPE_MUXED_ACCOUNT": "muxed_account",
+   "SC_ADDRESS_TYPE_CLAIMABLE_BALANCE": "claimable_balance",
+   "SC_ADDRESS_TYPE_LIQUIDITY_POOL": "liquidity_pool",
+   "SC_ADDRESS_TYPE_MUXED_CONTRACT": "muxed_contract"
+  },
+  "AssetType": {
+   "ASSET_TYPE_NATIVE": "native",
+   "ASSET_TYPE_CREDIT_ALPHANUM4": "credit_alphanum4",
+   "ASSET_TYPE_CREDIT_ALPHANUM12": "credit_alphanum12",
+   "ASSET_TYPE_POOL_SHARE": "pool_share"
+  },
+  "ThresholdIndexes": {
+   "THRESHOLD_MASTER_WEIGHT": "master_weight",
+   "THRESHOLD_LOW": "low",
+   "THRESHOLD_MED": "med",
+   "THRESHOLD_HIGH": "high"
+  },
+  "LedgerEntryType": {
+   "ACCOUNT": "account",
+   "TRUSTLINE": "trustline",
+   "OFFER": "offer",
+   "DATA": "data",
+   "CLAIMABLE_BALANCE": "claimable_balance",
+   "LIQUIDITY_POOL": "liquidity_pool",
+   "CONTRACT_DATA": "contract_data",
+   "CONTRACT_CODE": "contract_code",
+   "CONFIG_SETTING": "config_setting",
+   "TTL": "ttl"
+  },
+  "AccountFlags": {
+   "AUTH_REQUIRED_FLAG": "required_flag",
+   "AUTH_REVOCABLE_FLAG": "revocable_flag",
+   "AUTH_IMMUTABLE_FLAG": "immutable_flag",
+   "AUTH_CLAWBACK_ENABLED_FLAG": "clawback_enabled_flag"
+  },
+  "TrustLineFlags": {
+   "AUTHORIZED_FLAG": "authorized_flag",
+   "AUTHORIZED_TO_MAINTAIN_LIABILITIES_FLAG": "authorized_to_maintain_liabilities_flag",
+   "TRUSTLINE_CLAWBACK_ENABLED_FLAG": "trustline_clawback_enabled_flag"
+  },
+  "LiquidityPoolType": {
+   "LIQUIDITY_POOL_CONSTANT_PRODUCT": "liquidity_pool_constant_product"
+  },
+  "OfferEntryFlags": {
+   "PASSIVE_FLAG": "passive_flag"
+  },
+  "ClaimPredicateType": {
+   "CLAIM_PREDICATE_UNCONDITIONAL": "unconditional",
+   "CLAIM_PREDICATE_AND": "and",
+   "CLAIM_PREDICATE_OR": "or",
+   "CLAIM_PREDICATE_NOT": "not",
+   "CLAIM_PREDICATE_BEFORE_ABSOLUTE_TIME": "before_absolute_time",
+   "CLAIM_PREDICATE_BEFORE_RELATIVE_TIME": "before_relative_time"
+  },
+  "ClaimantType": {
+   "CLAIMANT_TYPE_V0": "claimant_type_v0"
+  },
+  "ClaimableBalanceFlags": {
+   "CLAIMABLE_BALANCE_CLAWBACK_ENABLED_FLAG": "claimable_balance_clawback_enabled_flag"
+  },
+  "ContractDataDurability": {
+   "TEMPORARY": "temporary",
+   "PERSISTENT": "persistent"
+  },
+  "EnvelopeType": {
+   "ENVELOPE_TYPE_TX_V0": "tx_v0",
+   "ENVELOPE_TYPE_SCP": "scp",
+   "ENVELOPE_TYPE_TX": "tx",
+   "ENVELOPE_TYPE_AUTH": "auth",
+   "ENVELOPE_TYPE_SCPVALUE": "scpvalue",
+   "ENVELOPE_TYPE_TX_FEE_BUMP": "tx_fee_bump",
+   "ENVELOPE_TYPE_OP_ID": "op_id",
+   "ENVELOPE_TYPE_POOL_REVOKE_OP_ID": "pool_revoke_op_id",
+   "ENVELOPE_TYPE_CONTRACT_ID": "contract_id",
+   "ENVELOPE_TYPE_SOROBAN_AUTHORIZATION": "soroban_authorization",
+   "ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS": "soroban_authorization_with_address"
+  },
+  "BucketListType": {
+   "LIVE": "live",
+   "HOT_ARCHIVE": "hot_archive"
+  },
+  "BucketEntryType": {
+   "METAENTRY": "metaentry",
+   "LIVEENTRY": "liveentry",
+   "DEADENTRY": "deadentry",
+   "INITENTRY": "initentry"
+  },
+  "HotArchiveBucketEntryType": {
+   "HOT_ARCHIVE_METAENTRY": "metaentry",
+   "HOT_ARCHIVE_ARCHIVED": "archived",
+   "HOT_ARCHIVE_LIVE": "live"
+  },
+  "StellarValueType": {
+   "STELLAR_VALUE_BASIC": "basic",
+   "STELLAR_VALUE_SIGNED": "signed",
+   "STELLAR_VALUE_EMPTY_TX_SET": "empty_tx_set",
+   "STELLAR_VALUE_SIGNED_MS": "signed_ms",
+   "STELLAR_VALUE_EMPTY_TX_SET_MS": "empty_tx_set_ms"
+  },
+  "LedgerHeaderFlags": {
+   "DISABLE_LIQUIDITY_POOL_TRADING_FLAG": "trading_flag",
+   "DISABLE_LIQUIDITY_POOL_DEPOSIT_FLAG": "deposit_flag",
+   "DISABLE_LIQUIDITY_POOL_WITHDRAWAL_FLAG": "withdrawal_flag"
+  },
+  "LedgerUpgradeType": {
+   "LEDGER_UPGRADE_VERSION": "version",
+   "LEDGER_UPGRADE_BASE_FEE": "base_fee",
+   "LEDGER_UPGRADE_MAX_TX_SET_SIZE": "max_tx_set_size",
+   "LEDGER_UPGRADE_BASE_RESERVE": "base_reserve",
+   "LEDGER_UPGRADE_FLAGS": "flags",
+   "LEDGER_UPGRADE_CONFIG": "config",
+   "LEDGER_UPGRADE_MAX_SOROBAN_TX_SET_SIZE": "max_soroban_tx_set_size"
+  },
+  "TxSetComponentType": {
+   "TXSET_COMP_TXS_MAYBE_DISCOUNTED_FEE": "txset_comp_txs_maybe_discounted_fee"
+  },
+  "LedgerEntryChangeType": {
+   "LEDGER_ENTRY_CREATED": "created",
+   "LEDGER_ENTRY_UPDATED": "updated",
+   "LEDGER_ENTRY_REMOVED": "removed",
+   "LEDGER_ENTRY_STATE": "state",
+   "LEDGER_ENTRY_RESTORED": "restored"
+  },
+  "ContractEventType": {
+   "SYSTEM": "system",
+   "CONTRACT": "contract",
+   "DIAGNOSTIC": "diagnostic"
+  },
+  "TransactionEventStage": {
+   "TRANSACTION_EVENT_STAGE_BEFORE_ALL_TXS": "before_all_txs",
+   "TRANSACTION_EVENT_STAGE_AFTER_TX": "after_tx",
+   "TRANSACTION_EVENT_STAGE_AFTER_ALL_TXS": "after_all_txs"
+  },
+  "ErrorCode": {
+   "ERR_MISC": "misc",
+   "ERR_DATA": "data",
+   "ERR_CONF": "conf",
+   "ERR_AUTH": "auth",
+   "ERR_LOAD": "load"
+  },
+  "IPAddrType": {
+   "IPv4": "i_pv4",
+   "IPv6": "i_pv6"
+  },
+  "MessageType": {
+   "ERROR_MSG": "error_msg",
+   "AUTH": "auth",
+   "DONT_HAVE": "dont_have",
+   "PEERS": "peers",
+   "GET_TX_SET": "get_tx_set",
+   "TX_SET": "tx_set",
+   "GENERALIZED_TX_SET": "generalized_tx_set",
+   "TRANSACTION": "transaction",
+   "GET_SCP_QUORUMSET": "get_scp_quorumset",
+   "SCP_QUORUMSET": "scp_quorumset",
+   "SCP_MESSAGE": "scp_message",
+   "GET_SCP_STATE": "get_scp_state",
+   "HELLO": "hello",
+   "SEND_MORE": "send_more",
+   "SEND_MORE_EXTENDED": "send_more_extended",
+   "FLOOD_ADVERT": "flood_advert",
+   "FLOOD_DEMAND": "flood_demand",
+   "TIME_SLICED_SURVEY_REQUEST": "time_sliced_survey_request",
+   "TIME_SLICED_SURVEY_RESPONSE": "time_sliced_survey_response",
+   "TIME_SLICED_SURVEY_START_COLLECTING": "time_sliced_survey_start_collecting",
+   "TIME_SLICED_SURVEY_STOP_COLLECTING": "time_sliced_survey_stop_collecting"
+  },
+  "SurveyMessageCommandType": {
+   "TIME_SLICED_SURVEY_TOPOLOGY": "time_sliced_survey_topology"
+  },
+  "SurveyMessageResponseType": {
+   "SURVEY_TOPOLOGY_RESPONSE_V2": "survey_topology_response_v2"
+  },
+  "OperationType": {
+   "CREATE_ACCOUNT": "create_account",
+   "PAYMENT": "payment",
+   "PATH_PAYMENT_STRICT_RECEIVE": "path_payment_strict_receive",
+   "MANAGE_SELL_OFFER": "manage_sell_offer",
+   "CREATE_PASSIVE_SELL_OFFER": "create_passive_sell_offer",
+   "SET_OPTIONS": "set_options",
+   "CHANGE_TRUST": "change_trust",
+   "ALLOW_TRUST": "allow_trust",
+   "ACCOUNT_MERGE": "account_merge",
+   "INFLATION": "inflation",
+   "MANAGE_DATA": "manage_data",
+   "BUMP_SEQUENCE": "bump_sequence",
+   "MANAGE_BUY_OFFER": "manage_buy_offer",
+   "PATH_PAYMENT_STRICT_SEND": "path_payment_strict_send",
+   "CREATE_CLAIMABLE_BALANCE": "create_claimable_balance",
+   "CLAIM_CLAIMABLE_BALANCE": "claim_claimable_balance",
+   "BEGIN_SPONSORING_FUTURE_RESERVES": "begin_sponsoring_future_reserves",
+   "END_SPONSORING_FUTURE_RESERVES": "end_sponsoring_future_reserves",
+   "REVOKE_SPONSORSHIP": "revoke_sponsorship",
+   "CLAWBACK": "clawback",
+   "CLAWBACK_CLAIMABLE_BALANCE": "clawback_claimable_balance",
+   "SET_TRUST_LINE_FLAGS": "set_trust_line_flags",
+   "LIQUIDITY_POOL_DEPOSIT": "liquidity_pool_deposit",
+   "LIQUIDITY_POOL_WITHDRAW": "liquidity_pool_withdraw",
+   "INVOKE_HOST_FUNCTION": "invoke_host_function",
+   "EXTEND_FOOTPRINT_TTL": "extend_footprint_ttl",
+   "RESTORE_FOOTPRINT": "restore_footprint"
+  },
+  "RevokeSponsorshipType": {
+   "REVOKE_SPONSORSHIP_LEDGER_ENTRY": "ledger_entry",
+   "REVOKE_SPONSORSHIP_SIGNER": "signer"
+  },
+  "HostFunctionType": {
+   "HOST_FUNCTION_TYPE_INVOKE_CONTRACT": "invoke_contract",
+   "HOST_FUNCTION_TYPE_CREATE_CONTRACT": "create_contract",
+   "HOST_FUNCTION_TYPE_UPLOAD_CONTRACT_WASM": "upload_contract_wasm",
+   "HOST_FUNCTION_TYPE_CREATE_CONTRACT_V2": "create_contract_v2"
+  },
+  "ContractIDPreimageType": {
+   "CONTRACT_ID_PREIMAGE_FROM_ADDRESS": "address",
+   "CONTRACT_ID_PREIMAGE_FROM_ASSET": "asset"
+  },
+  "SorobanAuthorizedFunctionType": {
+   "SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN": "contract_fn",
+   "SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN": "create_contract_host_fn",
+   "SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN": "create_contract_v2_host_fn"
+  },
+  "SorobanCredentialsType": {
+   "SOROBAN_CREDENTIALS_SOURCE_ACCOUNT": "source_account",
+   "SOROBAN_CREDENTIALS_ADDRESS": "address",
+   "SOROBAN_CREDENTIALS_ADDRESS_V2": "address_v2",
+   "SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES": "address_with_delegates"
+  },
+  "MemoType": {
+   "MEMO_NONE": "none",
+   "MEMO_TEXT": "text",
+   "MEMO_ID": "id",
+   "MEMO_HASH": "hash",
+   "MEMO_RETURN": "return"
+  },
+  "PreconditionType": {
+   "PRECOND_NONE": "none",
+   "PRECOND_TIME": "time",
+   "PRECOND_V2": "v2"
+  },
+  "ClaimAtomType": {
+   "CLAIM_ATOM_TYPE_V0": "v0",
+   "CLAIM_ATOM_TYPE_ORDER_BOOK": "order_book",
+   "CLAIM_ATOM_TYPE_LIQUIDITY_POOL": "liquidity_pool"
+  },
+  "CreateAccountResultCode": {
+   "CREATE_ACCOUNT_SUCCESS": "success",
+   "CREATE_ACCOUNT_MALFORMED": "malformed",
+   "CREATE_ACCOUNT_UNDERFUNDED": "underfunded",
+   "CREATE_ACCOUNT_LOW_RESERVE": "low_reserve",
+   "CREATE_ACCOUNT_ALREADY_EXIST": "already_exist"
+  },
+  "PaymentResultCode": {
+   "PAYMENT_SUCCESS": "success",
+   "PAYMENT_MALFORMED": "malformed",
+   "PAYMENT_UNDERFUNDED": "underfunded",
+   "PAYMENT_SRC_NO_TRUST": "src_no_trust",
+   "PAYMENT_SRC_NOT_AUTHORIZED": "src_not_authorized",
+   "PAYMENT_NO_DESTINATION": "no_destination",
+   "PAYMENT_NO_TRUST": "no_trust",
+   "PAYMENT_NOT_AUTHORIZED": "not_authorized",
+   "PAYMENT_LINE_FULL": "line_full",
+   "PAYMENT_NO_ISSUER": "no_issuer"
+  },
+  "PathPaymentStrictReceiveResultCode": {
+   "PATH_PAYMENT_STRICT_RECEIVE_SUCCESS": "success",
+   "PATH_PAYMENT_STRICT_RECEIVE_MALFORMED": "malformed",
+   "PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED": "underfunded",
+   "PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST": "src_no_trust",
+   "PATH_PAYMENT_STRICT_RECEIVE_SRC_NOT_AUTHORIZED": "src_not_authorized",
+   "PATH_PAYMENT_STRICT_RECEIVE_NO_DESTINATION": "no_destination",
+   "PATH_PAYMENT_STRICT_RECEIVE_NO_TRUST": "no_trust",
+   "PATH_PAYMENT_STRICT_RECEIVE_NOT_AUTHORIZED": "not_authorized",
+   "PATH_PAYMENT_STRICT_RECEIVE_LINE_FULL": "line_full",
+   "PATH_PAYMENT_STRICT_RECEIVE_NO_ISSUER": "no_issuer",
+   "PATH_PAYMENT_STRICT_RECEIVE_TOO_FEW_OFFERS": "too_few_offers",
+   "PATH_PAYMENT_STRICT_RECEIVE_OFFER_CROSS_SELF": "offer_cross_self",
+   "PATH_PAYMENT_STRICT_RECEIVE_OVER_SENDMAX": "over_sendmax"
+  },
+  "PathPaymentStrictSendResultCode": {
+   "PATH_PAYMENT_STRICT_SEND_SUCCESS": "success",
+   "PATH_PAYMENT_STRICT_SEND_MALFORMED": "malformed",
+   "PATH_PAYMENT_STRICT_SEND_UNDERFUNDED": "underfunded",
+   "PATH_PAYMENT_STRICT_SEND_SRC_NO_TRUST": "src_no_trust",
+   "PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED": "src_not_authorized",
+   "PATH_PAYMENT_STRICT_SEND_NO_DESTINATION": "no_destination",
+   "PATH_PAYMENT_STRICT_SEND_NO_TRUST": "no_trust",
+   "PATH_PAYMENT_STRICT_SEND_NOT_AUTHORIZED": "not_authorized",
+   "PATH_PAYMENT_STRICT_SEND_LINE_FULL": "line_full",
+   "PATH_PAYMENT_STRICT_SEND_NO_ISSUER": "no_issuer",
+   "PATH_PAYMENT_STRICT_SEND_TOO_FEW_OFFERS": "too_few_offers",
+   "PATH_PAYMENT_STRICT_SEND_OFFER_CROSS_SELF": "offer_cross_self",
+   "PATH_PAYMENT_STRICT_SEND_UNDER_DESTMIN": "under_destmin"
+  },
+  "ManageSellOfferResultCode": {
+   "MANAGE_SELL_OFFER_SUCCESS": "success",
+   "MANAGE_SELL_OFFER_MALFORMED": "malformed",
+   "MANAGE_SELL_OFFER_SELL_NO_TRUST": "sell_no_trust",
+   "MANAGE_SELL_OFFER_BUY_NO_TRUST": "buy_no_trust",
+   "MANAGE_SELL_OFFER_SELL_NOT_AUTHORIZED": "sell_not_authorized",
+   "MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED": "buy_not_authorized",
+   "MANAGE_SELL_OFFER_LINE_FULL": "line_full",
+   "MANAGE_SELL_OFFER_UNDERFUNDED": "underfunded",
+   "MANAGE_SELL_OFFER_CROSS_SELF": "cross_self",
+   "MANAGE_SELL_OFFER_SELL_NO_ISSUER": "sell_no_issuer",
+   "MANAGE_SELL_OFFER_BUY_NO_ISSUER": "buy_no_issuer",
+   "MANAGE_SELL_OFFER_NOT_FOUND": "not_found",
+   "MANAGE_SELL_OFFER_LOW_RESERVE": "low_reserve"
+  },
+  "ManageOfferEffect": {
+   "MANAGE_OFFER_CREATED": "created",
+   "MANAGE_OFFER_UPDATED": "updated",
+   "MANAGE_OFFER_DELETED": "deleted"
+  },
+  "ManageBuyOfferResultCode": {
+   "MANAGE_BUY_OFFER_SUCCESS": "success",
+   "MANAGE_BUY_OFFER_MALFORMED": "malformed",
+   "MANAGE_BUY_OFFER_SELL_NO_TRUST": "sell_no_trust",
+   "MANAGE_BUY_OFFER_BUY_NO_TRUST": "buy_no_trust",
+   "MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED": "sell_not_authorized",
+   "MANAGE_BUY_OFFER_BUY_NOT_AUTHORIZED": "buy_not_authorized",
+   "MANAGE_BUY_OFFER_LINE_FULL": "line_full",
+   "MANAGE_BUY_OFFER_UNDERFUNDED": "underfunded",
+   "MANAGE_BUY_OFFER_CROSS_SELF": "cross_self",
+   "MANAGE_BUY_OFFER_SELL_NO_ISSUER": "sell_no_issuer",
+   "MANAGE_BUY_OFFER_BUY_NO_ISSUER": "buy_no_issuer",
+   "MANAGE_BUY_OFFER_NOT_FOUND": "not_found",
+   "MANAGE_BUY_OFFER_LOW_RESERVE": "low_reserve"
+  },
+  "SetOptionsResultCode": {
+   "SET_OPTIONS_SUCCESS": "success",
+   "SET_OPTIONS_LOW_RESERVE": "low_reserve",
+   "SET_OPTIONS_TOO_MANY_SIGNERS": "too_many_signers",
+   "SET_OPTIONS_BAD_FLAGS": "bad_flags",
+   "SET_OPTIONS_INVALID_INFLATION": "invalid_inflation",
+   "SET_OPTIONS_CANT_CHANGE": "cant_change",
+   "SET_OPTIONS_UNKNOWN_FLAG": "unknown_flag",
+   "SET_OPTIONS_THRESHOLD_OUT_OF_RANGE": "threshold_out_of_range",
+   "SET_OPTIONS_BAD_SIGNER": "bad_signer",
+   "SET_OPTIONS_INVALID_HOME_DOMAIN": "invalid_home_domain",
+   "SET_OPTIONS_AUTH_REVOCABLE_REQUIRED": "auth_revocable_required"
+  },
+  "ChangeTrustResultCode": {
+   "CHANGE_TRUST_SUCCESS": "success",
+   "CHANGE_TRUST_MALFORMED": "malformed",
+   "CHANGE_TRUST_NO_ISSUER": "no_issuer",
+   "CHANGE_TRUST_INVALID_LIMIT": "invalid_limit",
+   "CHANGE_TRUST_LOW_RESERVE": "low_reserve",
+   "CHANGE_TRUST_SELF_NOT_ALLOWED": "self_not_allowed",
+   "CHANGE_TRUST_TRUST_LINE_MISSING": "trust_line_missing",
+   "CHANGE_TRUST_CANNOT_DELETE": "cannot_delete",
+   "CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES": "not_auth_maintain_liabilities"
+  },
+  "AllowTrustResultCode": {
+   "ALLOW_TRUST_SUCCESS": "success",
+   "ALLOW_TRUST_MALFORMED": "malformed",
+   "ALLOW_TRUST_NO_TRUST_LINE": "no_trust_line",
+   "ALLOW_TRUST_TRUST_NOT_REQUIRED": "trust_not_required",
+   "ALLOW_TRUST_CANT_REVOKE": "cant_revoke",
+   "ALLOW_TRUST_SELF_NOT_ALLOWED": "self_not_allowed",
+   "ALLOW_TRUST_LOW_RESERVE": "low_reserve"
+  },
+  "AccountMergeResultCode": {
+   "ACCOUNT_MERGE_SUCCESS": "success",
+   "ACCOUNT_MERGE_MALFORMED": "malformed",
+   "ACCOUNT_MERGE_NO_ACCOUNT": "no_account",
+   "ACCOUNT_MERGE_IMMUTABLE_SET": "immutable_set",
+   "ACCOUNT_MERGE_HAS_SUB_ENTRIES": "has_sub_entries",
+   "ACCOUNT_MERGE_SEQNUM_TOO_FAR": "seqnum_too_far",
+   "ACCOUNT_MERGE_DEST_FULL": "dest_full",
+   "ACCOUNT_MERGE_IS_SPONSOR": "is_sponsor"
+  },
+  "InflationResultCode": {
+   "INFLATION_SUCCESS": "success",
+   "INFLATION_NOT_TIME": "not_time"
+  },
+  "ManageDataResultCode": {
+   "MANAGE_DATA_SUCCESS": "success",
+   "MANAGE_DATA_NOT_SUPPORTED_YET": "not_supported_yet",
+   "MANAGE_DATA_NAME_NOT_FOUND": "name_not_found",
+   "MANAGE_DATA_LOW_RESERVE": "low_reserve",
+   "MANAGE_DATA_INVALID_NAME": "invalid_name"
+  },
+  "BumpSequenceResultCode": {
+   "BUMP_SEQUENCE_SUCCESS": "success",
+   "BUMP_SEQUENCE_BAD_SEQ": "bad_seq"
+  },
+  "CreateClaimableBalanceResultCode": {
+   "CREATE_CLAIMABLE_BALANCE_SUCCESS": "success",
+   "CREATE_CLAIMABLE_BALANCE_MALFORMED": "malformed",
+   "CREATE_CLAIMABLE_BALANCE_LOW_RESERVE": "low_reserve",
+   "CREATE_CLAIMABLE_BALANCE_NO_TRUST": "no_trust",
+   "CREATE_CLAIMABLE_BALANCE_NOT_AUTHORIZED": "not_authorized",
+   "CREATE_CLAIMABLE_BALANCE_UNDERFUNDED": "underfunded"
+  },
+  "ClaimClaimableBalanceResultCode": {
+   "CLAIM_CLAIMABLE_BALANCE_SUCCESS": "success",
+   "CLAIM_CLAIMABLE_BALANCE_DOES_NOT_EXIST": "does_not_exist",
+   "CLAIM_CLAIMABLE_BALANCE_CANNOT_CLAIM": "cannot_claim",
+   "CLAIM_CLAIMABLE_BALANCE_LINE_FULL": "line_full",
+   "CLAIM_CLAIMABLE_BALANCE_NO_TRUST": "no_trust",
+   "CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED": "not_authorized",
+   "CLAIM_CLAIMABLE_BALANCE_TRUSTLINE_FROZEN": "trustline_frozen"
+  },
+  "BeginSponsoringFutureReservesResultCode": {
+   "BEGIN_SPONSORING_FUTURE_RESERVES_SUCCESS": "success",
+   "BEGIN_SPONSORING_FUTURE_RESERVES_MALFORMED": "malformed",
+   "BEGIN_SPONSORING_FUTURE_RESERVES_ALREADY_SPONSORED": "already_sponsored",
+   "BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE": "recursive"
+  },
+  "EndSponsoringFutureReservesResultCode": {
+   "END_SPONSORING_FUTURE_RESERVES_SUCCESS": "success",
+   "END_SPONSORING_FUTURE_RESERVES_NOT_SPONSORED": "not_sponsored"
+  },
+  "RevokeSponsorshipResultCode": {
+   "REVOKE_SPONSORSHIP_SUCCESS": "success",
+   "REVOKE_SPONSORSHIP_DOES_NOT_EXIST": "does_not_exist",
+   "REVOKE_SPONSORSHIP_NOT_SPONSOR": "not_sponsor",
+   "REVOKE_SPONSORSHIP_LOW_RESERVE": "low_reserve",
+   "REVOKE_SPONSORSHIP_ONLY_TRANSFERABLE": "only_transferable",
+   "REVOKE_SPONSORSHIP_MALFORMED": "malformed"
+  },
+  "ClawbackResultCode": {
+   "CLAWBACK_SUCCESS": "success",
+   "CLAWBACK_MALFORMED": "malformed",
+   "CLAWBACK_NOT_CLAWBACK_ENABLED": "not_clawback_enabled",
+   "CLAWBACK_NO_TRUST": "no_trust",
+   "CLAWBACK_UNDERFUNDED": "underfunded"
+  },
+  "ClawbackClaimableBalanceResultCode": {
+   "CLAWBACK_CLAIMABLE_BALANCE_SUCCESS": "success",
+   "CLAWBACK_CLAIMABLE_BALANCE_DOES_NOT_EXIST": "does_not_exist",
+   "CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER": "not_issuer",
+   "CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED": "not_clawback_enabled"
+  },
+  "SetTrustLineFlagsResultCode": {
+   "SET_TRUST_LINE_FLAGS_SUCCESS": "success",
+   "SET_TRUST_LINE_FLAGS_MALFORMED": "malformed",
+   "SET_TRUST_LINE_FLAGS_NO_TRUST_LINE": "no_trust_line",
+   "SET_TRUST_LINE_FLAGS_CANT_REVOKE": "cant_revoke",
+   "SET_TRUST_LINE_FLAGS_INVALID_STATE": "invalid_state",
+   "SET_TRUST_LINE_FLAGS_LOW_RESERVE": "low_reserve"
+  },
+  "LiquidityPoolDepositResultCode": {
+   "LIQUIDITY_POOL_DEPOSIT_SUCCESS": "success",
+   "LIQUIDITY_POOL_DEPOSIT_MALFORMED": "malformed",
+   "LIQUIDITY_POOL_DEPOSIT_NO_TRUST": "no_trust",
+   "LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED": "not_authorized",
+   "LIQUIDITY_POOL_DEPOSIT_UNDERFUNDED": "underfunded",
+   "LIQUIDITY_POOL_DEPOSIT_LINE_FULL": "line_full",
+   "LIQUIDITY_POOL_DEPOSIT_BAD_PRICE": "bad_price",
+   "LIQUIDITY_POOL_DEPOSIT_POOL_FULL": "pool_full",
+   "LIQUIDITY_POOL_DEPOSIT_TRUSTLINE_FROZEN": "trustline_frozen"
+  },
+  "LiquidityPoolWithdrawResultCode": {
+   "LIQUIDITY_POOL_WITHDRAW_SUCCESS": "success",
+   "LIQUIDITY_POOL_WITHDRAW_MALFORMED": "malformed",
+   "LIQUIDITY_POOL_WITHDRAW_NO_TRUST": "no_trust",
+   "LIQUIDITY_POOL_WITHDRAW_UNDERFUNDED": "underfunded",
+   "LIQUIDITY_POOL_WITHDRAW_LINE_FULL": "line_full",
+   "LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM": "under_minimum",
+   "LIQUIDITY_POOL_WITHDRAW_TRUSTLINE_FROZEN": "trustline_frozen"
+  },
+  "InvokeHostFunctionResultCode": {
+   "INVOKE_HOST_FUNCTION_SUCCESS": "success",
+   "INVOKE_HOST_FUNCTION_MALFORMED": "malformed",
+   "INVOKE_HOST_FUNCTION_TRAPPED": "trapped",
+   "INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED": "resource_limit_exceeded",
+   "INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED": "entry_archived",
+   "INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE": "insufficient_refundable_fee"
+  },
+  "ExtendFootprintTTLResultCode": {
+   "EXTEND_FOOTPRINT_TTL_SUCCESS": "success",
+   "EXTEND_FOOTPRINT_TTL_MALFORMED": "malformed",
+   "EXTEND_FOOTPRINT_TTL_RESOURCE_LIMIT_EXCEEDED": "resource_limit_exceeded",
+   "EXTEND_FOOTPRINT_TTL_INSUFFICIENT_REFUNDABLE_FEE": "insufficient_refundable_fee"
+  },
+  "RestoreFootprintResultCode": {
+   "RESTORE_FOOTPRINT_SUCCESS": "success",
+   "RESTORE_FOOTPRINT_MALFORMED": "malformed",
+   "RESTORE_FOOTPRINT_RESOURCE_LIMIT_EXCEEDED": "resource_limit_exceeded",
+   "RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE": "insufficient_refundable_fee"
+  },
+  "OperationResultCode": {
+   "opINNER": "op_inner",
+   "opBAD_AUTH": "op_bad_auth",
+   "opNO_ACCOUNT": "op_no_account",
+   "opNOT_SUPPORTED": "op_not_supported",
+   "opTOO_MANY_SUBENTRIES": "op_too_many_subentries",
+   "opEXCEEDED_WORK_LIMIT": "op_exceeded_work_limit",
+   "opTOO_MANY_SPONSORING": "op_too_many_sponsoring"
+  },
+  "TransactionResultCode": {
+   "txFEE_BUMP_INNER_SUCCESS": "tx_fee_bump_inner_success",
+   "txSUCCESS": "tx_success",
+   "txFAILED": "tx_failed",
+   "txTOO_EARLY": "tx_too_early",
+   "txTOO_LATE": "tx_too_late",
+   "txMISSING_OPERATION": "tx_missing_operation",
+   "txBAD_SEQ": "tx_bad_seq",
+   "txBAD_AUTH": "tx_bad_auth",
+   "txINSUFFICIENT_BALANCE": "tx_insufficient_balance",
+   "txNO_ACCOUNT": "tx_no_account",
+   "txINSUFFICIENT_FEE": "tx_insufficient_fee",
+   "txBAD_AUTH_EXTRA": "tx_bad_auth_extra",
+   "txINTERNAL_ERROR": "tx_internal_error",
+   "txNOT_SUPPORTED": "tx_not_supported",
+   "txFEE_BUMP_INNER_FAILED": "tx_fee_bump_inner_failed",
+   "txBAD_SPONSORSHIP": "tx_bad_sponsorship",
+   "txBAD_MIN_SEQ_AGE_OR_GAP": "tx_bad_min_seq_age_or_gap",
+   "txMALFORMED": "tx_malformed",
+   "txSOROBAN_INVALID": "tx_soroban_invalid",
+   "txFROZEN_KEY_ACCESSED": "tx_frozen_key_accessed"
+  },
+  "CryptoKeyType": {
+   "KEY_TYPE_ED25519": "ed25519",
+   "KEY_TYPE_PRE_AUTH_TX": "pre_auth_tx",
+   "KEY_TYPE_HASH_X": "hash_x",
+   "KEY_TYPE_ED25519_SIGNED_PAYLOAD": "ed25519_signed_payload",
+   "KEY_TYPE_MUXED_ED25519": "muxed_ed25519"
+  },
+  "PublicKeyType": {
+   "PUBLIC_KEY_TYPE_ED25519": "public_key_type_ed25519"
+  },
+  "SignerKeyType": {
+   "SIGNER_KEY_TYPE_ED25519": "ed25519",
+   "SIGNER_KEY_TYPE_PRE_AUTH_TX": "pre_auth_tx",
+   "SIGNER_KEY_TYPE_HASH_X": "hash_x",
+   "SIGNER_KEY_TYPE_ED25519_SIGNED_PAYLOAD": "ed25519_signed_payload"
+  },
+  "BinaryFuseFilterType": {
+   "BINARY_FUSE_FILTER_8_BIT": "b8_bit",
+   "BINARY_FUSE_FILTER_16_BIT": "b16_bit",
+   "BINARY_FUSE_FILTER_32_BIT": "b32_bit"
+  },
+  "ClaimableBalanceIDType": {
+   "CLAIMABLE_BALANCE_ID_TYPE_V0": "claimable_balance_id_type_v0"
+  }
+ }
+}

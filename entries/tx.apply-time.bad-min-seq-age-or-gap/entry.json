@@ -1,0 +1,427 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "tx.apply-time.bad-min-seq-age-or-gap",
+  "title": "A transaction with minSeqLedgerGap fails at apply after a bump-to-0 in the same ledger",
+  "pattern": "Core applies a ledger's classic phase before its Soroban phase and re-checks the source account, sequence number, signatures and sequence-age preconditions at apply (TransactionFrame::commonValid; OperationFrame::checkSignature with forApply). Here a classic transaction earlier in the same ledger runs BUMP_SEQUENCE with bumpTo 0 on the source: the sequence number does not change, but seqLedger moves to this ledger (BumpSequenceOpFrame.cpp maybeUpdateAccountOnLedgerSeqUpdate), so this transaction's minSeqLedgerGap of 1 is no longer met and it fails with txBAD_MIN_SEQ_AGE_OR_GAP.",
+  "caps": [
+    "CAP-0021",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "TransactionResult.txBAD_MIN_SEQ_AGE_OR_GAP in a closed ledger: seqLedger moved earlier in the ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "dbc26aa0d75267052a7b0ff3a399e6a5f1bd708bf51da7b88e10fce8e646ba9b",
+      "size": 17236,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/soroban/gen/gen.mjs#race-victim-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "298360ae4086065cf1cd8f36d0d824af3caacde08a2c4aca0747527fe2cd1d57",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "b464fb610c5dc4338e51264688075287b17489787054fc0a9a3ed48926be972c",
+      "size": 17228,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 41,
+        "recipe": "recipes/soroban/gen/gen.mjs#race-victim-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "2767092ea6a02760cb007c6a844538566c3f7e15f7b7114b0d3277844a4e1d87",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "93d7ae80867e77f226d47e6e0b9ffda64102deea242ce75547630c1b054069d4",
+      "size": 17132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 42,
+        "recipe": "recipes/soroban/gen/gen.mjs#race-victim-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "189c121bb68e38676e8c6ddede11990c4657a604993afadd85bd5c25537b4926",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "e7e04e4b8cdf6577f759407db04947b1975e718e8cc0409916390ace9facde81",
+      "size": 17124,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 41,
+        "recipe": "recipes/soroban/gen/gen.mjs#race-victim-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "601fbdfcd7c88415c2203a3475b8e5a4ce73f42657b940833090a6ee4d6a1545",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction fails with tx_bad_min_seq_age_or_gap although it was valid when submitted.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with tx_bad_min_seq_age_or_gap although it was valid when submitted.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with tx_bad_min_seq_age_or_gap although it was valid when submitted.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with tx_bad_min_seq_age_or_gap although it was valid when submitted.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "b04e55b08b9c5b757745d4ce2ac1e38b423bf6b1f50a1651853c79a085a8db90"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "d1bc8cc3561e1ead7ad2ccf0ac8343d8c60985a57b2d92aa6fb625b3691570e6"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "3e2eb29a216a9f575793895b4494a744bc09231477c5c3925b9c975856807ccb"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "07f54f45f7345e4d5741ce5f42b5148f84cbcd0c5acac3281cf8f4f1baf7ca26"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed: the source account changes before apply.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed: the source account changes before apply.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed: the source account changes before apply.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The sequence number is consumed: the source account changes before apply.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/tx_apply_processing/v4/tx_changes_before",
+        "length": 2,
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation was applied: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation was applied: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation was applied: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation was applied: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction source is the account changed earlier in the ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/2/tx/tx/source_account",
+        "equals": "GAQHMVAW3Z2WUFZSL7TNPHHCPKAM5M7SSUU3JVZAQ2LPYV2ETR4UDFAY",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction source is the account changed earlier in the ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/2/tx/tx/source_account",
+        "equals": "GAQHMVAW3Z2WUFZSL7TNPHHCPKAM5M7SSUU3JVZAQ2LPYV2ETR4UDFAY",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction source is the account changed earlier in the ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/1/tx/tx/source_account",
+        "equals": "GAQHMVAW3Z2WUFZSL7TNPHHCPKAM5M7SSUU3JVZAQ2LPYV2ETR4UDFAY",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction source is the account changed earlier in the ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/5/tx/tx/source_account",
+        "equals": "GAQHMVAW3Z2WUFZSL7TNPHHCPKAM5M7SSUU3JVZAQ2LPYV2ETR4UDFAY",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The unused resource fee is refunded after apply (two changes on the fee source).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/post_tx_apply_fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The unused resource fee is refunded after apply (two changes on the fee source).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/post_tx_apply_fee_processing",
+        "length": 2,
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The unused resource fee is refunded after apply (two changes on the fee source).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/post_tx_apply_fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The unused resource fee is refunded after apply (two changes on the fee source).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/post_tx_apply_fee_processing",
+        "length": 2,
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

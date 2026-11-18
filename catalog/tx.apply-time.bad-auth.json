@@ -1,0 +1,91 @@
+{
+  "id": "tx.apply-time.bad-auth",
+  "title": "A transaction valid at submission fails txBAD_AUTH at apply",
+  "pattern": "Core applies a ledger's classic phase before its Soroban phase and re-checks the source account, sequence number, signatures and sequence-age preconditions at apply (TransactionFrame::commonValid; OperationFrame::checkSignature with forApply). Here a classic transaction earlier in the same ledger removes the only signer that signed this transaction, so it fails with txBAD_AUTH. Its sequence number is consumed and its fee charged.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "TransactionResult.txBAD_AUTH in a closed ledger: signer removed earlier in the ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "race-victim-txBAD_AUTH",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction fails with tx_bad_auth although it was valid when submitted.",
+      "at": "tx.result",
+      "equals": "tx_bad_auth",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction that caused it is in the same ledger.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "some": {
+        "/result/transaction_hash": {
+          "$step": "race-attacker-remove-tx-signer"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The sequence number is consumed: the source account changes before apply.",
+      "at": "tx.meta",
+      "path": "/tx_changes_before",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation was applied: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The transaction source is the account changed earlier in the ledger.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/source_account",
+      "equals": {
+        "$manifest": "accounts.race.vC"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The unused resource fee is refunded after apply (two changes on the fee source).",
+      "at": "tx.post_apply_fee",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}
