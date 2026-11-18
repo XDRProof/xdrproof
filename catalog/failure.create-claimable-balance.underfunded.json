@@ -1,0 +1,55 @@
+{
+  "id": "failure.create-claimable-balance.underfunded",
+  "title": "CREATE_CLAIMABLE_BALANCE fails with CREATE_CLAIMABLE_BALANCE_UNDERFUNDED",
+  "pattern": "A transaction whose CREATE_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (underfunded). A 5 NRV claimable balance from an account holding 1.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.create_claimable_balance.underfunded in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CREATE_CLAIMABLE_BALANCE_UNDERFUNDED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with underfunded.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/create_claimable_balance",
+      "equals": "underfunded",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

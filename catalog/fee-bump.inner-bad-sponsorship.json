@@ -1,0 +1,55 @@
+{
+  "id": "fee-bump.inner-bad-sponsorship",
+  "title": "A fee bump whose inner transaction leaves a sponsorship open: inner txBAD_SPONSORSHIP",
+  "pattern": "The inner transaction begins sponsoring an account and never ends it. The fee bump's result is txFEE_BUMP_INNER_FAILED; the inner result is txBAD_SPONSORSHIP, a transaction-level code inside InnerTransactionResult. The fee source pays; nothing the inner transaction did is kept.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "InnerTransactionResult.txBAD_SPONSORSHIP inside txFEE_BUMP_INNER_FAILED"
+    },
+    {
+      "id": "H-C3",
+      "placement": "an open sponsorship inside a fee bump"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "fee-bump-inner-txBAD_SPONSORSHIP",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The inner transaction fails with txBAD_SPONSORSHIP.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result",
+      "equals": "tx_bad_sponsorship",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee source is fbFee.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/fee_source",
+      "equals": {
+        "$manifest": "fs2.accounts.fbFee"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

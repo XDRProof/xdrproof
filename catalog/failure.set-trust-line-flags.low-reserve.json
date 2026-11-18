@@ -1,0 +1,74 @@
+{
+  "id": "failure.set-trust-line-flags.low-reserve",
+  "title": "SET_TRUST_LINE_FLAGS fails with SET_TRUST_LINE_FLAGS_LOW_RESERVE",
+  "pattern": "A transaction whose SET_TRUST_LINE_FLAGS operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (low_reserve). Revoking ARQ from an account that holds XLM/ARQ pool shares redeems them into new claimable balances (CAP-0038). The account is inside a sponsorship sandwich, so the sandwich's sponsor must fund the balances' reserves, and it sits at its minimum balance (TransactionUtils.cpp, removeOffersAndPoolShareTrustLines). Operations 0 and 2 report success in the failed transaction.",
+  "caps": [
+    "CAP-0035",
+    "CAP-0038",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.set_trust_line_flags.low_reserve in a closed ledger"
+    },
+    {
+      "id": "H-D9",
+      "placement": "revocation whose pool-share redemption cannot fund its claimable balances"
+    },
+    {
+      "id": "H-C3",
+      "placement": "revocation inside a sponsorship sandwich whose sponsor is at its minimum balance"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "SET_TRUST_LINE_FLAGS_LOW_RESERVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "Operation 1 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/1/op_inner/set_trust_line_flags",
+      "equals": "low_reserve",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 reports success in the failed transaction.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/begin_sponsoring_future_reserves",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

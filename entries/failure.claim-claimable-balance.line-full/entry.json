@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.claim-claimable-balance.line-full",
+  "title": "CLAIM_CLAIMABLE_BALANCE fails with CLAIM_CLAIMABLE_BALANCE_LINE_FULL",
+  "pattern": "A transaction whose CLAIM_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (line_full). The claimant's NRV trustline is at its limit of 1; the balance holds 5.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.claim_claimable_balance.line_full in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claim into a trustline at its limit"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "239e2cd2e35ee6ddef41852a80e6adef06118c4e03926e83e2d60aa2616ed456",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#CLAIM_CLAIMABLE_BALANCE_LINE_FULL"
+      },
+      "focus": {
+        "tx_hash": "b072578d02fd9f893a0912f80655803e1967604aea37019f4cb561c507fba64c",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a46139bc0d15f50c77100719df89eed22d98f0ffb2b2c3398e38f06f6dc5652a",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#CLAIM_CLAIMABLE_BALANCE_LINE_FULL"
+      },
+      "focus": {
+        "tx_hash": "1750c0b511f7d649557b4d8e0f441520911114767860abb962718d9f4517cca3",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with line_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/claim_claimable_balance",
+        "equals": "line_full",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with line_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/claim_claimable_balance",
+        "equals": "line_full",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

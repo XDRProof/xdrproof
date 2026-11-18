@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.set-trust-line-flags.invalid-state",
+  "title": "SET_TRUST_LINE_FLAGS fails with SET_TRUST_LINE_FLAGS_INVALID_STATE",
+  "pattern": "A transaction whose SET_TRUST_LINE_FLAGS operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (invalid_state). Setting AUTHORIZED_TO_MAINTAIN_LIABILITIES on an AUTHORIZED trustline without clearing AUTHORIZED would leave both set.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.set_trust_line_flags.invalid_state in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "AUTHORIZED and AUTHORIZED_TO_MAINTAIN_LIABILITIES both set"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "239e2cd2e35ee6ddef41852a80e6adef06118c4e03926e83e2d60aa2616ed456",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#SET_TRUST_LINE_FLAGS_INVALID_STATE"
+      },
+      "focus": {
+        "tx_hash": "069df1484b527879528a33768f7866700b98cd1a24b031d0e59d4429906cd297",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a46139bc0d15f50c77100719df89eed22d98f0ffb2b2c3398e38f06f6dc5652a",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#SET_TRUST_LINE_FLAGS_INVALID_STATE"
+      },
+      "focus": {
+        "tx_hash": "1da167a4a1989360cfecbc86d2fcaca48876426e0959d81bc731582b27a149f7",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with invalid_state.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/2/result/result/result/tx_failed/0/op_inner/set_trust_line_flags",
+        "equals": "invalid_state",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with invalid_state.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/result/result/result/tx_failed/0/op_inner/set_trust_line_flags",
+        "equals": "invalid_state",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/2/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

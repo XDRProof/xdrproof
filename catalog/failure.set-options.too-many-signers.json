@@ -1,0 +1,59 @@
+{
+  "id": "failure.set-options.too-many-signers",
+  "title": "SET_OPTIONS fails with SET_OPTIONS_TOO_MANY_SIGNERS",
+  "pattern": "A transaction whose SET_OPTIONS operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (too_many_signers). A 21st signer; an account holds at most 20.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.set_options.too_many_signers in a closed ledger"
+    },
+    {
+      "id": "H-B6",
+      "placement": "AccountEntry.signers at its maximum of 20, and one past it"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "SET_OPTIONS_TOO_MANY_SIGNERS",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with too_many_signers.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/set_options",
+      "equals": "too_many_signers",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

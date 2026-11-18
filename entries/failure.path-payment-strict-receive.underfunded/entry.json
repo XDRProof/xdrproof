@@ -1,0 +1,142 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.path-payment-strict-receive.underfunded",
+  "title": "PATH_PAYMENT_STRICT_RECEIVE fails with PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED",
+  "pattern": "A transaction whose PATH_PAYMENT_STRICT_RECEIVE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (underfunded). Sending 5 NRV from an account holding 1.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.path_payment_strict_receive.underfunded in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "fb251221440e0adaad4c2bf377f88d14d31f4e5e24fbf246c9c1643e35f0b81e",
+      "size": 14032,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 103,
+        "recipe": "recipes/classic/gen.mjs#PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED"
+      },
+      "focus": {
+        "tx_hash": "287e327e1908c71c73612c1aaff5e67b4ffda03412bbf1a2c146b40257a9d701",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "58314b09bb84c82ac1a63458130f88b679c3d7599acd87bb69a039c7e89d135c",
+      "size": 14032,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 103,
+        "recipe": "recipes/classic/gen.mjs#PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED"
+      },
+      "focus": {
+        "tx_hash": "c285f9066b1316112e8b76583f52e5a824b7cb8ed8e264f259aa612f5389051c",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result/tx_failed/0/op_inner/path_payment_strict_receive",
+        "equals": "underfunded",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result/tx_failed/0/op_inner/path_payment_strict_receive",
+        "equals": "underfunded",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

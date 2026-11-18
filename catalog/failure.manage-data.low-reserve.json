@@ -1,0 +1,55 @@
+{
+  "id": "failure.manage-data.low-reserve",
+  "title": "MANAGE_DATA fails with MANAGE_DATA_LOW_RESERVE",
+  "pattern": "A transaction whose MANAGE_DATA operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (low_reserve). A new data entry from an account at its minimum balance; another account pays the fee.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_data.low_reserve in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "MANAGE_DATA_LOW_RESERVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_data",
+      "equals": "low_reserve",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

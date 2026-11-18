@@ -1,0 +1,44 @@
+{
+  "id": "failure.extend-footprint-ttl.insufficient-refundable-fee",
+  "title": "EXTEND_FOOTPRINT_TTL fails with INSUFFICIENT_REFUNDABLE_FEE",
+  "pattern": "A transaction whose EXTEND_FOOTPRINT_TTL operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (insufficient_refundable_fee). The resource fee is exactly the non-refundable part, the smallest fee core accepts at submission: nothing is left for the rent the extension owes.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "EXTEND_FOOTPRINT_TTL insufficient_refundable_fee at apply"
+    },
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.extend_footprint_ttl.insufficient_refundable_fee in a closed ledger"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "extend-ttl-insufficient-refundable-fee",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with insufficient_refundable_fee.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/extend_footprint_ttl",
+      "equals": "insufficient_refundable_fee",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "auth.create-contract-v1-signed-over-own-bytes",
+  "title": "A v1 create-contract authorization signed over its own bytes fails verification",
+  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0058"
+  ],
+  "hazards": [
+    {
+      "id": "H-B16",
+      "placement": "a v1 create authorization signed over its own bytes: verification fails"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "f115adb9add3c96f5fd13a451cbeb6ee6e55bd679989db6ace65357eb3db2ac5",
+      "size": 2744,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 87,
+        "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-own-bytes"
+      },
+      "focus": {
+        "tx_hash": "c9568f1a16750d5e2380040c9c6378e2b24a16b8d75df1f06a0c019742ababa9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "e1680ebb0cc313a9e0530cedb8cc2a8f156480bc8563b0ebee6d186cfdbb0feb",
+      "size": 2736,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 86,
+        "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-own-bytes"
+      },
+      "focus": {
+        "tx_hash": "67bb4f70a5c14ffc60674e873cdd8aeb37872e3afedd4c26f9c3ed0dba63a529",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "7030131aab2dbbb1a8546de05306521fe2f89b29c1e7c6447e2c1e19d7ff8372",
+      "size": 2744,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 87,
+        "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-own-bytes"
+      },
+      "focus": {
+        "tx_hash": "31afe82c820fdff72ec1644712f5d0928f77846a5bce80ab0e4ce9c3cacc129e",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "4572be4f039beb2a9f228e25f92dfd3df31fd78468314a4489a613e26c63e794",
+      "size": 2736,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 86,
+        "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-own-bytes"
+      },
+      "focus": {
+        "tx_hash": "0745704a49d7f91c1e4579da6a11fc8966317166565aae981d13bc3da9433426",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-mainnet-generated-galexie",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated-galexie.xdr",
+      "sha256": "3fba1afab9483879c754df93a2625e5aa925e449884a4f0fa0989b933fda6262",
+      "size": 4568,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "BACKFILL_STELLAR_ASSET_EVENTS",
+          "BACKFILL_RESTORE_META",
+          "ENABLE_SOROBAN_DIAGNOSTIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 87,
+        "recipe": "recipes/soroban/gen/gen.mjs#create-contract-v1-auth-signed-over-own-bytes"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "5d0627a9fabc9f7cce643556c6062d67359590967c5ca447727f851f99f490a5",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "3fba1afab9483879c754df93a2625e5aa925e449884a4f0fa0989b933fda6262",
+            "runs": 1
+          },
+          {
+            "sha256": "97e0947ee3cd36e2ce76418f3fe96d66f11c078e927d6ec6df2dfc9228c99582",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "c9568f1a16750d5e2380040c9c6378e2b24a16b8d75df1f06a0c019742ababa9",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The call traps.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/invoke_host_function",
+        "equals": "trapped"
+      },
+      {
+        "says": "The auth entry's root is the v1 create-contract function, for the kit Wasm.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/auth/0/root_invocation/function/create_contract_host_fn/executable/wasm",
+        "equals": "946784bc2ad1543af3d5a0221fce600ae56495cbcd4a5642e659f5ea4b2b4556"
+      },
+      {
+        "says": "With diagnostic events: crypto invalid_input, \"failed ED25519 verification\".",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/diagnostic_events",
+        "some": {
+          "/event/body/v0/topics/1/error/crypto": "invalid_input",
+          "/event/body/v0/data/string": "failed ED25519 verification"
+        },
+        "variants": [
+          "p30-mainnet-generated-galexie"
+        ]
+      }
+    ]
+  }
+}

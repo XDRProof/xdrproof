@@ -1,0 +1,142 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.create-claimable-balance.underfunded",
+  "title": "CREATE_CLAIMABLE_BALANCE fails with CREATE_CLAIMABLE_BALANCE_UNDERFUNDED",
+  "pattern": "A transaction whose CREATE_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (underfunded). A 5 NRV claimable balance from an account holding 1.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.create_claimable_balance.underfunded in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "239e2cd2e35ee6ddef41852a80e6adef06118c4e03926e83e2d60aa2616ed456",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#CREATE_CLAIMABLE_BALANCE_UNDERFUNDED"
+      },
+      "focus": {
+        "tx_hash": "e63f8947e135b1f592a420e4624120c7b7db562ef3aa4079019d56b84a29a7ee",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a46139bc0d15f50c77100719df89eed22d98f0ffb2b2c3398e38f06f6dc5652a",
+      "size": 9132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 101,
+        "recipe": "recipes/classic/gen.mjs#CREATE_CLAIMABLE_BALANCE_UNDERFUNDED"
+      },
+      "focus": {
+        "tx_hash": "a9efd168903e56509f755e4efcbcd9adf7a8217df7332ac26e7e3677fc8f8658",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/result/result/result/tx_failed/0/op_inner/create_claimable_balance",
+        "equals": "underfunded",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with underfunded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/5/result/result/result/tx_failed/0/op_inner/create_claimable_balance",
+        "equals": "underfunded",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

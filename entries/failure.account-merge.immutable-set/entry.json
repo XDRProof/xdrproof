@@ -1,0 +1,101 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.account-merge.immutable-set",
+  "title": "ACCOUNT_MERGE fails with ACCOUNT_MERGE_IMMUTABLE_SET",
+  "pattern": "A transaction whose ACCOUNT_MERGE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (immutable_set). An issuer with AUTH_IMMUTABLE can never be merged.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.account_merge.immutable_set in a closed ledger"
+    },
+    {
+      "id": "H-C11",
+      "placement": "merging an AUTH_IMMUTABLE issuer"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9d41b66de6ab14a2246e753d0ec5690ec523f108a5deff88c66a65ccd3e836d7",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_IMMUTABLE_SET"
+      },
+      "focus": {
+        "tx_hash": "409cb010557e31b36f6ac8e222ac6f8f3b8b0fbb64ff68215a2fec01f0c8752f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5f41a5a8623e1a1987a8a593e1bc7522cb1559af8c12b40958c6441a73787f13",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_IMMUTABLE_SET"
+      },
+      "focus": {
+        "tx_hash": "20b4c01a4f693f92d8713df025dd7eaa9d03b2b4606261010684d03a09c27b30",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with immutable_set.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result/tx_failed/0/op_inner/account_merge",
+        "equals": "immutable_set"
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/fee_processing",
+        "length": 2
+      }
+    ]
+  }
+}

@@ -421,12 +421,15 @@ await submit('kit2-set-executable-ref', soroban(alice, invoke(CA1, 'set_ref', [x
 // value is SCV_BYTES(set) (Upgrades.cpp, ConfigUpgradeSetFrame::makeFromKey and getLedgerKey). kit2's
 // put_all writes one, so upgrades are staged deterministically; core's get-settings-upgrade-txs would pick
 // a random salt. The upgrade applies at the end of the ledger it is armed for, after that ledger's txs.
-const configUpgrade = async (name, entries, note) => {
+// staging and arming are separate so an upgrade can be staged while kit2 is still callable (section (5) below)
+const stageConfigUpgrade = async (name, entries) => {
   const set = new xdr.ConfigUpgradeSet({ updatedEntry: entries }).toXDR(); const hash = sha(set);
   const k = xdr.ScVal.scvBytes(hash), v = xdr.ScVal.scvBytes(set);
   await submit(name + '-staged', soroban(alice, invoke(CA1, 'put_all', [k, v]),
     { ro: [kCode(wasm2Hash)], rw: [kInstance(CA1), kData(CA1, k, DUR.persistent), kData(CA1, k, DUR.temporary)] }), 'ConfigUpgradeSet bytes in a temporary entry of CA1');
-  const key = new xdr.ConfigUpgradeSetKey({ contractId: new xdr.ContractId(S.StrKey.decodeContract(CA1)), contentHash: hash }).toXDR('base64');
+  return { hash, key: new xdr.ConfigUpgradeSetKey({ contractId: new xdr.ContractId(S.StrKey.decodeContract(CA1)), contentHash: hash }).toXDR('base64') };
+};
+const armConfigUpgrade = async (name, { hash, key }, note) => {
   // core answers an accepted key with an empty body (CommandHandler::upgrades) and clears it once the upgrade
   // applies (Upgrades::removeUpgrades), so the pending-upgrade report must change on arming and return after the close
   const before = await get('upgrades?mode=get');
@@ -437,6 +440,7 @@ const configUpgrade = async (name, entries, note) => {
   if ((await get('upgrades?mode=get')) !== before) throw new Error(name + ': still pending after the close, not applied');
   manifest.steps.push({ name, ledger, note, config_upgrade_set: hash.toString('hex') }); console.log(String(ledger).padStart(3), name, 'applied');
 };
+const configUpgrade = async (name, entries, note) => armConfigUpgrade(name, await stageConfigUpgrade(name, entries), note);
 const [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB] = ['issuer', 'holder', 'maker', 'taker', 'pool-a', 'pool-b'].map((n) => kp('freeze-' + n));
 const fzAll = [fzIssuer, fzHolder, fzMaker, fzTaker, fzPoolA, fzPoolB];
 const FRZ = new S.Asset('FRZ', fzIssuer.publicKey()), FRP = new S.Asset('FRP', fzIssuer.publicKey());
@@ -531,6 +535,118 @@ console.log(String(ledger).padStart(3), `archival-empty-ledgers x${WAIT}`);
 await enqueue('archival-restore-footprint', soroban(bob, S.Operation.restoreFootprint({}), { rw: [kData(K0, kOp)] }), 'RESTORE_FOOTPRINT of an evicted persistent entry');
 await closeGroup('archival-restores');
 await configUpgrade('config-upgrade-restore-lifetimes', [archival(sa)], 'LEDGER_UPGRADE_CONFIG: state archival settings back');
+
+// ---- Failure suite 2, Soroban side (appended; earlier ledgers unchanged) ------------------------------------
+// (1) Inner-transaction codes of fee bumps, and an outer txBAD_AUTH_EXTRA: classic attackers change an account in the
+//     classic phase; Soroban victims queued for the same ledger re-check it at apply (TransactionFrame::commonValid,
+//     processSignatures with checkAllSignaturesUsed) and fail. As in H-C16, the phase order makes this reproducible.
+// plain accounts for the steps below the race: earlier accounts carry signer setups (carol needs 20 signatures)
+const [v1dep, ttlF, rstF, rstW] = ['v1-deployer', 'ttl-fee', 'restore-fee', 'restore-write'].map((n) => kp('fs2s-' + n));
+{ const [a1, a2, a3, a4, a5, a6, u1, u2, u3, u4, u5, u6, f1, f2, f3, f4, f5] =
+    ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'f1', 'f2', 'f3', 'f4', 'f5'].map((n) => kp('race2-' + n));
+  const [s3, s5, s6] = ['s3', 's5', 's6'].map((n) => kp('race2-signer-' + n));
+  const fresh = [a1, a2, a3, a4, a5, a6, u1, u2, u3, u4, u5, u6, f1, f2, f3, f4, f5, v1dep, ttlF, rstF, rstW];
+  await submit('race2-setup-accounts', classic(root, fresh.map((k) => S.Operation.createAccount({ destination: k.publicKey(), startingBalance: '1000' }))));
+  for (const k of fresh) seq.set(k.publicKey(), BigInt(ledger) << 32n);
+  await enqueue('race2-setup-only-signer-u3', classic(u3, [S.Operation.setOptions({ signer: { ed25519PublicKey: s3.publicKey(), weight: 1 }, lowThreshold: 1, medThreshold: 1, highThreshold: 1 })]));
+  // u5 and u6 need weight 2: their master key (1) and s5/s6 (1) both sign, and core's signature checker stops at the needed
+  // weight (SignatureChecker.cpp), so both signatures are used at submission
+  const two = { lowThreshold: 2, medThreshold: 2, highThreshold: 2 };
+  await enqueue('race2-setup-second-signer-u5', classic(u5, [S.Operation.setOptions({ signer: { ed25519PublicKey: s5.publicKey(), weight: 1 }, ...two })]));
+  await enqueue('race2-setup-second-signer-u6', classic(u6, [S.Operation.setOptions({ signer: { ed25519PublicKey: s6.publicKey(), weight: 1 }, ...two })]));
+  await closeGroup('race2-setup');
+  const ttl2 = () => S.Operation.extendFootprintTtl({ extendTo: 60001 });
+  const fp2 = { ro: [kData(K0, sym('collide'))] };
+  const bump = (inner, fee) => { const fb = S.TransactionBuilder.buildFeeBumpTransaction(fee, (BigInt(inner.fee) - BigInt(RES.fee)).toString(), inner, passphrase); fb.sign(fee); return fb; };
+  await enqueue('race2-attacker-bump-sequence', classic(a1, [S.Operation.bumpSequence({ bumpTo: String((BigInt(ledger) << 32n) + 1000n), source: u1.publicKey() })], [a1, u1]), 'bumps u1 past its queued inner transaction');
+  await enqueue('race2-attacker-merge-inner-source', classic(a2, [S.Operation.accountMerge({ destination: a2.publicKey(), source: u2.publicKey() })], [a2, u2]), 'merges u2, the inner source; the fee source f2 stays');
+  await enqueue('race2-attacker-remove-only-signer', classic(a3, [S.Operation.setOptions({ signer: { ed25519PublicKey: s3.publicKey(), weight: 0 }, source: u3.publicKey() })], [a3, s3]), 'removes s3, the only key that signed u3\'s inner transaction');
+  await enqueue('race2-attacker-bump-sequence-ledger', classic(a4, [S.Operation.bumpSequence({ bumpTo: '0', source: u4.publicKey() })], [a4, u4]), 'sets u4\'s seqLedger to this ledger');
+  await enqueue('race2-attacker-master-weight-2-inner', classic(a5, [S.Operation.setOptions({ masterWeight: 2, source: u5.publicKey() })], [a5, u5, s5]), 'u5\'s master key alone now meets the threshold: s5\'s signature on the inner transaction goes unused');
+  await enqueue('race2-attacker-master-weight-2', classic(a6, [S.Operation.setOptions({ masterWeight: 2, source: u6.publicKey() })], [a6, u6, s6]), 'u6\'s master key alone now meets the threshold: s6\'s signature goes unused');
+  await enqueue('race2-victim-inner-txBAD_SEQ', bump(soroban(u1, ttl2(), fp2), f1), 'fee bump by f1; the inner sequence number was bumped earlier in the ledger');
+  await enqueue('race2-victim-inner-txNO_ACCOUNT', bump(soroban(u2, ttl2(), fp2), f2), 'fee bump by f2; the inner source was merged earlier in the ledger');
+  await enqueue('race2-victim-inner-txBAD_AUTH', bump(soroban(u3, ttl2(), fp2, [s3]), f3), 'fee bump by f3; the inner transaction\'s only signer was removed');
+  { const data = new S.SorobanDataBuilder().setFootprint(fp2.ro, []).setResources(RES.ins, RES.read, RES.write).setResourceFee(RES.fee).build();
+    const t = new S.TransactionBuilder(new S.Account(u4.publicKey(), seq.get(u4.publicKey()).toString()), { fee: String(1000 + RES.fee), networkPassphrase: passphrase, timebounds: TB })
+      .setMinAccountSequenceLedgerGap(1).addOperation(ttl2()).setSorobanData(data).build(); t.sign(u4);
+    await enqueue('race2-victim-inner-txBAD_MIN_SEQ_AGE_OR_GAP', bump(t, f4), 'fee bump by f4; minSeqLedgerGap 1 and u4\'s seqLedger moved to this ledger'); }
+  await enqueue('race2-victim-inner-txBAD_AUTH_EXTRA', bump(soroban(u5, ttl2(), fp2, [u5, s5]), f5), 'fee bump by f5; signed by u5 and s5, and at apply the master key alone suffices');
+  await enqueue('race2-victim-txBAD_AUTH_EXTRA', soroban(u6, ttl2(), fp2, [u6, s6]), 'signed by u6 and s6; at apply the master key alone suffices');
+  await closeGroup('race2-apply-time-failures');
+  manifest.accounts.race2 = Object.fromEntries(Object.entries({ a1, a2, a3, a4, a5, a6, u1, u2, u3, u4, u5, u6, f1, f2, f3, f4, f5, s3, s5, s6 }).map(([n, k]) => [n, k.publicKey()])); }
+
+// (2) A forged address-credentials signature: the host verifies it with ed25519 and fails with Error(Crypto, InvalidInput)
+//     (soroban-env-host builtin_contracts/account_contract.rs, verify_sig_ed25519). alice signs nonce 7300001; the entry
+//     carries nonce 7300002, so the signature covers a different payload.
+{ const args = [A(alice.publicKey()), xdr.ScVal.scvVec([])];
+  const e = await addrAuth(alice, 7300001, fnInv(K0, 'nest', args));
+  e.credentials.address.nonce = 7300002n; // SDK 17 XDR objects carry plain fields; the signature stays the one over nonce 7300001
+  await submit('forged-address-signature-crypto-error', soroban(bob, invoke(K0, 'nest', args, [e]), { ro: [kInstance(K0), kCode(wasmHash), kAccount(alice)], rw: [kNonce(alice, 7300002)] }),
+    'bob submits a call carrying an auth entry for alice whose signature does not verify'); }
+
+// (3) CREATE_CONTRACT (v1 host function) authorized by address credentials, auth root
+//     SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN. The host reads that arm into its V2 form (constructor
+//     args empty) and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs: from_xdr turns
+//     CreateContractHostFn into CreateContractArgsV2; to_xdr writes CreateContractV2HostFn; get_signature_payload uses
+//     root_invocation_to_xdr). So a v1 entry signed over its own bytes, as js-stellar-base's authorizeEntry signs it,
+//     fails ed25519 verification, and the valid one carries a signature over bytes it does not contain.
+{ const create = (salt) => { const preimage = xdr.ContractIdPreimage.contractIdPreimageFromAddress(new xdr.ContractIdPreimageFromAddress({ address: addr(v1dep.publicKey()), salt: sha('xdrproof:v1-create:' + salt) }));
+    const executable = xdr.ContractExecutable.contractExecutableWasm(wasmHash);
+    return { id: contractId(preimage), args: new xdr.CreateContractArgs({ contractIdPreimage: preimage, executable }),
+      v2: new xdr.CreateContractArgsV2({ contractIdPreimage: preimage, executable, constructorArgs: [] }) }; };
+  const inv = (fn) => new xdr.SorobanAuthorizedInvocation({ function: fn, subInvocations: [] });
+  const v1fn = (c) => xdr.SorobanAuthorizedFunction.sorobanAuthorizedFunctionTypeCreateContractHostFn(c.args);
+  const deploy = (c, auth, nonce) => soroban(alice, S.Operation.invokeHostFunction({ func: xdr.HostFunction.hostFunctionTypeCreateContract(c.args), auth: [auth] }),
+    { ro: [kCode(wasmHash), kAccount(v1dep)], rw: [kInstance(c.id), kNonce(v1dep, nonce)] });
+  const a = create('signed-as-v1'), b = create('signed-over-v2');
+  await submit('create-contract-v1-auth-signed-over-own-bytes', deploy(a, await addrAuth(v1dep, 7400001, inv(v1fn(a))), 7400001),
+    'the v1 auth entry signed over its own bytes (as js-stellar-base signs it): ed25519 verification fails');
+  const entry = await addrAuth(v1dep, 7400002, inv(xdr.SorobanAuthorizedFunction.sorobanAuthorizedFunctionTypeCreateContractV2HostFn(b.v2)));
+  entry.rootInvocation = inv(v1fn(b)); // keep the signature over the V2 rendering, carry the v1 arm
+  await submit('create-contract-v1-auth-signed-over-v2-rendering', deploy(b, entry, 7400002), 'the same v1 entry signed over the V2 rendering the host hashes: the contract is created');
+  manifest.contracts.v1Created = b.id; manifest.accounts.v1Deployer = v1dep.publicKey(); }
+
+// (4) TTL and restore failures at apply. The smallest resource fee core accepts is the non-refundable fee: probes with a
+//     far-future sequence number answer txBAD_SEQ once the fee check (which runs first, in commonValidPreSeqNum) passes,
+//     and txSOROBAN_INVALID below it, without queueing anything. The archived entry is kit2's persistent twin of
+//     archived_tmp, evicted above and never restored.
+// SDK 17 XDR objects serialise as SEP-0051 JSON: a void result arm becomes its name, e.g. "tx_bad_seq"
+const resultCode = (r) => { if (!r.error) return r.status; const j = JSON.parse(JSON.stringify(xdr.TransactionResult.fromXDR(r.error, 'base64').result, (k, v) => (typeof v === 'bigint' ? String(v) : v))); return typeof j === 'string' ? j : Object.keys(j)[0]; };
+const sorobanAt = (src, op, ro, rw, over, seqOff = 0n) => {
+  const r = { ...RES, ...over };
+  const data = new S.SorobanDataBuilder().setFootprint(ro, rw).setResources(r.ins, r.read, r.write).setResourceFee(r.fee).build();
+  const t = new S.TransactionBuilder(new S.Account(src.publicKey(), (seq.get(src.publicKey()) + seqOff).toString()), { fee: String(1000 + r.fee), networkPassphrase: passphrase, timebounds: TB })
+    .addOperation(op).setSorobanData(data).build(); t.sign(src); return t; };
+const minResourceFee = async (src, op, ro, rw, over) => {
+  const probe = async (fee) => resultCode(JSON.parse(await get('tx?blob=' + encodeURIComponent(sorobanAt(src, op, ro, rw, { ...over, fee }, 1000n).toEnvelope().toXDR('base64')))));
+  const [a0, a1] = [await probe(0), await probe(RES.fee)];
+  if (a0 !== 'tx_soroban_invalid' || a1 !== 'tx_bad_seq') throw new Error(`resource-fee probe: unexpected answers ${a0} ${a1}`);
+  let lo = 0, hi = RES.fee; while (hi - lo > 1) { const mid = Math.floor((lo + hi) / 2); if ((await probe(mid)) === 'tx_bad_seq') hi = mid; else lo = mid; }
+  return hi; };
+const archivedTwin = kData(CA1, kTmp, DUR.persistent), live = kData(K0, sym('collide'));
+{ const extendTo = sa.max_entry_ttl - 1;
+  const opE = () => S.Operation.extendFootprintTtl({ extendTo });
+  const feeE = await minResourceFee(ttlF, opE(), [live], [], {});
+  await enqueue('extend-ttl-insufficient-refundable-fee', sorobanAt(ttlF, opE(), [live], [], { fee: feeE }), `resource fee ${feeE}: exactly the non-refundable part, nothing left for rent`);
+  const feeR = await minResourceFee(rstF, S.Operation.restoreFootprint({}), [], [archivedTwin], {});
+  await enqueue('restore-insufficient-refundable-fee', sorobanAt(rstF, S.Operation.restoreFootprint({}), [], [archivedTwin], { fee: feeR }), `resource fee ${feeR}: nothing left for rent`);
+  await enqueue('restore-write-bytes-exceeded', soroban(rstW, S.Operation.restoreFootprint({}), { rw: [archivedTwin], write: 0 }), 'declares 0 write bytes for an archived entry');
+  await closeGroup('ttl-restore-failures'); }
+
+// (5) EXTEND_FOOTPRINT_TTL_RESOURCE_LIMIT_EXCEEDED: from protocol 23 an extension fails only when the entry is larger than
+//     the network allows (ExtendFootprintTTLOpFrame.cpp, validateContractLedgerEntry; for code, TransactionUtils.cpp
+//     maxContractSizeBytes). kit2's Wasm is 5364 bytes; the maximum contract size drops to its floor of 2000 bytes
+//     (NetworkConfig.h, MinimumSorobanNetworkConfig::MAX_CONTRACT_SIZE), the extension of kit2's code fails, and the
+//     maximum goes back. Nothing is uploaded meanwhile.
+{ const find = (o, k) => (o && typeof o === 'object' ? (k in o ? o[k] : Object.values(o).map((v) => find(v, k)).find((v) => v !== undefined)) : undefined);
+  const size0 = find(JSON.parse(await get('sorobaninfo')), 'max_contract_size');
+  if (!Number.isInteger(size0) || size0 <= 5364) throw new Error('sorobaninfo: unexpected max_contract_size ' + size0);
+  // stage the way back first: once the limit drops, kit2 (which stages upgrades) is itself too large to run
+  const back = await stageConfigUpgrade('config-upgrade-contract-size-back', [xdr.ConfigSettingEntry.configSettingContractMaxSizeBytes(size0)]);
+  await configUpgrade('config-upgrade-contract-size-2000', [xdr.ConfigSettingEntry.configSettingContractMaxSizeBytes(2000)], 'LEDGER_UPGRADE_CONFIG: contract_max_size_bytes 2000, the floor');
+  await submit('extend-ttl-code-over-max-size', soroban(bob, S.Operation.extendFootprintTtl({ extendTo: sa.max_entry_ttl - 1 }), { ro: [kCode(wasm2Hash)] }), 'kit2\'s 5364-byte Wasm is now larger than the network allows');
+  await armConfigUpgrade('config-upgrade-contract-size-back', back, `LEDGER_UPGRADE_CONFIG: contract_max_size_bytes back to ${size0}`); }
 
 // ---- optional depth probe (not part of the corpus recipe): PROBE=1 KIT_INSTANCES=<n> --
 if (process.env.PROBE) {

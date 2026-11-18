@@ -1,0 +1,59 @@
+{
+  "id": "failure.liquidity-pool-withdraw.under-minimum",
+  "title": "LIQUIDITY_POOL_WITHDRAW fails with LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM",
+  "pattern": "A transaction whose LIQUIDITY_POOL_WITHDRAW operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (under_minimum). One pool share returns far less than the 1000 XLM minimum asked for.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_withdraw.under_minimum in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "withdrawal below the requested minimum"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with under_minimum.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_withdraw",
+      "equals": "under_minimum",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

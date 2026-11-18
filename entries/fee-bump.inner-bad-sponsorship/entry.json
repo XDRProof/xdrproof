@@ -1,0 +1,131 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "fee-bump.inner-bad-sponsorship",
+  "title": "A fee bump whose inner transaction leaves a sponsorship open: inner txBAD_SPONSORSHIP",
+  "pattern": "The inner transaction begins sponsoring an account and never ends it. The fee bump's result is txFEE_BUMP_INNER_FAILED; the inner result is txBAD_SPONSORSHIP, a transaction-level code inside InnerTransactionResult. The fee source pays; nothing the inner transaction did is kept.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C2",
+      "placement": "InnerTransactionResult.txBAD_SPONSORSHIP inside txFEE_BUMP_INNER_FAILED"
+    },
+    {
+      "id": "H-C3",
+      "placement": "an open sponsorship inside a fee bump"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9d41b66de6ab14a2246e753d0ec5690ec523f108a5deff88c66a65ccd3e836d7",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#fee-bump-inner-txBAD_SPONSORSHIP"
+      },
+      "focus": {
+        "tx_hash": "d765577b2437b930d02bcd44b6d65935943f9f9dde1ce711290cac4106bff43f",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5f41a5a8623e1a1987a8a593e1bc7522cb1559af8c12b40958c6441a73787f13",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#fee-bump-inner-txBAD_SPONSORSHIP"
+      },
+      "focus": {
+        "tx_hash": "76fbe908b2b3e5fcc1ef450f23338f29a717617bd01965f6012e85dddfacda04",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner transaction fails with txBAD_SPONSORSHIP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_sponsorship",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The inner transaction fails with txBAD_SPONSORSHIP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_sponsorship",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is fbFee.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/6/tx_fee_bump/tx/fee_source",
+        "equals": "GDFJ77SMS4XH3GDLESQWI6IRMDX2ARNV7WHV45YTO2UGBTXUELZ5NLJA",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is fbFee.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/0/v0/0/txset_comp_txs_maybe_discounted_fee/txs/2/tx_fee_bump/tx/fee_source",
+        "equals": "GDFJ77SMS4XH3GDLESQWI6IRMDX2ARNV7WHV45YTO2UGBTXUELZ5NLJA",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

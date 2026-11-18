@@ -1,0 +1,286 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "tx.apply-time.bad-auth-extra",
+  "title": "A transaction valid at submission fails at apply with txBAD_AUTH_EXTRA",
+  "pattern": "u6 needs weight 2: its master key and s6 both sign, and both signatures are used at submission. A classic transaction earlier in the same ledger raises the master key's weight to 2. At apply core's signature checker stops once the master key meets the threshold (SignatureChecker.cpp), so s6's signature goes unused and the transaction fails with txBAD_AUTH_EXTRA. Readers that treat BAD_AUTH_EXTRA as a submission-only code meet it in a closed ledger.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "TransactionResult.txBAD_AUTH_EXTRA at apply: a signature needed at submission is unused once the master weight rises"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "c4065d83a433726d23e1a5f6bce78830f9a6021c770327dab2cfa9c7904b75f1",
+      "size": 19000,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 85,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-txBAD_AUTH_EXTRA"
+      },
+      "focus": {
+        "tx_hash": "17b614487dffc56913abe17cef668c8449f7cbc22d4fef1cdd08263a193c3c1a",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "dd5ed5dece3a03bafa3129d390546c239adc47599f54ffc42d5e97931d34c2b1",
+      "size": 18992,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 84,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-txBAD_AUTH_EXTRA"
+      },
+      "focus": {
+        "tx_hash": "7ba98e24bab150877c0ae17955fc23e1a399018833e7fb244f12309edd1a8a1a",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a0247af00c199264bb2d7df689aeba2f0a12f09b9555ab1f86bfe36bb5d2524f",
+      "size": 19000,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 85,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-txBAD_AUTH_EXTRA"
+      },
+      "focus": {
+        "tx_hash": "d415e1e8df91a4ed5ebc6f673b4571ea9b2f51210d3386ec84f923cd569e336d",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "0b5b66959243e3c9b2b909240f073079ba77dd7067ccc840ce98160fd0147b4a",
+      "size": 18992,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 84,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-txBAD_AUTH_EXTRA"
+      },
+      "focus": {
+        "tx_hash": "82db26476b1b782a5e56b4f057d80beabd529e05df1da936a6f25afff39a40e6",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction fails with txBAD_AUTH_EXTRA.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result",
+        "equals": "tx_bad_auth_extra",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with txBAD_AUTH_EXTRA.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result",
+        "equals": "tx_bad_auth_extra",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with txBAD_AUTH_EXTRA.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result",
+        "equals": "tx_bad_auth_extra",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The transaction fails with txBAD_AUTH_EXTRA.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result",
+        "equals": "tx_bad_auth_extra",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that raised the master weight is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "f3537063754ad9d9d73b3a984ee4041c07bdadd6989c6b14c02d104c84d88eee"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that raised the master weight is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "588b40b7f8978a3319ac98bdd7c80775f9de54e291719899e2805dda583e6dfe"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that raised the master weight is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "b7c6e1268b8cb3e156fa6c21f1a4c07298035cd9f3ea911b518b0a100f1f3605"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that raised the master weight is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "fbbe79dc2365018d21f269ef1a7add82317d7c5bc1eb80400f783c4a1f1edfab"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The envelope carries two signatures.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/signatures",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The envelope carries two signatures.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/4/tx/signatures",
+        "length": 2,
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The envelope carries two signatures.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/signatures",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The envelope carries two signatures.",
+        "evidence": [
+          "construction",
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/signatures",
+        "length": 2,
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "failure.revoke-sponsorship.low-reserve",
+  "title": "REVOKE_SPONSORSHIP fails with REVOKE_SPONSORSHIP_LOW_RESERVE",
+  "pattern": "A transaction whose REVOKE_SPONSORSHIP operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (low_reserve). Revoking the sponsorship of a data entry hands its 0.5 XLM reserve to the owner, who sits at its minimum balance.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.revoke_sponsorship.low_reserve in a closed ledger"
+    },
+    {
+      "id": "H-C3",
+      "placement": "revoking a sponsorship the owner cannot take over"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "REVOKE_SPONSORSHIP_LOW_RESERVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/revoke_sponsorship",
+      "equals": "low_reserve",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.liquidity-pool-deposit.pool-full",
+  "title": "LIQUIDITY_POOL_DEPOSIT fails with LIQUIDITY_POOL_DEPOSIT_POOL_FULL",
+  "pattern": "A transaction whose LIQUIDITY_POOL_DEPOSIT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (pool_full). The NRB/NRV pool holds i64::MAX of each asset; one more stroop would overflow its reserves.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_deposit.pool_full in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "a pool holding i64::MAX of both assets"
+    },
+    {
+      "id": "H-B3",
+      "placement": "pool reserves at i64::MAX"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5d1b0b6d6130f05dcaa137746352b2b85ff8f9af07028159c0c7058e7df75462",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#LIQUIDITY_POOL_DEPOSIT_POOL_FULL"
+      },
+      "focus": {
+        "tx_hash": "628ced364e712f5fdded6e48d8e170d54237e682915895a1997174e59ab2fb41",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6958b55e5ea2071afe52b428d76c8abb5b6b2ed3cc0d4c36ece545cb59cdaf6b",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#LIQUIDITY_POOL_DEPOSIT_POOL_FULL"
+      },
+      "focus": {
+        "tx_hash": "67aa067a71aa4f5afa054cd4f591b0ed580b1e157b14721eb13b884091e43ee4",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with pool_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result/tx_failed/0/op_inner/liquidity_pool_deposit",
+        "equals": "pool_full",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with pool_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/liquidity_pool_deposit",
+        "equals": "pool_full",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

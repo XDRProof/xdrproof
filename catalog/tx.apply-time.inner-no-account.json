@@ -1,0 +1,83 @@
+{
+  "id": "tx.apply-time.inner-no-account",
+  "title": "A fee bump whose inner transaction fails at apply with txNO_ACCOUNT",
+  "pattern": "The inner transaction was valid when queued; a classic transaction earlier in the same ledger changed its source, and core re-checks the source at apply (TransactionFrame::commonValid, processSignatures): the inner source was merged earlier in the ledger; the fee source remains. The outer result is txFEE_BUMP_INNER_FAILED with txNO_ACCOUNT inside; the fee source pays. Readers that expect inner results to carry only operation failures, or treat a queued transaction as valid, get it wrong.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "InnerTransactionResult.txNO_ACCOUNT at apply: the inner source was merged earlier in the ledger; the fee source remains"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED with inner txNO_ACCOUNT"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "race2-victim-inner-txNO_ACCOUNT",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The inner transaction fails with txNO_ACCOUNT.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result",
+      "equals": "tx_no_account",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The classic transaction that caused it is in the same ledger.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "some": {
+        "/result/transaction_hash": {
+          "$step": "race2-attacker-merge-inner-source"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The inner source is u2.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+      "equals": {
+        "$manifest": "accounts.race2.u2"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee source is f2.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/fee_source",
+      "equals": {
+        "$manifest": "accounts.race2.f2"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "tx.apply-time.bad-auth-extra",
+  "title": "A transaction valid at submission fails at apply with txBAD_AUTH_EXTRA",
+  "pattern": "u6 needs weight 2: its master key and s6 both sign, and both signatures are used at submission. A classic transaction earlier in the same ledger raises the master key's weight to 2. At apply core's signature checker stops once the master key meets the threshold (SignatureChecker.cpp), so s6's signature goes unused and the transaction fails with txBAD_AUTH_EXTRA. Readers that treat BAD_AUTH_EXTRA as a submission-only code meet it in a closed ledger.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "TransactionResult.txBAD_AUTH_EXTRA at apply: a signature needed at submission is unused once the master weight rises"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "race2-victim-txBAD_AUTH_EXTRA",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction fails with txBAD_AUTH_EXTRA.",
+      "at": "tx.result",
+      "equals": "tx_bad_auth_extra",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The classic transaction that raised the master weight is in the same ledger.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "some": {
+        "/result/transaction_hash": {
+          "$step": "race2-attacker-master-weight-2"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The envelope carries two signatures.",
+      "at": "tx.envelope",
+      "path": "/tx/signatures",
+      "length": 2,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

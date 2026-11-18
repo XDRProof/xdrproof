@@ -1,0 +1,67 @@
+{
+  "id": "auth.create-contract-v1-signed-over-own-bytes",
+  "title": "A v1 create-contract authorization signed over its own bytes fails verification",
+  "pattern": "HOST_FUNCTION_TYPE_CREATE_CONTRACT authorized by address credentials, root SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, signed over the entry's own bytes, as js-stellar-base's authorizeEntry signs it. The host reads the arm into its V2 form and hashes the signature payload from the V2 rendering (soroban-env-host auth.rs), so ed25519 verification fails and the call traps.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0058"
+  ],
+  "hazards": [
+    {
+      "id": "H-B16",
+      "placement": "a v1 create authorization signed over its own bytes: verification fails"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "create-contract-v1-auth-signed-over-own-bytes",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet",
+      "p30-mainnet-galexie"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The auth entry's root is the v1 create-contract function, for the kit Wasm.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/root_invocation/function/create_contract_host_fn/executable/wasm",
+      "equals": "946784bc2ad1543af3d5a0221fce600ae56495cbcd4a5642e659f5ea4b2b4556",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With diagnostic events: crypto invalid_input, \"failed ED25519 verification\".",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/crypto": "invalid_input",
+        "/event/body/v0/data/string": "failed ED25519 verification"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

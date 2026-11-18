@@ -1,0 +1,59 @@
+{
+  "id": "failure.clawback-claimable-balance.not-issuer",
+  "title": "CLAWBACK_CLAIMABLE_BALANCE fails with CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER",
+  "pattern": "A transaction whose CLAWBACK_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_issuer). An account other than the issuer claws back an ARQ balance.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.clawback_claimable_balance.not_issuer in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claimable-balance clawback by a non-issuer"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with not_issuer.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/clawback_claimable_balance",
+      "equals": "not_issuer",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

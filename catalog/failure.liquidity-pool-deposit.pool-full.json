@@ -1,0 +1,63 @@
+{
+  "id": "failure.liquidity-pool-deposit.pool-full",
+  "title": "LIQUIDITY_POOL_DEPOSIT fails with LIQUIDITY_POOL_DEPOSIT_POOL_FULL",
+  "pattern": "A transaction whose LIQUIDITY_POOL_DEPOSIT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (pool_full). The NRB/NRV pool holds i64::MAX of each asset; one more stroop would overflow its reserves.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_deposit.pool_full in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "a pool holding i64::MAX of both assets"
+    },
+    {
+      "id": "H-B3",
+      "placement": "pool reserves at i64::MAX"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "LIQUIDITY_POOL_DEPOSIT_POOL_FULL",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with pool_full.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_deposit",
+      "equals": "pool_full",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

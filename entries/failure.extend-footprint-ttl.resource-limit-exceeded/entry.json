@@ -1,0 +1,137 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.extend-footprint-ttl.resource-limit-exceeded",
+  "title": "EXTEND_FOOTPRINT_TTL fails with RESOURCE_LIMIT_EXCEEDED after a config upgrade",
+  "pattern": "A transaction whose EXTEND_FOOTPRINT_TTL operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (resource_limit_exceeded). From protocol 23 an extension fails only when the entry is larger than the network allows. A config upgrade lowered the maximum contract size to its floor of 2000 bytes; kit2's 5364-byte Wasm is now too large to extend. The maximum goes back two ledgers later.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "EXTEND_FOOTPRINT_TTL resource_limit_exceeded at apply"
+    },
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.extend_footprint_ttl.resource_limit_exceeded in a closed ledger"
+    },
+    {
+      "id": "H-F10",
+      "placement": "a config upgrade that leaves existing code above the maximum contract size"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "a280a09c68090b143f177981ed5c2a6f7dc9bcf07dadf824390561f60f70c11f",
+      "size": 2132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 93,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-ttl-code-over-max-size"
+      },
+      "focus": {
+        "tx_hash": "ab3a2bac59ad7a2d659d2a48aa6c7fb79d71ed8ddddbc133bbb8603c187b72d9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "aad6e2f219070a013095e338f46d764addd0caa5658d000efaca49bbdabb77ca",
+      "size": 2124,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 92,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-ttl-code-over-max-size"
+      },
+      "focus": {
+        "tx_hash": "ab3a2bac59ad7a2d659d2a48aa6c7fb79d71ed8ddddbc133bbb8603c187b72d9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "d294c92b5ff09094ce910cc58de888e50d01d7608f9f9d5041243df9d293305e",
+      "size": 2132,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 93,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-ttl-code-over-max-size"
+      },
+      "focus": {
+        "tx_hash": "ee5efe5c08f5080b40c3e01635c85825f6d4c167a187ceb055661b39610b5513",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "69a0225e821e48a6c3f32fe0c4b5082ec4aeb5c7abc55351defac67d58f5d773",
+      "size": 2124,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 92,
+        "recipe": "recipes/soroban/gen/gen.mjs#extend-ttl-code-over-max-size"
+      },
+      "focus": {
+        "tx_hash": "ee5efe5c08f5080b40c3e01635c85825f6d4c167a187ceb055661b39610b5513",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with resource_limit_exceeded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/extend_footprint_ttl",
+        "equals": "resource_limit_exceeded"
+      }
+    ]
+  }
+}

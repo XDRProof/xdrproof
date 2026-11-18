@@ -1,0 +1,172 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.account-merge.seqnum-too-far",
+  "title": "ACCOUNT_MERGE fails with ACCOUNT_MERGE_SEQNUM_TOO_FAR",
+  "pattern": "A transaction whose ACCOUNT_MERGE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (seqnum_too_far). Operation 0 bumps the sequence number past this ledger's starting sequence (ledger << 32); merging could let the account be recreated with a lower number, so core refuses (MergeOpFrame.cpp, isSeqnumTooFar). Operation 0 reports success in the failed transaction.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.account_merge.seqnum_too_far in a closed ledger"
+    },
+    {
+      "id": "H-C11",
+      "placement": "merge after a bump past the ledger's starting sequence"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9d41b66de6ab14a2246e753d0ec5690ec523f108a5deff88c66a65ccd3e836d7",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_SEQNUM_TOO_FAR"
+      },
+      "focus": {
+        "tx_hash": "3dc123d661c8c3a94833fc781d30d8386933a7f37ecd5cc5ef86cf0cc178ad8a",
+        "op_index": 1
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5f41a5a8623e1a1987a8a593e1bc7522cb1559af8c12b40958c6441a73787f13",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_SEQNUM_TOO_FAR"
+      },
+      "focus": {
+        "tx_hash": "8ca451ff5868f0689e532a48608a42c90387814a4a7ec77559c7544bf5a1b911",
+        "op_index": 1
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 1 fails with seqnum_too_far.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result/tx_failed/1/op_inner/account_merge",
+        "equals": "seqnum_too_far",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 1 fails with seqnum_too_far.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/1/op_inner/account_merge",
+        "equals": "seqnum_too_far",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 reports success in the failed transaction.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/9/result/result/result/tx_failed/0/op_inner/bump_sequence",
+        "equals": "success",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 reports success in the failed transaction.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/bump_sequence",
+        "equals": "success",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/9/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/0/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

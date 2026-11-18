@@ -1,0 +1,63 @@
+{
+  "id": "failure.liquidity-pool-deposit.not-authorized",
+  "title": "LIQUIDITY_POOL_DEPOSIT fails with LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED",
+  "pattern": "A transaction whose LIQUIDITY_POOL_DEPOSIT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_authorized). The ARQ trustline is only authorized to maintain liabilities: it keeps its pool shares but cannot add to them.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_deposit.not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "deposit while only authorized to maintain liabilities"
+    },
+    {
+      "id": "H-C10",
+      "placement": "AUTHORIZED_TO_MAINTAIN_LIABILITIES keeps pool shares but cannot add to them"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_deposit",
+      "equals": "not_authorized",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "failure.set-trust-line-flags.invalid-state",
+  "title": "SET_TRUST_LINE_FLAGS fails with SET_TRUST_LINE_FLAGS_INVALID_STATE",
+  "pattern": "A transaction whose SET_TRUST_LINE_FLAGS operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (invalid_state). Setting AUTHORIZED_TO_MAINTAIN_LIABILITIES on an AUTHORIZED trustline without clearing AUTHORIZED would leave both set.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.set_trust_line_flags.invalid_state in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "AUTHORIZED and AUTHORIZED_TO_MAINTAIN_LIABILITIES both set"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "SET_TRUST_LINE_FLAGS_INVALID_STATE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with invalid_state.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/set_trust_line_flags",
+      "equals": "invalid_state",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

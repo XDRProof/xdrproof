@@ -1,0 +1,59 @@
+{
+  "id": "failure.manage-sell-offer.buy-not-authorized",
+  "title": "MANAGE_SELL_OFFER fails with MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED",
+  "pattern": "A transaction whose MANAGE_SELL_OFFER operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (buy_not_authorized). Buying ARQ into an unauthorized trustline.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_sell_offer.buy_not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "offer buying into an unauthorized trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with buy_not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_sell_offer",
+      "equals": "buy_not_authorized",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -16,25 +16,6 @@
   "method": "First pass by an independent reviewer (Codex) over stellar-core source; every evidence line re-opened and its quote matched; each class checked against every place core sets the code (apply vs check-valid paths); 18 classes corrected (review field).",
   "arms": [
     {
-      "arm": "AccountMergeResult.ACCOUNT_MERGE_DEST_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/MergeOpFrame.cpp:257 innerResult(res).code(ACCOUNT_MERGE_DEST_FULL);",
-        "src/transactions/TransactionUtils.cpp:617 if (newBalance > INT64_MAX - getBuyingLiabilities(header, entry))"
-      ],
-      "note": "An account's headroom is INT64_MAX minus its native buying liabilities: an offer buying a huge amount of XLM shrinks it below any merged balance.",
-      "review": "corrected after source check (Codex said unknown)"
-    },
-    {
-      "arm": "AccountMergeResult.ACCOUNT_MERGE_IMMUTABLE_SET",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/MergeOpFrame.cpp:211 innerResult(res).code(ACCOUNT_MERGE_IMMUTABLE_SET);"
-      ],
-      "note": "Merge an account whose immutable authorization flag is set.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "AccountMergeResult.ACCOUNT_MERGE_MALFORMED",
       "class": "validation-only",
       "evidence": [
@@ -44,48 +25,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "AccountMergeResult.ACCOUNT_MERGE_SEQNUM_TOO_FAR",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/MergeOpFrame.cpp:228 innerResult(res).code(ACCOUNT_MERGE_SEQNUM_TOO_FAR);"
-      ],
-      "note": "Bump the source account sequence number too far ahead, then attempt an account merge.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "AllowTrustResult.ALLOW_TRUST_CANT_REVOKE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/AllowTrustOpFrame.cpp:127 innerResult(res).code(ALLOW_TRUST_CANT_REVOKE);"
-      ],
-      "note": "Attempt to revoke authorization when the issuer has not enabled revocation.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "AllowTrustResult.ALLOW_TRUST_LOW_RESERVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/AllowTrustOpFrame.cpp:45 innerResult(res).code(ALLOW_TRUST_LOW_RESERVE);"
-      ],
-      "note": "Revoke trust where removing dependent offers or pool shares fails a reserve check.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "AllowTrustResult.ALLOW_TRUST_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/AllowTrustOpFrame.cpp:161 innerResult(res).code(ALLOW_TRUST_MALFORMED);"
       ],
       "note": "The malformed asset or flags fail doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "AllowTrustResult.ALLOW_TRUST_NO_TRUST_LINE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/AllowTrustOpFrame.cpp:39 innerResult(res).code(ALLOW_TRUST_NO_TRUST_LINE);"
-      ],
-      "note": "Have an issuer authorize a trustor with no trustline for that asset.",
       "review": "source lines checked"
     },
     {
@@ -118,15 +63,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "BeginSponsoringFutureReservesResult.BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/BeginSponsoringFutureReservesOpFrame.cpp:79 innerResult(res).code(BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE);"
-      ],
-      "note": "Begin a sponsorship that creates a recursive sponsor relationship.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "BumpSequenceResult.BUMP_SEQUENCE_BAD_SEQ",
       "class": "validation-only",
       "evidence": [
@@ -145,30 +81,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "ChangeTrustResult.CHANGE_TRUST_CANNOT_DELETE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ChangeTrustOpFrame.cpp:211 innerResult(res).code(CHANGE_TRUST_CANNOT_DELETE);"
-      ],
-      "note": "Try deleting a trustline whose liquidity-pool use count remains nonzero.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "ChangeTrustResult.CHANGE_TRUST_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/ChangeTrustOpFrame.cpp:317 innerResult(res).code(CHANGE_TRUST_MALFORMED);"
       ],
       "note": "An invalid limit or asset fails doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ChangeTrustResult.CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ChangeTrustOpFrame.cpp:65 innerResult(res).code(CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES);"
-      ],
-      "note": "Create a pool-share trustline while an underlying asset trustline lacks authorization to maintain liabilities.",
       "review": "source lines checked"
     },
     {
@@ -182,66 +100,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "ChangeTrustResult.CHANGE_TRUST_TRUST_LINE_MISSING",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ChangeTrustOpFrame.cpp:59 innerResult(res).code(CHANGE_TRUST_TRUST_LINE_MISSING);"
-      ],
-      "note": "Create a pool-share trustline without one required underlying asset trustline.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ClaimClaimableBalanceResult.CLAIM_CLAIMABLE_BALANCE_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ClaimClaimableBalanceOpFrame.cpp:177 innerResult(res).code(CLAIM_CLAIMABLE_BALANCE_LINE_FULL);"
-      ],
-      "note": "Claim an asset into a trustline at its limit.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ClaimClaimableBalanceResult.CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ClaimClaimableBalanceOpFrame.cpp:172 innerResult(res).code(CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED);"
-      ],
-      "note": "Claim an asset into a trustline that is no longer authorized.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ClawbackClaimableBalanceResult.CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ClawbackClaimableBalanceOpFrame.cpp:65 innerResult(res).code(CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED);"
-      ],
-      "note": "Attempt to claw back a balance that lacks the clawback-enabled flag.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ClawbackClaimableBalanceResult.CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ClawbackClaimableBalanceOpFrame.cpp:52 innerResult(res).code(CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER);"
-      ],
-      "note": "Attempt clawback from an account other than the asset issuer.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "ClawbackResult.CLAWBACK_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/ClawbackOpFrame.cpp:69 innerResult(res).code(CLAWBACK_MALFORMED);"
       ],
       "note": "The malformed clawback fails doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ClawbackResult.CLAWBACK_NOT_CLAWBACK_ENABLED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ClawbackOpFrame.cpp:44 innerResult(res).code(CLAWBACK_NOT_CLAWBACK_ENABLED);"
-      ],
-      "note": "Attempt clawback against a trustline without clawback enabled.",
       "review": "source lines checked"
     },
     {
@@ -283,15 +147,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_LOW_RESERVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/CreateClaimableBalanceOpFrame.cpp:235 innerResult(res).code(CREATE_CLAIMABLE_BALANCE_LOW_RESERVE);"
-      ],
-      "note": "Create a claimable balance when the source cannot meet its reserve.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_MALFORMED",
       "class": "validation-only",
       "evidence": [
@@ -301,48 +156,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/CreateClaimableBalanceOpFrame.cpp:187 innerResult(res).code(CREATE_CLAIMABLE_BALANCE_NOT_AUTHORIZED);"
-      ],
-      "note": "Create a balance using an asset for which the source trustline lacks authorization.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "CreateClaimableBalanceResult.CREATE_CLAIMABLE_BALANCE_UNDERFUNDED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/CreateClaimableBalanceOpFrame.cpp:170 innerResult(res).code(CREATE_CLAIMABLE_BALANCE_UNDERFUNDED);"
-      ],
-      "note": "Create a balance larger than the source's available asset balance.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_INSUFFICIENT_REFUNDABLE_FEE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ExtendFootprintTTLOpFrame.cpp:204 EXTEND_FOOTPRINT_TTL_INSUFFICIENT_REFUNDABLE_FEE);"
-      ],
-      "note": "Extend a live contract entry while declaring too little refundable fee for rent.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/ExtendFootprintTTLOpFrame.cpp:334 innerResult(res).code(EXTEND_FOOTPRINT_TTL_MALFORMED);"
       ],
       "note": "An invalid footprint fails doCheckValidForSoroban before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_RESOURCE_LIMIT_EXCEEDED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ExtendFootprintTTLOpFrame.cpp:241 EXTEND_FOOTPRINT_TTL_RESOURCE_LIMIT_EXCEEDED);"
-      ],
-      "note": "Extend a contract entry while declaring fewer read bytes than apply consumes.",
       "review": "source lines checked"
     },
     {
@@ -363,51 +182,6 @@
         "src/transactions/InflationOpFrame.cpp:143 return protocolVersionIsBefore(header.ledgerVersion, ProtocolVersion::V_12);"
       ],
       "note": "Successful inflation was possible in protocols 1–11. Old mined lake ledgers could contain it.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "InnerTransactionResultResult.txBAD_AUTH",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1700 txResult.setInnermostError(txBAD_AUTH);"
-      ],
-      "note": "Put a fee-bump inner transaction after a signer or threshold change that invalidates its authorization at apply.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "InnerTransactionResultResult.txBAD_AUTH_EXTRA",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1594 txResult.setInnermostError(txBAD_AUTH_EXTRA);"
-      ],
-      "note": "Change signers before a fee-bump inner transaction so one supplied signature is unused at apply.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "InnerTransactionResultResult.txBAD_MIN_SEQ_AGE_OR_GAP",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1693 txResult.setInnermostError(txBAD_MIN_SEQ_AGE_OR_GAP);"
-      ],
-      "note": "Apply a fee-bump inner transaction after account state changes invalidate its minimum sequence age or gap.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "InnerTransactionResultResult.txBAD_SEQ",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1680 txResult.setInnermostError(txBAD_SEQ);"
-      ],
-      "note": "Advance the inner source's sequence with an earlier transaction in the same close.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "InnerTransactionResultResult.txBAD_SPONSORSHIP",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:2438 txResult.setInnermostError(txBAD_SPONSORSHIP);"
-      ],
-      "note": "Use a fee-bump inner transaction whose operations leave a sponsorship entry open.",
       "review": "source lines checked"
     },
     {
@@ -477,15 +251,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "InnerTransactionResultResult.txNO_ACCOUNT",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1474 txResult.setInnermostError(txNO_ACCOUNT);"
-      ],
-      "note": "Merge the fee-bump inner source account earlier in the close.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "InnerTransactionResultResult.txSOROBAN_INVALID",
       "class": "validation-only",
       "evidence": [
@@ -523,25 +288,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "LedgerHeaderExt.1",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionUtils.cpp:135 lh.ext.v(1);"
-      ],
-      "note": "Apply a ledger-flags upgrade, which activates header extension 1.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LedgerHeaderExtensionV1Ext.0",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionUtils.cpp:135 lh.ext.v(1);",
-        "stellar-xdr/Stellar-ledger.x:91 case 0:"
-      ],
-      "note": "A ledger-flags upgrade activates header extension 1; its nested extension remains at default arm 0.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "LedgerKey.CONFIG_SETTING",
       "class": "not-emitted",
       "evidence": [
@@ -549,51 +295,6 @@
         "src/herder/Upgrades.cpp:1530 LedgerKey key(LedgerEntryType::CONFIG_SETTING);"
       ],
       "note": "Core uses config keys internally for upgrades, while transaction footprints reject them; the config update records an entry change, not a CONFIG_SETTING LedgerKey arm.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LedgerUpgrade.LEDGER_UPGRADE_BASE_FEE",
-      "class": "todo",
-      "evidence": [
-        "src/herder/Upgrades.cpp:298 result.emplace_back(LEDGER_UPGRADE_BASE_FEE);"
-      ],
-      "note": "Set a new base fee through the standalone validator's upgrade configuration.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LedgerUpgrade.LEDGER_UPGRADE_FLAGS",
-      "class": "todo",
-      "evidence": [
-        "src/herder/Upgrades.cpp:317 result.emplace_back(LEDGER_UPGRADE_FLAGS);"
-      ],
-      "note": "Set different ledger header flags through a standalone upgrade.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LedgerUpgrade.LEDGER_UPGRADE_MAX_SOROBAN_TX_SET_SIZE",
-      "class": "todo",
-      "evidence": [
-        "src/herder/Upgrades.cpp:340 result.emplace_back(LEDGER_UPGRADE_MAX_SOROBAN_TX_SET_SIZE);"
-      ],
-      "note": "Change the Soroban transaction-set limit through a standalone upgrade.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LedgerUpgrade.LEDGER_UPGRADE_MAX_TX_SET_SIZE",
-      "class": "todo",
-      "evidence": [
-        "src/herder/Upgrades.cpp:304 result.emplace_back(LEDGER_UPGRADE_MAX_TX_SET_SIZE);"
-      ],
-      "note": "Change the classic transaction-set limit through a standalone upgrade.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LiquidityPoolDepositResult.LIQUIDITY_POOL_DEPOSIT_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolDepositOpFrame.cpp:214 innerResult(res).code(LIQUIDITY_POOL_DEPOSIT_LINE_FULL);"
-      ],
-      "note": "Deposit when the source's pool-share trustline cannot receive more shares.",
       "review": "source lines checked"
     },
     {
@@ -606,57 +307,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "LiquidityPoolDepositResult.LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolDepositOpFrame.cpp:271 innerResult(res).code(LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED);"
-      ],
-      "note": "Deposit using an underlying trustline without authorization.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LiquidityPoolDepositResult.LIQUIDITY_POOL_DEPOSIT_POOL_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolDepositOpFrame.cpp:330 innerResult(res).code(LIQUIDITY_POOL_DEPOSIT_POOL_FULL);"
-      ],
-      "note": "Deposit into a pool whose reserve would exceed its numeric limit.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LiquidityPoolDepositResult.LIQUIDITY_POOL_DEPOSIT_UNDERFUNDED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolDepositOpFrame.cpp:201 innerResult(res).code(LIQUIDITY_POOL_DEPOSIT_UNDERFUNDED);"
-      ],
-      "note": "Deposit more of an underlying asset than the source can spend.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LiquidityPoolWithdrawResult.LIQUIDITY_POOL_WITHDRAW_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolWithdrawOpFrame.cpp:203 innerResult(res).code(LIQUIDITY_POOL_WITHDRAW_LINE_FULL);"
-      ],
-      "note": "Withdraw pool assets into an underlying trustline at its limit.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "LiquidityPoolWithdrawResult.LIQUIDITY_POOL_WITHDRAW_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/LiquidityPoolWithdrawOpFrame.cpp:172 innerResult(res).code(LIQUIDITY_POOL_WITHDRAW_MALFORMED);"
       ],
       "note": "Invalid withdrawal bounds fail doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "LiquidityPoolWithdrawResult.LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/LiquidityPoolWithdrawOpFrame.cpp:194 innerResult(res).code(LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM);"
-      ],
-      "note": "Withdraw shares while requiring more underlying assets than the pool calculation returns.",
       "review": "source lines checked"
     },
     {
@@ -670,30 +326,12 @@
       "review": "corrected after source check (Codex said reachable-generatable)"
     },
     {
-      "arm": "ManageBuyOfferResult.MANAGE_BUY_OFFER_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ManageBuyOfferOpFrame.cpp:132 res.tr().manageBuyOfferResult().code(MANAGE_BUY_OFFER_LINE_FULL);"
-      ],
-      "note": "Place a buy offer when the buying trustline cannot receive the offered amount.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "ManageBuyOfferResult.MANAGE_BUY_OFFER_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/ManageBuyOfferOpFrame.cpp:102 res.tr().manageBuyOfferResult().code(MANAGE_BUY_OFFER_MALFORMED);"
       ],
       "note": "Invalid offer parameters fail doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ManageBuyOfferResult.MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ManageBuyOfferOpFrame.cpp:120 res.tr().manageBuyOfferResult().code(MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED);"
-      ],
-      "note": "Place an offer selling an asset whose trustline lacks authorization.",
       "review": "source lines checked"
     },
     {
@@ -716,30 +354,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "ManageDataResult.MANAGE_DATA_LOW_RESERVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ManageDataOpFrame.cpp:64 innerResult(res).code(MANAGE_DATA_LOW_RESERVE);"
-      ],
-      "note": "Add a data entry when the source lacks reserve for another subentry.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "ManageDataResult.MANAGE_DATA_NOT_SUPPORTED_YET",
       "class": "validation-only",
       "evidence": [
         "src/transactions/ManageDataOpFrame.cpp:110 innerResult(res).code(MANAGE_DATA_NOT_SUPPORTED_YET);"
       ],
       "note": "This pre-protocol-2 check occurs in doCheckValid; it rejects submission and cannot arise from protocol-30 apply.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "ManageSellOfferResult.MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ManageSellOfferOpFrame.cpp:139 res.tr().manageSellOfferResult().code(MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED);"
-      ],
-      "note": "Place a sell offer buying an asset whose trustline lacks authorization.",
       "review": "source lines checked"
     },
     {
@@ -781,15 +401,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "OperationResult.opEXCEEDED_WORK_LIMIT",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/ManageOfferOpFrameBase.cpp:404 res.code(opEXCEEDED_WORK_LIMIT);"
-      ],
-      "note": "Cross enough offers in one manage-offer operation to exceed its work limit.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "OperationResult.opNOT_SUPPORTED",
       "class": "validation-only",
       "evidence": [
@@ -827,15 +438,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:270 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_LINE_FULL);"
-      ],
-      "note": "Pay through a path into a destination trustline at its limit.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_MALFORMED",
       "class": "validation-only",
       "evidence": [
@@ -844,15 +446,6 @@
         "src/transactions/PathPaymentOpFrameBase.cpp:261 setResultMalformed(res);"
       ],
       "note": "Malformed path-payment parameters fail doCheckValid before submission. Apply also sets it in updateSourceBalance when the source account is missing (unreachable: OperationFrame::checkValid at apply fails such an op with opNO_ACCOUNT first) and in updateDestBalance before protocol 11 only.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:264 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_NOT_AUTHORIZED);"
-      ],
-      "note": "Pay into a destination trustline lacking authorization.",
       "review": "source lines checked"
     },
     {
@@ -866,60 +459,6 @@
       "review": "corrected after source check (Codex said reachable-generatable)"
     },
     {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_NO_TRUST",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:257 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_NO_TRUST);"
-      ],
-      "note": "Pay an asset to a destination without its trustline.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_OFFER_CROSS_SELF",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:292 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_OFFER_CROSS_SELF);"
-      ],
-      "note": "Construct a path that would cross the payment source's own offer.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_SRC_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:244 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_SRC_NOT_AUTHORIZED);"
-      ],
-      "note": "Pay from a source trustline lacking authorization.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:237 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST);"
-      ],
-      "note": "Pay an asset from a source without its trustline.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictReceiveResult.PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictReceiveOpFrame.cpp:230 innerResult(res).code(PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED);"
-      ],
-      "note": "Require more source asset than the payer can spend.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_LINE_FULL",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictSendOpFrame.cpp:259 innerResult(res).code(PATH_PAYMENT_STRICT_SEND_LINE_FULL);"
-      ],
-      "note": "Send through a path into a destination trustline at its limit.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_MALFORMED",
       "class": "validation-only",
       "evidence": [
@@ -931,15 +470,6 @@
       "review": "source lines checked"
     },
     {
-      "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictSendOpFrame.cpp:253 innerResult(res).code(PATH_PAYMENT_STRICT_SEND_NOT_AUTHORIZED);"
-      ],
-      "note": "Send into a destination trustline lacking authorization.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_NO_ISSUER",
       "class": "historical",
       "evidence": [
@@ -948,24 +478,6 @@
       ],
       "note": "Only before protocol 13: the issuer-existence check is gated by protocolVersionIsBefore(V_13), so no ledger from protocol 13 on carries it. SDF's lake holds the 2015-2020 ledgers where it can appear.",
       "review": "corrected after source check (Codex said reachable-generatable)"
-    },
-    {
-      "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_OFFER_CROSS_SELF",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictSendOpFrame.cpp:280 innerResult(res).code(PATH_PAYMENT_STRICT_SEND_OFFER_CROSS_SELF);"
-      ],
-      "note": "Construct a path that would cross the sender's own offer.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "PathPaymentStrictSendResult.PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/PathPaymentStrictSendOpFrame.cpp:234 innerResult(res).code(PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED);"
-      ],
-      "note": "Send from a source trustline lacking authorization.",
-      "review": "source lines checked"
     },
     {
       "arm": "PaymentResult.PAYMENT_MALFORMED",
@@ -987,39 +499,12 @@
       "review": "corrected after source check (Codex said reachable-generatable)"
     },
     {
-      "arm": "RestoreFootprintResult.RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/RestoreFootprintOpFrame.cpp:251 RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE);"
-      ],
-      "note": "Restore archived contract state while declaring too little refundable fee for rent.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "RestoreFootprintResult.RESTORE_FOOTPRINT_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/RestoreFootprintOpFrame.cpp:440 innerResult(res).code(RESTORE_FOOTPRINT_MALFORMED);"
       ],
       "note": "An invalid restore footprint fails doCheckValidForSoroban before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "RestoreFootprintResult.RESTORE_FOOTPRINT_RESOURCE_LIMIT_EXCEEDED",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/RestoreFootprintOpFrame.cpp:204 RESTORE_FOOTPRINT_RESOURCE_LIMIT_EXCEEDED);"
-      ],
-      "note": "Restore an entry with declared read or write bytes below apply's actual resource use.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "RevokeSponsorshipResult.REVOKE_SPONSORSHIP_LOW_RESERVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/RevokeSponsorshipOpFrame.cpp:61 innerResult(res).code(REVOKE_SPONSORSHIP_LOW_RESERVE);"
-      ],
-      "note": "Revoke sponsorship when the beneficiary cannot assume the reserve.",
       "review": "source lines checked"
     },
     {
@@ -1030,25 +515,6 @@
       ],
       "note": "A malformed revoke-sponsorship target fails doCheckValid before submission.",
       "review": "source lines checked"
-    },
-    {
-      "arm": "RevokeSponsorshipResult.REVOKE_SPONSORSHIP_ONLY_TRANSFERABLE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/RevokeSponsorshipOpFrame.cpp:139 innerResult(res).code(REVOKE_SPONSORSHIP_ONLY_TRANSFERABLE);"
-      ],
-      "note": "Attempt a sponsorship transfer in a state where the entry is only transferable, rather than revocable.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SCError.SCE_CRYPTO",
-      "class": "todo",
-      "evidence": [
-        "soroban-env-host-28.0.2/src/crypto/mod.rs:89 verifying_key.verify_strict(payload, sig).map_err(|_| {",
-        "soroban-env-host-28.0.2/src/crypto/mod.rs:91 ScErrorType::Crypto,"
-      ],
-      "note": "A contract that verifies a bad ed25519 signature traps with Error(Crypto, InvalidInput); diagnostic events (Galexie flags) carry it.",
-      "review": "corrected after source check (Codex said unknown)"
     },
     {
       "arm": "SCError.SCE_EVENTS",
@@ -1138,30 +604,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "SetOptionsResult.SET_OPTIONS_INVALID_INFLATION",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/SetOptionsOpFrame.cpp:140 innerResult(res).code(SET_OPTIONS_INVALID_INFLATION);"
-      ],
-      "note": "Set an inflation destination to an account that does not exist at apply.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "SetOptionsResult.SET_OPTIONS_THRESHOLD_OUT_OF_RANGE",
       "class": "validation-only",
       "evidence": [
         "src/transactions/SetOptionsOpFrame.cpp:256 innerResult(res).code(SET_OPTIONS_THRESHOLD_OUT_OF_RANGE);"
       ],
       "note": "An out-of-range threshold fails doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SetOptionsResult.SET_OPTIONS_TOO_MANY_SIGNERS",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/SetOptionsOpFrame.cpp:66 innerResult(res).code(SET_OPTIONS_TOO_MANY_SIGNERS);"
-      ],
-      "note": "Add a signer to an account already at its signer limit.",
       "review": "source lines checked"
     },
     {
@@ -1174,59 +622,12 @@
       "review": "source lines checked"
     },
     {
-      "arm": "SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_CANT_REVOKE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/SetTrustLineFlagsOpFrame.cpp:207 innerResult(res).code(SET_TRUST_LINE_FLAGS_CANT_REVOKE);"
-      ],
-      "note": "Clear trust authorization when the issuer has not enabled revocation.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_INVALID_STATE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/SetTrustLineFlagsOpFrame.cpp:85 innerResult(res).code(SET_TRUST_LINE_FLAGS_INVALID_STATE);"
-      ],
-      "note": "Choose set and clear flags whose resulting trustline authorization state is invalid.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_LOW_RESERVE",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/SetTrustLineFlagsOpFrame.cpp:47 innerResult(res).code(SET_TRUST_LINE_FLAGS_LOW_RESERVE);"
-      ],
-      "note": "Revoke trust where removing dependent offers or pool shares fails a reserve check.",
-      "review": "source lines checked"
-    },
-    {
       "arm": "SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_MALFORMED",
       "class": "validation-only",
       "evidence": [
         "src/transactions/SetTrustLineFlagsOpFrame.cpp:106 innerResult(res).code(SET_TRUST_LINE_FLAGS_MALFORMED);"
       ],
       "note": "Invalid asset, issuer, trustor, or flag masks fail doCheckValid before submission.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SorobanAuthorizedFunction.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN",
-      "class": "todo",
-      "evidence": [
-        "src/main/SettingsUpgradeUtils.cpp:151 SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN);",
-        "stellar-protocol/core/cap-0058.md:206 `SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN` payload may still be used"
-      ],
-      "note": "Create a contract with the legacy host function and its source-account authorization entry.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "SorobanTransactionMetaExt.0",
-      "class": "todo",
-      "evidence": [
-        "src/main/Config.cpp:344 EMIT_SOROBAN_TRANSACTION_META_EXT_V1 = false;",
-        "src/transactions/TransactionMeta.cpp:1003 if (mEnabled && mSorobanMetaExtEnabled)"
-      ],
-      "note": "Run a Soroban transaction with the default metadata-extension setting; the extension remains arm 0. The bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) writes it: a bare variant of a Soroban entry covers it.",
       "review": "source lines checked"
     },
     {
@@ -1284,15 +685,6 @@
         "src/transactions/TransactionMeta.cpp:540 version = 3;"
       ],
       "note": "Core selects version 3 for protocols 20–22 without event backfill. The stated public-lake re-emission uses version 4 instead.",
-      "review": "source lines checked"
-    },
-    {
-      "arm": "TransactionResultResult.txBAD_AUTH_EXTRA",
-      "class": "todo",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:1594 txResult.setInnermostError(txBAD_AUTH_EXTRA);"
-      ],
-      "note": "Change signers before an accepted transaction applies so a supplied signature becomes unused.",
       "review": "source lines checked"
     },
     {

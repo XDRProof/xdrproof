@@ -1,0 +1,144 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "upgrade.generated-header-fee-sizes-flags",
+  "title": "One ledger upgrades the base fee, both transaction-set sizes and the ledger flags",
+  "pattern": "LEDGER_UPGRADE_BASE_FEE, LEDGER_UPGRADE_MAX_TX_SET_SIZE, LEDGER_UPGRADE_MAX_SOROBAN_TX_SET_SIZE and LEDGER_UPGRADE_FLAGS apply in one ledger. The flags upgrade (DISABLE_LIQUIDITY_POOL_TRADING_FLAG) switches the header to LedgerHeaderExt v1. Readers that only handle version and reserve upgrades, or a header without an extension, fail on it.",
+  "caps": [
+    "pre-cap",
+    "CAP-0038",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F1",
+      "placement": "LEDGER_UPGRADE_BASE_FEE, MAX_TX_SET_SIZE, MAX_SOROBAN_TX_SET_SIZE and FLAGS in one ledger; LedgerHeaderExt v1"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "858c272d1fa2497ad23ff1ce2afdba2e54b0acf97153957b669273a4bc9721cf",
+      "size": 728,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 105,
+        "recipe": "recipes/classic/gen.mjs#header-upgrades-fee-sizes-flags"
+      },
+      "focus": {
+        "ledger": true
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6d2ee1fa13293f011cfecb2785fa8fcd96df3d96bcbdb2806a6c9609f52d9c7a",
+      "size": 728,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 105,
+        "recipe": "recipes/classic/gen.mjs#header-upgrades-fee-sizes-flags"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The base fee becomes 200 stroops.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing",
+        "some": {
+          "/upgrade/base_fee": 200
+        }
+      },
+      {
+        "says": "The classic transaction-set size becomes 120 operations.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing",
+        "some": {
+          "/upgrade/max_tx_set_size": 120
+        }
+      },
+      {
+        "says": "The Soroban transaction-set size becomes 50.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing",
+        "some": {
+          "/upgrade/max_soroban_tx_set_size": 50
+        }
+      },
+      {
+        "says": "The ledger flags become 1 (liquidity-pool trading disabled).",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing",
+        "some": {
+          "/upgrade/flags": 1
+        }
+      },
+      {
+        "says": "The header carries extension v1 with flags 1.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/header/ext/v1/flags",
+        "equals": 1
+      },
+      {
+        "says": "The header's base fee is 200.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/header/base_fee",
+        "equals": 200
+      }
+    ]
+  }
+}

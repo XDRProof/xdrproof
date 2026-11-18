@@ -1,0 +1,87 @@
+{
+  "id": "auth.create-contract-v1-signature-covers-v2-rendering",
+  "title": "A valid v1 create-contract authorization whose signature covers bytes it does not contain",
+  "pattern": "The same v1 create, its auth entry still carrying SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN, but signed over the CREATE_CONTRACT_V2_HOST_FN rendering (empty constructor arguments) the host hashes: the contract is created. A verifier that recomputes the payload from the entry's bytes rejects a signature core accepted. Under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1) the same call writes Soroban meta extension v0, without the fee breakdown base writes in v1.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0058"
+  ],
+  "hazards": [
+    {
+      "id": "H-B16",
+      "placement": "a valid v1 create authorization: its signature covers the V2 rendering"
+    },
+    {
+      "id": "H-D5",
+      "placement": "HOST_FUNCTION_TYPE_CREATE_CONTRACT (v1) with address-credential auth"
+    },
+    {
+      "id": "H-F9",
+      "placement": "SorobanTransactionMetaExt v0 under the bare flag profile (no EMIT_SOROBAN_TRANSACTION_META_EXT_V1), v1 under base"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "create-contract-v1-auth-signed-over-v2-rendering",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet",
+      "p30-mainnet-bare"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The auth entry's root is the v1 create-contract function, for the kit Wasm.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/root_invocation/function/create_contract_host_fn/executable/wasm",
+      "equals": "946784bc2ad1543af3d5a0221fce600ae56495cbcd4a5642e659f5ea4b2b4556",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The contract instance is created.",
+      "at": "op.changes",
+      "some": {
+        "/created/data/contract_data/contract": {
+          "$manifest": "contracts.v1Created"
+        }
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Under the bare flag profile the Soroban meta extension is v0 (no fee breakdown).",
+      "variants": [
+        "p30-mainnet-bare"
+      ],
+      "at": "tx.meta",
+      "path": "/soroban_meta/ext",
+      "equals": "v0",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Under the base profile it is v1, which carries the fee breakdown: here 43724 stroops of rent.",
+      "variants": [
+        "p30-mainnet"
+      ],
+      "at": "tx.meta",
+      "path": "/soroban_meta/ext/v1/rent_fee_charged",
+      "equals": "43724",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.path-payment-strict-receive.src-no-trust",
+  "title": "PATH_PAYMENT_STRICT_RECEIVE fails with PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST",
+  "pattern": "A transaction whose PATH_PAYMENT_STRICT_RECEIVE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (src_no_trust). Sending NRV from an account without an NRV trustline.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.path_payment_strict_receive.src_no_trust in a closed ledger"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "fb251221440e0adaad4c2bf377f88d14d31f4e5e24fbf246c9c1643e35f0b81e",
+      "size": 14032,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 103,
+        "recipe": "recipes/classic/gen.mjs#PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST"
+      },
+      "focus": {
+        "tx_hash": "091b140af1d0b866bba87aff0f79ca0b4a2c73ab646cf0a1a6452900b3e36796",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "58314b09bb84c82ac1a63458130f88b679c3d7599acd87bb69a039c7e89d135c",
+      "size": 14032,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 103,
+        "recipe": "recipes/classic/gen.mjs#PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST"
+      },
+      "focus": {
+        "tx_hash": "c01d75294b044ff13853e2d948c2eda60e3571d437287852f5c80dcd5a21b445",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with src_no_trust.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/5/result/result/result/tx_failed/0/op_inner/path_payment_strict_receive",
+        "equals": "src_no_trust",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with src_no_trust.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/11/result/result/result/tx_failed/0/op_inner/path_payment_strict_receive",
+        "equals": "src_no_trust",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/11/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/11/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "failure.liquidity-pool-withdraw.line-full",
+  "title": "LIQUIDITY_POOL_WITHDRAW fails with LIQUIDITY_POOL_WITHDRAW_LINE_FULL",
+  "pattern": "A transaction whose LIQUIDITY_POOL_WITHDRAW operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (line_full). The account's NRV sits in the pool and its NRV trustline limit was cut to one stroop: the 100 NRV a full withdrawal returns cannot land.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_withdraw.line_full in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "withdrawal into a trustline whose limit was cut below the pooled amount"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "LIQUIDITY_POOL_WITHDRAW_LINE_FULL",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with line_full.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/liquidity_pool_withdraw",
+      "equals": "line_full",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

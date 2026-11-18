@@ -1,0 +1,68 @@
+{
+  "id": "failure.begin-sponsoring-future-reserves.recursive",
+  "title": "BEGIN_SPONSORING_FUTURE_RESERVES fails with BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE",
+  "pattern": "A transaction whose BEGIN_SPONSORING_FUTURE_RESERVES operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (recursive). One account begins sponsoring a second, which then tries to sponsor the first.",
+  "caps": [
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.begin_sponsoring_future_reserves.recursive in a closed ledger"
+    },
+    {
+      "id": "H-C3",
+      "placement": "two accounts trying to sponsor each other"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "Operation 1 fails with recursive.",
+      "at": "tx.result",
+      "path": "/tx_failed/1/op_inner/begin_sponsoring_future_reserves",
+      "equals": "recursive",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 reports success in the failed transaction.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/begin_sponsoring_future_reserves",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

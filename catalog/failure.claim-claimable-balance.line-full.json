@@ -1,0 +1,59 @@
+{
+  "id": "failure.claim-claimable-balance.line-full",
+  "title": "CLAIM_CLAIMABLE_BALANCE fails with CLAIM_CLAIMABLE_BALANCE_LINE_FULL",
+  "pattern": "A transaction whose CLAIM_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (line_full). The claimant's NRV trustline is at its limit of 1; the balance holds 5.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.claim_claimable_balance.line_full in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claim into a trustline at its limit"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CLAIM_CLAIMABLE_BALANCE_LINE_FULL",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with line_full.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/claim_claimable_balance",
+      "equals": "line_full",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

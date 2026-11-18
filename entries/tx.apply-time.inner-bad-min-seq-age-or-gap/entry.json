@@ -1,0 +1,355 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "tx.apply-time.inner-bad-min-seq-age-or-gap",
+  "title": "A fee bump whose inner transaction fails at apply with txBAD_MIN_SEQ_AGE_OR_GAP",
+  "pattern": "The inner transaction was valid when queued; a classic transaction earlier in the same ledger changed its source, and core re-checks the source at apply (TransactionFrame::commonValid, processSignatures): minSeqLedgerGap 1, and the inner source's seqLedger moved to this ledger. The outer result is txFEE_BUMP_INNER_FAILED with txBAD_MIN_SEQ_AGE_OR_GAP inside; the fee source pays. Readers that expect inner results to carry only operation failures, or treat a queued transaction as valid, get it wrong.",
+  "caps": [
+    "CAP-0015",
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C16",
+      "placement": "InnerTransactionResult.txBAD_MIN_SEQ_AGE_OR_GAP at apply: minSeqLedgerGap 1, and the inner source's seqLedger moved to this ledger"
+    },
+    {
+      "id": "H-C2",
+      "placement": "txFEE_BUMP_INNER_FAILED with inner txBAD_MIN_SEQ_AGE_OR_GAP"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "c4065d83a433726d23e1a5f6bce78830f9a6021c770327dab2cfa9c7904b75f1",
+      "size": 19000,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 85,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-inner-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "5101df5fa163b3da952cf1bfa6b1676d71eafc75502ea459fee95aeddc4119fb",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "dd5ed5dece3a03bafa3129d390546c239adc47599f54ffc42d5e97931d34c2b1",
+      "size": 18992,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 84,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-inner-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "b8a198f1670f968836c7649d8fc8577708aaa7db4e5f0985512d7d78aa9c9212",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a0247af00c199264bb2d7df689aeba2f0a12f09b9555ab1f86bfe36bb5d2524f",
+      "size": 19000,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 85,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-inner-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "8edfce5ff79d10c2e97c48739e84195f7ec92b45b7f989275f466153594c089a",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "0b5b66959243e3c9b2b909240f073079ba77dd7067ccc840ce98160fd0147b4a",
+      "size": 18992,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 84,
+        "recipe": "recipes/soroban/gen/gen.mjs#race2-victim-inner-txBAD_MIN_SEQ_AGE_OR_GAP"
+      },
+      "focus": {
+        "tx_hash": "f0c28d5e51cb8b8de346f6d18bec20e9861ea6a1ef0b335600f5f3ee90c29be7",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner transaction fails with txBAD_MIN_SEQ_AGE_OR_GAP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The inner transaction fails with txBAD_MIN_SEQ_AGE_OR_GAP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/10/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The inner transaction fails with txBAD_MIN_SEQ_AGE_OR_GAP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/11/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The inner transaction fails with txBAD_MIN_SEQ_AGE_OR_GAP.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result/tx_fee_bump_inner_failed/result/result",
+        "equals": "tx_bad_min_seq_age_or_gap",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "24ebb0a511a441848762cebbb5d3d0c856ac31993ec9d1594ffceaf26b140489"
+        },
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "38aa4839470429653d92c43c2c937693d725f62eb93099d396001f774b503bdb"
+        },
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "5e72499cac8809d426830e29d31ab04d43821da509bc7963add9c8b9e8e9122c"
+        },
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The classic transaction that caused it is in the same ledger.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing",
+        "some": {
+          "/result/transaction_hash": "4202a303ac39444efe8d218ca9f620ac072f5032ebb6a73880728afe2079e4ff"
+        },
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The inner source is u4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/5/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+        "equals": "GBVKCJULKPIBA3GHT4N6B74QVVN47XKNSFV63ZU4VP5E7TTMTO5ZQOWD",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The inner source is u4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/1/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+        "equals": "GBVKCJULKPIBA3GHT4N6B74QVVN47XKNSFV63ZU4VP5E7TTMTO5ZQOWD",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The inner source is u4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/3/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+        "equals": "GBVKCJULKPIBA3GHT4N6B74QVVN47XKNSFV63ZU4VP5E7TTMTO5ZQOWD",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The inner source is u4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/1/tx_fee_bump/tx/inner_tx/tx/tx/source_account",
+        "equals": "GBVKCJULKPIBA3GHT4N6B74QVVN47XKNSFV63ZU4VP5E7TTMTO5ZQOWD",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is f4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/5/tx_fee_bump/tx/fee_source",
+        "equals": "GB7XBPZPPXQGSMZ5ZWXCLR2RKPJXWS23K3MSHWQNFE3NILFI5244KKCM",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is f4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/1/tx_fee_bump/tx/fee_source",
+        "equals": "GB7XBPZPPXQGSMZ5ZWXCLR2RKPJXWS23K3MSHWQNFE3NILFI5244KKCM",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is f4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/3/tx_fee_bump/tx/fee_source",
+        "equals": "GB7XBPZPPXQGSMZ5ZWXCLR2RKPJXWS23K3MSHWQNFE3NILFI5244KKCM",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee source is f4.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/1/tx_fee_bump/tx/fee_source",
+        "equals": "GB7XBPZPPXQGSMZ5ZWXCLR2RKPJXWS23K3MSHWQNFE3NILFI5244KKCM",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

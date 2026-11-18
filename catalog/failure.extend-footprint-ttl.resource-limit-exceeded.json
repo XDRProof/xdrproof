@@ -1,0 +1,48 @@
+{
+  "id": "failure.extend-footprint-ttl.resource-limit-exceeded",
+  "title": "EXTEND_FOOTPRINT_TTL fails with RESOURCE_LIMIT_EXCEEDED after a config upgrade",
+  "pattern": "A transaction whose EXTEND_FOOTPRINT_TTL operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (resource_limit_exceeded). From protocol 23 an extension fails only when the entry is larger than the network allows. A config upgrade lowered the maximum contract size to its floor of 2000 bytes; kit2's 5364-byte Wasm is now too large to extend. The maximum goes back two ledgers later.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "EXTEND_FOOTPRINT_TTL resource_limit_exceeded at apply"
+    },
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.extend_footprint_ttl.resource_limit_exceeded in a closed ledger"
+    },
+    {
+      "id": "H-F10",
+      "placement": "a config upgrade that leaves existing code above the maximum contract size"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "extend-ttl-code-over-max-size",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with resource_limit_exceeded.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/extend_footprint_ttl",
+      "equals": "resource_limit_exceeded",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

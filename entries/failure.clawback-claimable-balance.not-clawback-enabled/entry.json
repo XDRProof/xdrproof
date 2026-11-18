@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.clawback-claimable-balance.not-clawback-enabled",
+  "title": "CLAWBACK_CLAIMABLE_BALANCE fails with CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED",
+  "pattern": "A transaction whose CLAWBACK_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_clawback_enabled). The issuer never enabled clawback, so its claimable balance carries no clawback flag.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.clawback_claimable_balance.not_clawback_enabled in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "clawback of a balance created without the clawback flag"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5d1b0b6d6130f05dcaa137746352b2b85ff8f9af07028159c0c7058e7df75462",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED"
+      },
+      "focus": {
+        "tx_hash": "8dfdc20ab2f9c66b56d4316cc47d69e06ed98b1f197fec4b0af5b66de12379f9",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6958b55e5ea2071afe52b428d76c8abb5b6b2ed3cc0d4c36ece545cb59cdaf6b",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED"
+      },
+      "focus": {
+        "tx_hash": "d3779d9726fa37b79bc1582eda57872bd9375aa8f3bb9b66efd76b160829b431",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with not_clawback_enabled.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/result/result/result/tx_failed/0/op_inner/clawback_claimable_balance",
+        "equals": "not_clawback_enabled",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with not_clawback_enabled.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/8/result/result/result/tx_failed/0/op_inner/clawback_claimable_balance",
+        "equals": "not_clawback_enabled",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/8/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

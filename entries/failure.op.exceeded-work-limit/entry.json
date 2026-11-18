@@ -1,0 +1,124 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.op.exceeded-work-limit",
+  "title": "An offer that would cross 1001 offers fails with opEXCEEDED_WORK_LIMIT",
+  "pattern": "One operation may cross at most 1000 offers (MAX_OFFERS_TO_CROSS, TransactionUtils.cpp). 1001 one-stroop WRK offers sit at one price; a buy offer for 1001 stroops would cross them all. The operation fails at the operation level, with no inner result of its type, and nothing crosses. Readers that expect every failed operation to carry an operation-specific code meet a bare opEXCEEDED_WORK_LIMIT.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.opEXCEEDED_WORK_LIMIT in a closed ledger"
+    },
+    {
+      "id": "H-C7",
+      "placement": "a buy offer that would cross 1001 offers"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9d41b66de6ab14a2246e753d0ec5690ec523f108a5deff88c66a65ccd3e836d7",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#opEXCEEDED_WORK_LIMIT"
+      },
+      "focus": {
+        "tx_hash": "aea8460803a2f56f8dc204ceea91367735094003d8f3d375691d1421d814f2c5",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5f41a5a8623e1a1987a8a593e1bc7522cb1559af8c12b40958c6441a73787f13",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#opEXCEEDED_WORK_LIMIT"
+      },
+      "focus": {
+        "tx_hash": "505c009598ab9a8d9e71a199a7bf6f17d656971a42b746615ed35e6e157bc6f3",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with opEXCEEDED_WORK_LIMIT.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result/tx_failed/0",
+        "equals": "op_exceeded_work_limit",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with opEXCEEDED_WORK_LIMIT.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/6/result/result/result/tx_failed/0",
+        "equals": "op_exceeded_work_limit",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/6/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.manage-sell-offer.buy-not-authorized",
+  "title": "MANAGE_SELL_OFFER fails with MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED",
+  "pattern": "A transaction whose MANAGE_SELL_OFFER operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (buy_not_authorized). Buying ARQ into an unauthorized trustline.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_sell_offer.buy_not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "offer buying into an unauthorized trustline"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5d1b0b6d6130f05dcaa137746352b2b85ff8f9af07028159c0c7058e7df75462",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED"
+      },
+      "focus": {
+        "tx_hash": "da06a1562f4d9524a0235cc61a7fc3bb9fd3e30f91de33169f8507c6d8539eb1",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6958b55e5ea2071afe52b428d76c8abb5b6b2ed3cc0d4c36ece545cb59cdaf6b",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED"
+      },
+      "focus": {
+        "tx_hash": "f54d045517818ea3cc5690182214cfca1f8ece05d919d6129b5d9c47214620fc",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with buy_not_authorized.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/5/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "buy_not_authorized",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with buy_not_authorized.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/manage_sell_offer",
+        "equals": "buy_not_authorized",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "failure.account-merge.seqnum-too-far",
+  "title": "ACCOUNT_MERGE fails with ACCOUNT_MERGE_SEQNUM_TOO_FAR",
+  "pattern": "A transaction whose ACCOUNT_MERGE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (seqnum_too_far). Operation 0 bumps the sequence number past this ledger's starting sequence (ledger << 32); merging could let the account be recreated with a lower number, so core refuses (MergeOpFrame.cpp, isSeqnumTooFar). Operation 0 reports success in the failed transaction.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.account_merge.seqnum_too_far in a closed ledger"
+    },
+    {
+      "id": "H-C11",
+      "placement": "merge after a bump past the ledger's starting sequence"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "ACCOUNT_MERGE_SEQNUM_TOO_FAR",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "Operation 1 fails with seqnum_too_far.",
+      "at": "tx.result",
+      "path": "/tx_failed/1/op_inner/account_merge",
+      "equals": "seqnum_too_far",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 reports success in the failed transaction.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/bump_sequence",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

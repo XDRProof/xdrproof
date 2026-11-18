@@ -1,0 +1,59 @@
+{
+  "id": "failure.create-claimable-balance.low-reserve",
+  "title": "CREATE_CLAIMABLE_BALANCE fails with CREATE_CLAIMABLE_BALANCE_LOW_RESERVE",
+  "pattern": "A transaction whose CREATE_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (low_reserve). The operation source holds 10 NRV but sits at its minimum XLM balance; a claimable balance needs 0.5 XLM of reserve from its creator. Another account pays the transaction fee.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.create_claimable_balance.low_reserve in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claimable balance whose creator cannot fund its reserve"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CREATE_CLAIMABLE_BALANCE_LOW_RESERVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/create_claimable_balance",
+      "equals": "low_reserve",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

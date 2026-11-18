@@ -1,0 +1,150 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.change-trust.not-auth-maintain-liabilities",
+  "title": "CHANGE_TRUST fails with CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES",
+  "pattern": "A transaction whose CHANGE_TRUST operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_auth_maintain_liabilities). A pool-share trustline for XLM/ARQ while the ARQ trustline is not even authorized to maintain liabilities.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.change_trust.not_auth_maintain_liabilities in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "pool-share trustline over an unauthorized asset trustline"
+    },
+    {
+      "id": "H-C10",
+      "placement": "ARQ trustline not authorized to maintain liabilities"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "60f5ea9859bf29afb04f7e410951585d5fea981e41ce7faac0d374eb19e13db0",
+      "size": 8504,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 100,
+        "recipe": "recipes/classic/gen.mjs#CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES"
+      },
+      "focus": {
+        "tx_hash": "ca2df43c412636e65ffa580dc50ba4591fbed501e86221ef619dab18eab274b5",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "d0f91e0ff8e53829f2baee3935251c60648085050deae8cb31460e28fb37a2ad",
+      "size": 8504,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 100,
+        "recipe": "recipes/classic/gen.mjs#CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES"
+      },
+      "focus": {
+        "tx_hash": "828f9621db5089610f645889593c18360e4b10c8617f1fe27192bf6e512f9fb2",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with not_auth_maintain_liabilities.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/change_trust",
+        "equals": "not_auth_maintain_liabilities",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with not_auth_maintain_liabilities.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/3/result/result/result/tx_failed/0/op_inner/change_trust",
+        "equals": "not_auth_maintain_liabilities",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/1/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/3/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

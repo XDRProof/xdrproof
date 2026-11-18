@@ -1,0 +1,67 @@
+{
+  "id": "failure.account-merge.dest-full",
+  "title": "ACCOUNT_MERGE fails with ACCOUNT_MERGE_DEST_FULL",
+  "pattern": "A transaction whose ACCOUNT_MERGE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (dest_full). The destination sells 429.4967297 NRV at 2147483647 XLM each: native buying liabilities of 2^63 - 2147483649 stroops, which leave it about 164 XLM of room below i64::MAX (TransactionUtils.cpp, addBalance). The 300 XLM merged in does not fit.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.account_merge.dest_full in a closed ledger"
+    },
+    {
+      "id": "H-C11",
+      "placement": "merge into an account with no room below i64::MAX"
+    },
+    {
+      "id": "H-C17",
+      "placement": "native buying liabilities near i64::MAX"
+    },
+    {
+      "id": "H-B3",
+      "placement": "an account balance plus buying liabilities near i64::MAX"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "ACCOUNT_MERGE_DEST_FULL",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with dest_full.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/account_merge",
+      "equals": "dest_full",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

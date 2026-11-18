@@ -1,0 +1,70 @@
+{
+  "id": "auth.forged-signature-crypto-error",
+  "title": "A forged address signature: the host fails ed25519 verification with an SCError of type crypto",
+  "pattern": "bob submits a call carrying an auth entry for alice whose signature covers another nonce. The host verifies it with ed25519 and fails with Error(Crypto, InvalidInput), then escalates to an auth error and the call traps. alice authorized nothing, yet her address sits in the transaction. Readers that index auth-entry addresses as participants, or decode SCError as host error types only, both go wrong.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A7",
+      "placement": "an auth entry naming alice whose signature fails verification; alice authorized nothing"
+    },
+    {
+      "id": "H-C6",
+      "placement": "SCError.SCE_CRYPTO (invalid_input) in diagnostic events"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "forged-address-signature-crypto-error",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet",
+      "p30-mainnet-galexie"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call traps.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "trapped",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The auth entry names alice, with nonce 7300002.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/auth/0/credentials/address/nonce",
+      "equals": "7300002",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "With diagnostic events: crypto invalid_input, \"failed ED25519 verification\".",
+      "variants": [
+        "p30-mainnet-galexie"
+      ],
+      "at": "tx.meta",
+      "path": "/diagnostic_events",
+      "some": {
+        "/event/body/v0/topics/1/error/crypto": "invalid_input",
+        "/event/body/v0/data/string": "failed ED25519 verification"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.liquidity-pool-withdraw.under-minimum",
+  "title": "LIQUIDITY_POOL_WITHDRAW fails with LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM",
+  "pattern": "A transaction whose LIQUIDITY_POOL_WITHDRAW operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (under_minimum). One pool share returns far less than the 1000 XLM minimum asked for.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.liquidity_pool_withdraw.under_minimum in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "withdrawal below the requested minimum"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "5d1b0b6d6130f05dcaa137746352b2b85ff8f9af07028159c0c7058e7df75462",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM"
+      },
+      "focus": {
+        "tx_hash": "97731f566e630a562edaa0e89385e689d0b9d9ba39be761d39d3d0de7c63877d",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "6958b55e5ea2071afe52b428d76c8abb5b6b2ed3cc0d4c36ece545cb59cdaf6b",
+      "size": 12352,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 102,
+        "recipe": "recipes/classic/gen.mjs#LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM"
+      },
+      "focus": {
+        "tx_hash": "56a7d91ce2fed484544c4d31b2648eda54b43c5d478148a0fd6326211f1813f5",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with under_minimum.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/10/result/result/result/tx_failed/0/op_inner/liquidity_pool_withdraw",
+        "equals": "under_minimum",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with under_minimum.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/5/result/result/result/tx_failed/0/op_inner/liquidity_pool_withdraw",
+        "equals": "under_minimum",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/10/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/10/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/5/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

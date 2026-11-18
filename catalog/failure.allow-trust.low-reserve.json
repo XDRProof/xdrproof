@@ -1,0 +1,74 @@
+{
+  "id": "failure.allow-trust.low-reserve",
+  "title": "ALLOW_TRUST fails with ALLOW_TRUST_LOW_RESERVE",
+  "pattern": "A transaction whose ALLOW_TRUST operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (low_reserve). The same as SET_TRUST_LINE_FLAGS_LOW_RESERVE, through the older AllowTrust operation: the redeemed pool shares need claimable-balance reserves the sandwich's sponsor does not have.",
+  "caps": [
+    "pre-cap",
+    "CAP-0038",
+    "CAP-0033"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.allow_trust.low_reserve in a closed ledger"
+    },
+    {
+      "id": "H-D9",
+      "placement": "AllowTrust revocation whose pool-share redemption cannot fund its claimable balances"
+    },
+    {
+      "id": "H-C3",
+      "placement": "AllowTrust revocation inside a sponsorship sandwich whose sponsor is at its minimum balance"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "ALLOW_TRUST_LOW_RESERVE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 1
+  },
+  "facts": [
+    {
+      "says": "Operation 1 fails with low_reserve.",
+      "at": "tx.result",
+      "path": "/tx_failed/1/op_inner/allow_trust",
+      "equals": "low_reserve",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Operation 0 reports success in the failed transaction.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/begin_sponsoring_future_reserves",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

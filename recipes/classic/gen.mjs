@@ -408,4 +408,179 @@ await close(); steps.push({ name: 'surge-left-over-applies-next-ledger', ledger,
   note: 'the transaction left out of the oversubscribed ledger, applied one ledger later at the normal base fee' });
 console.log('surge-left-over-applies-next-ledger', ledger);                                                     // 82
 
-if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2, cb3, cb4, cb10], pool2, poolIssuers: [pi1.publicKey(), pi2.publicKey()], hop: { issuer: hopIssuer.publicKey(), maker: hopMaker.publicKey(), dest: hopDest.publicKey() } }, null, 1));
+// ---- Failure suite 2 (appended; earlier ledgers unchanged) -----------------------------------------------------
+// Each result code core can still write at protocol 30 that the corpus lacked (COVERAGE.md "todo"), built from its
+// own state on fresh accounts and three fresh issuers, so nothing above changes:
+//   iNR issues NRV, NRB, CSF, CSG and WRK with no flags: it can neither revoke nor claw back;
+//   iAR issues ARQ with AUTH_REQUIRED | AUTH_REVOCABLE | AUTH_CLAWBACK_ENABLED: its trustlines start unauthorized;
+//   iIM sets AUTH_IMMUTABLE, so it can never be merged.
+// Setup ledgers order every dependency (a flag before the trustlines it governs, a trustline before its payment);
+// each failure ledger holds only transactions that fail, so the apply order inside it changes nothing.
+const q = (n) => kp('fs2-' + n);
+const [iNR, iAR, iIM] = ['issuer-plain', 'issuer-auth-required', 'issuer-immutable'].map(q);
+const [NRV, NRB, CSF, CSG, WRK] = ['NRV', 'NRB', 'CSF', 'CSG', 'WRK'].map((c) => new S.Asset(c, iNR.publicKey()));
+const ARQ = new S.Asset('ARQ', iAR.publicKey());
+const XLM = S.Asset.native();
+const lpOf = (a, b) => { const [lo, hi] = S.Asset.compare(a, b) < 0 ? [a, b] : [b, a]; const asset = new S.LiquidityPoolAsset(lo, hi, S.LiquidityPoolFeeV18);
+  return { asset, id: Buffer.from(S.getLiquidityPoolId('constant_product', asset.getLiquidityPoolParameters())).toString('hex') }; };
+const P1 = lpOf(XLM, NRV), P2 = lpOf(XLM, ARQ), P3 = lpOf(NRB, NRV);
+const BAL = { lrX1: '1', lrX2: '1', poorCB: '1.5', poorData: '1', poorRevoke: '1', dfD: '50', dfM: '300', lpFull: '1000', lpNA: '1000', lpUF: '1000', wLF: '1000', wUM: '1000', W1: '1000', W2: '1000' };
+const ROLES = ['noTL', 'cantRevA', 'cantRevS', 'invState', 'lrT1', 'lrT2', 'lrX1', 'lrX2', 'cdel', 'tlMiss', 'notAuthML', 'full', 'unauth', 'clawNI', 'clawNE',
+  'poorCB', 'payer1', 'payer2', 'deauthCB', 'underCB', 'lpFull', 'lpNA', 'pf1', 'pf2', 'lpUF', 'wLF', 'wUM', 'mboLF', 'mboSNA', 'msoBNA', 'poorData', 'W1', 'W2', 'WT',
+  'ppsrLF', 'ppsrNA', 'ppsrNT', 'ppsrSNA', 'ppsrUF', 'xs1', 'xs1dest', 'ppssLF', 'ppssNA', 'ppssSNA', 'xs2', 'xs2dest', 'spon2', 'poorRevoke', 'rsOT', 'infl',
+  'signers20', 'seqFar', 'dfD', 'dfM', 'rec1', 'rec2', 'fbInner', 'fbSponsored', 'fbFee'];
+const R = Object.fromEntries(ROLES.map((n) => [n, q(n)]));
+const ct = (asset, limit) => S.Operation.changeTrust({ asset, ...(limit ? { limit } : {}) });
+const many = (k, ops, signers = [k]) => { const x = txb(k, ops); x.sign(...signers); return x; };
+
+t = txb(root, [iNR, iAR, iIM, ...ROLES.map((n) => R[n])].map((k) => S.Operation.createAccount({ destination: k.publicKey(),
+  startingBalance: k === iNR || k === iAR || k === iIM ? '1000' : BAL[ROLES.find((n) => R[n] === k)] ?? '100' })));
+t.sign(root); await submit('fs2-create-accounts', t, root, '62 accounts: three issuers and one or two accounts per failure; four at exactly their minimum balance');
+for (const k of [iNR, iAR, iIM, ...Object.values(R)]) cur.set(k.publicKey(), BigInt(ledger) << 32n);
+
+await queue('fs2-issuer-auth-required', one(iAR, [S.Operation.setOptions({ setFlags: S.AuthRequiredFlag | S.AuthRevocableFlag | S.AuthClawbackEnabledFlag })]), iAR);
+await queue('fs2-issuer-immutable', one(iIM, [S.Operation.setOptions({ setFlags: S.AuthImmutableFlag })]), iIM);
+for (const [n, ops] of [['cantRevA', [ct(NRV)]], ['cantRevS', [ct(NRV)]], ['cdel', [ct(NRV), ct(P1.asset)]], ['full', [ct(NRV, '1')]], ['clawNE', [ct(NRV)]], ['underCB', [ct(NRV)]],
+  ['lpFull', [ct(NRV), ct(P1.asset, '0.0000001')]], ['pf1', [ct(NRB), ct(NRV), ct(P3.asset)]], ['pf2', [ct(NRB), ct(NRV), ct(P3.asset)]], ['lpUF', [ct(NRV), ct(P1.asset)]],
+  ['wLF', [ct(NRV, '1000'), ct(P1.asset)]], ['wUM', [ct(NRV), ct(P1.asset)]], ['mboLF', [ct(NRV, '1')]], ['W1', [ct(WRK)]], ['W2', [ct(WRK)]], ['WT', [ct(WRK)]],
+  ['ppsrLF', [ct(NRV)]], ['ppsrNT', [ct(NRV)]], ['ppsrUF', [ct(NRV)]], ['xs1', [ct(CSF)]], ['xs1dest', [ct(CSF)]], ['ppssLF', [ct(NRV)]], ['xs2', [ct(CSG)]], ['xs2dest', [ct(CSG)]], ['dfD', [ct(NRV)]]])
+  await queue('fs2-trust-' + n, one(R[n], ops), R[n]);
+await queue('fs2-trust-poorCB', many(R.payer1, [S.Operation.changeTrust({ asset: NRV, source: R.poorCB.publicKey() })], [R.payer1, R.poorCB]), R.payer1);
+await closeGroup('fs2-setup-flags-and-trustlines', 'iAR: AUTH_REQUIRED|REVOCABLE|CLAWBACK; iIM: AUTH_IMMUTABLE; NRV, NRB, CSF, CSG, WRK and pool-share trustlines');
+
+for (const n of ['invState', 'lrT1', 'lrT2', 'notAuthML', 'unauth', 'deauthCB', 'lpNA', 'mboSNA', 'msoBNA', 'ppsrNA', 'ppsrSNA', 'ppssNA', 'ppssSNA'])
+  await queue('fs2-trust-arq-' + n, one(R[n], [ct(ARQ)]), R[n]);
+const nrPay = [['clawNE', NRV, '5'], ['poorCB', NRV, '10'], ['underCB', NRV, '1'], ['lpFull', NRV, '100'], ['pf1', NRV, MAXLIMIT], ['pf1', NRB, MAXLIMIT], ['pf2', NRV, '10'], ['pf2', NRB, '10'],
+  ['lpUF', NRV, '1'], ['wLF', NRV, '100'], ['wUM', NRV, '100'], ['ppsrLF', NRV, '10'], ['ppsrNT', NRV, '10'], ['ppsrUF', NRV, '1'], ['xs1', CSF, '10'], ['ppssLF', NRV, '10'],
+  ['xs2', CSG, '10'], ['W1', WRK, '1'], ['W2', WRK, '1'], ['full', NRV, '1'], ['dfD', NRV, '429.4967297']];
+const tNR = txb(iNR, [...nrPay.map(([n, asset, amount]) => S.Operation.payment({ destination: R[n].publicKey(), asset, amount })),
+  S.Operation.createClaimableBalance({ asset: NRV, amount: '5', claimants: [new P(R.full.publicKey(), P.predicateUnconditional())] }),
+  S.Operation.createClaimableBalance({ asset: NRV, amount: '1', claimants: [new P(R.noTL.publicKey(), P.predicateUnconditional())] })]);
+const cbFull = tNR.getClaimableBalanceId(nrPay.length), cbNR = tNR.getClaimableBalanceId(nrPay.length + 1);
+tNR.sign(iNR); await queue('fs2-issue-plain-assets', tNR, iNR);
+await closeGroup('fs2-setup-arq-trustlines-and-issue', 'ARQ trustlines (unauthorized); iNR pays NRV/NRB/CSF/CSG/WRK, i64::MAX of NRV and NRB to pf1, and creates two NRV claimable balances');
+
+const arqAuth = ['invState', 'lrT1', 'lrT2', 'deauthCB', 'lpNA', 'ppsrNA', 'ppsrSNA', 'ppssNA', 'ppssSNA', 'mboSNA'];
+const arqPay = [['lrT1', '100'], ['lrT2', '100'], ['deauthCB', '10'], ['lpNA', '100'], ['ppsrNA', '10'], ['ppsrSNA', '10'], ['ppssNA', '10'], ['ppssSNA', '10'], ['mboSNA', '10']];
+const tAR = txb(iAR, [...arqAuth.map((n) => S.Operation.setTrustLineFlags({ trustor: R[n].publicKey(), asset: ARQ, flags: { authorized: true } })),
+  ...arqPay.map(([n, amount]) => S.Operation.payment({ destination: R[n].publicKey(), asset: ARQ, amount })),
+  S.Operation.createClaimableBalance({ asset: ARQ, amount: '1', claimants: [new P(R.unauth.publicKey(), P.predicateUnconditional())] })]);
+const cbArq = tAR.getClaimableBalanceId(arqAuth.length + arqPay.length);
+tAR.sign(iAR); await queue('fs2-authorize-and-issue-arq', tAR, iAR);
+const dep = (pool, a, b, price = '1') => S.Operation.liquidityPoolDeposit({ liquidityPoolId: pool.id, maxAmountA: a, maxAmountB: b, minPrice: price, maxPrice: price });
+await queue('fs2-deposit-wLF', one(R.wLF, [dep(P1, '100', '100')]), R.wLF);
+await queue('fs2-deposit-wUM', one(R.wUM, [dep(P1, '100', '100')]), R.wUM);
+await queue('fs2-deposit-pf1-int64-max', one(R.pf1, [dep(P3, MAXLIMIT, MAXLIMIT)]), R.pf1);
+await queue('fs2-offer-xs1', one(R.xs1, [S.Operation.manageSellOffer({ selling: CSF, buying: XLM, amount: '5', price: '1' })]), R.xs1);
+await queue('fs2-offer-xs2', one(R.xs2, [S.Operation.manageSellOffer({ selling: CSG, buying: XLM, amount: '5', price: '1' })]), R.xs2);
+// dfD sells 4294967297 stroops of NRV at 2147483647 XLM each: native buying liabilities of 2^63 - 2147483649 stroops,
+// leaving dfD's balance about 164 XLM of room below i64::MAX
+await queue('fs2-offer-dfD-huge-native-buying-liabilities', one(R.dfD, [S.Operation.manageSellOffer({ selling: NRV, buying: XLM, amount: '429.4967297', price: { n: 2147483647, d: 1 } })]), R.dfD);
+await queue('fs2-signers-20', one(R.signers20, Array.from({ length: 20 }, (_, i) => S.Operation.setOptions({ signer: { ed25519PublicKey: q('signer-' + i).publicKey(), weight: 1 } }))), R.signers20);
+await queue('fs2-sponsored-data', many(R.spon2, [S.Operation.beginSponsoringFutureReserves({ sponsoredId: R.poorRevoke.publicKey() }),
+  S.Operation.manageData({ name: 'fs2', value: 'sponsored', source: R.poorRevoke.publicKey() }), S.Operation.endSponsoringFutureReserves({ source: R.poorRevoke.publicKey() })], [R.spon2, R.poorRevoke]), R.spon2);
+const tOT = txb(R.rsOT, [S.Operation.createClaimableBalance({ asset: XLM, amount: '1', claimants: [new P(R.noTL.publicKey(), P.predicateUnconditional())] })]);
+const cbOT = tOT.getClaimableBalanceId(0); tOT.sign(R.rsOT); await queue('fs2-claimable-for-revoke', tOT, R.rsOT);
+await closeGroup('fs2-setup-authorize-deposit-offers', 'ARQ authorized and paid; deposits into XLM/NRV and NRB/NRV (i64::MAX each); self-cross offers; huge native buying liabilities; 20 signers; a sponsored data entry');
+
+for (const n of ['lpNA', 'lrT1', 'lrT2']) await queue('fs2-pool-trust-arq-' + n, one(R[n], [ct(P2.asset)]), R[n]);
+// core checks a zero balance before authorization (ManageOfferOpFrameBase.cpp:65-75): a seller must hold ARQ and then lose
+// its authorization to fail with SELL_NOT_AUTHORIZED
+await queue('fs2-deauthorize-four', one(iAR, ['deauthCB', 'ppsrSNA', 'ppssSNA', 'mboSNA'].map((n) => S.Operation.setTrustLineFlags({ trustor: R[n].publicKey(), asset: ARQ, flags: { authorized: false } }))), iAR);
+await queue('fs2-wLF-limit-one-stroop', one(R.wLF, [ct(NRV, '0.0000001')]), R.wLF);
+await closeGroup('fs2-setup-pool-trustlines-and-deauth', 'XLM/ARQ pool-share trustlines; four ARQ holders deauthorized; wLF NRV limit cut to one stroop (its NRV sits in the pool)');
+
+await queue('fs2-deposit-lrT1', one(R.lrT1, [dep(P2, '10', '10')]), R.lrT1);
+await queue('fs2-deposit-lrT2', one(R.lrT2, [dep(P2, '10', '10')]), R.lrT2);
+await queue('fs2-lpNA-maintain-liabilities', one(iAR, [S.Operation.setTrustLineFlags({ trustor: R.lpNA.publicKey(), asset: ARQ, flags: { authorized: false, authorizedToMaintainLiabilities: true } })]), iAR);
+await closeGroup('fs2-setup-arq-pool-deposits', 'lrT1 and lrT2 hold XLM/ARQ pool shares; lpNA drops to AUTHORIZED_TO_MAINTAIN_LIABILITIES');
+
+// opEXCEEDED_WORK_LIMIT: 1001 one-stroop WRK offers at one price (MAX_OFFERS_TO_CROSS is 1000, TransactionUtils.cpp:37).
+// Each ledger holds one 100-operation transaction: exactly the classic set cap, never oversubscribed.
+for (let i = 0; i < 11; i++) {
+  const [k, n] = i < 6 ? [R.W1, 100] : i < 10 ? [R.W2, 100] : [R.W2, 1];
+  await submit(`fs2-work-limit-book-${String(i + 1).padStart(2, '0')}`, one(k, Array.from({ length: n }, () => S.Operation.manageSellOffer({ selling: WRK, buying: XLM, amount: '0.0000001', price: '1' }))), k);
+}
+
+// ---- the failures --------------------------------------------------------------------------------------
+// the sponsor sits at its minimum balance, so another account pays the fee and the sponsor is only an operation source
+const sandwich = (payer, sponsor, trustor, revoke) => many(payer, [S.Operation.beginSponsoringFutureReserves({ source: sponsor.publicKey(), sponsoredId: trustor.publicKey() }), revoke,
+  S.Operation.endSponsoringFutureReserves({ source: trustor.publicKey() })], [payer, sponsor, iAR, trustor]);
+await queue('ALLOW_TRUST_NO_TRUST_LINE', one(iAR, [S.Operation.allowTrust({ trustor: R.noTL.publicKey(), assetCode: 'ARQ', authorize: 1 })]), iAR);
+await queue('ALLOW_TRUST_CANT_REVOKE', one(iNR, [S.Operation.allowTrust({ trustor: R.cantRevA.publicKey(), assetCode: 'NRV', authorize: 0 })]), iNR);
+await queue('SET_TRUST_LINE_FLAGS_LOW_RESERVE', sandwich(R.payer1, R.lrX1, R.lrT1, S.Operation.setTrustLineFlags({ source: iAR.publicKey(), trustor: R.lrT1.publicKey(), asset: ARQ, flags: { authorized: false } })), R.payer1);
+await queue('ALLOW_TRUST_LOW_RESERVE', sandwich(R.payer2, R.lrX2, R.lrT2, S.Operation.allowTrust({ source: iAR.publicKey(), trustor: R.lrT2.publicKey(), assetCode: 'ARQ', authorize: 0 })), R.payer2);
+await queue('CHANGE_TRUST_CANNOT_DELETE', one(R.cdel, [ct(NRV, '0')]), R.cdel);
+await queue('CHANGE_TRUST_TRUST_LINE_MISSING', one(R.tlMiss, [ct(P1.asset)]), R.tlMiss);
+await queue('CHANGE_TRUST_NOT_AUTH_MAINTAIN_LIABILITIES', one(R.notAuthML, [ct(P2.asset)]), R.notAuthML);
+await closeGroup('fs2-failed-trust-and-revocation', 'allow-trust, change-trust and revocation failures; the low-reserve revocations run inside sponsorship sandwiches whose sponsor is at its minimum balance');
+
+await queue('SET_TRUST_LINE_FLAGS_CANT_REVOKE', one(iNR, [S.Operation.setTrustLineFlags({ trustor: R.cantRevS.publicKey(), asset: NRV, flags: { authorized: false } })]), iNR);
+await queue('SET_TRUST_LINE_FLAGS_INVALID_STATE', one(iAR, [S.Operation.setTrustLineFlags({ trustor: R.invState.publicKey(), asset: ARQ, flags: { authorizedToMaintainLiabilities: true } })]), iAR);
+await queue('CLAIM_CLAIMABLE_BALANCE_LINE_FULL', one(R.full, [S.Operation.claimClaimableBalance({ balanceId: cbFull })]), R.full);
+await queue('CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED', one(R.unauth, [S.Operation.claimClaimableBalance({ balanceId: cbArq })]), R.unauth);
+await queue('CLAWBACK_CLAIMABLE_BALANCE_NOT_ISSUER', one(R.clawNI, [S.Operation.clawbackClaimableBalance({ balanceId: cbArq })]), R.clawNI);
+await queue('CREATE_CLAIMABLE_BALANCE_LOW_RESERVE', many(R.payer1, [S.Operation.createClaimableBalance({ source: R.poorCB.publicKey(), asset: NRV, amount: '1', claimants: [new P(R.noTL.publicKey(), P.predicateUnconditional())] })], [R.payer1, R.poorCB]), R.payer1);
+await queue('CREATE_CLAIMABLE_BALANCE_NOT_AUTHORIZED', one(R.deauthCB, [S.Operation.createClaimableBalance({ asset: ARQ, amount: '1', claimants: [new P(R.noTL.publicKey(), P.predicateUnconditional())] })]), R.deauthCB);
+await queue('CREATE_CLAIMABLE_BALANCE_UNDERFUNDED', one(R.underCB, [S.Operation.createClaimableBalance({ asset: NRV, amount: '5', claimants: [new P(R.noTL.publicKey(), P.predicateUnconditional())] })]), R.underCB);
+await closeGroup('fs2-failed-trust-flags-and-claimable-balances', 'set-trustline-flags, claim, clawback and create claimable balance failures');
+
+await queue('CLAWBACK_CLAIMABLE_BALANCE_NOT_CLAWBACK_ENABLED', one(iNR, [S.Operation.clawbackClaimableBalance({ balanceId: cbNR })]), iNR);
+await queue('LIQUIDITY_POOL_DEPOSIT_LINE_FULL', one(R.lpFull, [dep(P1, '10', '10')]), R.lpFull);
+await queue('LIQUIDITY_POOL_DEPOSIT_NOT_AUTHORIZED', one(R.lpNA, [dep(P2, '10', '10')]), R.lpNA);
+await queue('LIQUIDITY_POOL_DEPOSIT_POOL_FULL', one(R.pf2, [dep(P3, '1', '1')]), R.pf2);
+await queue('LIQUIDITY_POOL_DEPOSIT_UNDERFUNDED', one(R.lpUF, [dep(P1, '100', '100')]), R.lpUF);
+await queue('LIQUIDITY_POOL_WITHDRAW_LINE_FULL', one(R.wLF, [S.Operation.liquidityPoolWithdraw({ liquidityPoolId: P1.id, amount: '100', minAmountA: '0', minAmountB: '0' })]), R.wLF);
+await queue('LIQUIDITY_POOL_WITHDRAW_UNDER_MINIMUM', one(R.wUM, [S.Operation.liquidityPoolWithdraw({ liquidityPoolId: P1.id, amount: '1', minAmountA: '1000', minAmountB: '0' })]), R.wUM);
+await queue('MANAGE_BUY_OFFER_LINE_FULL', one(R.mboLF, [S.Operation.manageBuyOffer({ selling: XLM, buying: NRV, buyAmount: '5', price: '1' })]), R.mboLF);
+await queue('MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED', one(R.mboSNA, [S.Operation.manageBuyOffer({ selling: ARQ, buying: XLM, buyAmount: '1', price: '1' })]), R.mboSNA);
+await queue('MANAGE_SELL_OFFER_BUY_NOT_AUTHORIZED', one(R.msoBNA, [S.Operation.manageSellOffer({ selling: XLM, buying: ARQ, amount: '1', price: '1' })]), R.msoBNA);
+await queue('MANAGE_DATA_LOW_RESERVE', many(R.payer2, [S.Operation.manageData({ source: R.poorData.publicKey(), name: 'fs2', value: 'no-reserve' })], [R.payer2, R.poorData]), R.payer2);
+await closeGroup('fs2-failed-pools-offers-data', 'clawback-claimable-balance, liquidity pool, offer and manage-data failures');
+
+const ppsr = (k, asset, dest, amount, sendMax = amount) => one(k, [S.Operation.pathPaymentStrictReceive({ sendAsset: asset, sendMax, destination: dest.publicKey(), destAsset: asset, destAmount: amount, path: [] })]);
+const ppss = (k, asset, dest, amount) => one(k, [S.Operation.pathPaymentStrictSend({ sendAsset: asset, sendAmount: amount, destination: dest.publicKey(), destAsset: asset, destMin: amount, path: [] })]);
+await queue('CLAWBACK_NOT_CLAWBACK_ENABLED', one(iNR, [S.Operation.clawback({ asset: NRV, from: R.clawNE.publicKey(), amount: '1' })]), iNR);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_LINE_FULL', ppsr(R.ppsrLF, NRV, R.full, '5'), R.ppsrLF);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_NOT_AUTHORIZED', ppsr(R.ppsrNA, ARQ, R.unauth, '1'), R.ppsrNA);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_NO_TRUST', ppsr(R.ppsrNT, NRV, R.noTL, '1'), R.ppsrNT);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_SRC_NO_TRUST', ppsr(R.noTL, NRV, R.cantRevA, '1'), R.noTL);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_SRC_NOT_AUTHORIZED', ppsr(R.ppsrSNA, ARQ, R.ppsrNA, '1'), R.ppsrSNA);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_UNDERFUNDED', ppsr(R.ppsrUF, NRV, R.ppsrNT, '5'), R.ppsrUF);
+await queue('PATH_PAYMENT_STRICT_RECEIVE_OFFER_CROSS_SELF', one(R.xs1, [S.Operation.pathPaymentStrictReceive({ sendAsset: XLM, sendMax: '10', destination: R.xs1dest.publicKey(), destAsset: CSF, destAmount: '1', path: [] })]), R.xs1);
+await queue('PATH_PAYMENT_STRICT_SEND_LINE_FULL', ppss(R.ppssLF, NRV, R.full, '5'), R.ppssLF);
+await queue('PATH_PAYMENT_STRICT_SEND_NOT_AUTHORIZED', ppss(R.ppssNA, ARQ, R.unauth, '1'), R.ppssNA);
+await queue('PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED', ppss(R.ppssSNA, ARQ, R.ppssNA, '1'), R.ppssSNA);
+await queue('PATH_PAYMENT_STRICT_SEND_OFFER_CROSS_SELF', one(R.xs2, [S.Operation.pathPaymentStrictSend({ sendAsset: XLM, sendAmount: '1', destination: R.xs2dest.publicKey(), destAsset: CSG, destMin: '0.0000001', path: [] })]), R.xs2);
+await closeGroup('fs2-failed-path-payments', 'strict-receive and strict-send failures, one per result code, plus a clawback without the clawback flag');
+
+await queue('REVOKE_SPONSORSHIP_LOW_RESERVE', one(R.spon2, [S.Operation.revokeDataSponsorship({ account: R.poorRevoke.publicKey(), name: 'fs2' })]), R.spon2);
+await queue('REVOKE_SPONSORSHIP_ONLY_TRANSFERABLE', one(R.rsOT, [S.Operation.revokeClaimableBalanceSponsorship({ balanceId: cbOT })]), R.rsOT);
+await queue('SET_OPTIONS_INVALID_INFLATION', one(R.infl, [S.Operation.setOptions({ inflationDest: ghost(101) })]), R.infl);
+await queue('SET_OPTIONS_TOO_MANY_SIGNERS', one(R.signers20, [S.Operation.setOptions({ signer: { ed25519PublicKey: q('signer-20').publicKey(), weight: 1 } })]), R.signers20);
+await queue('ACCOUNT_MERGE_IMMUTABLE_SET', one(iIM, [S.Operation.accountMerge({ destination: R.noTL.publicKey() })]), iIM);
+await queue('ACCOUNT_MERGE_SEQNUM_TOO_FAR', one(R.seqFar, [S.Operation.bumpSequence({ bumpTo: String(BigInt(ledger + 1000) << 32n) }), S.Operation.accountMerge({ destination: R.noTL.publicKey() })]), R.seqFar);
+await queue('ACCOUNT_MERGE_DEST_FULL', one(R.dfM, [S.Operation.accountMerge({ destination: R.dfD.publicKey() })]), R.dfM);
+// rec1 begins sponsoring rec2, then rec2 tries to sponsor rec1: operation 1 fails, so no END is needed
+await queue('BEGIN_SPONSORING_FUTURE_RESERVES_RECURSIVE', many(R.rec1, [S.Operation.beginSponsoringFutureReserves({ sponsoredId: R.rec2.publicKey() }),
+  S.Operation.beginSponsoringFutureReserves({ sponsoredId: R.rec1.publicKey(), source: R.rec2.publicKey() })], [R.rec1, R.rec2]), R.rec1);
+{ const inner = one(R.fbInner, [S.Operation.beginSponsoringFutureReserves({ sponsoredId: R.fbSponsored.publicKey() })]);
+  const fb = S.TransactionBuilder.buildFeeBumpTransaction(R.fbFee, '2000', inner, passphrase); fb.sign(R.fbFee);
+  await queue('fee-bump-inner-txBAD_SPONSORSHIP', fb, R.fbInner); }
+await queue('opEXCEEDED_WORK_LIMIT', one(R.WT, [S.Operation.manageBuyOffer({ selling: XLM, buying: WRK, buyAmount: '0.0001001', price: '1' })]), R.WT);
+await closeGroup('fs2-failed-sponsorship-options-merge-work', 'sponsorship, set-options and merge failures, an inner txBAD_SPONSORSHIP, and an offer that would cross 1001 offers');
+
+// ---- the lane's last ledger: base fee, both transaction-set sizes and the ledger flags change in one upgrade --
+// The flags upgrade (DISABLE_LIQUIDITY_POOL_TRADING_FLAG) switches the header to LedgerHeaderExt v1. Nothing runs after it.
+{ const before = await get('upgrades?mode=get');
+  console.log((await get('upgrades?mode=set&upgradetime=1970-01-01T00:00:00Z&basefee=200&maxtxsetsize=120&maxsorobantxsetsize=50&flags=1')).trim());
+  if ((await get('upgrades?mode=get')) === before) throw new Error('header upgrades: nothing armed');
+  await close();
+  const h = JSON.parse(await get('info')).info.ledger;
+  if (h.baseFee !== 200) throw new Error('header upgrades did not apply: ' + JSON.stringify(h));
+  steps.push({ name: 'header-upgrades-fee-sizes-flags', ledger, note: 'LEDGER_UPGRADE_BASE_FEE 200, MAX_TX_SET_SIZE 120, MAX_SOROBAN_TX_SET_SIZE 50, FLAGS 1 (pool trading disabled)' });
+  console.log('header-upgrades-fee-sizes-flags', ledger); }
+const fs2 = { accounts: Object.fromEntries([['iNR', iNR], ['iAR', iAR], ['iIM', iIM], ...Object.entries(R)].map(([n, k]) => [n, k.publicKey()])),
+  claimable: { cbFull, cbNR, cbArq, cbOT }, pools: { P1: P1.id, P2: P2.id, P3: P3.id } };
+
+if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2, cb3, cb4, cb10], pool2, poolIssuers: [pi1.publicKey(), pi2.publicKey()], hop: { issuer: hopIssuer.publicKey(), maker: hopMaker.publicKey(), dest: hopDest.publicKey() }, fs2 }, null, 1));

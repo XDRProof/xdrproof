@@ -1,0 +1,154 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.account-merge.dest-full",
+  "title": "ACCOUNT_MERGE fails with ACCOUNT_MERGE_DEST_FULL",
+  "pattern": "A transaction whose ACCOUNT_MERGE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (dest_full). The destination sells 429.4967297 NRV at 2147483647 XLM each: native buying liabilities of 2^63 - 2147483649 stroops, which leave it about 164 XLM of room below i64::MAX (TransactionUtils.cpp, addBalance). The 300 XLM merged in does not fit.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.account_merge.dest_full in a closed ledger"
+    },
+    {
+      "id": "H-C11",
+      "placement": "merge into an account with no room below i64::MAX"
+    },
+    {
+      "id": "H-C17",
+      "placement": "native buying liabilities near i64::MAX"
+    },
+    {
+      "id": "H-B3",
+      "placement": "an account balance plus buying liabilities near i64::MAX"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "9d41b66de6ab14a2246e753d0ec5690ec523f108a5deff88c66a65ccd3e836d7",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_DEST_FULL"
+      },
+      "focus": {
+        "tx_hash": "4fb509c6cd57f49fb65f62eccf28425186f5981dc19063386fbf7e864bd2130a",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "5f41a5a8623e1a1987a8a593e1bc7522cb1559af8c12b40958c6441a73787f13",
+      "size": 14368,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS"
+        ],
+        "ledger_seq": 104,
+        "recipe": "recipes/classic/gen.mjs#ACCOUNT_MERGE_DEST_FULL"
+      },
+      "focus": {
+        "tx_hash": "edebed2ff25a8cd1b6776fb5094891be8324eec980d1a248f90c937e70a7e0b7",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Operation 0 fails with dest_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/4/result/result/result/tx_failed/0/op_inner/account_merge",
+        "equals": "dest_full",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "Operation 0 fails with dest_full.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/7/result/result/result/tx_failed/0/op_inner/account_merge",
+        "equals": "dest_full",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/4/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "No operation changed state: the operation meta is empty.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/tx_apply_processing/v4/operations",
+        "length": 0,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/4/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The fee is still charged: the fee source changes in fee processing.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing/7/fee_processing",
+        "length": 2,
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

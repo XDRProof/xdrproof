@@ -1,0 +1,59 @@
+{
+  "id": "failure.path-payment-strict-send.src-not-authorized",
+  "title": "PATH_PAYMENT_STRICT_SEND fails with PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED",
+  "pattern": "A transaction whose PATH_PAYMENT_STRICT_SEND operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (src_not_authorized). Sending ARQ from a trustline that holds 10 but was deauthorized.",
+  "caps": [
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.path_payment_strict_send.src_not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "strict send from a deauthorized trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "PATH_PAYMENT_STRICT_SEND_SRC_NOT_AUTHORIZED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with src_not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/path_payment_strict_send",
+      "equals": "src_not_authorized",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

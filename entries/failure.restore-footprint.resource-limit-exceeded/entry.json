@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "failure.restore-footprint.resource-limit-exceeded",
+  "title": "RESTORE_FOOTPRINT fails with RESOURCE_LIMIT_EXCEEDED",
+  "pattern": "A transaction whose RESTORE_FOOTPRINT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (resource_limit_exceeded). Restoring an evicted persistent entry while declaring 0 write bytes: the restored entry has to be written.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "RESTORE_FOOTPRINT resource_limit_exceeded at apply"
+    },
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.restore_footprint.resource_limit_exceeded in a closed ledger"
+    },
+    {
+      "id": "H-D7",
+      "placement": "RestoreFootprint of an evicted entry with too few write bytes"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-mainnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p30-mainnet-generated.xdr",
+      "sha256": "dedf233f1bc40371559aea6a5cf04881e47520fa741c995e1171cbb1c96eec1a",
+      "size": 3960,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 89,
+        "recipe": "recipes/soroban/gen/gen.mjs#restore-write-bytes-exceeded"
+      },
+      "focus": {
+        "tx_hash": "bf743e8ca12a6ce3a41048fa98e8775a0e090ed48b61ba4a9e62f75c42006e83",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "83b6bb1b3dbfe0551399473ea843513e11e1c3a9d3b7e6e1d6505cad4808978b",
+      "size": 3952,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 88,
+        "recipe": "recipes/soroban/gen/gen.mjs#restore-write-bytes-exceeded"
+      },
+      "focus": {
+        "tx_hash": "89cb877bd3d45ab3da1963fa0d3cb4c1a23d2c6d3bc819c48fd919c8627f4592",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "06f836c986dae1700d22e4573d9754d7e696e7225fe8f1d2d8cbd87aeab93c3b",
+      "size": 3960,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 89,
+        "recipe": "recipes/soroban/gen/gen.mjs#restore-write-bytes-exceeded"
+      },
+      "focus": {
+        "tx_hash": "7757d11f79a1d3a0589c247239ce504407832de3a89761c64926c1f316bc68c6",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "09bde6766ce8b82c625a199dfd6178e422ec110cbbe8605fb57ad8a82cbca7bf",
+      "size": 3952,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 88,
+        "recipe": "recipes/soroban/gen/gen.mjs#restore-write-bytes-exceeded"
+      },
+      "focus": {
+        "tx_hash": "19993fd621f7ef5b59a2ab11123798cf6a8d186e9c0591fadda5fc23225ea230",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation fails with resource_limit_exceeded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/restore_footprint",
+        "equals": "resource_limit_exceeded",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with resource_limit_exceeded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/restore_footprint",
+        "equals": "resource_limit_exceeded",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with resource_limit_exceeded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/1/result/result/result/tx_failed/0/op_inner/restore_footprint",
+        "equals": "resource_limit_exceeded",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The operation fails with resource_limit_exceeded.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/0/result/result/result/tx_failed/0/op_inner/restore_footprint",
+        "equals": "resource_limit_exceeded",
+        "variants": [
+          "p28-testnet-generated"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "failure.manage-buy-offer.sell-not-authorized",
+  "title": "MANAGE_BUY_OFFER fails with MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED",
+  "pattern": "A transaction whose MANAGE_BUY_OFFER operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (sell_not_authorized). The seller holds 10 ARQ on a deauthorized trustline. Core checks a zero balance before authorization (ManageOfferOpFrameBase.cpp), so an unauthorized trustline that never held ARQ reports underfunded instead.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.manage_buy_offer.sell_not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "offer selling from a deauthorized trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "MANAGE_BUY_OFFER_SELL_NOT_AUTHORIZED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with sell_not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/manage_buy_offer",
+      "equals": "sell_not_authorized",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

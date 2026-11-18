@@ -76,6 +76,7 @@ if (untargeted.length) out.push('Not corpus hazards: these are about invalid inp
 out.push(`## Arms no entry reaches (${ex.arms.length})`, '');
 for (const c of ORDER) {
   const rows = ex.arms.filter((x) => x.class === c).sort((a, b) => a.arm.localeCompare(b.arm));
+  if (!rows.length) continue; // an empty class stays in the summary table above
   out.push(`### ${c} (${rows.length})`, '', ex.classes[c] + '.', '', '| Arm | Why | Source |', '|---|---|---|',
     ...rows.map((x) => `| ${code(x.arm)} | ${cell(x.note)}${x.review.startsWith('corrected') ? ' *(class corrected after source check)*' : ''} | ${x.evidence.map((e) => cell(ev(e))).join('<br>')} |`), '');
 }

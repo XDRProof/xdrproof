@@ -1,0 +1,51 @@
+{
+  "id": "failure.op.exceeded-work-limit",
+  "title": "An offer that would cross 1001 offers fails with opEXCEEDED_WORK_LIMIT",
+  "pattern": "One operation may cross at most 1000 offers (MAX_OFFERS_TO_CROSS, TransactionUtils.cpp). 1001 one-stroop WRK offers sit at one price; a buy offer for 1001 stroops would cross them all. The operation fails at the operation level, with no inner result of its type, and nothing crosses. Readers that expect every failed operation to carry an operation-specific code meet a bare opEXCEEDED_WORK_LIMIT.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.opEXCEEDED_WORK_LIMIT in a closed ledger"
+    },
+    {
+      "id": "H-C7",
+      "placement": "a buy offer that would cross 1001 offers"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "opEXCEEDED_WORK_LIMIT",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with opEXCEEDED_WORK_LIMIT.",
+      "at": "tx.result",
+      "path": "/tx_failed/0",
+      "equals": "op_exceeded_work_limit",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

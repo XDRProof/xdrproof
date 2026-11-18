@@ -1,0 +1,59 @@
+{
+  "id": "failure.clawback.not-clawback-enabled",
+  "title": "CLAWBACK fails with CLAWBACK_NOT_CLAWBACK_ENABLED",
+  "pattern": "A transaction whose CLAWBACK operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_clawback_enabled). The issuer never enabled clawback, so its trustlines carry no clawback flag.",
+  "caps": [
+    "CAP-0035"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.clawback.not_clawback_enabled in a closed ledger"
+    },
+    {
+      "id": "H-C10",
+      "placement": "clawback from a trustline without the clawback flag"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CLAWBACK_NOT_CLAWBACK_ENABLED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with not_clawback_enabled.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/clawback",
+      "equals": "not_clawback_enabled",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

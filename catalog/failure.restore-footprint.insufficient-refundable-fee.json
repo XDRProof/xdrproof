@@ -1,0 +1,48 @@
+{
+  "id": "failure.restore-footprint.insufficient-refundable-fee",
+  "title": "RESTORE_FOOTPRINT fails with INSUFFICIENT_REFUNDABLE_FEE",
+  "pattern": "A transaction whose RESTORE_FOOTPRINT operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (insufficient_refundable_fee). Restoring an evicted persistent entry with a resource fee that covers only the non-refundable part: nothing is left for the rent.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "RESTORE_FOOTPRINT insufficient_refundable_fee at apply"
+    },
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.restore_footprint.insufficient_refundable_fee in a closed ledger"
+    },
+    {
+      "id": "H-D7",
+      "placement": "RestoreFootprint of an evicted entry that cannot pay its rent"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "restore-insufficient-refundable-fee",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation fails with insufficient_refundable_fee.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/restore_footprint",
+      "equals": "insufficient_refundable_fee",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

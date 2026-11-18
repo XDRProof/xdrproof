@@ -1,0 +1,59 @@
+{
+  "id": "failure.change-trust.cannot-delete",
+  "title": "CHANGE_TRUST fails with CHANGE_TRUST_CANNOT_DELETE",
+  "pattern": "A transaction whose CHANGE_TRUST operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (cannot_delete). Deleting an NRV trustline (limit 0) while an XLM/NRV pool-share trustline still depends on it.",
+  "caps": [
+    "CAP-0038"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.change_trust.cannot_delete in a closed ledger"
+    },
+    {
+      "id": "H-C8",
+      "placement": "deleting a trustline a pool-share trustline still uses"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CHANGE_TRUST_CANNOT_DELETE",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with cannot_delete.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/change_trust",
+      "equals": "cannot_delete",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

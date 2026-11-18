@@ -1,0 +1,63 @@
+{
+  "id": "failure.claim-claimable-balance.not-authorized",
+  "title": "CLAIM_CLAIMABLE_BALANCE fails with CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED",
+  "pattern": "A transaction whose CLAIM_CLAIMABLE_BALANCE operation fails at apply is still written into the closed ledger: its fee is charged, its sequence number is consumed, and nothing it did is kept. The result carries the operation's code (not_authorized). The claimant's ARQ trustline is not authorized.",
+  "caps": [
+    "CAP-0023"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "OperationResult.claim_claimable_balance.not_authorized in a closed ledger"
+    },
+    {
+      "id": "H-C9",
+      "placement": "claim into an unauthorized trustline"
+    },
+    {
+      "id": "H-C10",
+      "placement": "unauthorized ARQ trustline"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "classic",
+    "step": "CLAIM_CLAIMABLE_BALANCE_NOT_AUTHORIZED",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Operation 0 fails with not_authorized.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/claim_claimable_balance",
+      "equals": "not_authorized",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "No operation changed state: the operation meta is empty.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee is still charged: the fee source changes in fee processing.",
+      "at": "tx.fee_processing",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}
