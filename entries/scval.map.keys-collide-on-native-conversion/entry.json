@@ -52,7 +52,9 @@
         "says": "The contract wrote a persistent entry keyed `collide` whose value is a 5-entry map with keys u32 1, i32 1, u64 1, string \"1\", symbol \"1\" (in core's order).",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
         "some": {
@@ -87,7 +89,9 @@
         "says": "Each key maps to a different value (10, 20, 30, 40, 50), so a lossy conversion is detectable.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events/0/body/v0/data/map/4/val/u32",
         "equals": 50

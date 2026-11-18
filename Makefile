@@ -1,12 +1,15 @@
 # XDRProof. Each target re-runs a claim and prints its result.
 # Fast and offline:   make verify   make coverage
 # Need Docker:        make generate   make conformance   make replay
-.PHONY: verify coverage coverage-goldens generate conformance replay replay-729 replay-731 native all
+.PHONY: verify oracle coverage coverage-goldens generate conformance replay replay-729 replay-731 native all
 
 NATIVE := tools/native/target/release/xdrproof-native
 
 verify: tools/node_modules $(NATIVE)  ## schema, hazards, sha256, native rs-stellar-xdr round trip, focus, every fact (seconds)
 	node tools/verify.mjs
+
+oracle: tools/node_modules             ## facts confirmed by stellar-core's own decoder and the schema walker (needs Docker; seconds)
+	node tools/oracle.mjs
 
 coverage:                             ## arms reachable from LedgerCloseMeta vs arms the entries reach (seconds)
 	tools/coverage/run.sh
@@ -30,7 +33,7 @@ replay-731:                           ## wallet-backend #731 dropped / fixed han
 
 native: $(NATIVE)                     ## build the native rs-stellar-xdr reader (~1 min once)
 
-all: verify coverage generate conformance replay
+all: verify oracle coverage generate conformance replay
 
 $(NATIVE): tools/native/Cargo.toml tools/native/src/main.rs
 	cargo build --quiet --release --manifest-path tools/native/Cargo.toml

@@ -108,7 +108,9 @@
         "says": "The transaction calls `trust` on the XPF Stellar Asset Contract for bob.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/function_name",
         "equals": "trust"
@@ -117,7 +119,9 @@
         "says": "The contract called is the SAC for XPF issued by the fixed issuer key.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
         "equals": "CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG"
@@ -126,7 +130,9 @@
         "says": "Some change (in any order) creates bob's XPF trustline: balance 0, limit i64::MAX, authorized.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/changes",
         "some": {
@@ -149,7 +155,9 @@
       {
         "says": "The invocation succeeded.",
         "evidence": [
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "path": "/v2/tx_processing/0/result/result/result/tx_success/0/op_inner/invoke_host_function/success",
         "equals": "cbbc48750debb8535093b3deaf88ac7f4cff87425576a58de2bac754acdb4616"

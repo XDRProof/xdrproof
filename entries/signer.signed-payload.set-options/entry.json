@@ -102,7 +102,9 @@
       {
         "says": "The mined testnet signer is the P… strkey from the wallet-backend#729 ledger, kept whole.",
         "evidence": [
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "variants": [
           "p28-testnet-mined"
@@ -113,7 +115,9 @@
       {
         "says": "After apply, the mined account's only signer is that full P… key (an indexer storing 33 bytes has lost the payload).",
         "evidence": [
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "variants": [
           "p28-testnet-mined"
@@ -128,7 +132,9 @@
         "says": "Generated: the first signer carries a 64-byte payload (sha256('xdrproof:payload:a') || sha256('xdrproof:payload:b')) for bob's key; its strkey is 165 characters.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "variants": [
           "p30-mainnet-generated",
@@ -141,7 +147,9 @@
         "says": "Generated: the second signer carries a 29-byte payload, a length that needs XDR padding (first 29 bytes of sha256('xdrproof:payload:c')).",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "variants": [
           "p30-mainnet-generated",
@@ -154,7 +162,9 @@
         "says": "Generated: after both operations, alice's account holds both signed-payload signers.",
         "evidence": [
           "construction",
-          "snapshot"
+          "snapshot",
+          "core",
+          "walker"
         ],
         "variants": [
           "p30-mainnet-generated",

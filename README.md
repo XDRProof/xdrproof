@@ -15,6 +15,7 @@ XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stel
 | Command | What it proves | Needs | Time |
 |---|---|---|---|
 | `make verify` | Every entry matches the schema and names known hazards; sha256 and size match; every variant **round-trips byte-for-byte through native rs-stellar-xdr 30.0.0** (depth limit 1500); its focus transaction is present; every expected fact holds; `manifest.json` is current. A second reader, the WASM build `@stellar/stellar-xdr-json`, must agree wherever it can decode | Node ≥ 22.15, Rust | seconds (first build ~1 min) |
+| `make oracle` | Every value-checkable fact is **confirmed by stellar-core's own decoder** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK); a planted one-digit error in a 64-bit value is caught by both | Docker | seconds |
 | `make coverage` | 499 XDR union arms are reachable from `LedgerCloseMeta` at v30.0; the three entries here reach 78 | Python 3 | seconds |
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach **254 of 499** | + git (downloads ~76 MB once) | ~1 min |
 | `make generate` | Every generated entry is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0 on the mainnet passphrase (no RPC, no network, no keys or funds), and the shipped bytes are reproduced | Docker | ~2 min |
