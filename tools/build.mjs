@@ -90,11 +90,12 @@ function generatedVariant(cat, label) {
     change_order };
 }
 
-function minedVariant(cat, recId) {
+function minedVariant(cat, ref) { // ref: a mined record id, or {record, key} to keep a published variant key
+  const recId = typeof ref === 'string' ? ref : ref.record;
   const rec = MINED.find((r) => r.id === recId) ?? die(`mined record ${recId} missing`);
   const net = rec.network === 'pubnet' ? 'mainnet' : 'testnet';
   const bytes = zstdDecompressSync(readFileSync(join(ROOT, rec.file)));
-  const key = `p${rec.protocol_version}-${net}-mined-l${rec.ledger_seq}`;
+  const key = typeof ref === 'string' ? `p${rec.protocol_version}-${net}-mined-l${rec.ledger_seq}` : ref.key;
   const tx = cat.focus?.tx_hash ?? rec.findings.find((f) => f.tx_hash)?.tx_hash ?? null;
   return { key, protocol: rec.protocol_version, passphrase: PASSPHRASE[net], bytes, fileName: `${key}.xdr.zst`, zst: readFileSync(join(ROOT, rec.file)), tx, manifest: {},
     source: { lane: 'mined', ledger_seq: rec.ledger_seq, url: rec.source.lake_url, container_sha256: rec.source.batch_sha256 }, // full provenance: mined/index.json

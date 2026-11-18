@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "eviction.mainnet-at-cap",
+  "title": "Mainnet evicts 1000 entries in one ledger, the per-ledger cap",
+  "pattern": "1000 contract-data entries and their 1000 TTL keys leave the live state with no transaction: exactly maxEntriesToArchive, 1000 on mainnet since ledger 59516381.",
+  "caps": [
+    "CAP-0062"
+  ],
+  "hazards": [
+    {
+      "id": "H-D6",
+      "placement": "evicted_keys at maxEntriesToArchive on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65460631",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65460631.xdr.zst",
+      "sha256": "6be00191ddc9109958aa51575b0a993bd1e0c73affaedd07784dedf125bad430",
+      "size": 1156180,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65460631,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC19F3FF--65408000-65471999/FC192668--65460631.xdr.zst",
+        "container_sha256": "480b7b1339add065dc43abe01ad0e7fe624d4fb8777055ffa4e34ef4035f506c"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "2000 keys are evicted.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/evicted_keys",
+        "length": 2000
+      }
+    ]
+  }
+}

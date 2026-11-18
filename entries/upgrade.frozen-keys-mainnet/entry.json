@@ -1,0 +1,60 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "upgrade.frozen-keys-mainnet",
+  "title": "Mainnet freezes a fourth account (CAP-0077)",
+  "pattern": "A mainnet config upgrade grows the frozen-key list from 3 to 4 accounts; it is visible only in upgradesProcessing as encoded LedgerKeys.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "mainnet frozen-key list 3 -> 4 accounts"
+    },
+    {
+      "id": "H-F10",
+      "placement": "LEDGER_UPGRADE_CONFIG frozen_ledger_keys on mainnet"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65273932",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65273932.xdr.zst",
+      "sha256": "c0b22acfabfbe0ff4e068abc603bc3239713aab6956db637d4912bfe0ddf8f06",
+      "size": 1276284,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65273932,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1CE1FF--65216000-65279999/FC1BFFB3--65273932.xdr.zst",
+        "container_sha256": "3e849ee85277a58c4ac7448d57ba8289d3d9f15574c6abac159f096dcee7f300"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "After the upgrade 4 keys are frozen.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing/0/changes",
+        "some": {
+          "/updated/data/config_setting/frozen_ledger_keys/keys/3": "0000000000000000ef88a3c873600ee2668ae1e76ca64e836bbd339c1f4b95f225e515072b2a9999"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "header.signed-ms",
+  "title": "A protocol-30 header with a signed millisecond close time",
+  "pattern": "CAP-0088: StellarValue ext signed_ms carries close_time_ms, signed by the node. Readers that read close_time only, or expect ext basic/signed, miss the new arm.",
+  "caps": [
+    "CAP-0088"
+  ],
+  "hazards": [
+    {
+      "id": "H-F2",
+      "placement": "StellarValue.ext STELLAR_VALUE_SIGNED_MS"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p30-testnet-mined-l5540314",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-mined-l5540314.xdr.zst",
+      "sha256": "ee742912551436ce338747a1428c5917c589dbeaa415000f8de768493c82bb71",
+      "size": 168364,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 5540314,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/testnet/2025-12-18/FFAC03FF--5504000-5567999/FFAB7625--5540314.xdr.zst",
+        "container_sha256": "79caf2c48b41e7b0b37cf2ffb70df2ffdcfc03cb5d69677fe38c36534e43f1b4"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "close_time_ms is close_time × 1000 here: 1793725210000.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/header/scp_value/ext/signed_ms/close_time_ms",
+        "equals": "1793725210000"
+      }
+    ]
+  }
+}

@@ -32,8 +32,6 @@
         "core_version": "stellar-core v30.0.0",
         "emitter_flags": [
           "EMIT_CLASSIC_EVENTS",
-          "EMIT_SOROBAN_TRANSACTION_META_EXT_V1",
-          "EMIT_LEDGER_CLOSE_META_EXT_V1",
           "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
         ],
         "ledger_seq": 19,
@@ -41,6 +39,75 @@
       },
       "focus": {
         "tx_hash": "739fcbf6280db92b3a445597b78b634ea2e84d885d7df1b5f0e649bddcad78e7",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-mainnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p28-mainnet-generated.xdr",
+      "sha256": "6d54aaf35a75e1773e0b7789695da45933136ad0340f6ff013309284a7727600",
+      "size": 2964,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "focus": {
+        "tx_hash": "739fcbf6280db92b3a445597b78b634ea2e84d885d7df1b5f0e649bddcad78e7",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "a70bc215e80662a703b2077d59ddf90e8b5bdf41b17929f2719a6e9ea28cc3e7",
+      "size": 2972,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "focus": {
+        "tx_hash": "0ae68be3989eb7989008b658a3bc42076ce942331af75a9bd6eee2f32c336105",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "46fed2036c0f50547b2172489ef7b8a29dd2e6c866c6d772c9d25c9ce05580c9",
+      "size": 2964,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 19,
+        "recipe": "recipes/soroban/gen/gen.mjs#map-colliding-keys-as-value"
+      },
+      "focus": {
+        "tx_hash": "0ae68be3989eb7989008b658a3bc42076ce942331af75a9bd6eee2f32c336105",
         "op_index": 0
       }
     }

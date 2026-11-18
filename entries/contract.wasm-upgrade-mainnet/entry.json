@@ -1,0 +1,58 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "contract.wasm-upgrade-mainnet",
+  "title": "A mainnet contract upgrades its Wasm: an executable_update system event",
+  "pattern": "A contract replaces its own code; the only trace is a system event executable_update with old and new executables. Readers that index contract code only at deploy keep the old Wasm.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "contract Wasm upgrade (executable_update system event)"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65514477",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65514477.xdr.zst",
+      "sha256": "e29beaedb0b4b1919f5ddcf0239b5a382d624cccd07a1ae4a61ffc0b6e24f868",
+      "size": 1536208,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65514477,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185412--65514477.xdr.zst",
+        "container_sha256": "c003d0e2d7452b08fc765551ed942ce15fb81a588cf47828d29811a6ae0278cd"
+      },
+      "focus": {
+        "tx_hash": "91a365e1595aa417a7f63b948a5cc5723fd62e055247c166a6615fe0fe8c8d70",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The operation emits an executable_update system event.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/300/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/type": "system",
+          "/body/v0/topics/0/symbol": "executable_update"
+        }
+      }
+    ]
+  }
+}

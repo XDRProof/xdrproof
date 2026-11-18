@@ -1,0 +1,34 @@
+{
+  "id": "auth.many-entries-mainnet",
+  "title": "A mainnet Soroban call carrying many authorization entries",
+  "pattern": "One batch call carries many auth entries, each naming an address: an indexer that adds every auth address to that address's history puts this transaction into many unrelated histories.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A7",
+      "placement": "many SorobanAuthorizationEntry addresses in one transaction"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-auth-many-entries@pubnet-65167655"
+  },
+  "focus": {
+    "tx_hash": "2a0da9b5243c0e133761e918191ac55417e1b6c421ac3f168a7fc738b2edf396",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call is batch_plant.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/function_name",
+      "equals": "batch_plant",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

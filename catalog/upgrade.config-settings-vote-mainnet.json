@@ -1,0 +1,36 @@
+{
+  "id": "upgrade.config-settings-vote-mainnet",
+  "title": "A mainnet validator vote updating seven Soroban settings",
+  "pattern": "One LEDGER_UPGRADE_CONFIG updates seven ConfigSettingEntry values, including ledger_max_dependent_tx_clusters 3.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-F10",
+      "placement": "mainnet LEDGER_UPGRADE_CONFIG with 7 settings"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "config-upgrade-settings-vote@pubnet-65080525"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "ledger_max_dependent_tx_clusters becomes 3.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/changes",
+      "some": {
+        "/updated/data/config_setting/contract_parallel_compute_v0/ledger_max_dependent_tx_clusters": 3
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

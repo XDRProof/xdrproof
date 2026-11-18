@@ -1,0 +1,152 @@
+{
+  "id": "ledger.apply-order-differs-from-set-order",
+  "title": "Apply order is not transaction-set order, and differs by network and protocol",
+  "pattern": "The transaction set lists transactions in phases sorted by hash; core applies the classic phase first, then the Soroban phase, each in an order shuffled by the hash of the whole set (TxSetFrame.cpp ApplyTxSorter). The same recipe gives a different apply order on each network and protocol. Readers that number transactions by their position in the set, or assume one order, misattribute results.",
+  "caps": [
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-C12",
+      "placement": "tx_processing order differs from tx_set order; classic phase before Soroban phase"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "soroban",
+    "step": "race-attacker-bump-sequence",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The ledger applies 12 transactions.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 12,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied first (p30-mainnet): race-attacker-merge-tx-source.",
+      "variants": [
+        "p30-mainnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/0/result/transaction_hash",
+      "equals": {
+        "$step": "race-attacker-merge-tx-source"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied last (p30-mainnet): race-victim-opNO_ACCOUNT, a Soroban transaction.",
+      "variants": [
+        "p30-mainnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/11/result/transaction_hash",
+      "equals": {
+        "$step": "race-victim-opNO_ACCOUNT"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied first (p28-mainnet): race-attacker-bump-sequence.",
+      "variants": [
+        "p28-mainnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/0/result/transaction_hash",
+      "equals": {
+        "$step": "race-attacker-bump-sequence"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied last (p28-mainnet): race-victim-txBAD_SEQ, a Soroban transaction.",
+      "variants": [
+        "p28-mainnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/11/result/transaction_hash",
+      "equals": {
+        "$step": "race-victim-txBAD_SEQ"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied first (p30-testnet): race-attacker-bump-sequence.",
+      "variants": [
+        "p30-testnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/0/result/transaction_hash",
+      "equals": {
+        "$step": "race-attacker-bump-sequence"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied last (p30-testnet): race-victim-txNO_ACCOUNT, a Soroban transaction.",
+      "variants": [
+        "p30-testnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/11/result/transaction_hash",
+      "equals": {
+        "$step": "race-victim-txNO_ACCOUNT"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied first (p28-testnet): race-attacker-remove-op-signer.",
+      "variants": [
+        "p28-testnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/0/result/transaction_hash",
+      "equals": {
+        "$step": "race-attacker-remove-op-signer"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Applied last (p28-testnet): race-victim-txBAD_AUTH, a Soroban transaction.",
+      "variants": [
+        "p28-testnet-generated"
+      ],
+      "at": "ledger",
+      "path": "/tx_processing/11/result/transaction_hash",
+      "equals": {
+        "$step": "race-victim-txBAD_AUTH"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "sac.trust.creates-trustline",
+  "title": "Stellar Asset Contract `trust` call creates a classic trustline with no event",
+  "pattern": "Since CAP-0073 a contract call (the Stellar Asset Contract's `trust` function) can create a classic trustline. The trustline appears only as a created ledger entry in the operation's changes: there is no CHANGE_TRUST operation and no operation event. Readers that learn about trustlines from operation types or events drop it. wallet-backend recorded the balance but no TRUSTLINE/ADD state change (#731).",
+  "caps": [
+    "CAP-0073"
+  ],
+  "hazards": [
+    {
+      "id": "H-D1",
+      "placement": "InvokeHostFunctionOp → LedgerEntryChange.created.TrustLineEntry (no operation event)"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/issues/731",
+    "https://github.com/stellar/stellar-etl/issues/460"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "sac-trust-source-auth",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction calls `trust` on the XPF Stellar Asset Contract for bob.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/function_name",
+      "equals": "trust",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The contract called is the SAC for XPF issued by the fixed issuer key; its ID depends on the network.",
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
+      "equals": {
+        "$manifest": "contracts.sac_XPF"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Some change (in any order) creates bob's XPF trustline: balance 0, limit i64::MAX, authorized.",
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/created/data/trustline/account_id": "GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF",
+        "/created/data/trustline/asset/credit_alphanum4/asset_code": "XPF",
+        "/created/data/trustline/asset/credit_alphanum4/issuer": "GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND",
+        "/created/data/trustline/balance": "0",
+        "/created/data/trustline/limit": "9223372036854775807",
+        "/created/data/trustline/flags": 1
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The operation emits no event: an indexer that waits for an event or a CHANGE_TRUST operation never learns about this trustline.",
+      "at": "tx.meta",
+      "path": "/operations/0/events",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The invocation succeeded.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/invoke_host_function/success",
+      "equals": "cbbc48750debb8535093b3deaf88ac7f4cff87425576a58de2bac754acdb4616",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

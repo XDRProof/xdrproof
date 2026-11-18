@@ -1,0 +1,61 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "parallel.three-stages-mainnet",
+  "title": "A mainnet Soroban phase with three stages and two clusters in one stage",
+  "pattern": "CAP-0063 parallel execution: the Soroban phase is stages of clusters of transactions. This mainnet ledger has 3 stages with 1, 2 and 1 clusters. Readers that assume one stage and one cluster drop transactions.",
+  "caps": [
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-F5",
+      "placement": "ParallelTxsComponent with 3 stages, one holding 2 clusters"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65485185",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65485185.xdr.zst",
+      "sha256": "fc6b3e4907991b6d568d0fb6096551348de8e2d062ad836b91f56b773dced1e0",
+      "size": 2495988,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65485185,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC18C67E--65485185.xdr.zst",
+        "container_sha256": "088efd0bc5fdc0a5a01666f2495dd86aaa12ee8fb548da43609dbdda5a15b7c4"
+      },
+      "focus": {
+        "tx_hash": "1011f8f40f79d361b9f4e68a5cf5f87225ddd2d6b1222f055b2d02475de612c3",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The Soroban phase has 3 stages.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages",
+        "length": 3
+      },
+      {
+        "says": "The second stage has 2 clusters.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/1",
+        "length": 2
+      }
+    ]
+  }
+}

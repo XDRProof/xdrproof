@@ -10,6 +10,10 @@
     {
       "id": "H-D5",
       "placement": "CreateContractV2 from address + salt"
+    },
+    {
+      "id": "H-G1",
+      "placement": "contract ID derived from the network ID: different in the mainnet and testnet variants of the same recipe"
     }
   ],
   "xdr_type": "LedgerCloseMeta",

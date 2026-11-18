@@ -19,6 +19,10 @@
     {
       "id": "H-C8",
       "placement": "pool entry removed by a revocation"
+    },
+    {
+      "id": "H-F6",
+      "placement": "a ledger whose change order differed in every one of 20 core runs; minority orderings ship as files"
     }
   ],
   "xdr_type": "LedgerCloseMeta",

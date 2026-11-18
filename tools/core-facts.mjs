@@ -6,7 +6,7 @@
 // stellar-core v30.0.0) with networking disabled.
 // stellar-core prints 64-bit integers as bare JSON numbers and copies non-UTF-8 string bytes raw, so the
 // output is read as bytes (latin1) and parsed with source-preserving number handling.
-import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -63,17 +63,17 @@ export function coreValues(buffers) {
       const head = Buffer.alloc(4); head.writeUInt32BE((0x80000000 | b.length) >>> 0); // XDR record mark
       writeFileSync(join(dir, `meta-${String(i).padStart(6, '0')}.xdr`), Buffer.concat([head, b]));
     });
-    const out = execFileSync('docker', ['run', '--rm', '--network', 'none', '-v', `${dir}:/work`, '--entrypoint', 'sh', CORE_IMAGE, '-c',
-      'for f in /work/meta-*.xdr; do printf "\\n@@FILE %s\\n" "$f"; stellar-core dump-xdr "$f" 2>/dev/null || echo "@@FAILED"; done'],
-    { maxBuffer: 1 << 30 }).toString('latin1');
-    const parts = out.split(/\n@@FILE \/work\/meta-(\d+)\.xdr\n/).slice(1);
+    // one container for all ledgers; each dump goes to its own file (large mainnet ledgers print tens of MB each,
+    // so one combined output would exceed Node's string limit), and a failed dump leaves an empty .fail marker
+    execFileSync('docker', ['run', '--rm', '--network', 'none', '-v', `${dir}:/work`, '--entrypoint', 'sh', CORE_IMAGE, '-c',
+      'for f in /work/meta-*.xdr; do stellar-core dump-xdr "$f" > "$f.json" 2>/dev/null || : > "$f.fail"; done'], { stdio: 'ignore' });
     const result = new Array(buffers.length).fill(null);
-    for (let i = 0; i < parts.length; i += 2) {
-      const idx = Number(parts[i]); const text = parts[i + 1];
-      if (text.includes('@@FAILED')) continue;
-      const json = JSON.parse(text, (key, value, ctx) => (typeof value === 'number' && ctx?.source ? ctx.source : value));
+    buffers.forEach((_, idx) => {
+      const base = join(dir, `meta-${String(idx).padStart(6, '0')}.xdr`);
+      if (existsSync(base + '.fail') || !existsSync(base + '.json')) return;
+      const json = JSON.parse(readFileSync(base + '.json').toString('latin1'), (key, value, ctx) => (typeof value === 'number' && ctx?.source ? ctx.source : value));
       const values = new Set(); collect(json, values); result[idx] = values;
-    }
+    });
     return result;
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }

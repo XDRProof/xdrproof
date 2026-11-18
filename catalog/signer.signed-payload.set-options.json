@@ -1,0 +1,118 @@
+{
+  "id": "signer.signed-payload.set-options",
+  "title": "Account adds a signed-payload (P…) signer with SET_OPTIONS",
+  "pattern": "CAP-0040 added a signer type that carries a payload: the strkey starts with P and is longer than a G address (up to 165 characters for a 64-byte payload). Readers that assume every signer is a 32-byte ed25519 key truncate it or fail. wallet-backend halted ingestion on testnet ledger 4437357 (#729) and stored the signer as 33 bytes, losing the payload (#716).",
+  "caps": [
+    "CAP-0040"
+  ],
+  "hazards": [
+    {
+      "id": "H-A3",
+      "placement": "SetOptionsOp.signer.key (SIGNER_KEY_TYPE_ED25519_SIGNED_PAYLOAD)"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/wallet-backend/pull/729",
+    "https://github.com/stellar/wallet-backend/issues/716"
+  ],
+  "source": {
+    "lane": "classic",
+    "step": "add-signed-payload-signers",
+    "variants": [
+      "p30-mainnet",
+      "p30-testnet"
+    ],
+    "mined": [
+      {
+        "record": "signed-payload-signer@testnet-4437357",
+        "key": "p28-testnet-mined"
+      }
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The transaction succeeded: core applied the signed-payload signer.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/set_options",
+      "equals": "success",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The mined testnet signer is the P… strkey from the wallet-backend#729 ledger, kept whole.",
+      "variants": [
+        "p28-testnet-mined"
+      ],
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/set_options/signer/key",
+      "equals": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "After apply, the mined account's only signer is that full P… key (an indexer storing 33 bytes has lost the payload).",
+      "variants": [
+        "p28-testnet-mined"
+      ],
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/updated/data/account/account_id": "GBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSBB7B",
+        "/updated/data/account/signers/0/key": "PBCK2RYYLIYOSHBEL2FQLAVRSHRH3GP3ID476SGKBV7BEZHMQ6NSAAAAAAB55LN6AANMS"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Generated: the first signer carries a 64-byte payload (sha256('xdrproof:payload:a') || sha256('xdrproof:payload:b')) for bob's key; its strkey is 165 characters.",
+      "variants": [
+        "p30-mainnet",
+        "p30-testnet"
+      ],
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/0/body/set_options/signer/key",
+      "equals": "PCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAABAPLCG4TV4JZWAODQ2OPNXPBFSF7DB774MDE3MVLMKFQ7PHE5HQIOGTBILGV7NGJBMP3A7I5NBRXG5PJFEDEZBYWZW72BQXUSY4R5RC7YFXC",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Generated: the second signer carries a 29-byte payload, a length that needs XDR padding (first 29 bytes of sha256('xdrproof:payload:c')).",
+      "variants": [
+        "p30-mainnet",
+        "p30-testnet"
+      ],
+      "at": "tx.envelope",
+      "path": "/tx/tx/operations/1/body/set_options/signer/key",
+      "equals": "PCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5AAAAAAOS2UR5JPZSJKJ7MTYM2KD5A35N4M6CQAT7BRSYUBOTHZFDOMAAAABQCM",
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Generated: after both operations, alice's account holds both signed-payload signers.",
+      "variants": [
+        "p30-mainnet",
+        "p30-testnet"
+      ],
+      "at": "tx.meta",
+      "path": "/operations/1/changes",
+      "some": {
+        "/updated/data/account/account_id": "GBQXLZZTGUKRRRYDQNQOMKWL7DN3PGIBPNBIHDIO5KFPPPIFAHHQJZB3",
+        "/updated/data/account/num_sub_entries": 2
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ]
+}

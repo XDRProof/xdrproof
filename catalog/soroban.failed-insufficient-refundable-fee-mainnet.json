@@ -1,0 +1,34 @@
+{
+  "id": "soroban.failed-insufficient-refundable-fee-mainnet",
+  "title": "A mainnet Soroban call that fails insufficient_refundable_fee",
+  "pattern": "The declared refundable fee does not cover rent and events: INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-failed@pubnet-65516072"
+  },
+  "focus": {
+    "tx_hash": "428555ae995b2a83af1a314c4e1b4bbd1085e3540ac49f38e3216e1430e3b3fa",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails with insufficient_refundable_fee.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "insufficient_refundable_fee",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

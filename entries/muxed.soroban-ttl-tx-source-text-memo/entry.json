@@ -11,6 +11,10 @@
     {
       "id": "H-A9",
       "placement": "muxed Transaction.sourceAccount and MEMO_TEXT on ExtendFootprintTTL"
+    },
+    {
+      "id": "H-G2",
+      "placement": "P28 variant, the newest protocol a pre-fix wallet-backend (#753 at f8e5786d) ingests"
     }
   ],
   "xdr_type": "LedgerCloseMeta",

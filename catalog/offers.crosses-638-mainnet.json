@@ -1,0 +1,34 @@
+{
+  "id": "offers.crosses-638-mainnet",
+  "title": "One mainnet offer crosses 638 offers",
+  "pattern": "A single MANAGE_SELL_OFFER claims 638 offers: 638 claim atoms and as many removed or updated offers.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-C7",
+      "placement": "one ManageSellOffer claims 638 offers"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "offer-crosses-many@pubnet-65488299"
+  },
+  "focus": {
+    "tx_hash": "b769a9f83907e711cc99027bc5bf52f372ef70ef289814cdabdff5fe54dd0aaf",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The result holds 638 claim atoms.",
+      "at": "tx.result",
+      "path": "/tx_success/0/op_inner/manage_sell_offer/success/offers_claimed",
+      "length": 638,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

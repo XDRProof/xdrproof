@@ -33,8 +33,6 @@
         "core_version": "stellar-core v30.0.0",
         "emitter_flags": [
           "EMIT_CLASSIC_EVENTS",
-          "EMIT_SOROBAN_TRANSACTION_META_EXT_V1",
-          "EMIT_LEDGER_CLOSE_META_EXT_V1",
           "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
         ],
         "ledger_seq": 5,
@@ -43,15 +41,16 @@
       "change_order": {
         "stable": false,
         "normalized_sha256": "e502f4156178b2e6a39ad192321d80fb57de2db0ab0ef6dfe992df37a92f8bd2",
-        "runs": 60,
+        "runs": 20,
         "raw": [
           {
             "sha256": "a08d8c7b8db5f37d1df6edc104b17cd6a7b024ceef30e70715a034454c3aabde",
-            "runs": 54
+            "runs": 16
           },
           {
             "sha256": "edca160b09677651c7c997af5d7b54814d4588e811a200a5e7db8aa1dd24cafb",
-            "runs": 6
+            "runs": 4,
+            "file": "p30-mainnet-generated.order-1.xdr"
           }
         ]
       },
@@ -73,8 +72,6 @@
         "core_version": "stellar-core v30.0.0",
         "emitter_flags": [
           "EMIT_CLASSIC_EVENTS",
-          "EMIT_SOROBAN_TRANSACTION_META_EXT_V1",
-          "EMIT_LEDGER_CLOSE_META_EXT_V1",
           "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
         ],
         "ledger_seq": 5,
@@ -83,11 +80,11 @@
       "change_order": {
         "stable": false,
         "normalized_sha256": "1985655d990ad1a5c1cc2c0ef2e69b1c9f23a1c491023f8b0c67432eb41e7adb",
-        "runs": 30,
+        "runs": 2,
         "raw": [
           {
             "sha256": "86051026e6f0ab0ea2c3dc3f2ef8da061b0a333f4bdd9a20c5cab0f0bf812628",
-            "runs": 29
+            "runs": 1
           },
           {
             "sha256": "1c6ffcba7815c2f635c2699e999f239ef3a6247da716efbbf9f8516fde4ad07e",
@@ -97,6 +94,67 @@
       },
       "focus": {
         "tx_hash": "1c6f4a6c2322a8c5ce54c45fd912668abd3c96cc529b118e11117f85645296a1",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p30-testnet-generated",
+      "protocol": 30,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p30-testnet-generated.xdr",
+      "sha256": "4bd94c7a2455d6391b5fd5b6c5cd4267500a82c15719552ee1a0efb2b0b58f92",
+      "size": 2924,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 5,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-source-auth"
+      },
+      "focus": {
+        "tx_hash": "dceee6b4bcbec3104472e88ca94ff46b1fe214c9a0ebc1b2afe7fb6237614a59",
+        "op_index": 0
+      }
+    },
+    {
+      "key": "p28-testnet-generated",
+      "protocol": 28,
+      "network_passphrase": "Test SDF Network ; September 2015",
+      "file": "p28-testnet-generated.xdr",
+      "sha256": "a37deedf9fdec2914e6aab26259b19a0d02171ecffa39b8d363219fabbad82cf",
+      "size": 2916,
+      "synthetic": false,
+      "source": {
+        "lane": "generated",
+        "core_version": "stellar-core v30.0.0",
+        "emitter_flags": [
+          "EMIT_CLASSIC_EVENTS",
+          "TESTING_SOROBAN_HIGH_LIMIT_OVERRIDE"
+        ],
+        "ledger_seq": 5,
+        "recipe": "recipes/soroban/gen/gen.mjs#sac-trust-source-auth"
+      },
+      "change_order": {
+        "stable": false,
+        "normalized_sha256": "65018b9de7b2530cb89db06c8315f85391e02abc16d6ff70491d40407026e556",
+        "runs": 2,
+        "raw": [
+          {
+            "sha256": "a37deedf9fdec2914e6aab26259b19a0d02171ecffa39b8d363219fabbad82cf",
+            "runs": 1
+          },
+          {
+            "sha256": "242ed839bd92c0de5c7ec831cb1d654b3299676a2d24f42182ac8c0f7cbcb5e6",
+            "runs": 1
+          }
+        ]
+      },
+      "focus": {
+        "tx_hash": "dceee6b4bcbec3104472e88ca94ff46b1fe214c9a0ebc1b2afe7fb6237614a59",
         "op_index": 0
       }
     }
@@ -116,7 +174,7 @@
         "equals": "trust"
       },
       {
-        "says": "The contract called is the SAC for XPF issued by the fixed issuer key.",
+        "says": "The contract called is the SAC for XPF issued by the fixed issuer key; its ID depends on the network.",
         "evidence": [
           "construction",
           "snapshot",
@@ -124,7 +182,52 @@
           "walker"
         ],
         "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
-        "equals": "CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG"
+        "equals": "CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG",
+        "variants": [
+          "p30-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The contract called is the SAC for XPF issued by the fixed issuer key; its ID depends on the network.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
+        "equals": "CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG",
+        "variants": [
+          "p28-mainnet-generated"
+        ]
+      },
+      {
+        "says": "The contract called is the SAC for XPF issued by the fixed issuer key; its ID depends on the network.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
+        "equals": "CBRDUZVZSMQJDBGSVV64VHIFDCUZFPPXE3BLTZK2NDEPACGV72MIYNFE",
+        "variants": [
+          "p30-testnet-generated"
+        ]
+      },
+      {
+        "says": "The contract called is the SAC for XPF issued by the fixed issuer key; its ID depends on the network.",
+        "evidence": [
+          "construction",
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/0/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/contract_address",
+        "equals": "CBRDUZVZSMQJDBGSVV64VHIFDCUZFPPXE3BLTZK2NDEPACGV72MIYNFE",
+        "variants": [
+          "p28-testnet-generated"
+        ]
       },
       {
         "says": "Some change (in any order) creates bob's XPF trustline: balance 0, limit i64::MAX, authorized.",

@@ -1,0 +1,46 @@
+{
+  "id": "backfill.p12-v0-envelopes",
+  "title": "A protocol-12 mainnet ledger: LedgerCloseMeta v0 and only V0 envelopes",
+  "pattern": "Before protocol 13 every envelope is ENVELOPE_TYPE_TX_V0 (raw ed25519 source, no MuxedAccount) in a classic TransactionSet, and LedgerCloseMeta is v0. In SDF's lake the TransactionMeta is v4 (Galexie's BACKFILL_STELLAR_ASSET_EVENTS).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F8",
+      "placement": "LedgerCloseMeta v0 with TransactionEnvelope V0"
+    },
+    {
+      "id": "H-F9",
+      "placement": "TransactionMeta v4 at protocol 12 because of a node flag"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "p12-v0-envelopes@pubnet-26588352"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The transaction set is classic, with 532 envelopes.",
+      "at": "ledger",
+      "path": "/tx_set/txs",
+      "length": 532,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The first envelope is tx_v0: its source is a raw ed25519 key (source_account_ed25519), not a MuxedAccount.",
+      "at": "ledger",
+      "path": "/tx_set/txs/0/tx_v0/tx/source_account_ed25519",
+      "equals": "affe49fa72ececbd83bcc480be7e6f1cf65ffb7aa2cb928065361cd9b983ab5c",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

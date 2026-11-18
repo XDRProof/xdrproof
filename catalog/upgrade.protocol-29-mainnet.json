@@ -1,0 +1,44 @@
+{
+  "id": "upgrade.protocol-29-mainnet",
+  "title": "The mainnet ledger that upgraded the protocol to 29",
+  "pattern": "A protocol upgrade applies at the end of a ledger: LEDGER_UPGRADE_VERSION in the header's scp_value.upgrades, and the changes it causes in upgradesProcessing. The ledger's own transactions ran under the old protocol.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F1",
+      "placement": "LEDGER_UPGRADE_VERSION 29 on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "protocol-upgrade@pubnet-64717645"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The header's ledger version is 29.",
+      "at": "ledger",
+      "path": "/ledger_header/header/ledger_version",
+      "equals": 29,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "upgradesProcessing holds the version upgrade.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/upgrade",
+      "equals": {
+        "version": 29
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

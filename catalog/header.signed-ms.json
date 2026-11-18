@@ -1,0 +1,33 @@
+{
+  "id": "header.signed-ms",
+  "title": "A protocol-30 header with a signed millisecond close time",
+  "pattern": "CAP-0088: StellarValue ext signed_ms carries close_time_ms, signed by the node. Readers that read close_time only, or expect ext basic/signed, miss the new arm.",
+  "caps": [
+    "CAP-0088"
+  ],
+  "hazards": [
+    {
+      "id": "H-F2",
+      "placement": "StellarValue.ext STELLAR_VALUE_SIGNED_MS"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "protocol-30-signed-ms@testnet-5540314"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "close_time_ms is close_time × 1000 here: 1793725210000.",
+      "at": "ledger",
+      "path": "/ledger_header/header/scp_value/ext/signed_ms/close_time_ms",
+      "equals": "1793725210000",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

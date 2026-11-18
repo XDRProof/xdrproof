@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "soroban.failed-resource-limit-exceeded-mainnet",
+  "title": "A mainnet Soroban call that fails resource_limit_exceeded inside a fee bump",
+  "pattern": "The inner call exceeds its declared resources: INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED, under txFEE_BUMP_INNER_FAILED.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED in a fee bump"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65517387",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65517387.xdr.zst",
+      "sha256": "5ca13bdb1654ae22910f921a69817d620cf67e47768b951bf50b2814ae800be8",
+      "size": 1228904,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65517387,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC1848B4--65517387.xdr.zst",
+        "container_sha256": "a1ce09d82d5062deff7cbb91363401b9c71cbc5dce257bb0a2cd6958a273ddb6"
+      },
+      "focus": {
+        "tx_hash": "d19add7c39cefad16b58a95db3785fddaabed49f98425e468ce11c34a4ef4fb9",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The inner call fails with resource_limit_exceeded.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/323/result/result/result/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/invoke_host_function",
+        "equals": "resource_limit_exceeded"
+      }
+    ]
+  }
+}

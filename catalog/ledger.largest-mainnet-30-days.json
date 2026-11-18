@@ -1,0 +1,42 @@
+{
+  "id": "ledger.largest-mainnet-30-days",
+  "title": "The largest mainnet ledger of 30 days: 1184 transactions",
+  "pattern": "A ledger with 1184 transactions (classic and Soroban) and a 1000-operation classic cap: memory and time limits of an indexer meet real volume here.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F3",
+      "placement": "mainnet ledger with 1184 transactions"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "largest-ledger@pubnet-65167655"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "tx_processing holds 1184 transactions.",
+      "at": "ledger",
+      "path": "/tx_processing",
+      "length": 1184,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "max_tx_set_size is 1000.",
+      "at": "ledger",
+      "path": "/ledger_header/header/max_tx_set_size",
+      "equals": 1000,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

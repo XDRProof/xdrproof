@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "soroban.failed-insufficient-refundable-fee-mainnet",
+  "title": "A mainnet Soroban call that fails insufficient_refundable_fee",
+  "pattern": "The declared refundable fee does not cover rent and events: INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65516072",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65516072.xdr.zst",
+      "sha256": "edc91f96799427ae7fb5aa96fa0591d5c522c37b15e98a15dd85c00a21522521",
+      "size": 1260816,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65516072,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184DD7--65516072.xdr.zst",
+        "container_sha256": "0e3a949d63026e67364322228f53a19a59772cccc7494b8af05d0cb957b2382f"
+      },
+      "focus": {
+        "tx_hash": "428555ae995b2a83af1a314c4e1b4bbd1085e3540ac49f38e3216e1430e3b3fa",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The call fails with insufficient_refundable_fee.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/286/result/result/result/tx_failed/0/op_inner/invoke_host_function",
+        "equals": "insufficient_refundable_fee"
+      }
+    ]
+  }
+}

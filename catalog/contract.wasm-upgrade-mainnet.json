@@ -1,0 +1,36 @@
+{
+  "id": "contract.wasm-upgrade-mainnet",
+  "title": "A mainnet contract upgrades its Wasm: an executable_update system event",
+  "pattern": "A contract replaces its own code; the only trace is a system event executable_update with old and new executables. Readers that index contract code only at deploy keep the old Wasm.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-D5",
+      "placement": "contract Wasm upgrade (executable_update system event)"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-wasm-upgrade@pubnet-65514477"
+  },
+  "focus": {
+    "tx_hash": "91a365e1595aa417a7f63b948a5cc5723fd62e055247c166a6615fe0fe8c8d70",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The operation emits an executable_update system event.",
+      "at": "op.events",
+      "some": {
+        "/type": "system",
+        "/body/v0/topics/0/symbol": "executable_update"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

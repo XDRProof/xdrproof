@@ -1,0 +1,34 @@
+{
+  "id": "soroban.failed-resource-limit-exceeded-mainnet",
+  "title": "A mainnet Soroban call that fails resource_limit_exceeded inside a fee bump",
+  "pattern": "The inner call exceeds its declared resources: INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED, under txFEE_BUMP_INNER_FAILED.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED in a fee bump"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-failed@pubnet-65517387"
+  },
+  "focus": {
+    "tx_hash": "d19add7c39cefad16b58a95db3785fddaabed49f98425e468ce11c34a4ef4fb9",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The inner call fails with resource_limit_exceeded.",
+      "at": "tx.result",
+      "path": "/tx_fee_bump_inner_failed/result/result/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "resource_limit_exceeded",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

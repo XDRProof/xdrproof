@@ -1,0 +1,34 @@
+{
+  "id": "soroban.failed-entry-archived-mainnet",
+  "title": "A mainnet Soroban call that fails entry_archived",
+  "pattern": "The call needs an archived entry it did not mark for restore: INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED.",
+  "caps": [
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-failed@pubnet-65511929"
+  },
+  "focus": {
+    "tx_hash": "4053402e0856e7234d26e943d69dfc0cf4d153df1562adf3a78c1b502ad577d6",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The call fails with entry_archived.",
+      "at": "tx.result",
+      "path": "/tx_failed/0/op_inner/invoke_host_function",
+      "equals": "entry_archived",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

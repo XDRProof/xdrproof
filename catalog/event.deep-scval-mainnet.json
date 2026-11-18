@@ -1,0 +1,36 @@
+{
+  "id": "event.deep-scval-mainnet",
+  "title": "A mainnet contract event whose data is a deeply nested ScVal",
+  "pattern": "A DeFi vault event carries nested maps and vectors in its data: readers with shallow ScVal handling truncate it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-E2",
+      "placement": "contract event data with nested maps and vectors"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "soroban-event-deep-scval@pubnet-65516072"
+  },
+  "focus": {
+    "tx_hash": "b91b526006ef4786d3ca30e840428b4ef465c2ad0ed220d4aeaf8dae4d04dcf1",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "Event 5 is a contract event of the vault.",
+      "at": "op.events",
+      "some": {
+        "/type": "contract",
+        "/body/v0/topics/0/string": "DeFindexVault"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

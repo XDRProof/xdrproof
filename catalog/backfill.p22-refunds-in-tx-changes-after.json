@@ -1,0 +1,38 @@
+{
+  "id": "backfill.p22-refunds-in-tx-changes-after",
+  "title": "Protocol 22: the Soroban refund is in txChangesAfter",
+  "pattern": "Before protocol 23 the Soroban fee refund is a change in each transaction's txChangesAfter; from 23 it moved to postTxApplyFeeProcessing. LedgerCloseMeta v1.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F8",
+      "placement": "Soroban refund in TransactionMeta.txChangesAfter (P20-22)"
+    },
+    {
+      "id": "H-C13",
+      "placement": "refund placement before protocol 23"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "p22-refunds-in-tx-changes-after@pubnet-56085459"
+  },
+  "focus": {
+    "tx_hash": "c49ab33e23ebe5c40971c4ac098d756799553c50074adfa08acb52bd80c4b6c5",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The refund is in tx_changes_after (2 changes).",
+      "at": "tx.meta",
+      "path": "/tx_changes_after",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

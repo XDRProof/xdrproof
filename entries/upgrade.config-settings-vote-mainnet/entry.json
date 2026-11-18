@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "upgrade.config-settings-vote-mainnet",
+  "title": "A mainnet validator vote updating seven Soroban settings",
+  "pattern": "One LEDGER_UPGRADE_CONFIG updates seven ConfigSettingEntry values, including ledger_max_dependent_tx_clusters 3.",
+  "caps": [
+    "CAP-0046",
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-F10",
+      "placement": "mainnet LEDGER_UPGRADE_CONFIG with 7 settings"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65080525",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65080525.xdr.zst",
+      "sha256": "cb1eadc528e439cacc1899963f84454884527e02a342cd6d4c7a01854aa866e7",
+      "size": 2116128,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65080525,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1FCFFF--65024000-65087999/FC1EF332--65080525.xdr.zst",
+        "container_sha256": "0dccea9c61e864c5d7c4cc009b800f82cd1d24eae67d1074b220d5dae0274d5a"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "ledger_max_dependent_tx_clusters becomes 3.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/upgrades_processing/0/changes",
+        "some": {
+          "/updated/data/config_setting/contract_parallel_compute_v0/ledger_max_dependent_tx_clusters": 3
+        }
+      }
+    ]
+  }
+}

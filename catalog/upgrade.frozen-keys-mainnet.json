@@ -1,0 +1,39 @@
+{
+  "id": "upgrade.frozen-keys-mainnet",
+  "title": "Mainnet freezes a fourth account (CAP-0077)",
+  "pattern": "A mainnet config upgrade grows the frozen-key list from 3 to 4 accounts; it is visible only in upgradesProcessing as encoded LedgerKeys.",
+  "caps": [
+    "CAP-0077"
+  ],
+  "hazards": [
+    {
+      "id": "H-D12",
+      "placement": "mainnet frozen-key list 3 -> 4 accounts"
+    },
+    {
+      "id": "H-F10",
+      "placement": "LEDGER_UPGRADE_CONFIG frozen_ledger_keys on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "config-upgrade-frozen-keys@pubnet-65273932"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "After the upgrade 4 keys are frozen.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/changes",
+      "some": {
+        "/updated/data/config_setting/frozen_ledger_keys/keys/3": "0000000000000000ef88a3c873600ee2668ae1e76ca64e836bbd339c1f4b95f225e515072b2a9999"
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

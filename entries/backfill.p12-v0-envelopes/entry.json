@@ -1,0 +1,67 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "backfill.p12-v0-envelopes",
+  "title": "A protocol-12 mainnet ledger: LedgerCloseMeta v0 and only V0 envelopes",
+  "pattern": "Before protocol 13 every envelope is ENVELOPE_TYPE_TX_V0 (raw ed25519 source, no MuxedAccount) in a classic TransactionSet, and LedgerCloseMeta is v0. In SDF's lake the TransactionMeta is v4 (Galexie's BACKFILL_STELLAR_ASSET_EVENTS).",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F8",
+      "placement": "LedgerCloseMeta v0 with TransactionEnvelope V0"
+    },
+    {
+      "id": "H-F9",
+      "placement": "TransactionMeta v4 at protocol 12 because of a node flag"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p12-mainnet-mined-l26588352",
+      "protocol": 12,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p12-mainnet-mined-l26588352.xdr.zst",
+      "sha256": "039ba91a4dfd229cbbc58204ce16afed91eb066f4b88219b7d1932f08359b584",
+      "size": 887884,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 26588352,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FE6AB9FF--26560000-26623999/FE6A4B3F--26588352.xdr.zst",
+        "container_sha256": "e6cdde6d0600fb7d6019a25164abbb19468258392faa1f258b2ef457ff4a0749"
+      },
+      "focus": {
+        "tx_hash": "44aca175be4d51c1282466f8dd37d7e5a0e5b1acef74e453e5fb6cba92070df8",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The transaction set is classic, with 532 envelopes.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v0/tx_set/txs",
+        "length": 532
+      },
+      {
+        "says": "The first envelope is tx_v0: its source is a raw ed25519 key (source_account_ed25519), not a MuxedAccount.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v0/tx_set/txs/0/tx_v0/tx/source_account_ed25519",
+        "equals": "affe49fa72ececbd83bcc480be7e6f1cf65ffb7aa2cb928065361cd9b983ab5c"
+      }
+    ]
+  }
+}

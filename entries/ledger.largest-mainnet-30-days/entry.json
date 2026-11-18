@@ -1,0 +1,62 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "ledger.largest-mainnet-30-days",
+  "title": "The largest mainnet ledger of 30 days: 1184 transactions",
+  "pattern": "A ledger with 1184 transactions (classic and Soroban) and a 1000-operation classic cap: memory and time limits of an indexer meet real volume here.",
+  "caps": [
+    "pre-cap"
+  ],
+  "hazards": [
+    {
+      "id": "H-F3",
+      "placement": "mainnet ledger with 1184 transactions"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65167655",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65167655.xdr.zst",
+      "sha256": "f32809fefd5a57bae750fc35120f73a364f1e9e56fd97d3f79b4af96b42b6572",
+      "size": 5574024,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65167655,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1DDBFF--65152000-65215999/FC1D9ED8--65167655.xdr.zst",
+        "container_sha256": "db5e36ebd5eeabb35caf3b611d5ac8125c58097c264eca32de2da0948c6849d3"
+      },
+      "focus": {
+        "ledger": true
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "tx_processing holds 1184 transactions.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v2/tx_processing",
+        "length": 1184
+      },
+      {
+        "says": "max_tx_set_size is 1000.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/ledger_header/header/max_tx_set_size",
+        "equals": 1000
+      }
+    ]
+  }
+}

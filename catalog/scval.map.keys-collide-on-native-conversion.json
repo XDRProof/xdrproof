@@ -1,0 +1,88 @@
+{
+  "id": "scval.map.keys-collide-on-native-conversion",
+  "title": "Contract stores and emits a map whose keys all read as \"1\"",
+  "pattern": "An ScMap may hold keys of different types that print the same: u32 1, i32 1, u64 1, the string \"1\" and the symbol \"1\" are five distinct, correctly ordered keys on chain. Converting the map to a native object keyed by text collapses them. js-stellar-sdk's scValToNative silently kept one of them (#1789). This entry is real stellar-core output: a contract wrote the map to storage, returned it and emitted it in an event.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-B2",
+      "placement": "ContractDataEntry.val, ContractEvent.body.data, SorobanTransactionMeta.returnValue"
+    }
+  ],
+  "sightings": [
+    "https://github.com/stellar/js-stellar-sdk/issues/1789"
+  ],
+  "source": {
+    "lane": "soroban",
+    "step": "map-colliding-keys-as-value",
+    "variants": [
+      "p30-mainnet",
+      "p28-mainnet",
+      "p30-testnet",
+      "p28-testnet"
+    ]
+  },
+  "focus": {
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The contract wrote a persistent entry keyed `collide` whose value is a 5-entry map with keys u32 1, i32 1, u64 1, string \"1\", symbol \"1\" (in core's order).",
+      "at": "tx.meta",
+      "path": "/operations/0/changes",
+      "some": {
+        "/created/data/contract_data/key/symbol": "collide",
+        "/created/data/contract_data/durability": "persistent",
+        "/created/data/contract_data/val/map/0/key/u32": 1,
+        "/created/data/contract_data/val/map/1/key/i32": 1,
+        "/created/data/contract_data/val/map/2/key/u64": "1",
+        "/created/data/contract_data/val/map/3/key/string": "1",
+        "/created/data/contract_data/val/map/4/key/symbol": "1"
+      },
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The event emitted by the call carries the same map with all 5 entries.",
+      "at": "tx.meta",
+      "path": "/operations/0/events/0/body/v0/data/map",
+      "length": 5,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The return value is the same 5-entry map.",
+      "at": "tx.meta",
+      "path": "/soroban_meta/return_value/map",
+      "length": 5,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Each key maps to a different value (10, 20, 30, 40, 50), so a lossy conversion is detectable.",
+      "at": "tx.meta",
+      "path": "/operations/0/events/0/body/v0/data/map/4/val/u32",
+      "equals": 50,
+      "evidence": [
+        "construction",
+        "snapshot"
+      ]
+    }
+  ],
+  "sdk_checks": [
+    {
+      "says": "Native projection of the event's map keeps all five entries or rejects the map; it never silently drops one.",
+      "helper": "native-projection",
+      "path": "/v2/tx_processing/0/tx_apply_processing/v4/operations/0/events/0/body/v0/data",
+      "must": "return 5 entries, or raise an error; returning fewer than 5 is a failure (js-stellar-sdk#1789)"
+    }
+  ]
+}

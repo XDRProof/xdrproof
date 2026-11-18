@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "auth.many-entries-mainnet",
+  "title": "A mainnet Soroban call carrying many authorization entries",
+  "pattern": "One batch call carries many auth entries, each naming an address: an indexer that adds every auth address to that address's history puts this transaction into many unrelated histories.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-A7",
+      "placement": "many SorobanAuthorizationEntry addresses in one transaction"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65167655",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65167655.xdr.zst",
+      "sha256": "f32809fefd5a57bae750fc35120f73a364f1e9e56fd97d3f79b4af96b42b6572",
+      "size": 5574024,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65167655,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1DDBFF--65152000-65215999/FC1D9ED8--65167655.xdr.zst",
+        "container_sha256": "db5e36ebd5eeabb35caf3b611d5ac8125c58097c264eca32de2da0948c6849d3"
+      },
+      "focus": {
+        "tx_hash": "2a0da9b5243c0e133761e918191ac55417e1b6c421ac3f168a7fc738b2edf396",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The call is batch_plant.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_set/v1/phases/1/v1/execution_stages/0/0/306/tx_fee_bump/tx/inner_tx/tx/tx/operations/0/body/invoke_host_function/host_function/invoke_contract/function_name",
+        "equals": "batch_plant"
+      }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "backfill.p22-refunds-in-tx-changes-after",
+  "title": "Protocol 22: the Soroban refund is in txChangesAfter",
+  "pattern": "Before protocol 23 the Soroban fee refund is a change in each transaction's txChangesAfter; from 23 it moved to postTxApplyFeeProcessing. LedgerCloseMeta v1.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-F8",
+      "placement": "Soroban refund in TransactionMeta.txChangesAfter (P20-22)"
+    },
+    {
+      "id": "H-C13",
+      "placement": "refund placement before protocol 23"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p22-mainnet-mined-l56085459",
+      "protocol": 22,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p22-mainnet-mined-l56085459.xdr.zst",
+      "sha256": "ba8961760204861f773dfc133c1827680a242a89b94aa49c4b4d43b5768688cb",
+      "size": 1713432,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 56085459,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FCA887FF--56064000-56127999/FCA8342C--56085459.xdr.zst",
+        "container_sha256": "5e6fd1ee1f48c5e544c548d28b8e25a5000510106aca40b937a11638e40128e1"
+      },
+      "focus": {
+        "tx_hash": "c49ab33e23ebe5c40971c4ac098d756799553c50074adfa08acb52bd80c4b6c5",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The refund is in tx_changes_after (2 changes).",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v1/tx_processing/169/tx_apply_processing/v4/tx_changes_after",
+        "length": 2
+      }
+    ]
+  }
+}

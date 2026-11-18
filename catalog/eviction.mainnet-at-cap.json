@@ -1,0 +1,33 @@
+{
+  "id": "eviction.mainnet-at-cap",
+  "title": "Mainnet evicts 1000 entries in one ledger, the per-ledger cap",
+  "pattern": "1000 contract-data entries and their 1000 TTL keys leave the live state with no transaction: exactly maxEntriesToArchive, 1000 on mainnet since ledger 59516381.",
+  "caps": [
+    "CAP-0062"
+  ],
+  "hazards": [
+    {
+      "id": "H-D6",
+      "placement": "evicted_keys at maxEntriesToArchive on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "evicted-keys-at-cap@pubnet-65460631"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "2000 keys are evicted.",
+      "at": "ledger",
+      "path": "/evicted_keys",
+      "length": 2000,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

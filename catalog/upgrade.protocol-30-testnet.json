@@ -1,0 +1,35 @@
+{
+  "id": "upgrade.protocol-30-testnet",
+  "title": "The testnet ledger that upgraded the protocol to 30",
+  "pattern": "LEDGER_UPGRADE_VERSION 30 on testnet, written by a Galexie node.",
+  "caps": [
+    "CAP-0088"
+  ],
+  "hazards": [
+    {
+      "id": "H-F1",
+      "placement": "LEDGER_UPGRADE_VERSION 30 on testnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "protocol-upgrade@testnet-5540313"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "upgradesProcessing holds the version 30 upgrade.",
+      "at": "ledger",
+      "path": "/upgrades_processing/0/upgrade",
+      "equals": {
+        "version": 30
+      },
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

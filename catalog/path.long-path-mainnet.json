@@ -1,0 +1,34 @@
+{
+  "id": "path.long-path-mainnet",
+  "title": "A mainnet path payment with a 5-asset path inside a fee bump",
+  "pattern": "path<5> full on mainnet: a strict-send path payment through 5 assets, wrapped in a fee bump.",
+  "caps": [
+    "CAP-0024"
+  ],
+  "hazards": [
+    {
+      "id": "H-B12",
+      "placement": "PathPaymentStrictSendOp.path at 5 on mainnet"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "path-payment-long-path@pubnet-65517347"
+  },
+  "focus": {
+    "tx_hash": "99c82a32550f883e10671f8e69f92239fa39423b28a0ac19b3c2b76441ea8af7",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "The path holds 5 assets.",
+      "at": "tx.envelope",
+      "path": "/tx_fee_bump/tx/inner_tx/tx/tx/operations/0/body/path_payment_strict_send/path",
+      "length": 5,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "event.deep-scval-mainnet",
+  "title": "A mainnet contract event whose data is a deeply nested ScVal",
+  "pattern": "A DeFi vault event carries nested maps and vectors in its data: readers with shallow ScVal handling truncate it.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-E2",
+      "placement": "contract event data with nested maps and vectors"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65516072",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65516072.xdr.zst",
+      "sha256": "edc91f96799427ae7fb5aa96fa0591d5c522c37b15e98a15dd85c00a21522521",
+      "size": 1260816,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65516072,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC184DD7--65516072.xdr.zst",
+        "container_sha256": "0e3a949d63026e67364322228f53a19a59772cccc7494b8af05d0cb957b2382f"
+      },
+      "focus": {
+        "tx_hash": "b91b526006ef4786d3ca30e840428b4ef465c2ad0ed220d4aeaf8dae4d04dcf1",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "Event 5 is a contract event of the vault.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/305/tx_apply_processing/v4/operations/0/events",
+        "some": {
+          "/type": "contract",
+          "/body/v0/topics/0/string": "DeFindexVault"
+        }
+      }
+    ]
+  }
+}

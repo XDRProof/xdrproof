@@ -1,0 +1,42 @@
+{
+  "id": "parallel.three-stages-mainnet",
+  "title": "A mainnet Soroban phase with three stages and two clusters in one stage",
+  "pattern": "CAP-0063 parallel execution: the Soroban phase is stages of clusters of transactions. This mainnet ledger has 3 stages with 1, 2 and 1 clusters. Readers that assume one stage and one cluster drop transactions.",
+  "caps": [
+    "CAP-0063"
+  ],
+  "hazards": [
+    {
+      "id": "H-F5",
+      "placement": "ParallelTxsComponent with 3 stages, one holding 2 clusters"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "signer-hashx-preauth@pubnet-65485185"
+  },
+  "focus": {
+    "ledger": true
+  },
+  "facts": [
+    {
+      "says": "The Soroban phase has 3 stages.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/1/v1/execution_stages",
+      "length": 3,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The second stage has 2 clusters.",
+      "at": "ledger",
+      "path": "/tx_set/v1/phases/1/v1/execution_stages/1",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "soroban.failed-entry-archived-mainnet",
+  "title": "A mainnet Soroban call that fails entry_archived",
+  "pattern": "The call needs an archived entry it did not mark for restore: INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED.",
+  "caps": [
+    "CAP-0066"
+  ],
+  "hazards": [
+    {
+      "id": "H-C6",
+      "placement": "INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p29-mainnet-mined-l65511929",
+      "protocol": 29,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p29-mainnet-mined-l65511929.xdr.zst",
+      "sha256": "b4ec8499bcc7c0ac38e7b33a565cec2cc0e34e0607012ac0983525f36224b6aa",
+      "size": 1238984,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 65511929,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC18F9FF--65472000-65535999/FC185E06--65511929.xdr.zst",
+        "container_sha256": "c7015ae5b29340d5c53a21813942bba59f1b9e336dd54887c9004e759c9b71ce"
+      },
+      "focus": {
+        "tx_hash": "4053402e0856e7234d26e943d69dfc0cf4d153df1562adf3a78c1b502ad577d6",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "The call fails with entry_archived.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v2/tx_processing/485/result/result/result/tx_failed/0/op_inner/invoke_host_function",
+        "equals": "entry_archived"
+      }
+    ]
+  }
+}
