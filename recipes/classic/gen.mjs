@@ -347,4 +347,57 @@ await submit('pool-share-limit-only-change-trust', t, mm, 'pool-share trustline 
 // H-F4: an empty ledger (no transactions)
 await close(); steps.push({ name: 'empty-ledger', ledger, note: 'no transactions: the cursor must still advance' }); console.log('empty-ledger', ledger); // 73
 
-if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2, cb3, cb4], pool2, poolIssuers: [pi1.publicKey(), pi2.publicKey()] }, null, 1));
+// ---- Ledgers 74+: B2c. H-B12 every vector at its XDR maximum; H-D9 + H-C10 a revocation cascade ----
+// A six-hop market for a path<5> payment: XLM -> HOP1 -> ... -> HOP5 -> HOP6, one offer per hop
+const [hopIssuer, hopMaker, hopDest] = ['hop-issuer', 'hop-maker', 'hop-dest'].map(kp);
+const HOP = [1, 2, 3, 4, 5, 6].map((i) => new S.Asset('HOP' + i, hopIssuer.publicKey()));
+await newAccounts('create-hop-accounts', [hopIssuer, hopMaker, hopDest]);                                          // 74
+t = txb(hopMaker, [...HOP.map((a) => S.Operation.changeTrust({ asset: a })), S.Operation.changeTrust({ asset: HOP[5], source: hopDest.publicKey() })]);
+t.sign(hopMaker, hopDest); await submit('hop-trustlines', t, hopMaker);                                         // 75
+t = txb(hopIssuer, HOP.map((a) => S.Operation.payment({ destination: hopMaker.publicKey(), asset: a, amount: '1000' }))); t.sign(hopIssuer);
+await submit('hop-issue', t, hopIssuer);                                                                         // 76
+t = txb(hopMaker, HOP.map((a, i) => S.Operation.manageSellOffer({ selling: a, buying: i ? HOP[i - 1] : S.Asset.native(), amount: '100', price: '1' }))); t.sign(hopMaker);
+await submit('hop-offers', t, hopMaker, 'sell HOP1 for XLM, HOP2 for HOP1, ... HOP6 for HOP5');                   // 77
+// one ledger, six transactions, each with a vector at its maximum length
+await queue('path-5-assets', one(alice, [S.Operation.pathPaymentStrictSend({ sendAsset: S.Asset.native(), sendAmount: '10', destination: hopDest.publicKey(),
+  destAsset: HOP[5], destMin: '0.0000001', path: HOP.slice(0, 5) })]), alice);
+const claimants10 = Array.from({ length: 10 }, (_, i) => new P(kp('claimant-' + i).publicKey(), i === 0
+  ? P.predicateAnd(P.predicateOr(P.predicateNot(P.predicateBeforeAbsoluteTime('4102444800')), P.predicateBeforeRelativeTime('60')), P.predicateNot(P.predicateNot(P.predicateUnconditional())))
+  : i % 2 ? P.predicateUnconditional() : P.predicateBeforeRelativeTime(String(i * 1000))));
+t = txb(frank, [S.Operation.createClaimableBalance({ asset: S.Asset.native(), amount: '1', claimants: claimants10 })]);
+const cb10 = t.getClaimableBalanceId(0); t.sign(frank); await queue('claimants-10-predicate-depth-4', t, frank);
+const payloadA = sha('xdrproof:extra-signer:a'), payloadB = sha('xdrproof:extra-signer:b');
+const xs = (k, p) => S.StrKey.encodeSignedPayload(new S.xdr.SignerKeyEd25519SignedPayload({ ed25519: k.rawPublicKey(), payload: p }).toXDR());
+t = txb(bob, [pay(bob, alice.publicKey())], { extraSigners: [xs(eve, payloadA), xs(frank, payloadB)] });
+t.sign(bob); t.addDecoratedSignature(eve.signPayloadDecorated(payloadA)); t.addDecoratedSignature(frank.signPayloadDecorated(payloadB));
+await queue('extra-signers-2', t, bob);
+const name64 = 'xdrproof.data-name-at-the-64-byte-maximum.' + 'x'.repeat(64 - 42);
+await queue('data-name-64-value-64', one(eve, [S.Operation.manageData({ name: name64, value: Buffer.alloc(64, 0x5a) })]), eve);
+await queue('allow-trust-alphanum12-code', one(issuer, [S.Operation.allowTrust({ trustor: liab.publicKey(), assetCode: 'XPFLONGCODE1', authorize: 1 })]), issuer);
+await closeGroup('vectors-at-maximum-length', 'path<5>, claimants<10> with a depth-4 predicate, extraSigners<2>, string64 data name, AllowTrust 12-char code'); // 78
+// operations<100> fills a ledger's whole classic transaction set (max_tx_set_size 100 operations), so it closes
+// alone. Queued beside other transactions it would oversubscribe the ledger, and with equal fee bids core picks
+// what to keep by a random tie-break (SurgePricingUtils.cpp:122): not reproducible.
+t = txb(whale, Array.from({ length: 100 }, (_, i) => S.Operation.payment({ destination: muxed(bob, String(i + 1)), asset: S.Asset.native(), amount: '0.0000001' }))); t.sign(whale);
+await submit('operations-100-muxed-ids', t, whale, '100 payments to M(bob, 1..100): exactly the 100-operation cap, not surge priced'); // 79
+
+// H-D9 + H-C10: the issuer fully deauthorizes mm's XPF trustline. Core removes mm's offers that sell or buy
+// XPF and redeems mm's XLM/XPF pool shares into new claimable balances, with no create operation (CAP-0038).
+t = txb(issuer, [S.Operation.setTrustLineFlags({ trustor: mm.publicKey(), asset: XPF, flags: { authorized: false, authorizedToMaintainLiabilities: false } })]); t.sign(issuer);
+await submit('revoke-trustline-with-offers-and-pool-shares', t, issuer, 'deauthorized; offers removed; pool shares become claimable balances'); // 80
+
+// H-C18: an oversubscribed ledger. 101 operations are queued for a 100-operation set. Bids differ, so core keeps
+// the two highest deterministically and the classic component's baseFee becomes the lowest kept bid: the 3000
+// bidder pays less than it bid, both pay more than the header's base_fee. The 1000 bidder waits one ledger.
+const fifty = (k) => Array.from({ length: 50 }, () => S.Operation.payment({ destination: alice.publicKey(), asset: S.Asset.native(), amount: '0.0000001' }));
+await queue('surge-bid-3000-per-op', one(whale, fifty(whale), { fee: '3000' }), whale);
+await queue('surge-bid-2000-per-op', one(bob, fifty(bob), { fee: '2000' }), bob);
+const late = one(frank, [S.Operation.payment({ destination: alice.publicKey(), asset: S.Asset.native(), amount: '0.0000001' })], { fee: '1000' });
+const lateR = JSON.parse(await get('tx?blob=' + encodeURIComponent(late.toEnvelope().toXDR('base64'))));
+if (lateR.status === 'PENDING') cur.set(frank.publicKey(), cur.get(frank.publicKey()) + 1n);
+await closeGroup('surge-priced-oversubscribed', '101 operations queued for 100: bids 3000 and 2000 per op kept, baseFee 2000; bid 1000 left in the queue'); // 81
+await close(); steps.push({ name: 'surge-left-over-applies-next-ledger', ledger, txs: [{ label: 'surge-bid-1000-per-op', tx: Buffer.from(late.hash()).toString('hex'), status: lateR.status }],
+  note: 'the transaction left out of the oversubscribed ledger, applied one ledger later at the normal base fee' });
+console.log('surge-left-over-applies-next-ledger', ledger);                                                     // 82
+
+if (manifestPath) writeFileSync(manifestPath, JSON.stringify({ passphrase, steps, accounts: Object.fromEntries([['root', root], ['alice', alice], ['bob', bob], ['issuer', issuer], ['carol', carol], ['mm', mm], ['sponsor', sponsor], ['eve', eve], ['frank', frank]].map(([n, k]) => [n, k.publicKey()])), assets: { XPF: XPF.toString(), XPF12: XPF12.toString() }, pool: poolId, claimable: [cb1, cb2, cb3, cb4, cb10], pool2, poolIssuers: [pi1.publicKey(), pi2.publicKey()], hop: { issuer: hopIssuer.publicKey(), maker: hopMaker.publicKey(), dest: hopDest.publicKey() } }, null, 1));

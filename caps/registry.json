@@ -339,7 +339,7 @@
       "title": "Maximum lengths not yet tested: `path<5>`, `claimants<10>`, `extraSigners<2>`, `dataName` 64, `operations<100>`, AllowTrust 12-char code",
       "evidence": "RFP F14 \"vectors at their maximum length\"",
       "refs": [],
-      "test": "One max-lengths ledger",
+      "test": "One ledger of vectors at their XDR maximum: path<5> (six offers crossed), claimants<10> with a depth-4 predicate (the core limit, CreateClaimableBalanceOpFrame.cpp:78), extraSigners<2>, 64-byte data name with a 64-byte value, AllowTrust with a 12-character code: c-base `vectors-at-maximum-length`; operations<100> alone in its ledger (the classic set holds exactly 100 operations): `operations-100-muxed-ids`",
       "checks": [
         "C",
         "V"
@@ -509,7 +509,7 @@
       "refs": [
         "stellar-etl#457"
       ],
-      "test": "C20, C21, allow_trust C44, mainnet `M:clawback-and-trustline-flags`",
+      "test": "C20, C21, allow_trust C44, mainnet `M:clawback-and-trustline-flags`; full deauthorization (authorized and maintain-liabilities both cleared): c-base `revoke-trustline-with-offers-and-pool-shares`",
       "checks": [
         "R"
       ]
@@ -618,7 +618,7 @@
       "refs": [
         "stellar-etl#465"
       ],
-      "test": "`s-settings`/`c-surge` run: oversubscribed ledger after a `maxtxsetsize` upgrade",
+      "test": "Oversubscribed classic ledger with distinct bids (equal bids are broken by a random seed, SurgePricingUtils.cpp:122, so they are not reproducible): component baseFee 2000 against header base_fee 100, the 3000 bidder charged below its bid, the 1000 bidder applied one ledger later: c-base `surge-priced-oversubscribed`, `surge-left-over-applies-next-ledger`",
       "checks": [
         "V"
       ]
@@ -747,7 +747,7 @@
         "stellar-etl#458",
         "wallet-backend#817"
       ],
-      "test": "Revoke mm (holds pool shares and offers)",
+      "test": "The issuer fully deauthorizes mm's XPF trustline: three offers removed, two claimable balances created from redeemed pool shares (no create op), pool-share trustline removed, and the liquidity pool entry itself removed because mm was its last shareholder: c-base `revoke-trustline-with-offers-and-pool-shares`",
       "checks": [
         "R"
       ]
