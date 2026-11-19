@@ -1,19 +1,110 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png">
-  <img alt="xdrproof: If stellar-core can emit it, your code should survive it. A test kit for every program that reads the Stellar ledger." src=".github/assets/banner-light.png" width="100%">
-</picture>
+<p align="center">
+  <a href="https://xdrproof.dev">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png">
+      <img alt="XDRProof: If stellar-core can emit it, your code should survive it. A test kit for every program that reads the Stellar ledger." src=".github/assets/banner-light.png" width="100%">
+    </picture>
+  </a>
+</p>
 
-# XDRProof
+<h1 align="center">XDRProof</h1>
 
-**Test your Stellar indexer and SDK against the ledger's rarest shapes.**
+<p align="center"><b>Test your Stellar indexer and SDK against the ledger's rarest shapes.</b></p>
 
-XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stellar-core actually emitted. Each entry is tagged with the CAP that introduced it and carries the values a correct reader must return. Around the corpus sit tools that check it with independent readers, replay it into real indexers, run JavaScript, Go, Rust and Python SDK builds against test vectors for the same shapes, and lint Go indexer code for the three ingestion mistakes the corpus is built around.
+<p align="center">
+  <a href="./LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/license/XDRProof/xdrproof?colorA=21262d&colorB=21262d&style=flat"><img alt="Licence: Apache-2.0" src="https://img.shields.io/github/license/XDRProof/xdrproof?colorA=f6f8fa&colorB=f6f8fa&style=flat"></picture></a>
+</p>
 
-> **Status: early, built in public.** This repository backs our proposal to the Stellar Community Fund's RFP *XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide* (SCF #46). It holds the manifest schema, the hazard registry, 263 corpus entries, the generator recipes and runnable reproductions of real upstream bugs. Every number below is re-measured by the command next to it.
+<p align="center">
+  <b><a href="https://xdrproof.dev/docs/start/quickstart">Quickstart</a></b> ·
+  <a href="https://xdrproof.dev/docs">Docs</a> ·
+  <a href="https://xdrproof.dev/docs/corpus">Corpus</a> ·
+  <a href="https://xdrproof.dev/docs/findings">Findings</a> ·
+  <a href="ARCHITECTURE.md">Architecture</a> ·
+  <a href="#check-every-claim-yourself">Check every claim</a>
+</p>
 
-## Built from a failure-mode blueprint
+XDRProof is a shared test kit for every program that reads the Stellar ledger. It holds rare but valid ledgers that
+stellar-core actually wrote, each tagged with the CAP that introduced its shape and the answer a correct reader must
+give, and tools that run SDKs and indexers against them and show exactly where they break.
 
-[`caps/registry.json`](caps/registry.json) lists **78 hazards**: named ways readers of the Stellar ledger break, in eight layers. Examples: a muxed account stored without its ID, a contract call that creates a trustline with no event, a failed transaction that still changes state, a valid ledger a decoder refuses. Each hazard carries its evidence: an upstream issue, a protocol rule or a measurement. Every corpus entry names the hazards it targets and where in the XDR they sit, so the corpus grows by purpose, not by volume. 72 hazards are targeted by entries; the other 6 are about invalid input, prose or release policy, which no valid ledger can carry, and belong to conformance, the guide and the release channel.
+Built in public for the Stellar Community Fund's RFP *XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide*
+(SCF #46). The core was built before any funding, and work continues through every protocol that follows.
+
+## The problem
+
+Every Stellar wallet, explorer and analytics tool depends on code that reads the ledger: an SDK that decodes its XDR,
+or an indexer that turns ledgers into database rows. That code is usually tested like this:
+
+1. a developer writes test cases for the transactions they know about;
+2. runs them against testnet;
+3. ships, and waits.
+
+The network writes far more than anyone thinks to test. A muxed account with a 64-bit ID, a signer that carries a
+payload, a contract call that quietly creates a trustline, a failed transaction that still changes state, an
+authorization tree 245 levels deep: all valid, all rare. When one reaches an indexer, it stops, or it stores rows that
+are wrong, and the first to notice are people looking at a wrong balance. The RFP lists 18 bugs like this, each found
+after release. In one, wallet-backend cut two kinds of valid address short and stored rows nobody could read back
+([#716](https://github.com/stellar/wallet-backend/issues/716)).
+
+What exists today stops short. stellar-core's own golden ledger files test stellar-core: they carry no CAP tags or
+expected values, and reach 254 of the 499 shapes a ledger reader can meet. Each SDK keeps its own fixtures, and each
+indexer team writes its own. Nothing shared tells a team, before release, which real shapes its code gets wrong.
+
+## What XDRProof does
+
+It gives every team the same hard cases, with the answers checked by stellar-core itself:
+
+- **A corpus** of 263 entries (634 ledger variants), generated by a pinned stellar-core or mined from SDF's public data
+  lake, reaching 417 of those 499 shapes. Every checkable expected value is confirmed by stellar-core's own decoder and
+  by an independent schema walker, never by the SDK under test.
+- **A conformance runner** that puts every ledger through the JavaScript, Go, Rust and Python SDKs and pins every
+  difference with its cause.
+- **A replay harness** that serves each ledger to a real indexer through a mock stellar-rpc and judges what it stored.
+  SDF's wallet-backend is the first; an adapter lets any indexer join.
+- **xplint**, a Go linter for the three ingestion mistakes behind recent halts, with SARIF for code scanning.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="architecture/pipeline-dark.png">
+    <img alt="Figure 1: stellar-core and SDF's public data lake produce the ledgers; stellar-core's decoder and a schema walker confirm the expected values; the corpus feeds the SDK conformance runner, the indexer replay harness and the linter; findings go upstream." src="architecture/pipeline-light.png" width="100%">
+  </picture>
+</p>
+
+<p align="center"><sub>Built on, and tested against</sub></p>
+
+<table align="center">
+  <tr>
+    <td align="center"><b>stellar-core</b><br><sub>v30.0.0, writes the ledgers</sub></td>
+    <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/logos/rust_dark.svg"><img alt="Rust" src=".github/assets/logos/rust.svg" height="34"></picture><br><sub>rs-stellar-xdr 30.0.0</sub></td>
+    <td align="center"><img alt="JavaScript" src=".github/assets/logos/javascript.svg" height="34"><br><sub>js-stellar-sdk 17.4.0</sub></td>
+    <td align="center"><img alt="WebAssembly" src=".github/assets/logos/webassembly.svg" height="34"><br><sub>stellar-xdr-json 30.0.0</sub></td>
+    <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/logos/golang_dark.svg"><img alt="Go" src=".github/assets/logos/golang.svg" height="30"></picture><br><sub>go-stellar-sdk, wallet-backend, stellar-etl</sub></td>
+    <td align="center"><img alt="Python" src=".github/assets/logos/python.svg" height="34"><br><sub>py-stellar-base, stellar-xdr</sub></td>
+  </tr>
+</table>
+
+## Reported upstream
+
+Bugs this kit found are reported to the projects that own them, each with a figure and a reproduction:
+
+<table>
+  <tr>
+    <td width="34%"><a href="https://github.com/stellar/wallet-backend/issues/834"><img alt="Where a Soroban refund lands before protocol 23, and the parts wallet-backend reads" src="findings/figures/f3-refunds.png"></a></td>
+    <td><b><a href="https://github.com/stellar/wallet-backend/issues/834">stellar/wallet-backend#834</a></b><br>Native balances miss Soroban fee refunds on protocol 20 to 22 ledgers: on pubnet ledger 56085459, seven accounts end short by 3,349,302 stroops. A fix is ready; replaying the whole corpus into it fixes both affected variants and changes nothing else.</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><img alt="The depth each part of a 245-deep transaction needs, against the decoder's limit of 500" src="findings/figures/f1-depth.png"></a></td>
+    <td><b><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67">stellar/js-stellar-xdr-json#67</a></b><br>The decoder Stellar Lab depends on refuses a transaction the network applied: its auth entry needs depth 499, the transaction 507 and its ledger 519, against a limit of 500.</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><img alt="A bounded contract-deploy walk that stops at the limit instead of failing the ledger" src="findings/figures/820-bounded-walk.png"></a></td>
+    <td><b><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300">stellar/wallet-backend#820</a></b><br>A tested bound for wallet-backend's contract-deploy walk, which follows declared authorization trees with no limit: stop at the bound, count it and log it, never fail the ledger.</td>
+  </tr>
+</table>
+
+The replay also reproduces five fixed wallet-backend bugs at the commit before their fix, and passes at the fix:
+#716, #729, #731, #745 and #753. Every finding, with its status, is in [`findings/REPORT.md`](findings/REPORT.md).
 
 ## Check every claim yourself
 
@@ -78,6 +169,23 @@ Beyond the RFP's fields, each entry names its `hazards` (with the `placement` in
 - **Codes read as submission-only appear in closed ledgers.** Core re-checks sequence numbers, signatures and preconditions at apply, so a classic transaction earlier in the same ledger can make a queued Soroban transaction fail with `txBAD_AUTH_EXTRA` (a signature needed at submission becomes surplus once a master weight rises) and fee-bump inner transactions fail with `txBAD_SEQ`, `txNO_ACCOUNT`, `txBAD_AUTH`, `txBAD_AUTH_EXTRA` or `txBAD_MIN_SEQ_AGE_OR_GAP` inside `txFEE_BUMP_INNER_FAILED`.
 - **wallet-backend's balances and its own history disagree on protocol 22.** Before protocol 23 a Soroban fee refund is credited in `txChangesAfter`; wallet-backend's native balances never read it, so replaying pubnet ledger 56085459 leaves its 7 refunded accounts short by exactly their refund, while its own `BALANCE` history rows add up to the ledger (reported as [stellar/wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834); F-3 in [`findings/REPORT.md`](findings/REPORT.md)). Current ledgers carry refunds in `postTxApplyFeeProcessing`, which it reads.
 
+## What comes next
+
+The SCF grant would fund the work that turns this into a check every Stellar team can run, and keeps it current:
+the indexer-hardening guide, reviewed by a core or platform engineer before it is published; per-CAP coverage and
+agreement with stellar-core's golden files; a memory gate on replay; npm, Go and Rust packages; CI workflows and a
+GitHub Action; stellar-etl and a third indexer in the replay harness; conformance runners for the Java, Swift, Dart, PHP
+and .NET SDKs; and the documentation site. [`ARCHITECTURE.md`](ARCHITECTURE.md) has the detail. After v1.0, XDRProof is
+maintained for 18 months.
+
+## Limits today
+
+- The linter reports four true findings on unmodified wallet-backend `main`, and none with the two patches it offers
+  upstream; it runs clean on current wallet-backend only once those land.
+- The indexer-hardening guide is not written yet, and no package or GitHub Action is published yet.
+- The replay harness has one indexer adapter so far (wallet-backend).
+- The corpus targets protocol 30 and the releases around it.
+
 ## Layout
 
 ```
@@ -99,10 +207,7 @@ replay/               harness, mock stellar-rpc, wallet-backend adapter, sightin
 linter/               xplint (Go analyzers), fixtures and mutants, targets, triaged expectations, patches for wallet-backend
 ```
 
-## Architecture
-
-[`ARCHITECTURE.md`](ARCHITECTURE.md) describes how the parts fit, what is built and what the SCF grant would fund.
-
 ## Independence and licence
 
-XDRProof is an independent open-source project. It is not affiliated with or endorsed by the Stellar Development Foundation. Code and data are licensed under [Apache-2.0](LICENSE).
+XDRProof is an independent open-source project. It is not affiliated with or endorsed by the Stellar Development
+Foundation. Code and data are licensed under [Apache-2.0](LICENSE).

@@ -1,0 +1,14 @@
+# gitleaks configuration: the default rules, plus three files of public test data that its
+# generic-api-key rule mistakes for secrets.
+title = "XDRProof"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public data: SEP-0023's published strkey test vectors, and signer keys read from mined mainnet ledgers"
+paths = [
+  '''conformance/vectors/strkey\.json''',
+  '''tools/vectors/sep-0023\.md''',
+  '''mined/index\.json''',
+]
