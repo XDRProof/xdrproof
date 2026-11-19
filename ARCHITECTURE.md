@@ -27,7 +27,8 @@ Built before any funding, public, and re-runnable with one command each:
 
 The $60,000 award funds 120 future engineer-days through the v1.0 release: the reviewed guide, per-CAP and golden
 agreement reports, a replay memory gate, packages for JavaScript, Go and Rust, CI workflows and a GitHub Action, two
-more indexer adapters, five more SDK runners, and the documentation site (§12). The existing corpus, generator,
+more indexer adapters (stellar-etl and Horizon), five more SDK runners (Java, Swift, Flutter/Dart, PHP and .NET), and
+the documentation site (§12). The existing corpus, generator,
 oracle, conformance runner, wallet-backend replay and linter are pre-award work, charged at $0. After v1.0, XDRProof
 is maintained for 18 months, outside the award budget (§13).
 
@@ -97,9 +98,14 @@ network. None is unclassified. stellar-core's own 866 golden ledger files reach 
 `conformance/` runs each SDK build as a testee speaking one line-delimited JSON protocol, so a new language needs one
 small program. Every corpus variant, 164 strkeys (SEP-0023, all ten types), 14 invalid-input vectors and a depth
 ladder run through js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk
-v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1, plus five older releases around upstream fixes.
-Every known difference is pinned with its cause in `conformance/expectations/`, so a new failure, and a fix upstream,
-both fail the run until the expectation is updated.
+v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1; five older releases run the regression vectors
+for bugs already fixed upstream. Every known difference is pinned with its cause in `conformance/expectations/`, so a
+new failure, and a fix upstream, both fail the run until the expectation is updated.
+
+**Sibling issues.** When an entry breaks one SDK, the same entry runs through every other build. Each build it also
+breaks gets its own issue, linked to the first; each build it does not break is recorded as checked in
+[`findings/REPORT.md`](findings/REPORT.md). For F-1, only `@stellar/stellar-xdr-json` fails the 13 deep variants;
+every other build decodes them.
 
 ## 8. Indexer replay harness
 
@@ -163,8 +169,9 @@ fixed on its main branch.
 - **npm:** `xdrproof`, the command-line tool (`verify`, `coverage`, `conformance`, `replay`, `guide check`, `check`),
   and `@xdrproof/corpus`, the corpus with `loadEntries({hazards, caps, protocol})` and test helpers for Vitest and Jest.
 - **Go:** the corpus embedded in a Go module with a table-test helper. **Rust:** a loader crate.
-- **Workflows**, with actions pinned by SHA and read-only permissions: check (verify, oracle, novelty, coverage gate,
-  linter self-test), conformance, replay (sharded, with the memory gate), determinism, golden agreement, an upstream
+- **Workflows**, with actions pinned by SHA and read-only permissions. `check` already runs `make verify`,
+  `make novelty` and the linter self-test on every push and pull request; the grant adds the oracle and coverage gate to
+  it, conformance, replay (sharded, with the memory gate), determinism, golden agreement, an upstream
   watch that opens a pull request when stellar-xdr, stellar-core or an SDK tags a release, and release (tarball,
   `SHA256SUMS`, build attestation, npm provenance).
 - **GitHub Action:** `XDRProof/action` runs `xdrproof check` on a pinned corpus in another team's CI and uploads
