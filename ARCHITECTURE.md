@@ -5,8 +5,8 @@ XDRProof answers the Stellar Community Fund RFP **XDR/CAP-Coverage Audit Tool an
 Every number below comes from a command in the [README](README.md) that anyone can re-run.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="architecture/pipeline-dark.png">
-  <img alt="Figure 1: stellar-core and the public data lake produce ledgers; independent readers confirm their expected values; the corpus feeds the SDK conformance runner, the indexer replay harness and the linter; findings go upstream." src="architecture/pipeline-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pipeline-dark.png">
+  <img alt="Figure 1: stellar-core and the public data lake produce ledgers; independent readers confirm their expected values; the corpus feeds the SDK conformance runner, the indexer replay harness and the linter; findings go upstream." src=".github/assets/pipeline-light.png">
 </picture>
 
 ## 1. What exists today, and what the grant funds

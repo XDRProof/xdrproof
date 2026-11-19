@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://xdrproof.dev">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png">
-      <img alt="XDRProof: If stellar-core can emit it, your code should survive it. A test kit for every program that reads the Stellar ledger." src=".github/assets/banner-light.png" width="100%">
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.gif">
+      <img alt="XDRProof: If stellar-core can emit it, your code should survive it. A test kit for every program that reads the Stellar ledger. Beside the motto, a terminal replays real runs recorded on 19 Nov 2026: make verify, where the WASM decoder fails on 13 ledgers stellar-core produced (reported as stellar/js-stellar-xdr-json#67); make conformance, six SDK builds matching every pre-registered result; and a replay of pubnet ledger 56085459 into wallet-backend main, which stores seven balances short (reported as stellar/wallet-backend#834)." src=".github/assets/banner-light.gif" width="100%">
     </picture>
   </a>
 </p>
@@ -66,8 +66,8 @@ It gives every team the same hard cases, with the answers checked by stellar-cor
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="architecture/pipeline-dark.png">
-    <img alt="Figure 1: stellar-core and SDF's public data lake produce the ledgers; stellar-core's decoder and a schema walker confirm the expected values; the corpus feeds the SDK conformance runner, the indexer replay harness and the linter; findings go upstream." src="architecture/pipeline-light.png" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pipeline-dark.png">
+    <img alt="Figure 1: stellar-core and SDF's public data lake produce the ledgers; stellar-core's decoder and a schema walker confirm the expected values; the corpus feeds the SDK conformance runner, the indexer replay harness and the linter; findings go upstream." src=".github/assets/pipeline-light.png" width="100%">
   </picture>
 </p>
 
