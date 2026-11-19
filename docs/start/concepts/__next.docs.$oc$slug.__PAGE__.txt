@@ -1,0 +1,52 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/15v9q_j054jco.js"
+5:"/_next/static/chunks/0r_7uf7f793oq.js"
+6:"/_next/static/chunks/3jn0l4-16p9in.js"
+7:"/_next/static/chunks/2e2hww9tb03qq.js"
+8:"/_next/static/chunks/3mh2i9hm-q-ui.js"
+9:I[871044,["$4","$5","$6","$7","$8"],"default"]
+a:I[994813,["$4","$5","$6","$7","$8"],"default"]
+f:"/_next/static/chunks/3wgt30n7z5lyz.js"
+10:"/_next/static/chunks/36bd7nkxz2f7y.js"
+11:"/_next/static/chunks/19oqp96fvqy1s.js"
+12:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"DocsPage"]
+13:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"DocsTitle"]
+14:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"DocsDescription"]
+15:"MarkdownCopyButton"
+16:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"$15"]
+17:"ViewOptionsPopover"
+18:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"$17"]
+19:I[708171,["$4","$5","$6","$7","$8","$f","$10","$11"],"DocsBody"]
+25:"ViewportBoundary"
+26:I[192649,["$4","$5","$6","$7","$8"],"$25"]
+27:"MetadataBoundary"
+28:I[192649,["$4","$5","$6","$7","$8"],"$27"]
+29:"$Sreact.suspense"
+2a:I[586675,["$4","$5","$6","$7","$8"],"IconMark"]
+c:X
+c:C
+d:X
+e:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","$L12",null,{"toc":[],"tableOfContent":{"style":"clerk"},"breadcrumb":{"enabled":false},"children":[["$","div",null,{"className":"xp-label flex items-center gap-2.5 text-[var(--xp-accent)]","children":[["$","span",null,{"className":"grid size-[18px] place-items-center rounded-full bg-[var(--xp-hue)] text-[10px] text-[var(--xp-on-hue)]","children":"01"}],"Sheet 01.04 · Start"]}],["$","$L13",null,{"className":"text-[2.5rem] leading-[1.05]","children":"Concepts"}],["$","$L14",null,{"className":"mb-0 text-[1.125rem]","children":"The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order."}],["$","div",null,{"className":"flex flex-row flex-wrap items-center gap-2 border-b border-fd-border pt-4 pb-6","children":[["$","$L16",null,{"markdownUrl":"/llms.mdx/docs/start/concepts/content.md"}],["$","$L18",null,{"markdownUrl":"/llms.mdx/docs/start/concepts/content.md","pageUrl":"https://xdrproof.dev/docs/start/concepts"}]]}],["$","$L19",null,{"children":["$","div",null,{"className":"relative overflow-auto prose-no-margin my-6","tabIndex":0,"children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Word"}],["$","th",null,{"children":"Meaning"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Entry"}]}],["$","td",null,{"children":["One rare shape. A directory under ",["$","code",null,{"children":"entries/"}]," with an ",["$","code",null,{"children":"entry.json"}]," and one XDR file per variant, plus up to two alternate-ordering files when the change order varies. Its ",["$","code",null,{"children":"id"}]," is permanent and never reused."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Catalog file"}]}],["$","td",null,{"children":["The hand-written source of an entry, ",["$","code",null,{"children":"catalog/<id>.json"}],": its intent and facts, addressed relative to the focus transaction. ",["$","code",null,{"children":"make build"}]," (",["$","code",null,{"children":"tools/build.mjs"}],") compiles it into the entry."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Family"}]}],["$","td",null,{"children":["The first part of an entry id, such as ",["$","code",null,{"children":"failure"}],", ",["$","code",null,{"children":"signer"}]," or ",["$","code",null,{"children":"archival"}],". The docs group entries by it."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Variant"}]}],["$","td",null,{"children":["One ledger file of an entry, for one protocol, one network passphrase and one emitter-flag profile. Its key reads like ",["$","code",null,{"children":"p30-mainnet-generated"}],"; a ",["$","code",null,{"children":"-galexie"}]," or ",["$","code",null,{"children":"-bare"}]," suffix names a non-base profile."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Flag profile"}]}],["$","td",null,{"children":["Which of stellar-core's six metadata flags a run sets: ",["$","code",null,{"children":"base"}]," (the shipped variants), ",["$","code",null,{"children":"galexie"}]," (all six, as public data lakes are written) or ",["$","code",null,{"children":"bare"}]," (none). The ledger is the same; the metadata is not."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Lane"}]}],["$","td",null,{"children":["How a variant was made: ",["$","code",null,{"children":"generated"}]," by a standalone stellar-core, ",["$","code",null,{"children":"mined"}]," from ledger history, or ",["$","code",null,{"children":"synthetic"}]," (hand-built; none yet). The recipes are also split into two lanes, classic and Soroban."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Hazard"}]}],["$","td",null,{"children":["A named way readers break, with its evidence, from ",["$","code",null,{"children":"caps/registry.json"}],". For example, ",["$","code",null,{"children":"H-A3"}]," is a signed-payload signer stored as 33 bytes."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Placement"}]}],"$L1a"]}],"$L1b","$L1c","$L1d","$L1e","$L1f","$L20"]}]]}]}]}]]}],["$L21","$L22"],"$L23"]}],"p":"$@24","v":null,"s":"$d"}}]]
+2:[["children",{"s":{"n":"slug","t":"oc","k":"start/concepts","s":[]},"h":64,"d":{"r":["$","$3","c",{"children":[null,["$","$L9",null,{"parallelRouterKey":"children","template":["$","$La",null,{}]}]]}],"p":"$@b","v":"$c","s":"$d"},"c":"$Qe"}]]
+1:[["children",{"s":"docs","h":32,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L26",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#FAF7F2","media":"(prefers-color-scheme: light)"}],["$","meta","3",{"name":"theme-color","content":"#100F0E","media":"(prefers-color-scheme: dark)"}]]}],["$","$L28",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$29",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Concepts · XDRProof"}],["$","meta","1",{"name":"description","content":"The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order."}],["$","meta","2",{"name":"application-name","content":"XDRProof"}],["$","link","3",{"rel":"canonical","href":"https://xdrproof.dev/docs/start/concepts"}],["$","meta","4",{"property":"og:title","content":"Concepts"}],["$","meta","5",{"property":"og:description","content":"The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order."}],["$","meta","6",{"property":"og:image","content":"https://xdrproof.dev/og/docs/start/concepts/image.png"}],["$","meta","7",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","8",{"name":"twitter:title","content":"Concepts"}],["$","meta","9",{"name":"twitter:description","content":"The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order."}],["$","meta","10",{"name":"twitter:image","content":"https://xdrproof.dev/og/docs/start/concepts/image.png"}],["$","link","11",{"rel":"icon","href":"/brand/favicon.svg"}],["$","$L2a","12",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@2b","v":null,"s":"$d"}},"a":"$@2c","u":"$@2d","b":"X-ZNnTpGpfyvUM3pKt9Yh"}
+2e:I[192649,["$4","$5","$6","$7","$8"],"OutletBoundary"]
+:HL["/_next/static/chunks/0iaxnelvtqw2u.css","style"]
+1a:["$","td",null,{"children":["Where in the XDR a hazard sits in this entry. For example, ",["$","code",null,{"children":"SetOptionsOp.signer.key"}],"."]}]
+1b:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Fact"}]}],["$","td",null,{"children":["A value a correct reader must find at a JSON Pointer path in the SEP-0051 rendering, as ",["$","code",null,{"children":"equals"}],", ",["$","code",null,{"children":"length"}]," or ",["$","code",null,{"children":"some"}]," (a matching change, in any order)."]}]]}]
+1c:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Evidence"}]}],["$","td",null,{"children":["What backs a fact: ",["$","code",null,{"children":"construction"}],", ",["$","code",null,{"children":"snapshot"}],", ",["$","code",null,{"children":"core"}],", ",["$","code",null,{"children":"walker"}]," or ",["$","code",null,{"children":"review"}],"."]}]]}]
+1d:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"SDK check"}]}],["$","td",null,{"children":"A rule for an SDK helper rather than a value, such as \"return all 5 entries or raise an error\"."}]]}]
+1e:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Focus"}]}],["$","td",null,{"children":"The transaction (and operation) the entry is about, so a reader knows where to look in a full ledger."}]]}]
+1f:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Change order"}]}],["$","td",null,{"children":"Whether stellar-core always emits the operation's changes in the same order. When it doesn't, the entry pins an order-normalised hash and lists every ordering seen."}]]}]
+20:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Channel"}]}],["$","td",null,{"children":[["$","code",null,{"children":"stable"}],", ",["$","code",null,{"children":"next"}]," (gated CAPs before mainnet) or ",["$","code",null,{"children":"embargoed"}]," (never committed publicly). All entries today are ",["$","code",null,{"children":"stable"}],"."]}]]}]
+21:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0iaxnelvtqw2u.css","precedence":"next"}]
+22:["$","script","script-0",{"src":"/_next/static/chunks/19oqp96fvqy1s.js","async":true}]
+23:["$","$L2e",null,{"children":["$","$29",null,{"name":"Next.MetadataOutlet","children":"$@2f"}]}]
+2d:true
+d:300
+2f:null
+d:C
+2c:0
+b:"$undefined"
+2b:"$undefined"
+24:"$undefined"

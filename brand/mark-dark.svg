@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="XDRProof">
+  <title>XDRProof</title>
+  <g transform="translate(0 0) scale(1)">
+    <path d="M5.99 6.81L8.22 8.88M16.81 5.36L14.48 8.36M6.59 18.54L8.79 15.71M16.96 16.96L15.05 15.19M19.77 5.51L21.04 7.53" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M3.60 2.50L5.70 4.60L3.60 6.70L1.50 4.60Z" fill="#FFFFFF"/>
+    <path d="M18.40 1.85L19.85 3.30L18.40 4.75L16.95 3.30Z" fill="#FFFFFF"/>
+    <path d="M5.00 19.15L6.45 20.60L5.00 22.05L3.55 20.60Z" fill="#FFFFFF"/>
+    <path d="M19.60 16.95L22.05 19.40L19.60 21.85L17.15 19.40Z" fill="#FFFFFF"/>
+    <path d="M22.20 8.35L23.25 9.40L22.20 10.45L21.15 9.40Z" fill="#FFFFFF"/>
+    <path d="M11.64 8.53L15.14 12.03L11.64 15.53L8.14 12.03Z" fill="#D4F34A"/>
+  </g>
+</svg>
