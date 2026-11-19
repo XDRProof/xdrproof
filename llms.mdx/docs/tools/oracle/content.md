@@ -6,7 +6,7 @@
 
 ```bash
 make oracle          # node tools/oracle.mjs
-node tools/oracle.mjs --write   # also record core and walker as evidence in each entry
+node tools/oracle.mjs --write  # also writes the evidence into entries
 ```
 
 A fact is only as good as the reader that produced it. The oracle asks two readers that share no code with any SDK:

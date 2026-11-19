@@ -10,11 +10,11 @@
 
 ```bash
 go install github.com/XDRProof/xdrproof/linter/cmd/xplint@main
-xplint ./...                                   # text: file:line:col: RULE: message
-xplint -format sarif -o xplint.sarif ./...     # for GitHub code scanning
+xplint ./...                               # text, one finding a line
+xplint -format sarif -o xplint.sarif ./... # GitHub code scanning
 xplint -format json ./...
-xplint -rules XP002,XP003/declared-auth ./...  # a subset
-xplint -list                                   # every rule, with its evidence
+xplint -rules XP002,XP003/declared-auth ./...
+xplint -list                               # every rule, with evidence
 ```
 
 The exit status is 0 with no findings, 1 with findings, and 2 when the packages could not be loaded. It needs the same Go toolchain and cgo setup the packages build with.
@@ -22,8 +22,8 @@ The exit status is 0 with no findings, 1 with findings, and 2 when the packages 
 In this repository, both targets run in a pinned Go image (`linter/toolchain-image`) through `linter/go.sh`:
 
 ```bash
-make lint-selftest   # the seeded fixtures and their mutants (~2 min warm)
-make lint            # real code; must match expectations.json (~3 min warm)
+make lint-selftest   # seeded fixtures and mutants (~2 min warm)
+make lint            # real code, against expectations.json (~3 min)
 ```
 
 ## The three mistakes

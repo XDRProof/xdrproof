@@ -5,7 +5,7 @@
 **Why it matters.** When two SDKs read the same bytes differently, one of them is wrong, and every app built on it inherits the mistake. This finds it first.
 
 ```bash
-make conformance     # conformance/run.sh: about 2 minutes once the builds are cached
+make conformance     # about 2 minutes once the builds are cached
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.

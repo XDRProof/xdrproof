@@ -6,7 +6,8 @@
 
 ```bash
 make verify
-# node tools/strkey.test.mjs && node tools/verify.mjs && node tools/mined-verify.mjs && node tools/auth-payload-check.mjs
+# runs, with node: tools/strkey.test.mjs, tools/verify.mjs,
+# tools/mined-verify.mjs and tools/auth-payload-check.mjs
 node tools/verify.mjs --write   # also rewrite manifest.json
 ```
 

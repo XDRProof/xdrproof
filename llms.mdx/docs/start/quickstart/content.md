@@ -57,19 +57,23 @@ The first run installs the tool dependencies (`npm ci`) and builds the native re
 ### Go further
 
 ```bash
-make oracle        # facts confirmed by stellar-core's own decoder and the schema walker
-make coverage      # how many XDR union arms the entries and mined ledgers reach
-make coverage-report  # every arm reached by an entry, or classified with a core source line
-make novelty       # no entry is redundant
-make generate      # rebuild every generated variant from scratch, twice
-make order-scan    # which ledgers vary in change order
-make conformance   # every corpus variant and vector through the SDK builds
-make replay        # the whole corpus into wallet-backend, and every fix before and after
-make lint-selftest # the linter against its seeded violations and mutants
-make lint          # the linter on wallet-backend, stellar-etl and go-stellar-sdk
+make oracle          # facts confirmed by core and the walker
+make coverage        # the union arms the corpus reaches
+make coverage-report # every arm reached, or classified
+make novelty         # no entry is redundant
+make generate        # rebuild every generated variant, twice
+make order-scan      # which ledgers vary in change order
+make conformance     # the corpus and vectors through the SDKs
+make replay          # the corpus into wallet-backend, every fix
+make lint-selftest   # the linter's seeded violations and mutants
+make lint            # the linter on real indexer code
 ```
 
 Each target has its own page under [Tools](/docs/tools). `make all` runs verify, oracle, coverage, generate, conformance, replay, lint-selftest and lint.
 
 </Step>
 </Steps>
+
+<Callout title="Testing your own SDK or indexer?">
+The steps above run XDRProof's own checks. To run the corpus in **your** test suite, lint **your** Go indexer, or replay it into **your** indexer, start at [Use it on your code](/docs/use): a copy-paste test for JavaScript, Go, Rust and Python, and the one-line linter command.
+</Callout>

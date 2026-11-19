@@ -5,7 +5,7 @@
 **Why it matters.** Code that assumes a fixed order works on one run and breaks on the next. The corpus ships the rarer orderings, so that code fails in a test instead.
 
 ```bash
-make order-scan      # recipes/order-scan.sh classic 20, then soroban 20 at P30; about 15 minutes
+make order-scan   # 20 runs per lane, classic then Soroban (~15 min)
 ```
 
 stellar-core iterates a hash map with a per-process random salt, so the changes within an operation can come out in a different order on every run. The order scan measures this. It runs each recipe lane 20 times on fresh cores, records every byte ordering seen per ledger, and fails if any ledger's **content** differs once order is normalised.

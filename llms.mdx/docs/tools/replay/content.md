@@ -5,10 +5,11 @@
 **Why it matters.** An indexer that halts stops a wallet's history; one that stores a wrong balance is worse. Replay shows which ledgers do that before mainnet does.
 
 ```bash
-make replay              # the whole corpus into wallet-backend main, then every sighting
-make replay-main         # the corpus only
-make replay-sightings    # #729/#716, #731, #745 and #753, before and after their fixes
-node replay/harness.mjs --adapter wallet-backend --target main --entries muxed.payment.every-position
+make replay            # the whole corpus, then every sighting
+make replay-main       # the corpus only
+make replay-sightings  # #729/#716, #731, #745, #753 before and after
+node replay/harness.mjs --adapter wallet-backend --target main \
+  --entries muxed.payment.every-position
 ```
 
 Needs Docker, Node ≥ 22.15 and the native reader (`make native`). Once the images and Go modules are cached nothing reaches the network: the ledgers come from the corpus. On a laptop under Docker, six sessions at a time, the full run takes about 9.5 minutes once the builds are cached.

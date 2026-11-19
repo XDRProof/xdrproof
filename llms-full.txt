@@ -11821,22 +11821,26 @@ The first run installs the tool dependencies (`npm ci`) and builds the native re
 ### Go further
 
 ```bash
-make oracle        # facts confirmed by stellar-core's own decoder and the schema walker
-make coverage      # how many XDR union arms the entries and mined ledgers reach
-make coverage-report  # every arm reached by an entry, or classified with a core source line
-make novelty       # no entry is redundant
-make generate      # rebuild every generated variant from scratch, twice
-make order-scan    # which ledgers vary in change order
-make conformance   # every corpus variant and vector through the SDK builds
-make replay        # the whole corpus into wallet-backend, and every fix before and after
-make lint-selftest # the linter against its seeded violations and mutants
-make lint          # the linter on wallet-backend, stellar-etl and go-stellar-sdk
+make oracle          # facts confirmed by core and the walker
+make coverage        # the union arms the corpus reaches
+make coverage-report # every arm reached, or classified
+make novelty         # no entry is redundant
+make generate        # rebuild every generated variant, twice
+make order-scan      # which ledgers vary in change order
+make conformance     # the corpus and vectors through the SDKs
+make replay          # the corpus into wallet-backend, every fix
+make lint-selftest   # the linter's seeded violations and mutants
+make lint            # the linter on real indexer code
 ```
 
 Each target has its own page under [Tools](/docs/tools). `make all` runs verify, oracle, coverage, generate, conformance, replay, lint-selftest and lint.
 
 </Step>
 </Steps>
+
+<Callout title="Testing your own SDK or indexer?">
+The steps above run XDRProof's own checks. To run the corpus in **your** test suite, lint **your** Go indexer, or replay it into **your** indexer, start at [Use it on your code](/docs/use): a copy-paste test for JavaScript, Go, Rust and Python, and the one-line linter command.
+</Callout>
 
 
 # Conformance (/docs/tools/conformance)
@@ -11846,7 +11850,7 @@ Each target has its own page under [Tools](/docs/tools). `make all` runs verify,
 **Why it matters.** When two SDKs read the same bytes differently, one of them is wrong, and every app built on it inherits the mistake. This finds it first.
 
 ```bash
-make conformance     # conformance/run.sh: about 2 minutes once the builds are cached
+make conformance     # about 2 minutes once the builds are cached
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.
@@ -11943,9 +11947,10 @@ A depth limit counts XDR nesting, and one `ScVal` level costs several units, so 
 **Why it matters.** It turns "we test the rare cases" into a number. Every branch the corpus lacks has a written reason, with the stellar-core source line behind it.
 
 ```bash
-make coverage          # arms in the corpus bytes and the mined ledgers
-make coverage-report   # COVERAGE.md: every arm reached by an entry, or classified; fails if any is neither
-make coverage-goldens  # plus stellar-core's own golden ledgers (downloads about 76 MB once)
+make coverage          # arms in the corpus and the mined ledgers
+make coverage-report   # writes COVERAGE.md; fails on any arm that is
+                       # neither reached by an entry nor classified
+make coverage-goldens  # plus core's own golden ledgers (76 MB, once)
 ```
 
 A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union arm and enum member reachable from `LedgerCloseMeta`. It then walks real ledgers and records which arms they meet.
@@ -11958,7 +11963,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>e5e532a</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>24810e7</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
@@ -12201,11 +12206,11 @@ It ends with `OK: every run reproduced; every shipped generated variant reproduc
 
 ```bash
 go install github.com/XDRProof/xdrproof/linter/cmd/xplint@main
-xplint ./...                                   # text: file:line:col: RULE: message
-xplint -format sarif -o xplint.sarif ./...     # for GitHub code scanning
+xplint ./...                               # text, one finding a line
+xplint -format sarif -o xplint.sarif ./... # GitHub code scanning
 xplint -format json ./...
-xplint -rules XP002,XP003/declared-auth ./...  # a subset
-xplint -list                                   # every rule, with its evidence
+xplint -rules XP002,XP003/declared-auth ./...
+xplint -list                               # every rule, with evidence
 ```
 
 The exit status is 0 with no findings, 1 with findings, and 2 when the packages could not be loaded. It needs the same Go toolchain and cgo setup the packages build with.
@@ -12213,8 +12218,8 @@ The exit status is 0 with no findings, 1 with findings, and 2 when the packages 
 In this repository, both targets run in a pinned Go image (`linter/toolchain-image`) through `linter/go.sh`:
 
 ```bash
-make lint-selftest   # the seeded fixtures and their mutants (~2 min warm)
-make lint            # real code; must match expectations.json (~3 min warm)
+make lint-selftest   # seeded fixtures and mutants (~2 min warm)
+make lint            # real code, against expectations.json (~3 min)
 ```
 
 ## The three mistakes
@@ -12356,7 +12361,7 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>e5e532a</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>24810e7</code>: 0 redundant entries, over 1,226 atoms.
 
 | Entries | Count |
 |---|---:|
@@ -12377,7 +12382,7 @@ It needs Node ≥ 22.15 and the native reader (Rust), which finds each variant's
 
 ```bash
 make oracle          # node tools/oracle.mjs
-node tools/oracle.mjs --write   # also record core and walker as evidence in each entry
+node tools/oracle.mjs --write  # also writes the evidence into entries
 ```
 
 A fact is only as good as the reader that produced it. The oracle asks two readers that share no code with any SDK:
@@ -12411,7 +12416,7 @@ If no planted error is caught at all, the self-test fails and the run exits 1.
 **Why it matters.** Code that assumes a fixed order works on one run and breaks on the next. The corpus ships the rarer orderings, so that code fails in a test instead.
 
 ```bash
-make order-scan      # recipes/order-scan.sh classic 20, then soroban 20 at P30; about 15 minutes
+make order-scan   # 20 runs per lane, classic then Soroban (~15 min)
 ```
 
 stellar-core iterates a hash map with a per-process random salt, so the changes within an operation can come out in a different order on every run. The order scan measures this. It runs each recipe lane 20 times on fresh cores, records every byte ordering seen per ledger, and fails if any ledger's **content** differs once order is normalised.
@@ -12439,10 +12444,11 @@ Corpus entries whose order varies pin an order-normalised hash, and list every r
 **Why it matters.** An indexer that halts stops a wallet's history; one that stores a wrong balance is worse. Replay shows which ledgers do that before mainnet does.
 
 ```bash
-make replay              # the whole corpus into wallet-backend main, then every sighting
-make replay-main         # the corpus only
-make replay-sightings    # #729/#716, #731, #745 and #753, before and after their fixes
-node replay/harness.mjs --adapter wallet-backend --target main --entries muxed.payment.every-position
+make replay            # the whole corpus, then every sighting
+make replay-main       # the corpus only
+make replay-sightings  # #729/#716, #731, #745, #753 before and after
+node replay/harness.mjs --adapter wallet-backend --target main \
+  --entries muxed.payment.every-position
 ```
 
 Needs Docker, Node ≥ 22.15 and the native reader (`make native`). Once the images and Go modules are cached nothing reaches the network: the ledgers come from the corpus. On a laptop under Docker, six sessions at a time, the full run takes about 9.5 minutes once the builds are cached.
@@ -12568,7 +12574,8 @@ The wallet-backend adapter builds each commit in a pinned Go image, runs Timesca
 
 ```bash
 make verify
-# node tools/strkey.test.mjs && node tools/verify.mjs && node tools/mined-verify.mjs && node tools/auth-payload-check.mjs
+# runs, with node: tools/strkey.test.mjs, tools/verify.mjs,
+# tools/mined-verify.mjs and tools/auth-payload-check.mjs
 node tools/verify.mjs --write   # also rewrite manifest.json
 ```
 
@@ -12636,3 +12643,484 @@ For the two v1 create-contract entries, `tools/auth-payload-check.mjs` encodes e
 ## Output
 
 A table with one row per variant: entry@variant, protocol, source, round trip, facts, WASM reader. Then a summary of the counts (entries, variants, hazards targeted), an `OK` line, and the mined-ledger report.
+
+
+# Use it on your code (/docs/use)
+
+**What it is.** The rest of these docs show how XDRProof tests other people's code. This section is for your team: the shortest way to point XDRProof at your own SDK, your own Go indexer and your own indexer.
+
+**Why it matters.** The corpus holds the rare ledgers that broke real indexers and SDKs. Running it in your own CI means your code meets them before your users do, and keeps meeting them on every change.
+- [Test your SDK](https://xdrproof.dev/docs/use/sdk): A copy-paste test in JavaScript, Go, Rust or Python: every corpus ledger must decode and re-encode to the same bytes.
+- [Lint your Go indexer](https://xdrproof.dev/docs/use/lint): Run xplint on your repository for the three ingestion mistakes, with SARIF for GitHub code scanning.
+- [Replay your indexer](https://xdrproof.dev/docs/use/replay): Write a small adapter and replay every corpus ledger into your indexer, with a verdict for each from what it stored.
+
+Every snippet in this section was run in an empty folder, against a fresh clone of the repository, on 19 November 2026. The output shown is what it printed. Where something did not work as first written, the page says so.
+
+
+# Lint your Go indexer (/docs/use/lint)
+
+**What it is.** `xplint` reads your Go indexer's source and points at the exact lines that make one of three mistakes. You run it on your own repository with one command; there is nothing to install first.
+
+**Why it matters.** These three mistakes are how real indexers have halted or stored wrong data. Finding them in review costs a minute; finding them after a ledger arrives costs an incident.
+
+## The three mistakes, in plain words
+
+| Rule | The mistake | What to do instead |
+|---|---|---|
+| **XP001** | Trusting a field stellar-core does not check. Memo text, contract strings and muxed addresses are whatever the sender put there. | Validate the bytes (UTF-8, length), and switch on an address's kind before treating it as an account. |
+| **XP002** | Walking a nested structure with no limit. Authorization trees and nested contract values can be hundreds of levels deep. | Carry a depth and a node budget, and at the limit stop descending. Never fail the ledger: it fails again on every retry. |
+| **XP003** | Taking participants from the envelope. The envelope says what a transaction asked for; the meta says what happened. | Attribute accounts from the meta, and only for transactions that succeeded. |
+
+Each rule has sub-rules with stable IDs; the full list, with the evidence behind each, is on [Linter](/docs/tools/linter#the-three-mistakes).
+
+## Run it
+
+From your repository's root, with Go 1.26 or later and the same cgo setup your packages build with:
+
+```bash
+go run github.com/XDRProof/xdrproof/linter/cmd/xplint@latest ./...
+```
+
+Go fetches the linter's module straight from GitHub (`github.com/XDRProof/xdrproof/linter`); no clone is needed. Run from an empty folder on a fresh clone of [stellar/wallet-backend](https://github.com/stellar/wallet-backend) at `18db88f`, in the `golang:1.27` image with an empty module cache, it printed:
+
+```text
+internal/indexer/processors/contract_deploy.go:116:2: XP002/walk-unbudgeted: closure walkInvocation recurses over SorobanAuthorizedInvocation with no depth or node budget
+internal/services/blend/processor.go:387:21: XP001/muxed-as-account: an address that may be muxed (M...) or not an account is passed to stageHistoryRow, where it reaches .WithAccount() at blend/processor.go:439; it comes from ScAddress.String at blend/scval.go:71
+internal/services/blend/processor.go:579:16: XP001/muxed-as-account: an address that may be muxed (M...) or not an account is passed to routeEntry, where it reaches a map key at blend/processor.go:819; it comes from ScAddress.String at blend/scval.go:71
+internal/services/blend/scval.go:182:6: XP001/muxed-as-account: an address that may be muxed (M...) or not an account reaches a map key; it comes from ScAddress.String at blend/scval.go:71
+exit status 1
+```
+
+Each line is `file:line:col: RULE: message`. The exit status is 0 with no findings, 1 with findings, and 2 when the packages could not be loaded. All four of these are real; what each one means, and the patches that clear them, are on [Linter](/docs/tools/linter#wallet-backend-main).
+
+## In CI: SARIF for GitHub code scanning
+
+```bash
+go run github.com/XDRProof/xdrproof/linter/cmd/xplint@latest \
+  -format sarif -o xplint.sarif ./...
+```
+
+The same run wrote the same four findings as SARIF 2.1.0:
+
+```text
+      3 "ruleId": "XP001/muxed-as-account"
+      1 "ruleId": "XP002/walk-unbudgeted"
+```
+
+Upload `xplint.sarif` with GitHub's `github/codeql-action/upload-sarif` and each finding appears on its line in pull requests. Other flags: `-format json`, `-rules XP002,XP003/declared-auth` for a subset, and `-list` for every rule.
+
+<Callout title="What it does not see">
+xplint follows Go values through SSA within and across your packages. It does not follow calls through interfaces or function values, values sent over channels, or flows through a database, and it knows the go-stellar-sdk's accessors, not your own XDR types. A clean run means none of the patterns it knows, not no bugs. [Limits](/docs/tools/linter#limits)
+</Callout>
+
+
+# Replay your indexer (/docs/use/replay)
+
+**What it is.** A way to feed every rare ledger in the corpus into your own indexer, the way an RPC would serve it, and get a verdict for each one: handled, dropped, mishandled, stalled, crashed or halted.
+
+**Why it matters.** It is the closest thing to meeting those ledgers in production, without waiting for them. The verdict comes from your indexer's own state, so a wrong balance is caught even when nothing crashes.
+
+Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a real indexer build with its own database; what it did (its cursor, its process, the rows it stored) is compared with probes derived from the same ledger, which gives a verdict: handled, dropped, mishandled, stalled, crashed or halted.
+
+## Try it on wallet-backend first
+
+From a fresh clone, with Docker and Node 22.15 or later:
+
+```bash
+git clone --depth 1 https://github.com/XDRProof/xdrproof && cd xdrproof
+make tools/node_modules native
+node replay/harness.mjs --adapter wallet-backend --target main \
+  --entries muxed.payment.every-position
+```
+
+What it printed on 19 November 2026, in 113 seconds with the Docker images already cached (a cold build downloads Go modules first; the adapter allows 20 minutes):
+
+```text
+wallet-backend@main (18db88f4ba48, protocol_max 30): 2 variants, 2 sessions, 0 unsupported
+  3/3 sessions
+  control executable-ref.invoke@p28-mainnet-generated: handled
+  control failure.path-payment-strict-send.no-destination-mainnet@p29-mainnet-mined-l65517499: handled
+  control event.classic.payment-transfer@p30-mainnet-generated: handled
+  2/2 sessions
+
+handled 2   (…/replay/runs/wallet-backend@main/report.json; harness peak RSS 79 MiB)
+  the indexer read ledger entries the corpus does not hold: contract_data x4 (answered not found)
+partial run (2 variants judged): each matches its expectation; the judged-set check needs a full run.
+OK: every verdict matches replay/expectations/wallet-backend@main.json.
+```
+
+The control ledgers run first: the plainest ledger of each protocol the target decodes, each of which must get through before any session counts. The `contract_data` line is the mock telling you the indexer asked for state the ledger does not hold (wallet-backend reads two Blend contracts at startup); a verdict that depends on such a read is flagged and traced by hand. Drop `--entries` to replay the whole corpus.
+
+## Write an adapter for your indexer
+
+An adapter is a folder under `replay/adapters/` with an `adapter.toml` and a few commands. Any indexer that reads ledgers through `getLedgers` can join. Below is a starting template, cut down from wallet-backend's adapter; fill in your own commands.
+
+```toml title="replay/adapters/your-indexer/adapter.toml"
+schema = "xdrproof.adapter/v1"
+name   = "your-indexer"
+
+[delivery]
+kind = "rpc"   # ledgers come through a mock stellar-rpc
+
+[supports]
+networks = ["pubnet", "testnet"]
+# the probe kinds your observe command answers
+probes   = ["tx.present", "balance.native"]
+
+[targets.main]
+ref = "<commit>"      # the commit to build
+protocol_max = 30     # the newest protocol its decoder reads
+
+[commands]                  # run from the adapter folder
+prepare = "./prepare.sh"    # a clean store, cursor before the ledger
+start   = "./start.sh"      # the indexer, pointed at XDRPROOF_RPC_URL
+cursor  = "./cursor.sh"     # print the last ledger committed
+observe = "node observe.mjs" # optional: answer probes, read-only
+
+[timeouts]
+setup_s = 1200
+ledger_s = 30
+session_s = 120
+
+[limits]
+memory_mb = 1024
+```
+
+| Command | Required | Does |
+|---|---|---|
+| `setup` | no | once per target: build the commit, start the store |
+| `prepare` | yes | per session: a clean store with the cursor just before the ledger |
+| `start` | yes | per session: run the indexer in the foreground against the mock RPC |
+| `cursor` | yes | print the last ledger the indexer committed |
+| `observe` | no | read `{"probes": [...]}` on stdin and answer each one `present` (with the stored value) or `absent`, read-only |
+| `stop`, `finish`, `teardown` | no | stop the indexer, drop the session's store, clean up |
+
+Each command gets the session in its environment: `XDRPROOF_FIRST_LEDGER`, `XDRPROOF_LAST_LEDGER`, `XDRPROOF_NETWORK_PASSPHRASE`, `XDRPROOF_RPC_URL` (and a `_DOCKER` form that reaches the host from a container), `XDRPROOF_TARGET_REF` and more; the full list is in [`replay/README.md`](https://github.com/XDRProof/xdrproof/blob/main/replay/README.md#adapter-contract).
+
+With only `prepare`, `start` and `cursor`, every ledger already gets `handled`, `crashed` or `halted`. Add `observe` and the harness can also tell `dropped` and `mishandled`: it works out probes from the ledger's own meta (transactions, participants, signers, trustlines, balances, contracts) and asks your store about each one.
+
+The worked example is [`replay/adapters/wallet-backend/`](https://github.com/XDRProof/xdrproof/tree/main/replay/adapters/wallet-backend): it builds each commit in a pinned Go image, runs TimescaleDB as wallet-backend's compose file does, copies each session's database from a migrated template, and answers every probe with one read of the session database. Its `cursor.sh` is one SQL query.
+
+## What a verdict means
+
+Each ledger gets two attempts: if the first does not get past it, the indexer is restarted once on the same store.
+
+| Verdict | Means |
+|---|---|
+| `handled` | the cursor passed the ledger and every probe your adapter answers matches it |
+| `dropped` | the cursor passed, and something the ledger states is not stored |
+| `mishandled` | the cursor passed, and a stored value differs from the ledger, or an invariant fails |
+| `stalled` | the first attempt stopped making progress without exiting; the restart got past the ledger |
+| `crashed` | the first attempt exited on the ledger; the restart got past it |
+| `halted` | neither attempt got past the ledger: ingestion is stuck |
+
+Two more statuses are not findings: `unsupported` (the ledger's protocol is newer than your target decodes, or its network is not supported) and `error` (an adapter command failed; the run exits 2).
+
+See [Replay](/docs/tools/replay) for how sessions, probes and expectations work, and for wallet-backend's results across the whole corpus.
+
+
+# Test your SDK (/docs/use/sdk)
+
+**What it is.** One test file for your SDK's test suite. It reads every ledger in the corpus, decodes it as `LedgerCloseMeta`, encodes it again, and checks that the bytes are identical.
+
+**Why it matters.** A ledger that does not round-trip is a ledger your SDK reads wrongly: a field dropped, a value changed, or a shape it cannot read at all. The corpus is the rarest valid ledgers stellar-core writes, so this is the cheapest way to meet them in CI before a user does.
+
+<Steps>
+<Step>
+
+### Get the corpus
+
+Clone it next to your tests, or add it as a git submodule so CI pins a version:
+
+```bash
+git clone --depth 1 https://github.com/XDRProof/xdrproof
+# or: git submodule add https://github.com/XDRProof/xdrproof
+```
+
+Each entry is a folder in `entries/` with an `entry.json` that lists its variants. A variant is one ledger file. The 37 mined ledgers from the public data lake ship zstd-compressed (`.xdr.zst`); decompress those first. The tests below read `xdrproof/entries`, or the folder in `XDRPROOF_ENTRIES`.
+
+</Step>
+<Step>
+
+### Add the test
+
+<Tabs items={["JavaScript", "Go", "Rust", "Python"]}>
+<Tab value="JavaScript">
+
+`@stellar/stellar-sdk` 17.4.0. Node 22.15 or later, for its built-in zstd.
+
+```js title="xdrproof.test.mjs"
+// Every corpus ledger must decode and re-encode to the same bytes.
+// Run: node --test   (Node 22.15 or later, for zstd)
+import { test } from "node:test"
+import assert from "node:assert/strict"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
+import { join } from "node:path"
+import { zstdDecompressSync } from "node:zlib"
+import { xdr } from "@stellar/stellar-sdk"
+
+const ENTRIES = process.env.XDRPROOF_ENTRIES ?? "xdrproof/entries"
+
+for (const id of readdirSync(ENTRIES)) {
+  const file = join(ENTRIES, id, "entry.json")
+  if (!existsSync(file)) continue
+  for (const v of JSON.parse(readFileSync(file, "utf8")).variants) {
+    test(`${id}@${v.key}`, () => {
+      let bytes = readFileSync(join(ENTRIES, id, v.file))
+      // mined ledgers ship zstd-compressed
+      if (v.file.endsWith(".zst")) bytes = zstdDecompressSync(bytes)
+      const meta = xdr.LedgerCloseMeta.fromXDR(bytes)
+      assert.ok(Buffer.from(meta.toXDR()).equals(bytes), "bytes differ")
+    })
+  }
+}
+```
+
+```bash
+npm install @stellar/stellar-sdk@17.4.0
+node --test
+```
+
+What it printed, on Node 25.9 (the end of the run):
+
+```text
+ℹ tests 634
+ℹ suites 0
+ℹ pass 634
+ℹ fail 0
+```
+
+</Tab>
+<Tab value="Go">
+
+`github.com/stellar/go-stellar-sdk` v0.9.0. `xdr.SafeUnmarshal` keeps the SDK's default depth limit.
+
+```go title="xdrproof_test.go"
+// Every corpus ledger must decode and re-encode to the same bytes.
+// Run: go test ./...
+package xdrproof_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/klauspost/compress/zstd"
+	"github.com/stellar/go-stellar-sdk/xdr"
+)
+
+func TestCorpusRoundTrip(t *testing.T) {
+	root := "xdrproof/entries"
+	if r := os.Getenv("XDRPROOF_ENTRIES"); r != "" {
+		root = r
+	}
+	dirs, err := os.ReadDir(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unzst, _ := zstd.NewReader(nil)
+	for _, d := range dirs {
+		dir := filepath.Join(root, d.Name())
+		raw, err := os.ReadFile(filepath.Join(dir, "entry.json"))
+		if err != nil {
+			continue
+		}
+		var entry struct{ Variants []struct{ Key, File string } }
+		if err := json.Unmarshal(raw, &entry); err != nil {
+			t.Fatal(err)
+		}
+		for _, v := range entry.Variants {
+			t.Run(d.Name()+"@"+v.Key, func(t *testing.T) {
+				b, err := os.ReadFile(filepath.Join(dir, v.File))
+				if err != nil {
+					t.Fatal(err)
+				}
+				// mined ledgers ship zstd-compressed
+				if strings.HasSuffix(v.File, ".zst") {
+					if b, err = unzst.DecodeAll(b, nil); err != nil {
+						t.Fatal(err)
+					}
+				}
+				var meta xdr.LedgerCloseMeta
+				if err := xdr.SafeUnmarshal(b, &meta); err != nil {
+					t.Fatal("decode: ", err)
+				}
+				out, err := meta.MarshalBinary()
+				if err != nil {
+					t.Fatal("encode: ", err)
+				}
+				if !bytes.Equal(out, b) {
+					t.Fatal("re-encoded bytes differ")
+				}
+			})
+		}
+	}
+}
+```
+
+```bash
+go get github.com/stellar/go-stellar-sdk@v0.9.0
+go mod tidy
+go test ./...
+```
+
+`go mod tidy` is needed: `go get` on the SDK's root module leaves the `xdr` package's own dependencies out of `go.sum`, and the first try, without it, stopped with `missing go.sum entry`. With it, on Go 1.27.4:
+
+```text
+ok  	example.com/check	0.569s
+```
+
+`go test -v` lists 634 passing subtests, one per variant, and no failures.
+
+</Tab>
+<Tab value="Rust">
+
+`stellar-xdr` 30.0.0 has **no default depth limit**: you choose one in `Limits`. The deepest corpus ledgers need more than 500 levels (see [how deep is too deep](/docs/findings/reported)); 1500 reads them all.
+
+```toml title="Cargo.toml"
+[dev-dependencies]
+stellar-xdr = "=30.0.0"
+serde_json = "1"
+zstd = "0.13"
+```
+
+```rust title="tests/xdrproof.rs"
+// Every corpus ledger must decode and re-encode to the same bytes.
+// Run: cargo test --release
+use std::{env, fs};
+use stellar_xdr::{LedgerCloseMeta, Limits, ReadXdr, WriteXdr};
+
+// rs-stellar-xdr has no default depth limit: choose one.
+// The deepest corpus ledgers need more than 500.
+fn limits() -> Limits {
+    Limits { depth: 1500, len: 256 * 1024 * 1024 }
+}
+
+#[test]
+fn corpus_round_trips() {
+    let root = env::var("XDRPROOF_ENTRIES")
+        .unwrap_or("xdrproof/entries".into());
+    let mut n = 0;
+    for dir in fs::read_dir(&root).unwrap() {
+        let dir = dir.unwrap().path();
+        let Ok(raw) = fs::read(dir.join("entry.json")) else {
+            continue;
+        };
+        let entry: serde_json::Value =
+            serde_json::from_slice(&raw).unwrap();
+        for v in entry["variants"].as_array().unwrap() {
+            let file = v["file"].as_str().unwrap();
+            let mut bytes = fs::read(dir.join(file)).unwrap();
+            // mined ledgers ship zstd-compressed
+            if file.ends_with(".zst") {
+                bytes = zstd::decode_all(&bytes[..]).unwrap();
+            }
+            let name = format!("{}@{}", dir.display(), v["key"]);
+            let meta = LedgerCloseMeta::from_xdr(&bytes, limits())
+                .unwrap_or_else(|e| panic!("{name}: decode: {e}"));
+            let out = meta.to_xdr(limits()).unwrap();
+            assert_eq!(out, bytes, "{name}: bytes differ");
+            n += 1;
+        }
+    }
+    println!("{n} corpus variants round-trip");
+}
+```
+
+```bash
+cargo test --release -- --nocapture
+```
+
+The types are at the crate root in 30.0.0 (a first try with `stellar_xdr::curr::…` did not compile). On cargo 1.98.1:
+
+```text
+running 1 test
+634 corpus variants round-trip
+test corpus_round_trips ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+```
+
+</Tab>
+<Tab value="Python">
+
+`stellar-sdk` 17.0.1 (py-stellar-base), with `zstandard` for the mined ledgers.
+
+```python title="test_xdrproof.py"
+# Every corpus ledger must decode and re-encode to the same bytes.
+# Run: pytest -q
+import json
+import os
+import pathlib
+
+import pytest
+import zstandard
+from stellar_sdk import xdr
+
+ROOT = os.environ.get("XDRPROOF_ENTRIES", "xdrproof/entries")
+CASES = [
+    (d, v)
+    for d in sorted(pathlib.Path(ROOT).iterdir())
+    if (d / "entry.json").exists()
+    for v in json.loads((d / "entry.json").read_text())["variants"]
+]
+IDS = [f"{d.name}@{v['key']}" for d, v in CASES]
+
+
+@pytest.mark.parametrize("d,v", CASES, ids=IDS)
+def test_round_trip(d, v):
+    data = (d / v["file"]).read_bytes()
+    # mined ledgers ship zstd-compressed
+    if v["file"].endswith(".zst"):
+        unzst = zstandard.ZstdDecompressor().decompressobj()
+        data = unzst.decompress(data)
+    meta = xdr.LedgerCloseMeta.from_xdr_bytes(data)
+    assert meta.to_xdr_bytes() == data
+```
+
+```bash
+pip install stellar-sdk==17.0.1 zstandard pytest
+pytest -q
+```
+
+On Python 3.13.18 (the end of the run):
+
+```text
+634 passed in 17.06s
+```
+
+</Tab>
+</Tabs>
+
+</Step>
+<Step>
+
+### Go further
+
+A byte round trip is the floor. Each entry also lists the **facts** a correct reader must find (`expected.facts`, at a JSON Pointer path in the SEP-0051 rendering), and some list SDK checks (`expected.sdk_checks`). [Conformance](/docs/tools/conformance) runs all of them, through the same bytes, in every build.
+
+</Step>
+</Steps>
+
+<Callout title="Depth">
+The deepest valid ledgers in the corpus need more than 500 levels of XDR nesting. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0 and py-stellar-base 17.0.1 read all of them with their defaults. rs-stellar-xdr has no default, so pick a limit (1500 above). `@stellar/stellar-xdr-json` 30.0.0 refuses 13 of them: [F-1](/docs/findings/reported).
+</Callout>
+
+## Join the matrix
+
+[Conformance](/docs/tools/conformance) runs 6 SDK builds over the whole corpus today (JavaScript, WebAssembly, Rust, Go and two Python packages), plus 5 older releases on the fixed-bug regressions. Any SDK can join by wrapping itself in a **testee**: a small program that reads one JSON request per line on stdin and writes one JSON answer per line on stdout.
+
+| `op` | Input | Answer when `ok` |
+|---|---|---|
+| `hello` | none | `implementation: {sdk, package, version, runtime}`, `ops: [...]` |
+| `decode` | `{type, xdr}`: a type name as rs-stellar-xdr spells it, and base64 bytes | `xdr`: your re-encoding; `json`: your SEP-0051 rendering, if you have one |
+| `encode_json` | `{type, json}` | `xdr`: base64 |
+| `strkey_decode` | `{strkey}` | `kind`: the first letter; `payload`: hex of the bytes between version byte and checksum |
+| `native` | `{type: "ScVal", xdr}` | `value`: your native projection, rendered losslessly |
+
+Every answer carries `status`: `ok`, `error` (with the stage and message) or `unsupported`. Anything your SDK cannot do is `unsupported`, recorded as not applicable, never as a failure. The six testees in [`conformance/testees/`](https://github.com/XDRProof/xdrproof/tree/main/conformance/testees) are working examples, from 28 to 118 lines each.
+
+The Java, Swift, Dart, PHP and .NET SDKs are not run today. Testees for all five, run over the whole corpus with every difference pinned, are Deliverable 10 of the grant's Tranche 3 ([Architecture](/docs/start/architecture)).
