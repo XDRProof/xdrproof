@@ -61,9 +61,9 @@ function lint(t, tree) {
 // a finding is its rule, place and message: the message names the source and the sink, so a different
 // flow on the same line is a different finding
 const key = (f) => `${f.rule} ${f.file}:${f.line} ${f.message}`;
-const place = (f) => `${f.rule} ${f.file}:${f.line}`;
 const results = {};
 let bad = 0;
+if (opt.only && !T.targets.some((t) => t.name.includes(opt.only))) die(`--only ${opt.only} matches no target in targets.json`);
 for (const t of T.targets) {
   if (opt.only && !t.name.includes(opt.only)) continue;
   const t0 = Date.now();
@@ -77,7 +77,12 @@ for (const t of T.targets) {
     // the mutant must add a finding of its rule that the unmutated tree does not have
     const base = EXP.targets[T.targets.find((b) => b.kind === 'codebase' && b.repo === t.repo && b.ref === t.ref).name] ?? [];
     const inScope = (f) => t.patterns.some((p) => f.file.startsWith(p.replace(/^\.\//, '').replace(/\.\.\.$/, '')));
-    mutantOK = fs.filter((f) => f.rule === t.expect).length > base.filter((f) => f.rule === t.expect && inScope(f)).length;
+    // ... and one of them must be in a file the mutant edited, or trace its flow through one (a finding is
+    // reported where the value is kept; its message names the source, as "blend/scval.go:110")
+    const edited = (t.edits ?? []).map((e) => e.file);
+    const touches = (f) => edited.some((e) => f.file === e || f.message.includes(e.split('/').slice(-2).join('/') + ':'));
+    mutantOK = fs.filter((f) => f.rule === t.expect).length > base.filter((f) => f.rule === t.expect && inScope(f)).length
+      && fs.some((f) => f.rule === t.expect && touches(f));
   }
   const ok = missing.length === 0 && extra.length === 0 && mutantOK;
   if (!ok) bad++;
@@ -94,13 +99,15 @@ if (opt.record) {
   for (const t of T.targets) {
     const fs = results[t.name] ?? null;
     if (!fs) { out.targets[t.name] = EXP.targets[t.name] ?? []; continue; }
-    const old = new Map((EXP.targets[t.name] ?? []).map((f) => [place(f), f]));
-    out.targets[t.name] = fs.map((f) => ({ rule: f.rule, file: f.file, line: f.line, message: f.message, verdict: old.get(place(f))?.verdict ?? 'TODO', why: old.get(place(f))?.why ?? 'TODO', upstream: old.get(place(f))?.upstream ?? null }));
+    // a triage carries over only to the same finding (rule, place and message); a changed message is a
+    // different flow and is triaged again
+    const old = new Map((EXP.targets[t.name] ?? []).map((f) => [key(f), f]));
+    out.targets[t.name] = fs.map((f) => ({ rule: f.rule, file: f.file, line: f.line, message: f.message, verdict: old.get(key(f))?.verdict ?? 'TODO', why: old.get(key(f))?.why ?? 'TODO', upstream: old.get(key(f))?.upstream ?? null }));
   }
   writeFileSync(EXP_FILE, JSON.stringify(out, null, 2) + '\n');
   const todo = Object.values(out.targets).flat().filter((f) => f.verdict === 'TODO').length;
   console.log(`\nrecorded linter/expectations.json${todo ? `: ${todo} finding(s) need triage (verdict TODO)` : ''}`);
-  process.exit(0);
+  process.exit(todo ? 1 : 0);
 }
 
 // ---- recorded.md ---------------------------------------------------------------------------------------

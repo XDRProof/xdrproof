@@ -88,6 +88,42 @@ func BadCosmeticBudget(inv xdr.SorobanAuthorizedInvocation, depth int, log func(
 	return n
 }
 
+// Bad: past the limit it stops only when logOnly is set; otherwise it goes on descending.
+func BadConditionalStop(inv xdr.SorobanAuthorizedInvocation, depth int, logOnly bool) int { // want XP002/walk-unbudgeted
+	if depth > 64 {
+		if logOnly {
+			return 0
+		}
+	}
+	n := 1
+	for _, sub := range inv.SubInvocations {
+		n += BadConditionalStop(sub, depth+1, logOnly)
+	}
+	return n
+}
+
+// Bad: it recurses only past the limit.
+func BadRecursesPastLimit(inv xdr.SorobanAuthorizedInvocation, depth int) int { // want XP002/walk-unbudgeted
+	n := 1
+	if depth > 64 {
+		for _, sub := range inv.SubInvocations {
+			n += BadRecursesPastLimit(sub, depth+1)
+		}
+	}
+	return n
+}
+
+// Good: it recurses only within the limit.
+func GoodUnderLimit(inv xdr.SorobanAuthorizedInvocation, depth int) int {
+	n := 1
+	if depth < 256 {
+		for _, sub := range inv.SubInvocations {
+			n += GoodUnderLimit(sub, depth+1)
+		}
+	}
+	return n
+}
+
 // Good: a depth parameter checked and stepped.
 func GoodDepthParam(inv xdr.SorobanAuthorizedInvocation, depth int) int {
 	if depth > 256 {

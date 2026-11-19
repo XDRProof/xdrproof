@@ -69,22 +69,27 @@ refuses the LLVM bitcode section in a prebuilt cgo library it links (`targets.js
   A map, set or builder counts only when it outlives the function (returned, stored, passed on, or held by a
   parameter, a receiver or a package variable): a scratch map for deduplication or lookup is not
   attribution.
-- **Gates** count only when they dominate the sink, and only for the value they checked. A UTF-8 check or a
-  bound holds for the value checked and what is computed from it (through string and `[]byte` conversions);
-  a bound counts on the branch where the value is below the constant. A switch on the address kind clears
-  the address it was read from, on the account or contract branch. A membership test against a collection
-  built from the meta confirms the key and, when a plain function computed the key (a contract ID hashed
-  from its preimage), that function's arguments. A success check (`Successful()`, the result code) clears
-  operation bodies and events on its branch, and in an unexported function or closure every one of whose
-  callers is success-gated. A gate in a block whose every incoming edge carries the check counts
-  (`case A, B:`).
+- **Gates** count only when they dominate the sink, and only for the value they checked: every source of
+  the label that reaches the sink must pass through the checked value, so a check on `good` does not clear
+  `bad + good`, nor a bound on one argument `max(a, b)`. A UTF-8 check or a bound holds for the value checked
+  and what is computed from it alone (through string and `[]byte` conversions); a bound counts on the
+  branch where the value is below the constant. A helper is a UTF-8 validator only when its result says so:
+  every return of a nil error (or of `true`) is reached through the check. A switch on the address kind
+  clears the address it was read from, on the account or contract branch. A membership test against a
+  collection built from the meta confirms the key and, when a function in the package computed the key (a
+  contract ID hashed from its preimage), the arguments the key is computed from. A success check
+  (`Successful()` on a go-stellar-sdk transaction or result, a result code equal to `txSUCCESS` or
+  `txFEE_BUMP_INNER_SUCCESS`) clears operation bodies and events on its branch, and in an unexported
+  function or closure every one of whose callers is success-gated. A gate in a block whose every incoming
+  edge carries the check counts (`case A, B:`).
 - **XP002** finds recursion with a per-package call graph. The recursive XDR types are computed from the SDK's
   own type graph, so `SorobanDelegateSignature.NestedDelegates` (CAP-0071, hazard H-B14) is covered without a
   list; `ClaimPredicate` and `ScpQuorumSet` are excluded because stellar-core caps them at depth 4
   (v30.0.0 `CreateClaimableBalanceOpFrame.cpp:78`, `QuorumSetUtils.cpp:16,60`). A budget is an integer that
   changes across the recursion (a stepped parameter, or a counter outside the walker), is compared, and stops
-  the descent: the branch past the limit returns, breaks or continues. A check that only logs is not a
-  budget.
+  the descent: the branch that runs past the limit (read from the comparison) ends in a return, break,
+  continue or panic on every path, or, when the check guards the walk (`depth < N`), every recursive call
+  sits inside it. A check that only logs, or stops only on some paths, is not a budget.
 
 Tests and generated files are skipped.
 
@@ -114,11 +119,14 @@ meta confirmation removed (`declared-auth`), the success gate of `GetOperationPa
 (`op-body-ungated`), #753 reverted (`muxed-as-account`), the Blend UTF-8 check removed (`text-bytes`), and the
 first, wrong #820 patch that fails at depth 64 (`budget-fails`).
 
-**Fixtures.** `make lint-selftest`: 36 seeded violations across all twelve default sub-rules (each modelled on
-real code, named in the fixture), every one caught at its marked line, and no finding on the 28 good cases;
+**Fixtures.** `make lint-selftest`: 44 seeded violations across all twelve default sub-rules (each modelled on
+real code, named in the fixture), every one caught at its marked line, and no finding on the 31 good cases;
 17 mutants of the good cases (a guard removed, a fixed bug put back), each caught at the line it breaks. The
-near misses are seeded too: a check on a different memo or address than the one stored, a bound on the wrong
-branch, `max` as a bound, a budget that only logs, a meta check that confirms a different deploy.
+near misses are seeded too: a check on a different memo or address than the one stored, or on half of what
+is stored; a bound on the wrong branch; `max` as a bound; a helper that calls the UTF-8 check and ignores
+it; a budget that only logs, that stops only on some paths past the limit, or that recurses only past it;
+a meta check that confirms a different deploy, or a key that ignores the address recorded; a method that
+happens to be called `Successful`; the failed branch of a result-code check.
 
 ## Does it run clean on current wallet-backend?
 
@@ -159,6 +167,15 @@ processor and Blend tests (against TimescaleDB) pass, as they do on `main`. Open
   column needs too.
 - `XP002/decode-unlimited` sees `DecodeUnlimitedDepth` and constant depths; a depth computed at run time is
   not followed.
+- `XP001/muxed-as-account` sinks are set members, map keys and builder roles. A struct field or a database
+  column is not one: the Blend decoder also stores `addrString`'s result as a token contract ID
+  (`comet.go:337` into `OraclePrice.AssetContractID`), which xplint does not report; the Blend patch covers
+  it, since it changes `addrString` itself.
+- A map or set counts as attribution when it outlives the function. Passing it to any function counts as
+  outliving it, even a helper that only reads it.
+- Summaries carry the first 48 parameters. A value a function stores into a package variable reaches its
+  callers through that variable, but the summary does not say which argument it was.
+- Write order is not followed: a byte changed after its UTF-8 check still counts as checked.
 - Flows through a database are not followed. wallet-backend #802 (Blend decimals stored, read back by the API
   and used as an exponent) is out of reach for that reason; the in-memory shape is caught.
 - Memory is field-sensitive one level deep; deeper fields and slice elements share their root's labels.

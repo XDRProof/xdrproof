@@ -4,3 +4,6 @@ node_modules/
 runs/
 target/
 tools/native/target/
+
+# npm credentials: tokens live in ~/.npmrc or a CI secret, never in the repo
+.npmrc

@@ -145,6 +145,45 @@ func BadValidatedPrefix(v xdr.ScVal) (TransactionOutput, error) {
 	return TransactionOutput{Memo: name}, nil // want XP001/text-bytes
 }
 
+// validateIgnored calls the check and ignores its answer.
+func validateIgnored(s string) error {
+	_ = utf8.ValidString(s)
+	return nil
+}
+
+// Bad: the helper's result says nothing about the bytes.
+func BadIgnoredValidator(tx ingest.LedgerTransaction) TransactionOutput {
+	out := TransactionOutput{}
+	memo := tx.Memo()
+	if err := validateIgnored(memo); err == nil {
+		out.Memo = memo // want XP001/text-bytes
+	}
+	return out
+}
+
+// validMemo is a bool validator.
+func validMemo(s string) bool { return utf8.ValidString(s) && len(s) <= 28 }
+
+// Good: stored only when the bool validator says so.
+func GoodBoolValidator(tx ingest.LedgerTransaction) TransactionOutput {
+	out := TransactionOutput{}
+	memo := tx.Memo()
+	if validMemo(memo) {
+		out.Memo = memo
+	}
+	return out
+}
+
+// Bad: the check covers one half of what is stored.
+func BadCheckedHalf(a, b ingest.LedgerTransaction) TransactionOutput {
+	out := TransactionOutput{}
+	good, bad := a.Memo(), b.Memo()
+	if utf8.ValidString(good) {
+		out.Memo = bad + good // want XP001/text-bytes
+	}
+	return out
+}
+
 // Good: an uncalled helper reaches no sink (wallet-backend internal/utils GetText helper).
 func GoodDeadHelper(m xdr.Memo) string {
 	t, _ := m.GetText()
@@ -291,6 +330,15 @@ func BadMaxNotABound(v xdr.ScVal) []byte {
 // Good: min with a constant bounds it.
 func GoodMinBound(v xdr.ScVal) []byte {
 	return make([]byte, min(v.MustU32(), 64))
+}
+
+// Bad: max of an unbounded value and a checked one is still unbounded.
+func BadMaxOfChecked(v, w xdr.ScVal) []byte {
+	a, b := v.MustU32(), w.MustU32()
+	if b > 64 {
+		return nil
+	}
+	return make([]byte, max(a, b)) // want XP001/contract-number
 }
 
 // ---- XP001/declared-footprint -----------------------------------------------------------------------

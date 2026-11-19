@@ -131,6 +131,20 @@ func BadConfirmedOtherDeploy(a, b xdr.SorobanAuthorizedInvocation, created map[s
 	return out
 }
 
+// idOf hashes only its first preimage; the second is ignored.
+func idOf(a, b xdr.ContractIdPreimageFromAddress) string { return contractIDFrom(a) }
+
+// Bad: the key is computed from a only, so finding it confirms nothing about b.
+func BadKeyIgnoresArg(x, y xdr.SorobanAuthorizedInvocation, created map[string]bool) []builder {
+	var out []builder
+	fa, _ := fromAddressOf(x)
+	fb, _ := fromAddressOf(y)
+	if _, found := created[idOf(fa, fb)]; found {
+		out = append(out, builder{}.WithCreator(deployerOf(fb))) // want XP003/declared-auth
+	}
+	return out
+}
+
 // ---- XP003/op-body-ungated ---------------------------------------------------------------------------
 
 func destinations(op xdr.Operation) []xdr.AccountId {
@@ -210,6 +224,45 @@ func GoodLocalDedupe(op xdr.Operation) int {
 		seen[a.Address()] = true
 	}
 	return len(seen)
+}
+
+// job is not a transaction: its Successful says nothing about one.
+type job struct{ ok bool }
+
+func (j job) Successful() bool { return j.ok }
+
+// Bad: a method that happens to be called Successful is not the transaction's result.
+func BadUnrelatedSuccess(j job, op xdr.Operation) set.Set[string] {
+	out := set.NewThreadUnsafeSet[string]()
+	if j.Successful() {
+		for _, a := range destinations(op) {
+			out.Add(a.Address()) // want XP003/op-body-ungated
+		}
+	}
+	return out
+}
+
+// Bad: the failed branch of a result-code check.
+func BadFailedCodeBranch(tx ingest.LedgerTransaction, op xdr.Operation) set.Set[string] {
+	out := set.NewThreadUnsafeSet[string]()
+	if tx.Result.Result.Result.Code == xdr.TransactionResultCodeTxFailed {
+		for _, a := range destinations(op) {
+			out.Add(a.Address()) // want XP003/op-body-ungated
+		}
+	}
+	return out
+}
+
+// Good: the success branch of a result-code check.
+func GoodSuccessCode(tx ingest.LedgerTransaction, op xdr.Operation) set.Set[string] {
+	out := set.NewThreadUnsafeSet[string]()
+	if tx.Result.Result.Result.Code != xdr.TransactionResultCodeTxSuccess {
+		return out
+	}
+	for _, a := range destinations(op) {
+		out.Add(a.Address())
+	}
+	return out
 }
 
 // ---- XP003/events-ungated ----------------------------------------------------------------------------

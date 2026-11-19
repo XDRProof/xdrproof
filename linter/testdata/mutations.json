@@ -103,10 +103,10 @@
  {
   "name": "decode: turn the limit off",
   "file": "xp002/xp002.go",
-  "from": "func GoodSafeUnmarshal(b []byte) (xdr.ScVal, error) {\n\tvar v xdr.ScVal",
-  "to": "func GoodSafeUnmarshal(b []byte) (xdr.ScVal, error) {\n\t_ = xdr3.DecodeOptions{MaxDepth: xdr3.DecodeUnlimitedDepth}\n\tvar v xdr.ScVal",
+  "from": "\terr := xdr.SafeUnmarshal(b, &v)\n\treturn v, err",
+  "to": "\t_, err := xdr3.NewDecoderWithOptions(bytes.NewReader(b), xdr3.DecodeOptions{MaxDepth: xdr3.DecodeUnlimitedDepth}).Decode(&v)\n\treturn v, err",
   "expect": "XP002/decode-unlimited",
-  "why": "unlimited decoder",
+  "why": "the safe decode replaced by one with the depth limit turned off",
   "at": "DecodeUnlimitedDepth}"
  },
  {

@@ -292,57 +292,137 @@ func budgetChecks(info *types.Info, u *unit, cycle map[types.Object]bool, mutate
 
 var errorIface = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
 
-// stops: a budget check that actually ends the descent. Its over-limit branch returns, breaks or
-// continues, or every recursive call of the unit sits inside one branch of it, or it is a loop condition.
-// A check that only logs and carries on is not a budget.
+// stops: a budget check that actually ends the descent. Which branch runs past the limit follows from the
+// comparison (overLimit); that branch must end, on every path, in a return, break, continue, goto or
+// panic. When the body runs under the limit instead, every recursive call of the unit must sit inside it.
+// A loop condition ends the loop at the limit. A check that only logs, or stops only on some paths past the
+// limit, is not a budget.
 func stops(info *types.Info, is *ast.IfStmt, u *unit, cycle map[types.Object]bool) bool {
 	if !is.If.IsValid() {
 		return true // a loop condition: the loop ends at the limit
 	}
-	exits := func(n ast.Node) bool {
-		found := false
-		ast.Inspect(n, func(m ast.Node) bool {
-			switch x := m.(type) {
-			case *ast.FuncLit:
-				return false
-			case *ast.ReturnStmt:
-				found = true
-			case *ast.BranchStmt:
-				if x.Tok == token.BREAK || x.Tok == token.CONTINUE {
-					found = true
+	switch overLimit(info, is.Cond) {
+	case overBody:
+		return terminates(is.Body)
+	case overElse:
+		inside := func(n ast.Node) bool {
+			all, any := true, false
+			ast.Inspect(u.body, func(m ast.Node) bool {
+				call, ok := m.(*ast.CallExpr)
+				if !ok || !cycle[calleeObj(info, call)] {
+					return true
 				}
-			}
-			return !found
-		})
-		return found
-	}
-	if exits(is.Body) {
-		return true
-	}
-	inside := func(n ast.Node) bool {
-		if n == nil {
-			return false
-		}
-		all, any := true, false
-		ast.Inspect(u.body, func(m ast.Node) bool {
-			call, ok := m.(*ast.CallExpr)
-			if !ok || !cycle[calleeObj(info, call)] {
+				any = true
+				if call.Pos() < n.Pos() || call.End() > n.End() {
+					all = false
+				}
 				return true
-			}
-			any = true
-			if call.Pos() < n.Pos() || call.End() > n.End() {
-				all = false
-			}
-			return true
-		})
-		return any && all
+			})
+			return any && all
+		}
+		return inside(is.Body) || is.Else != nil && terminates(is.Else)
 	}
-	return inside(is.Body) || is.Else != nil && inside(is.Else)
+	return false
 }
 
-// failsOnBudget: the budget check's own block returns a non-nil error.
+// Which branch of a budget check runs when the budget is exceeded.
+const (
+	overUnknown = iota
+	overBody    // depth > N, nodes >= max, maxDepth == 0
+	overElse    // depth < N: the body runs within the budget
+)
+
+// overLimit reads the direction of a budget comparison. The budget is the operand that is not a constant;
+// when both are variables (w.nodes > w.limit) it is the left one. Conditions joined with || run the body
+// past the limit when any part does; anything else that is not a plain comparison is unknown.
+func overLimit(info *types.Info, e ast.Expr) int {
+	switch x := e.(type) {
+	case *ast.ParenExpr:
+		return overLimit(info, x.X)
+	case *ast.UnaryExpr:
+		if x.Op == token.NOT {
+			switch overLimit(info, x.X) {
+			case overBody:
+				return overElse
+			case overElse:
+				return overBody
+			}
+		}
+	case *ast.BinaryExpr:
+		switch x.Op {
+		case token.LOR:
+			if overLimit(info, x.X) == overBody || overLimit(info, x.Y) == overBody {
+				return overBody
+			}
+			return overUnknown
+		case token.LAND:
+			// the body needs every part: within the budget if any part is
+			if overLimit(info, x.X) == overElse || overLimit(info, x.Y) == overElse {
+				return overElse
+			}
+			return overUnknown
+		}
+		budgetLeft := !isConstant(info, x.X)
+		switch x.Op {
+		case token.GTR, token.GEQ:
+			if budgetLeft {
+				return overBody
+			}
+			return overElse
+		case token.LSS, token.LEQ:
+			if budgetLeft {
+				return overElse
+			}
+			return overBody
+		case token.EQL:
+			return overBody
+		case token.NEQ:
+			return overElse
+		}
+	}
+	return overUnknown
+}
+
+func isConstant(info *types.Info, e ast.Expr) bool {
+	tv, ok := info.Types[e]
+	return ok && tv.Value != nil
+}
+
+// terminates: the statement ends the current path on every branch (Go's terminating statements, with break
+// and continue counted, since either ends the descent of a walk).
+func terminates(s ast.Stmt) bool {
+	switch x := s.(type) {
+	case *ast.BlockStmt:
+		return len(x.List) > 0 && terminates(x.List[len(x.List)-1])
+	case *ast.ReturnStmt:
+		return true
+	case *ast.BranchStmt:
+		return x.Tok == token.BREAK || x.Tok == token.CONTINUE || x.Tok == token.GOTO
+	case *ast.ExprStmt:
+		if c, ok := x.X.(*ast.CallExpr); ok {
+			if id, ok := c.Fun.(*ast.Ident); ok && id.Name == "panic" {
+				return true
+			}
+		}
+	case *ast.IfStmt:
+		return x.Else != nil && terminates(x.Body) && terminates(x.Else)
+	case *ast.LabeledStmt:
+		return terminates(x.Stmt)
+	}
+	return false
+}
+
+// failsOnBudget: the branch a budget check takes past the limit returns a non-nil error.
 func failsOnBudget(info *types.Info, is *ast.IfStmt) (token.Pos, bool) {
-	for _, st := range is.Body.List {
+	var over ast.Stmt = is.Body
+	if overLimit(info, is.Cond) == overElse {
+		over = is.Else
+	}
+	block, ok := over.(*ast.BlockStmt)
+	if !ok {
+		return token.NoPos, false
+	}
+	for _, st := range block.List {
 		ret, ok := st.(*ast.ReturnStmt)
 		if !ok || len(ret.Results) == 0 {
 			continue

@@ -132,6 +132,7 @@ type engine struct {
 	gatedFn    map[*ssa.Function]bool // every local call site is success-gated
 	globals    map[*ssa.Global]Label  // what any function stored into a package global
 	calledOnly map[*ssa.Function]bool // unexported functions and closures used only as direct call targets
+	feeds      map[feedKey]bool       // argFeedsResult, memoised
 	globalsUp  bool
 	findings   map[string]Finding
 	reporting  bool
@@ -415,6 +416,7 @@ func (e *engine) analyse(fn *ssa.Function) Summary {
 			s.sinks(ins)
 		}
 	}
+	s.sum.ValidatesUTF8 = s.validatesUTF8()
 	if e.reporting {
 		s.muxIDs()
 		if d := os.Getenv("XPLINT_DEBUG"); d != "" && strings.Contains(fn.String(), d) {
@@ -1062,23 +1064,17 @@ func (s *fnState) edgeClears(a *ssa.BasicBlock, v ssa.Value) Label {
 // gateFor: what holds for v on the branch taken when cond is truth.
 func (s *fnState) gateFor(cond ssa.Value, truth bool, v ssa.Value) Label {
 	var g Label
-	// a validator or a bound holds for the value it checked and what is computed from it; string and
-	// []byte conversions do not change the bytes, so validate(string(b)) checks b
+	// a validator or a bound holds for the value it checked and what is computed from it alone (onlyFrom);
+	// string and []byte conversions do not change the bytes, so validate(string(b)) checks b
 	on := func(checked ssa.Value, l Label) {
-		if v != nil && s.derives(v, unconvert(checked)) {
+		if v != nil && s.onlyFrom(v, []ssa.Value{unconvert(checked)}, l) {
 			g |= l
 		}
 	}
 	// a membership test against the meta confirms the key and the inputs it was computed from (keyInputs)
 	onKey := func(checked ssa.Value, l Label) {
-		if v == nil {
-			return
-		}
-		for _, c := range keyInputs(checked) {
-			if s.derives(v, c) {
-				g |= l
-				return
-			}
+		if v != nil && s.onlyFrom(v, s.keyInputs(checked), l) {
+			g |= l
 		}
 	}
 	switch x := cond.(type) {
@@ -1090,7 +1086,7 @@ func (s *fnState) gateFor(cond ssa.Value, truth bool, v ssa.Value) Label {
 		if !truth {
 			break
 		}
-		if obj != nil && successMethods[obj.Name()] {
+		if obj != nil && successMethods[obj.Name()] && (stellarPkg(obj.Pkg(), "ingest") || stellarPkg(obj.Pkg(), "xdr")) {
 			g |= LOpBody | LDiag
 		}
 		if utf8Guards[key] && len(as) > 0 {
@@ -1144,7 +1140,7 @@ func (s *fnState) gateFor(cond ssa.Value, truth bool, v ssa.Value) Label {
 				if equal && addressKindTypes[xdrName(side.Type())] && plainAddressKind(xdrName(side.Type()), other) {
 					on(fieldBase(side), LMuxed)
 				}
-				if xdrName(side.Type()) == "TransactionResultCode" && equal {
+				if xdrName(side.Type()) == "TransactionResultCode" && equal && successCode(other) {
 					g |= LOpBody | LDiag
 				}
 			}
@@ -1291,16 +1287,17 @@ func (s *fnState) storedInto(r ssa.Value) []ssa.Value {
 func isConst(v ssa.Value) bool { _, ok := v.(*ssa.Const); return ok }
 
 // keyInputs: what a membership test confirms. The key itself, and, when a plain function computed the key
-// (calculateContractID hashing a preimage), that function's arguments: a contract ID found among the
-// instances the meta created confirms the preimage it was hashed from, deployer address included. Only one
-// call is climbed, and never a method's receiver or the value a field was read from: tx.Hash() found in a
-// set does not confirm all of tx, and a key read from part of a value confirms that part.
-func keyInputs(k ssa.Value) []ssa.Value {
+// (calculateContractID hashing a preimage), the arguments its summary says flow into its result: a contract
+// ID found among the instances the meta created confirms the preimage it was hashed from, deployer address
+// included. An argument the function ignores is not confirmed, and neither is a callee with no summary. Only
+// one call is climbed, and never a method's receiver or the value a field was read from: tx.Hash() found in
+// a set does not confirm all of tx, and a key read from part of a value confirms that part.
+func (s *fnState) keyInputs(k ssa.Value) []ssa.Value {
 	k = unconvert(k)
 	out := []ssa.Value{k}
-	t := k
+	t, res := k, 0
 	if ex, ok := k.(*ssa.Extract); ok {
-		t = ex.Tuple
+		t, res = ex.Tuple, ex.Index
 	}
 	call, ok := t.(*ssa.Call)
 	if !ok {
@@ -1313,12 +1310,171 @@ func keyInputs(k ssa.Value) []ssa.Value {
 	if obj := callObj(c); obj != nil && recvName(obj) != "" {
 		return out
 	}
-	for _, a := range c.Args {
-		if !isConst(a) {
+	if callee := s.e.calleeOf(s.fn, c); callee != nil {
+		// in this package: does the key result depend on the argument (through hashing and encoding too)
+		for i, a := range c.Args {
+			if !isConst(a) && s.e.argFeedsResult(callee, i, res) {
+				out = append(out, unconvert(a))
+			}
+		}
+		return out
+	}
+	sum, ok := s.calleeSummary(c)
+	if !ok {
+		return out
+	}
+	for i, a := range c.Args {
+		if i < maxParams && sum.RetFrom&(1<<i) != 0 && !isConst(a) {
 			out = append(out, unconvert(a))
 		}
 	}
 	return out
+}
+
+type feedKey struct {
+	fn       *ssa.Function
+	arg, res int
+}
+
+// argFeedsResult: result res of fn is computed from its parameter arg, following values, calls and
+// memory (derives). Unlike the label summary it follows a value through hashing and XDR encoding, which is
+// how a contract ID is made from its preimage.
+func (e *engine) argFeedsResult(fn *ssa.Function, arg, res int) bool {
+	if e.feeds == nil {
+		e.feeds = map[feedKey]bool{}
+	}
+	key := feedKey{fn, arg, res}
+	if v, ok := e.feeds[key]; ok {
+		return v
+	}
+	out := false
+	if arg < len(fn.Params) {
+		cs := &fnState{e: e, fn: fn}
+		for _, b := range fn.Blocks {
+			if len(b.Instrs) == 0 {
+				continue
+			}
+			if r, ok := b.Instrs[len(b.Instrs)-1].(*ssa.Return); ok && res < len(r.Results) && cs.derives(r.Results[res], fn.Params[arg]) {
+				out = true
+				break
+			}
+		}
+	}
+	e.feeds[key] = out
+	return out
+}
+
+// calleeSummary: the summary of a statically called function, from this package or from an imported
+// package's fact.
+func (s *fnState) calleeSummary(c *ssa.CallCommon) (Summary, bool) {
+	if callee := s.e.calleeOf(s.fn, c); callee != nil {
+		sum, ok := s.e.summary[callee]
+		return sum, ok
+	}
+	if obj := callObj(c); obj != nil && obj.Pkg() != s.e.pass.Pkg && !stellarPkg(obj.Pkg(), "xdr") {
+		var f funcFact
+		if s.e.pass.ImportObjectFact(obj, &f) {
+			return f.S, true
+		}
+	}
+	return Summary{}, false
+}
+
+// successCode: k is the constant for a successful transaction (txSUCCESS = 0, txFEE_BUMP_INNER_SUCCESS = 1).
+func successCode(k ssa.Value) bool {
+	c, ok := k.(*ssa.Const)
+	if !ok || c.Value == nil {
+		return false
+	}
+	n, exact := constant.Int64Val(constant.ToInt(c.Value))
+	return exact && (n == 0 || n == 1)
+}
+
+// onlyFrom: every source of label l that reaches v passes through one of checked. Walking back from v, each
+// operand (and each value stored into memory v reads, or a local whose address v is) that carries l must
+// lead to a checked value; a value that brings l in itself (tx.Memo(), a.String()) counts only when it is
+// read from a checked value. So a check on good does not clear bad + good, nor max(unbounded, checked).
+// Write order is not followed: a byte changed after its check still counts as checked.
+func (s *fnState) onlyFrom(v ssa.Value, checked []ssa.Value, l Label) bool {
+	if v == nil || len(checked) == 0 {
+		return false
+	}
+	isChecked := func(n ssa.Value) bool {
+		for _, c := range checked {
+			if sameValue(n, c, 0) {
+				return true
+			}
+		}
+		return false
+	}
+	carries := func(x ssa.Value) bool { return (s.get(x)|s.memAll(x))&l != 0 }
+	state := map[ssa.Value]int8{} // 1 on the stack (a loop: assume yes), 2 yes, 3 no
+	steps := 0
+	var rec func(n ssa.Value) bool
+	rec = func(n ssa.Value) bool {
+		if n == nil || isChecked(n) {
+			return true
+		}
+		switch state[n] {
+		case 1, 2:
+			return true
+		case 3:
+			return false
+		}
+		if steps++; steps > 4096 {
+			return false
+		}
+		state[n] = 1
+		var deps []ssa.Value
+		if ins, ok := n.(ssa.Instruction); ok {
+			for _, op := range ins.Operands(nil) {
+				if op != nil && *op != nil && !isConst(*op) && carries(*op) {
+					deps = append(deps, *op)
+				}
+			}
+		}
+		switch x := n.(type) {
+		case *ssa.UnOp:
+			if x.Op == token.MUL {
+				for _, st := range s.storedInto(root(x.X)) {
+					if carries(st) {
+						deps = append(deps, st)
+					}
+				}
+			}
+		case *ssa.Alloc:
+			for _, st := range s.storedInto(x) {
+				if carries(st) {
+					deps = append(deps, st)
+				}
+			}
+		}
+		ok := true
+		if len(deps) == 0 {
+			// n brings the label in itself: checked only if it is read from a checked value
+			ok = false
+			for _, c := range checked {
+				if s.derives(n, c) {
+					ok = true
+					break
+				}
+			}
+		} else {
+			for _, d := range deps {
+				if !rec(d) {
+					ok = false
+					break
+				}
+			}
+		}
+		if ok {
+			state[n] = 2
+		} else {
+			state[n] = 3
+		}
+		return ok
+	}
+	return rec(v)
 }
 
 // unconvert: the value under string <-> []byte conversions and named-type changes, which keep the bytes.
@@ -1349,6 +1505,115 @@ func bytesLike(t types.Type) bool {
 		return ok && (b.Kind() == types.Byte || b.Kind() == types.Rune)
 	}
 	return false
+}
+
+// validatesUTF8: the parameters whose UTF-8 validity the function's result reports. A function whose last
+// result is an error validates parameter i when every return that can carry a nil error is reached only
+// through a UTF-8 check of i (or returns the error of another validator of i); one whose last result is a
+// bool, when every return that can be true is. Calling utf8.ValidString and ignoring the answer validates
+// nothing.
+func (s *fnState) validatesUTF8() uint64 {
+	res := s.fn.Signature.Results()
+	if res.Len() == 0 {
+		return 0
+	}
+	last := res.At(res.Len() - 1).Type()
+	isErr := types.Identical(last, types.Universe.Lookup("error").Type())
+	isBool := types.Identical(last.Underlying(), types.Typ[types.Bool])
+	if !isErr && !isBool {
+		return 0
+	}
+	var mask uint64
+	for i, p := range s.fn.Params {
+		if i >= maxParams {
+			break
+		}
+		ok, any := true, false
+		for _, b := range s.fn.Blocks {
+			if len(b.Instrs) == 0 {
+				continue
+			}
+			r, isRet := b.Instrs[len(b.Instrs)-1].(*ssa.Return)
+			if !isRet || len(r.Results) == 0 {
+				continue
+			}
+			any = true
+			if !s.resultValidates(r.Results[len(r.Results)-1], b, nil, p, isErr, 0) {
+				ok = false
+				break
+			}
+		}
+		if ok && any {
+			mask |= 1 << i
+		}
+	}
+	return mask
+}
+
+// resultValidates: the result value r, returned from block b (or flowing along the edge from pred into b's
+// phi), is either a failure (a non-nil error, false) or holds only when p passed a UTF-8 check.
+func (s *fnState) resultValidates(r ssa.Value, b, pred *ssa.BasicBlock, p *ssa.Parameter, isErr bool, depth int) bool {
+	gated := func() bool {
+		at := b
+		if pred != nil {
+			at = pred
+		}
+		g := s.clears(at, p)
+		if pred != nil && len(pred.Instrs) > 0 {
+			if iff, ok := pred.Instrs[len(pred.Instrs)-1].(*ssa.If); ok && len(pred.Succs) == 2 && pred.Succs[0] != pred.Succs[1] {
+				g |= s.gateFor(iff.Cond, b == pred.Succs[0], p)
+			}
+		}
+		return g&LText != 0
+	}
+	if depth > 8 {
+		return false
+	}
+	switch x := r.(type) {
+	case *ssa.Const:
+		if isErr {
+			return !x.IsNil() || gated()
+		}
+		if x.Value != nil && constant.BoolVal(x.Value) == false {
+			return true
+		}
+		return gated()
+	case *ssa.Phi:
+		for i, e := range x.Edges {
+			if !s.resultValidates(e, x.Block(), x.Block().Preds[i], p, isErr, depth+1) {
+				return false
+			}
+		}
+		return true
+	case *ssa.MakeInterface:
+		// a concrete error value: never nil
+		if isErr {
+			return true
+		}
+	case *ssa.Extract, *ssa.Call:
+		var call *ssa.Call
+		if ex, ok := x.(*ssa.Extract); ok {
+			call, _ = ex.Tuple.(*ssa.Call)
+		} else {
+			call = x.(*ssa.Call)
+		}
+		if call != nil {
+			c := call.Common()
+			if obj := callObj(c); obj != nil && isErr && (keyOf(obj) == apiKey{"errors", "", "New"} || keyOf(obj) == apiKey{"fmt", "", "Errorf"}) {
+				return true // always a non-nil error
+			}
+			as := args(c)
+			if obj := callObj(c); obj != nil && !isErr && utf8Guards[keyOf(obj)] && len(as) > 0 && s.derives(p, unconvert(as[0])) {
+				return true // return utf8.ValidString(p)
+			}
+			for _, a := range s.validatedArgs(c) {
+				if s.derives(p, unconvert(a)) {
+					return true // the result of another validator of p
+				}
+			}
+		}
+	}
+	return gated()
 }
 
 // validatedArgs: the arguments a call checks are valid UTF-8 (its summary's ValidatesUTF8).
@@ -1660,13 +1925,6 @@ func (s *fnState) callSinks(ins ssa.Instruction, c *ssa.CallCommon) {
 		}
 		s.hitVia(ins, ps.Kind, as[ps.Param], ps.Labels, ps.Where, name, false)
 	}
-	if sum.ValidatesUTF8 != 0 {
-		for i, a := range as {
-			if i < maxParams && sum.ValidatesUTF8&(1<<i) != 0 {
-				s.sum.ValidatesUTF8 |= uint64(s.get(a) >> paramShift)
-			}
-		}
-	}
 }
 
 func (s *fnState) posOf(p token.Pos) string {
@@ -1676,12 +1934,6 @@ func (s *fnState) posOf(p token.Pos) string {
 
 // catalogueSinks: the sinks named in sdk.go (attribution methods, database writes, encoders, numbers).
 func (s *fnState) catalogueSinks(ins ssa.Instruction, c *ssa.CallCommon, obj *types.Func, key apiKey, as []ssa.Value) {
-	// a UTF-8 check on a value derived from a parameter: this function validates that parameter
-	if utf8Guards[key] {
-		for _, a := range as {
-			s.sum.ValidatesUTF8 |= uint64(s.get(a) >> paramShift)
-		}
-	}
 	switch {
 	case recvName(obj) == "" && strings.HasPrefix(obj.Name(), "New") && strings.Contains(obj.Name(), "Set"):
 		// a set built with its first members: set.NewThreadUnsafeSet(op.SourceAccount().Address())
