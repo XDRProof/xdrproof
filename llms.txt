@@ -4,6 +4,7 @@
   - [What XDRProof is](/docs/start): A shared corpus of rare but valid Stellar ledger data, the facts a correct reader must find in it, and tools that replay it into indexers and test SDKs on the same shapes.
   - [Quickstart](/docs/start/quickstart): Clone the repository and run make verify: strkey vectors, every entry against its schema, hashes, a byte-for-byte round trip and every fact, and every mined ledger, in seconds.
   - [How it works](/docs/start/how-it-works): Recipes drive a bare stellar-core to emit rare shapes; the bytes become entries with facts; independent readers check them, real indexers ingest them, and SDK builds read the same bytes.
+  - [Architecture](/docs/start/architecture): How the parts fit: where the ledgers come from, where 'correct' comes from, the three tools that run the corpus against real code, and what the Stellar Community Fund grant would fund.
   - [Concepts](/docs/start/concepts): The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order.
 - Corpus: The entries, the schema and how entries are made
   - [The corpus](/docs/corpus): Rare but valid Stellar ledger data, as bytes stellar-core actually emitted, each entry tagged with its CAP and the values a correct reader must return.
@@ -378,6 +379,7 @@
   - [Order scan](/docs/tools/order-scan): make order-scan: 20 fresh runs per recipe lane record which ledgers come out in more than one byte order, and prove the content never varies.
   - [Conformance](/docs/tools/conformance): make conformance: every corpus variant, the strkey vectors, invalid XDR and a depth ladder through builds of the JavaScript, Go, Rust and Python SDKs. Each build's known failures are written down first; anything else fails the run.
   - [Replay](/docs/tools/replay): make replay: every corpus ledger into a real indexer through a mock stellar-rpc, one fresh store per ledger. Each variant gets a verdict from the indexer's own state: its cursor, its process and what it stored. Never from logs.
+  - [Linter](/docs/tools/linter): make lint and make lint-selftest: xplint reads Go indexer code and points at the lines that make the three ingestion mistakes the RFP names. Text, JSON or SARIF for GitHub code scanning. Every finding on real code is triaged and pinned.
 - Hazards: Named ways ledger readers break
   - [The hazard registry](/docs/hazards): Every named way readers of the Stellar ledger break, in eight layers, each with its evidence. The corpus grows by covering them.
 
@@ -390,6 +392,7 @@
   - [Layer F: Ledger level](/docs/hazards/layer-f): Every hazard in layer F of the registry, each with its evidence and the test the corpus holds or will hold for it.
   - [Layer G: Protocol and network variants](/docs/hazards/layer-g): Every hazard in layer G of the registry, each with its evidence and the test the corpus holds or will hold for it.
   - [Layer H: Reader robustness (SDK-only)](/docs/hazards/layer-h): Every hazard in layer H of the registry, each with its evidence and the test the corpus holds or will hold for it.
-- Findings: What building the corpus found, and the upstream bugs it reproduces and found
+- Findings: What building the corpus found, what XDRProof reported upstream, and the upstream bugs it reproduces
   - [Found while building](/docs/findings): What building the corpus measured about stellar-core, its metadata and the decoders. Each one is a hazard for indexers.
+  - [Reported upstream](/docs/findings/reported): Two bugs XDRProof's runs found that nobody had reported, now filed upstream with a figure and a reproduction: a lost refund in wallet-backend and a decoder that refuses a ledger stellar-core closed. And a tested fix offered on an issue that was already open.
   - [Upstream bugs](/docs/findings/reproduced): Real bugs in wallet-backend and the SDKs, reproduced from corpus ledgers and test vectors, plus what the runs found that nobody had reported. Each is pinned, so a fix upstream shows up as an unexpected pass.

@@ -2,6 +2,8 @@
 
 Asset ordering, map keys that collide, amounts past 2⁵³, wide integers, invalid UTF-8, maximum lengths, nesting depth, and an authorization signed over bytes it does not contain: values that change, or break, when they are converted, decoded or verified.
 
+**Why it matters.** A value that changes when it is converted is a wrong number in front of a user: an amount rounded, a map key lost, a signature that won't verify.
+
 ### H-B1: Asset ordering by strkey text instead of XDR bytes
 
 In the corpus. Checks: conformance.

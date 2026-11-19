@@ -2,6 +2,8 @@
 
 Bytes that depend on the network passphrase, older protocols, mainnet-only code paths in core, and CAPs gated before mainnet.
 
+**Why it matters.** The same transaction can be different bytes on another network or protocol. Code that assumes one of them breaks on the other.
+
 ### H-G1: Passphrase-dependent bytes (hashes, contract IDs, signatures)
 
 In the corpus. Checks: conformance, verify facts.

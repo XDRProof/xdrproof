@@ -2,6 +2,8 @@
 
 Ledger entries created, updated or removed by something other than an operation that names them: trustlines from contract calls, eviction, restores, revocation.
 
+**Why it matters.** A reader that only looks at operations misses state that changed for other reasons, and its balances drift away from the ledger.
+
 ### H-D1: Contract call creates a classic trustline (no CHANGE_TRUST, no event)
 
 In the corpus. Checks: replay probe.

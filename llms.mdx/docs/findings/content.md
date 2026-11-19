@@ -1,5 +1,9 @@
 # Found while building (/docs/findings)
 
+**What it is.** What building the corpus measured about stellar-core and the decoders: things the documentation doesn't say.
+
+**Why it matters.** Each one is a trap for anyone reading the ledger, and each is now a test in the corpus.
+
 Each finding says where it comes from: a committed measurement, a mined ledger, or an observation on recipe runs. The recipe runs themselves are not shipped. The recipes are, along with the order-scan and flag-profile results.
 
 ## stellar-core emits some operation changes in a random order
@@ -39,7 +43,9 @@ At Protocol 30, an authorization tree 245 levels deep applies. At 246 the transa
 
 ## The WASM build of rs-stellar-xdr cannot decode those ledgers
 
-`@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr compiled to WASM, refuses 13 corpus variants that stellar-core wrote (`depth limit exceeded`): 8 whose authorization tree is 245 levels deep, the deepest that applies, and 5 at 246, which core includes and traps. The package hard-codes `XDR_MAX_DEPTH = 500`, set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr read them. This is finding F-1 on [Upstream bugs](/docs/findings/reproduced); it is not filed upstream yet.
+`@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr compiled to WASM, refuses 13 corpus variants that stellar-core wrote (`depth limit exceeded`): 8 whose authorization tree is 245 levels deep, the deepest that applies, and 5 at 246, which core includes and traps. The package hard-codes `XDR_MAX_DEPTH = 500`, set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr read them. This is finding F-1, reported as [js-stellar-xdr-json#67](https://github.com/stellar/js-stellar-xdr-json/issues/67); see [Reported upstream](/docs/findings/reported).
+
+Figure (animated): how deep is too deep. Counted from the authorization entry, as stellar-core counts, the deepest tree it applies needs depth 499, under the limit of 500. Counted from the transaction it needs 507, and from the ledger 519; @stellar/stellar-xdr-json counts from the ledger and refuses it.
 
 ## A create-contract authorization is signed over bytes it does not contain
 

@@ -1,5 +1,9 @@
 # Generate (/docs/tools/generate)
 
+**What it is.** Rebuilds every generated ledger from scratch on fresh, offline stellar-cores, twice, and checks that the runs agree.
+
+**Why it matters.** It proves the corpus is reproducible: nothing in it depends on our machine, our timing or our luck.
+
 ```bash
 make generate        # recipes/regenerate.sh, about 10 minutes
 make generate-quick  # only the two mainnet base P30 pairs, about 3 minutes

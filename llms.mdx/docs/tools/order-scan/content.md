@@ -1,5 +1,9 @@
 # Order scan (/docs/tools/order-scan)
 
+**What it is.** A measurement of how often stellar-core writes the same ledger's changes in a different order.
+
+**Why it matters.** Code that assumes a fixed order works on one run and breaks on the next. The corpus ships the rarer orderings, so that code fails in a test instead.
+
 ```bash
 make order-scan      # recipes/order-scan.sh classic 20, then soroban 20 at P30; about 15 minutes
 ```

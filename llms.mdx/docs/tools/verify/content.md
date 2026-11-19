@@ -1,5 +1,9 @@
 # Verify (/docs/tools/verify)
 
+**What it is.** The basic check: every entry is exactly what it says it is, byte for byte, and every expected fact holds.
+
+**Why it matters.** If the corpus were wrong, every test built on it would be wrong too. This runs in seconds, so it runs on every change.
+
 ```bash
 make verify
 # node tools/strkey.test.mjs && node tools/verify.mjs && node tools/mined-verify.mjs && node tools/auth-payload-check.mjs

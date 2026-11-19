@@ -1,5 +1,9 @@
 # The hazard registry (/docs/hazards)
 
+**What it is.** Every known way a program reading the Stellar ledger goes wrong, in 8 layers, each with its evidence.
+
+**Why it matters.** It is the corpus's blueprint: each entry targets hazards from this list, and each hazard says which check exercises it.
+
 [`caps/registry.json`](https://github.com/XDRProof/xdrproof/blob/main/caps/registry.json) is the blueprint for the corpus. Each **hazard** is a named way a reader of the Stellar ledger breaks. Some examples:
 
 - a muxed account stored without its ID;
@@ -28,6 +32,6 @@ Every hazard carries its **evidence**: an upstream issue, a protocol rule or a m
 | `title` | The failure, in one line |
 | `evidence` | Where it was seen: issues, pull requests, protocol rules, measurements |
 | `test` | What the corpus holds or will hold for it. `C5` and `S11` are classic and Soroban [recipe](/docs/corpus/recipes) ledgers; `c-base` and `s-base` name a recipe step; `M:` names a shape in the mined mainnet ledgers (`mined/index.json`); `todo` marks a placement not yet built |
-| `checks` | Which check will exercise it: replay probe, conformance, linter, guide, verify facts (the linter and the guide are planned) |
+| `checks` | Which check will exercise it: replay probe, conformance, linter, guide, verify facts (the guide is planned) |
 
 The **covered** column lists the hazards an entry already targets. The rest are the corpus's to-do list, in the open.

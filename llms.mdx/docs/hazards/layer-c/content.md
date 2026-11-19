@@ -2,6 +2,8 @@
 
 Failed transactions that still change state, fee bumps, sponsorship, Soroban failures, order-book matching, liquidity pools, claimable balances, and fees that differ from what was bid.
 
+**Why it matters.** Whether a transaction succeeded, what it cost and what it changed are three different questions, and the ledger answers each in a different place.
+
 ### H-C1: Failed transactions in ledgers (fees charged, no effects, result codes)
 
 In the corpus. Checks: replay probe, verify facts.

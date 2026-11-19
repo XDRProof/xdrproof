@@ -1,5 +1,9 @@
 # Novelty (/docs/tools/novelty)
 
+**What it is.** A check that every entry earns its place: each must hold something no other entry holds.
+
+**Why it matters.** The corpus grows by purpose, not by volume, so a team can run all of it without wading through duplicates.
+
 ```bash
 make novelty                    # node tools/novelty.mjs
 node tools/novelty.mjs --json out.json   # also write the per-entry report
@@ -18,7 +22,7 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>105aab7</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>e5e532a</code>: 0 redundant entries, over 1,226 atoms.
 
 | Entries | Count |
 |---|---:|

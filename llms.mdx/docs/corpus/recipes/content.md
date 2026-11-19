@@ -1,5 +1,9 @@
 # Recipes (/docs/corpus/recipes)
 
+**What it is.** Small scripts that make a private, offline stellar-core produce each rare shape on demand.
+
+**Why it matters.** A shape you can rebuild from scratch is one anyone can verify, and one that can be made again when the protocol changes.
+
 A recipe is a Node script (using `@stellar/stellar-sdk` 17.4.0) that drives one fresh **standalone stellar-core** over its HTTP port:
 
 - **Fixed seeds.** Every keypair is `sha256('xdrproof:' + name)`; the root account comes from the passphrase.

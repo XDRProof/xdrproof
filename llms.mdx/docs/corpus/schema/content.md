@@ -1,5 +1,9 @@
 # Manifest schema (/docs/corpus/schema)
 
+**What it is.** The format of an entry, field by field, as a JSON Schema.
+
+**Why it matters.** Any tool, in any language, can load the corpus and know what each field means without reading XDRProof's code.
+
 The schema is [`schema/v1/entry.schema.json`](https://github.com/XDRProof/xdrproof/blob/main/schema/v1/entry.schema.json), version 1.1. Every table on this page is generated from it.
 
 ## The RFP's fields

@@ -2,6 +2,8 @@
 
 Depth bombs, over-length vectors, truncated input and non-canonical encodings that an SDK must reject safely.
 
+**Why it matters.** An SDK is the first thing to touch untrusted bytes. It must refuse bad input cleanly; crashing, or quietly accepting it, passes the problem on.
+
 ### H-H1: Depth bombs (nested vecs/maps past each SDK's limit)
 
 Not in the corpus yet. Checks: conformance.

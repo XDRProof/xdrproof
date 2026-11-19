@@ -1,5 +1,9 @@
 # Catalog (/docs/corpus/catalog)
 
+**What it is.** The hand-written source of every entry: what it is for, where its ledger comes from, and the facts to check. A compiler turns it into the entry.
+
+**Why it matters.** Nobody edits the corpus by hand, and the compiler refuses any fact that doesn't hold, so a typo can't become a wrong answer.
+
 Nobody edits `entries/` by hand. Each entry starts as a **catalog file**, `catalog/<id>.json`. It says what the entry is for, where its ledger comes from, and the facts a correct reader must find, written relative to the transaction the entry is about. The compiler, `tools/build.mjs`, turns it into `entries/<id>/` for every variant.
 
 <Steps>

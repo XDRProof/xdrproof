@@ -1,5 +1,9 @@
 # Oracle (/docs/tools/oracle)
 
+**What it is.** A second and a third opinion on every expected value, from two readers that share no code with any SDK: stellar-core's own decoder and XDRProof's own walker.
+
+**Why it matters.** A test is only as good as its expected answer. Readers that cannot share a bug with the SDK under test keep the answers honest.
+
 ```bash
 make oracle          # node tools/oracle.mjs
 node tools/oracle.mjs --write   # also record core and walker as evidence in each entry

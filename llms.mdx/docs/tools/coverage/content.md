@@ -1,5 +1,9 @@
 # Coverage (/docs/tools/coverage)
 
+**What it is.** A count of every kind of data a ledger can hold (every branch of every XDR union), and whether the corpus has a real example of each.
+
+**Why it matters.** It turns "we test the rare cases" into a number. Every branch the corpus lacks has a written reason, with the stellar-core source line behind it.
+
 ```bash
 make coverage          # arms in the corpus bytes and the mined ledgers
 make coverage-report   # COVERAGE.md: every arm reached by an entry, or classified; fails if any is neither
@@ -16,7 +20,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>105aab7</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>e5e532a</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 

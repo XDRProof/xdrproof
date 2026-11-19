@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="t d" class="xp-fig">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700" role="img" aria-labelledby="t d" class="xp-fig">
   <title id="t">XDRProof pipeline</title>
-  <desc id="d">Inputs: the hazard registry (78 hazards) says what to target; recipes drive a standalone stellar-core v30.0.0, pinned by image digest, to emit rare shapes; ledger history adds mined variants. The corpus (263 entries, 634 variants) holds the bytes and the facts a correct reader must return. Verify, Oracle and Coverage prove it with independent readers; it reaches 417 of 499 union arms. Replay feeds every corpus ledger to wallet-backend main (618 of 634 handled, 0 halted) and to the builds before and after each fix. Conformance runs the corpus and test vectors through 11 JavaScript, WebAssembly, Rust, Go and Python SDK builds. Planned, not built yet: an indexer linter, a GitHub Action and the hardening guide.</desc>
+  <desc id="d">Inputs: the hazard registry (78 hazards) says what to target; recipes drive a standalone stellar-core v30.0.0, pinned by image digest, to emit rare shapes; ledger history adds mined variants. The corpus (263 entries, 634 variants) holds the bytes and the facts a correct reader must return. Verify, Oracle and Coverage prove it with independent readers; it reaches 417 of 499 union arms. Replay feeds every corpus ledger to wallet-backend main (618 of 634 handled, 0 halted) and to the builds before and after each fix. Conformance runs the corpus and test vectors through 6 JavaScript, WebAssembly, Rust, Go and Python SDK builds, and the fixed-bug regressions through 5 older releases. The linter, xplint, checks Go indexer source for the three ingestion mistakes: 4 findings on wallet-backend main, 0 with XDRProof's two patches. Planned: a GitHub Action and the hardening guide.</desc>
   <style>
     .xp-fig { --bg:#FAF7F2; --grid:rgba(21,19,15,.045); --grid2:rgba(21,19,15,.085); --cross:rgba(21,19,15,.32); --line:#15130F; --node:#FFFDF9; --nstroke:#15130F; --title:#15130F; --sub:#3B3731; --label:#8A6A00; --muted:#6E675E; --subj:#FDDA24; --subj-t:#15130F; --pass:#E2F0DA; --pass-t:#2F7A1F; --warn:#F8EAD3; --warn-t:#9A5600; --fail:#FBE1DA; --fail-t:#CC2E19; --neu:#F2EDE5; --neu-t:#15130F; --tile:#FFFFFF; --tilestroke:rgba(21,19,15,.18);
       font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; }
@@ -30,11 +30,11 @@
     .c-neu { fill: var(--neu); } .c-neu-t { fill: var(--neu-t); }
     .tile { fill: var(--tile); stroke: var(--tilestroke); }
   </style>
-  <rect class="bg" width="1200" height="660"/>
-  <path class="g1" d="M0.5 0V660M20.5 0V660M40.5 0V660M60.5 0V660M80.5 0V660M100.5 0V660M120.5 0V660M140.5 0V660M160.5 0V660M180.5 0V660M200.5 0V660M220.5 0V660M240.5 0V660M260.5 0V660M280.5 0V660M300.5 0V660M320.5 0V660M340.5 0V660M360.5 0V660M380.5 0V660M400.5 0V660M420.5 0V660M440.5 0V660M460.5 0V660M480.5 0V660M500.5 0V660M520.5 0V660M540.5 0V660M560.5 0V660M580.5 0V660M600.5 0V660M620.5 0V660M640.5 0V660M660.5 0V660M680.5 0V660M700.5 0V660M720.5 0V660M740.5 0V660M760.5 0V660M780.5 0V660M800.5 0V660M820.5 0V660M840.5 0V660M860.5 0V660M880.5 0V660M900.5 0V660M920.5 0V660M940.5 0V660M960.5 0V660M980.5 0V660M1000.5 0V660M1020.5 0V660M1040.5 0V660M1060.5 0V660M1080.5 0V660M1100.5 0V660M1120.5 0V660M1140.5 0V660M1160.5 0V660M1180.5 0V660M0 0.5H1200M0 20.5H1200M0 40.5H1200M0 60.5H1200M0 80.5H1200M0 100.5H1200M0 120.5H1200M0 140.5H1200M0 160.5H1200M0 180.5H1200M0 200.5H1200M0 220.5H1200M0 240.5H1200M0 260.5H1200M0 280.5H1200M0 300.5H1200M0 320.5H1200M0 340.5H1200M0 360.5H1200M0 380.5H1200M0 400.5H1200M0 420.5H1200M0 440.5H1200M0 460.5H1200M0 480.5H1200M0 500.5H1200M0 520.5H1200M0 540.5H1200M0 560.5H1200M0 580.5H1200M0 600.5H1200M0 620.5H1200M0 640.5H1200" stroke-width="1"/>
-  <path class="g2" d="M0.5 0V660M100.5 0V660M200.5 0V660M300.5 0V660M400.5 0V660M500.5 0V660M600.5 0V660M700.5 0V660M800.5 0V660M900.5 0V660M1000.5 0V660M1100.5 0V660M0 0.5H1200M0 100.5H1200M0 200.5H1200M0 300.5H1200M0 400.5H1200M0 500.5H1200M0 600.5H1200" stroke-width="1"/>
+  <rect class="bg" width="1200" height="700"/>
+  <path class="g1" d="M0.5 0V700M20.5 0V700M40.5 0V700M60.5 0V700M80.5 0V700M100.5 0V700M120.5 0V700M140.5 0V700M160.5 0V700M180.5 0V700M200.5 0V700M220.5 0V700M240.5 0V700M260.5 0V700M280.5 0V700M300.5 0V700M320.5 0V700M340.5 0V700M360.5 0V700M380.5 0V700M400.5 0V700M420.5 0V700M440.5 0V700M460.5 0V700M480.5 0V700M500.5 0V700M520.5 0V700M540.5 0V700M560.5 0V700M580.5 0V700M600.5 0V700M620.5 0V700M640.5 0V700M660.5 0V700M680.5 0V700M700.5 0V700M720.5 0V700M740.5 0V700M760.5 0V700M780.5 0V700M800.5 0V700M820.5 0V700M840.5 0V700M860.5 0V700M880.5 0V700M900.5 0V700M920.5 0V700M940.5 0V700M960.5 0V700M980.5 0V700M1000.5 0V700M1020.5 0V700M1040.5 0V700M1060.5 0V700M1080.5 0V700M1100.5 0V700M1120.5 0V700M1140.5 0V700M1160.5 0V700M1180.5 0V700M0 0.5H1200M0 20.5H1200M0 40.5H1200M0 60.5H1200M0 80.5H1200M0 100.5H1200M0 120.5H1200M0 140.5H1200M0 160.5H1200M0 180.5H1200M0 200.5H1200M0 220.5H1200M0 240.5H1200M0 260.5H1200M0 280.5H1200M0 300.5H1200M0 320.5H1200M0 340.5H1200M0 360.5H1200M0 380.5H1200M0 400.5H1200M0 420.5H1200M0 440.5H1200M0 460.5H1200M0 480.5H1200M0 500.5H1200M0 520.5H1200M0 540.5H1200M0 560.5H1200M0 580.5H1200M0 600.5H1200M0 620.5H1200M0 640.5H1200M0 660.5H1200M0 680.5H1200" stroke-width="1"/>
+  <path class="g2" d="M0.5 0V700M100.5 0V700M200.5 0V700M300.5 0V700M400.5 0V700M500.5 0V700M600.5 0V700M700.5 0V700M800.5 0V700M900.5 0V700M1000.5 0V700M1100.5 0V700M0 0.5H1200M0 100.5H1200M0 200.5H1200M0 300.5H1200M0 400.5H1200M0 500.5H1200M0 600.5H1200" stroke-width="1"/>
   <path class="cr" d="M94 100.5H106M100.5 94V106M94 200.5H106M100.5 194V206M94 300.5H106M100.5 294V306M94 400.5H106M100.5 394V406M94 500.5H106M100.5 494V506M94 600.5H106M100.5 594V606M194 100.5H206M200.5 94V106M194 200.5H206M200.5 194V206M194 300.5H206M200.5 294V306M194 400.5H206M200.5 394V406M194 500.5H206M200.5 494V506M194 600.5H206M200.5 594V606M294 100.5H306M300.5 94V106M294 200.5H306M300.5 194V206M294 300.5H306M300.5 294V306M294 400.5H306M300.5 394V406M294 500.5H306M300.5 494V506M294 600.5H306M300.5 594V606M394 100.5H406M400.5 94V106M394 200.5H406M400.5 194V206M394 300.5H406M400.5 294V306M394 400.5H406M400.5 394V406M394 500.5H406M400.5 494V506M394 600.5H406M400.5 594V606M494 100.5H506M500.5 94V106M494 200.5H506M500.5 194V206M494 300.5H506M500.5 294V306M494 400.5H506M500.5 394V406M494 500.5H506M500.5 494V506M494 600.5H506M500.5 594V606M594 100.5H606M600.5 94V106M594 200.5H606M600.5 194V206M594 300.5H606M600.5 294V306M594 400.5H606M600.5 394V406M594 500.5H606M600.5 494V506M594 600.5H606M600.5 594V606M694 100.5H706M700.5 94V106M694 200.5H706M700.5 194V206M694 300.5H706M700.5 294V306M694 400.5H706M700.5 394V406M694 500.5H706M700.5 494V506M694 600.5H706M700.5 594V606M794 100.5H806M800.5 94V106M794 200.5H806M800.5 194V206M794 300.5H806M800.5 294V306M794 400.5H806M800.5 394V406M794 500.5H806M800.5 494V506M794 600.5H806M800.5 594V606M894 100.5H906M900.5 94V106M894 200.5H906M900.5 194V206M894 300.5H906M900.5 294V306M894 400.5H906M900.5 394V406M894 500.5H906M900.5 494V506M894 600.5H906M900.5 594V606M994 100.5H1006M1000.5 94V106M994 200.5H1006M1000.5 194V206M994 300.5H1006M1000.5 294V306M994 400.5H1006M1000.5 394V406M994 500.5H1006M1000.5 494V506M994 600.5H1006M1000.5 594V606M1094 100.5H1106M1100.5 94V106M1094 200.5H1106M1100.5 194V206M1094 300.5H1106M1100.5 294V306M1094 400.5H1106M1100.5 394V406M1094 500.5H1106M1100.5 494V506M1094 600.5H1106M1100.5 594V606" stroke-width="1"/>
-  <rect class="frame" x="12.5" y="12.5" width="1175" height="635"/>
+  <rect class="frame" x="12.5" y="12.5" width="1175" height="675"/>
   <text class="lab" x="40" y="58" text-anchor="start">INPUTS</text>
   <text class="lab" x="300" y="58" text-anchor="start">01  MAKE</text>
   <text class="lab" x="560" y="58" text-anchor="start">02  PROVE</text>
@@ -96,21 +96,27 @@
   <image href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNzgiIHZpZXdCb3g9IjAgMCAyMDcgNzgiIHdpZHRoPSIyMDciPjxnIGZpbGw9IiMwMDAwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjIgMjQuMWMtLjQgMC0uNS0uMi0uMy0uNWwyLjEtMi43Yy4yLS4zLjctLjUgMS4xLS41aDM1LjdjLjQgMCAuNS4zLjMuNmwtMS43IDIuNmMtLjIuMy0uNy42LTEgLjZ6Ii8+PHBhdGggZD0ibTEuMSAzMy4zYy0uNCAwLS41LS4yLS4zLS41bDIuMS0yLjdjLjItLjMuNy0uNSAxLjEtLjVoNDUuNmMuNCAwIC42LjMuNS42bC0uOCAyLjRjLS4xLjQtLjUuNi0uOS42eiIvPjxwYXRoIGQ9Im0yNS4zIDQyLjVjLS40IDAtLjUtLjMtLjMtLjZsMS40LTIuNWMuMi0uMy42LS42IDEtLjZoMjBjLjQgMCAuNi4zLjYuN2wtLjIgMi40YzAgLjQtLjQuNy0uNy43eiIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU1KSI+PHBhdGggZD0ibTc0LjEgMjIuM2MtNi4zIDEuNi0xMC42IDIuOC0xNi44IDQuNC0xLjUuNC0xLjYuNS0yLjktMS0xLjUtMS43LTIuNi0yLjgtNC43LTMuOC02LjMtMy4xLTEyLjQtMi4yLTE4LjEgMS41LTYuOCA0LjQtMTAuMyAxMC45LTEwLjIgMTkgLjEgOCA1LjYgMTQuNiAxMy41IDE1LjcgNi44LjkgMTIuNS0xLjUgMTctNi42LjktMS4xIDEuNy0yLjMgMi43LTMuNy0zLjYgMC04LjEgMC0xOS4zIDAtMi4xIDAtMi42LTEuMy0xLjktMyAxLjMtMy4xIDMuNy04LjMgNS4xLTEwLjkuMy0uNiAxLTEuNiAyLjUtMS42aDM2LjRjLS4yIDIuNy0uMiA1LjQtLjYgOC4xLTEuMSA3LjItMy44IDEzLjgtOC4yIDE5LjYtNy4yIDkuNS0xNi42IDE1LjQtMjguNSAxNy05LjggMS4zLTE4LjktLjYtMjYuOS02LjYtNy40LTUuNi0xMS42LTEzLTEyLjctMjIuMi0xLjMtMTAuOSAxLjktMjAuNyA4LjUtMjkuMyA3LjEtOS4zIDE2LjUtMTUuMiAyOC0xNy4zIDkuNC0xLjcgMTguNC0uNiAyNi41IDQuOSA1LjMgMy41IDkuMSA4LjMgMTEuNiAxNC4xLjYuOS4yIDEuNC0xIDEuN3oiLz48cGF0aCBkPSJtMTA3LjIgNzcuNmMtOS4xLS4yLTE3LjQtMi44LTI0LjQtOC44LTUuOS01LjEtOS42LTExLjYtMTAuOC0xOS4zLTEuOC0xMS4zIDEuMy0yMS4zIDguMS0zMC4yIDcuMy05LjYgMTYuMS0xNC42IDI4LTE2LjcgMTAuMi0xLjggMTkuOC0uOCAyOC41IDUuMSA3LjkgNS40IDEyLjggMTIuNyAxNC4xIDIyLjMgMS43IDEzLjUtMi4yIDI0LjUtMTEuNSAzMy45LTYuNiA2LjctMTQuNyAxMC45LTI0IDEyLjgtMi43LjUtNS40LjYtOCAuOXptMjMuOC00MC40Yy0uMS0xLjMtLjEtMi4zLS4zLTMuMy0xLjgtOS45LTEwLjktMTUuNS0yMC40LTEzLjMtOS4zIDIuMS0xNS4zIDgtMTcuNSAxNy40LTEuOCA3LjggMiAxNS43IDkuMiAxOC45IDUuNSAyLjQgMTEgMi4xIDE2LjMtLjYgNy45LTQuMSAxMi4yLTEwLjUgMTIuNy0xOS4xeiIgZmlsbC1ydWxlPSJub256ZXJvIi8+PC9nPjwvZz48L3N2Zz4=" x="1002" y="376" width="18" height="18"/>
   <rect class="tile" x="1032" y="372" width="26" height="26"/>
   <image href="data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+UHl0aG9uPC90aXRsZT48cGF0aCBmaWxsPSIjMzc3NkFCIiBkPSJNMTQuMjUuMThsLjkuMi43My4yNi41OS4zLjQ1LjMyLjM0LjM0LjI1LjM0LjE2LjMzLjEuMy4wNC4yNi4wMi4yLS4wMS4xM1Y4LjVsLS4wNS42My0uMTMuNTUtLjIxLjQ2LS4yNi4zOC0uMy4zMS0uMzMuMjUtLjM1LjE5LS4zNS4xNC0uMzMuMS0uMy4wNy0uMjYuMDQtLjIxLjAySDguNzdsLS42OS4wNS0uNTkuMTQtLjUuMjItLjQxLjI3LS4zMy4zMi0uMjcuMzUtLjIuMzYtLjE1LjM3LS4xLjM1LS4wNy4zMi0uMDQuMjctLjAyLjIxdjMuMDZIMy4xN2wtLjIxLS4wMy0uMjgtLjA3LS4zMi0uMTItLjM1LS4xOC0uMzYtLjI2LS4zNi0uMzYtLjM1LS40Ni0uMzItLjU5LS4yOC0uNzMtLjIxLS44OC0uMTQtMS4wNS0uMDUtMS4yMy4wNi0xLjIyLjE2LTEuMDQuMjQtLjg3LjMyLS43MS4zNi0uNTcuNC0uNDQuNDItLjMzLjQyLS4yNC40LS4xNi4zNi0uMS4zMi0uMDUuMjQtLjAxaC4xNmwuMDYuMDFoOC4xNnYtLjgzSDYuMThsLS4wMS0yLjc1LS4wMi0uMzcuMDUtLjM0LjExLS4zMS4xNy0uMjguMjUtLjI2LjMxLS4yMy4zOC0uMi40NC0uMTguNTEtLjE1LjU4LS4xMi42NC0uMS43MS0uMDYuNzctLjA0Ljg0LS4wMiAxLjI3LjA1em0tNi4zIDEuOThsLS4yMy4zMy0uMDguNDEuMDguNDEuMjMuMzQuMzMuMjIuNDEuMDkuNDEtLjA5LjMzLS4yMi4yMy0uMzQuMDgtLjQxLS4wOC0uNDEtLjIzLS4zMy0uMzMtLjIyLS40MS0uMDktLjQxLjA5em0xMy4wOSAzLjk1bC4yOC4wNi4zMi4xMi4zNS4xOC4zNi4yNy4zNi4zNS4zNS40Ny4zMi41OS4yOC43My4yMS44OC4xNCAxLjA0LjA1IDEuMjMtLjA2IDEuMjMtLjE2IDEuMDQtLjI0Ljg2LS4zMi43MS0uMzYuNTctLjQuNDUtLjQyLjMzLS40Mi4yNC0uNC4xNi0uMzYuMDktLjMyLjA1LS4yNC4wMi0uMTYtLjAxaC04LjIydi44Mmg1Ljg0bC4wMSAyLjc2LjAyLjM2LS4wNS4zNC0uMTEuMzEtLjE3LjI5LS4yNS4yNS0uMzEuMjQtLjM4LjItLjQ0LjE3LS41MS4xNS0uNTguMTMtLjY0LjA5LS43MS4wNy0uNzcuMDQtLjg0LjAxLTEuMjctLjA0LTEuMDctLjE0LS45LS4yLS43My0uMjUtLjU5LS4zLS40NS0uMzMtLjM0LS4zNC0uMjUtLjM0LS4xNi0uMzMtLjEtLjMtLjA0LS4yNS0uMDItLjIuMDEtLjEzdi01LjM0bC4wNS0uNjQuMTMtLjU0LjIxLS40Ni4yNi0uMzguMy0uMzIuMzMtLjI0LjM1LS4yLjM1LS4xNC4zMy0uMS4zLS4wNi4yNi0uMDQuMjEtLjAyLjEzLS4wMWg1Ljg0bC42OS0uMDUuNTktLjE0LjUtLjIxLjQxLS4yOC4zMy0uMzIuMjctLjM1LjItLjM2LjE1LS4zNi4xLS4zNS4wNy0uMzIuMDQtLjI4LjAyLS4yMVY2LjA3aDIuMDlsLjE0LjAxem0tNi40NyAxNC4yNWwtLjIzLjMzLS4wOC40MS4wOC40MS4yMy4zMy4zMy4yMy40MS4wOC40MS0uMDguMzMtLjIzLjIzLS4zMy4wOC0uNDEtLjA4LS40MS0uMjMtLjMzLS4zMy0uMjMtLjQxLS4wOC0uNDEuMDh6Ii8+PC9zdmc+" x="1036" y="376" width="18" height="18"/>
-  <text class="s" x="1070" y="390" text-anchor="start">11 builds</text>
-  <rect class="c-pass" x="896" y="426" width="48" height="26"/>
-  <text class="chip-t c-pass-t" x="920.2" y="444" text-anchor="middle">pass</text>
-  <rect class="c-warn" x="952.4" y="426" width="134" height="26"/>
-  <text class="chip-t c-warn-t" x="1019.6" y="444" text-anchor="middle">known · pinned</text>
-  <text class="lab-m" x="560" y="528" text-anchor="start">PLANNED · NOT BUILT YET</text>
-  <rect class="node" x="560" y="542" width="186" height="66" style="stroke-dasharray:6 5;fill:none"/>
-  <text class="t" x="576" y="572" text-anchor="start">Linter</text>
-  <text class="k" x="576" y="594" text-anchor="start">indexer source</text>
-  <rect class="node" x="766" y="542" width="186" height="66" style="stroke-dasharray:6 5;fill:none"/>
-  <text class="t" x="782" y="572" text-anchor="start">GitHub Action</text>
-  <text class="k" x="782" y="594" text-anchor="start">on every PR</text>
-  <rect class="node" x="972" y="542" width="188" height="66" style="stroke-dasharray:6 5;fill:none"/>
-  <text class="t" x="988" y="572" text-anchor="start">Hardening guide</text>
-  <text class="k" x="988" y="594" text-anchor="start">per hazard</text>
+  <text class="s" x="896" y="422" text-anchor="start">6 on the corpus, 5 older</text>
+  <rect class="c-pass" x="896" y="440" width="48" height="26"/>
+  <text class="chip-t c-pass-t" x="920.2" y="458" text-anchor="middle">pass</text>
+  <rect class="c-warn" x="952.4" y="440" width="134" height="26"/>
+  <text class="chip-t c-warn-t" x="1019.6" y="458" text-anchor="middle">known · pinned</text>
+  <rect class="node" x="880" y="516" width="280" height="124"/>
+  <text class="t" x="896" y="547">Linter · xplint</text>
+  <text class="s" x="896" y="572">Go indexer source</text>
+  <rect class="c-warn" x="896" y="596" width="83" height="26"/>
+  <text class="chip-t c-warn-t" x="937.4" y="614" text-anchor="middle">main · 4</text>
+  <rect class="c-pass" x="986.8" y="596" width="109" height="26"/>
+  <text class="chip-t c-pass-t" x="1041.1" y="614" text-anchor="middle">patched · 0</text>
+  <text class="lab-m" x="560" y="540" text-anchor="start">PLANNED</text>
+  <rect class="node" x="560" y="554" width="270" height="40" style="stroke-dasharray:6 5;fill:none"/>
+  <text class="t" x="576" y="584" text-anchor="start"></text>
+  <text class="k" x="576" y="606" text-anchor="start"></text>
+  <text class="t" x="576" y="582" text-anchor="start">GitHub Action</text>
+  <rect class="node" x="560" y="602" width="270" height="40" style="stroke-dasharray:6 5;fill:none"/>
+  <text class="t" x="576" y="632" text-anchor="start"></text>
+  <text class="k" x="576" y="654" text-anchor="start"></text>
+  <text class="t" x="576" y="630" text-anchor="start">Hardening guide</text>
   <path class="alt" d="M250 139 H272 V340 H300"/>
   <path class="head" d="M300.0 340.0L289.0 334.0L289.0 346.0Z"/>
   <path class="flow" d="M250 231 H300"/>
@@ -133,9 +139,9 @@
   <path class="flow" d="M1020 310 V336"/>
   <path class="head" d="M1020.0 336.0L1014.0 325.0L1026.0 325.0Z"/>
   <rect class="jn" x="534" y="392" width="12" height="12" transform="rotate(45 540 398)"/>
-  <text class="lab-m" x="40" y="636" text-anchor="start">FIG. 1 · XDRPROOF PIPELINE</text>
-  <path class="flow" d="M716 631H756"/>
-  <text class="lab-m" x="766" y="636" text-anchor="start">DATA</text>
-  <path class="alt" d="M836 631H876"/>
-  <text class="lab-m" x="886" y="636" text-anchor="start">TARGETS · PLANNED</text>
+  <text class="lab-m" x="40" y="676" text-anchor="start">FIG. 1 · XDRPROOF PIPELINE</text>
+  <path class="flow" d="M716 671H756"/>
+  <text class="lab-m" x="766" y="676" text-anchor="start">DATA</text>
+  <path class="alt" d="M836 671H876"/>
+  <text class="lab-m" x="886" y="676" text-anchor="start">TARGETS · PLANNED</text>
 </svg>

@@ -1,5 +1,9 @@
 # The corpus (/docs/corpus)
 
+**What it is.** The heart of XDRProof: real Stellar ledgers in their rarest valid shapes, each kept as the exact bytes stellar-core wrote, with the answers a correct reader must give.
+
+**Why it matters.** Your code meets ordinary ledgers every day and these rarely, often for the first time in production. The corpus lets you meet them in a test.
+
 263 entries · 634 variants · 78 hazards in the registry · 72 hazards covered so far
 
 The corpus is a set of **entries**, plus [37 mined ledgers](/docs/corpus/mined) from the real networks. Each entry is one rare shape, such as a signed-payload signer or a trustline created by a contract call, kept as real `LedgerCloseMeta` bytes. Each entry also carries the facts a correct reader must find in those bytes.

@@ -1,5 +1,13 @@
 # How it works (/docs/start/how-it-works)
 
+**What it is.** The whole pipeline in four steps: make rare ledgers, write down what a correct reader must find, check that with independent readers, then run real indexers, SDKs and indexer code against it.
+
+**Why it matters.** Each step is one `make` command, so any claim on this site can be re-checked.
+
+Figure (animated): one ledger, start to finish. A recipe drives a private stellar-core, which closes a ledger; the ledger becomes a corpus entry (its exact bytes plus the answers a correct reader must find); three independent checks confirm the answers; then the same ledger is replayed into an indexer and read by every SDK build.
+
+The full map, with every tool and its numbers:
+
 ![XDRProof pipeline: make the shapes, prove them, run them against code](https://xdrproof.dev/brand/pipeline-light.png)
 
 ## 1. Make the shapes
@@ -30,9 +38,10 @@ Each interesting ledger becomes a corpus **entry**, compiled from a hand-written
 
 | Against | How | Target |
 |---|---|---|
-| The SDKs | 11 builds of the JavaScript, WASM, Rust, Go and Python SDKs read every corpus variant, plus strkey, invalid-input, depth and sighting vectors | `make conformance` |
+| The SDKs | 6 builds of the JavaScript, WASM, Rust, Go and Python SDKs read every corpus variant, plus strkey, invalid-input and depth vectors; 5 older releases run the fixed-bug regressions | `make conformance` |
 | An indexer | real wallet-backend builds ingest every corpus ledger, one isolated session each, through a mock stellar-rpc | `make replay` |
+| Indexer source code | `xplint` follows each value from where it came from to where it is kept, for the three ingestion mistakes | `make lint` |
 
 <Callout type="warn" title="Planned, not built">
-The figure also shows an indexer linter, a GitHub Action and the hardening guide, all marked planned. None of these exist yet; today the checks run as `make` targets.
+The figure marks two pieces as planned: a GitHub Action and the hardening guide. Today every check runs as a `make` target. [Architecture](/docs/start/architecture) says what is built and what the grant funds.
 </Callout>

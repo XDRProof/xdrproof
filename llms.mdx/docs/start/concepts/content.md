@@ -1,5 +1,9 @@
 # Concepts (/docs/start/concepts)
 
+**What it is.** The few words these pages use, each explained in one line.
+
+**Why it matters.** The corpus is exact about what an entry, a variant or a fact is. Knowing these words makes every other page quicker to read.
+
 | Word | Meaning |
 |---|---|
 | **Entry** | One rare shape. A directory under `entries/` with an `entry.json` and one XDR file per variant, plus up to two alternate-ordering files when the change order varies. Its `id` is permanent and never reused. |

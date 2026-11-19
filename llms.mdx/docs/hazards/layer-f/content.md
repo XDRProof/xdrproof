@@ -2,6 +2,8 @@
 
 Upgrade ledgers, empty and very large ledgers, parallel Soroban stages, change order that varies between core processes, and the same ledger in different bytes.
 
+**Why it matters.** Code tested on ordinary ledgers meets the unusual ones at upgrades and peaks: empty, huge, reordered or upgraded ledgers.
+
 ### H-F1: Protocol-upgrade ledgers (config settings, version, StellarValueExt)
 
 In the corpus. Checks: replay probe.

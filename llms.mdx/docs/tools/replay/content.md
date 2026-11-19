@@ -1,5 +1,9 @@
 # Replay (/docs/tools/replay)
 
+**What it is.** Every corpus ledger fed to a real indexer, one at a time, through a mock of the RPC an indexer reads ledgers from, then a look at what the indexer stored.
+
+**Why it matters.** An indexer that halts stops a wallet's history; one that stores a wrong balance is worse. Replay shows which ledgers do that before mainnet does.
+
 ```bash
 make replay              # the whole corpus into wallet-backend main, then every sighting
 make replay-main         # the corpus only
@@ -9,15 +13,19 @@ node replay/harness.mjs --adapter wallet-backend --target main --entries muxed.p
 
 Needs Docker, Node ≥ 22.15 and the native reader (`make native`). Once the images and Go modules are cached nothing reaches the network: the ledgers come from the corpus. On a laptop under Docker, six sessions at a time, the full run takes about 9.5 minutes once the builds are cached.
 
+Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a real indexer build with its own database; what it did (its cursor, its process, the rows it stored) is compared with probes derived from the same ledger, which gives a verdict: handled, dropped, mishandled, stalled, crashed or halted.
+
+![A terminal: the replay harness runs one protocol 22 ledger into wallet-backend main; three control ledgers are handled and the target is mishandled; a jq query over the harness's report lists the seven accounts stored short by their refunds.](https://xdrproof.dev/findings/f3-repro.gif)
+
 ## wallet-backend main, the whole corpus
 
 The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>18db88f4</code>) it ingests 634 variants in 364 sessions: **618 handled, 0 halted**. The other 16 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
-| [`backfill.p22-refunds-in-tx-changes-after`](https://xdrproof.dev/docs/corpus/entries/backfill-p22-refunds-in-tx-changes-after) | 1 | mishandled | F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger. | not filed |
+| [`backfill.p22-refunds-in-tx-changes-after`](https://xdrproof.dev/docs/corpus/entries/backfill-p22-refunds-in-tx-changes-after) | 1 | mishandled | F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger. | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 | [`contract.sac-deploy-from-asset`](https://xdrproof.dev/docs/corpus/entries/contract-sac-deploy-from-asset) | 4 | dropped | A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage. | [wallet-backend#815](https://github.com/stellar/wallet-backend/issues/815) |
-| [`failure.manage-buy-offer.buy-not-authorized-p22`](https://xdrproof.dev/docs/corpus/entries/failure-manage-buy-offer-buy-not-authorized-p22) | 1 | mishandled | F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger. | not filed |
+| [`failure.manage-buy-offer.buy-not-authorized-p22`](https://xdrproof.dev/docs/corpus/entries/failure-manage-buy-offer-buy-not-authorized-p22) | 1 | mishandled | F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger. | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 | [`preauth.failing-tx-still-removes-signer`](https://xdrproof.dev/docs/corpus/entries/preauth-failing-tx-still-removes-signer) | 2 | dropped | Core removes a used pre-auth signer in txChangesBefore even when the transaction fails (CAP-0028); wallet-backend reads signer changes from operation effects only. | [wallet-backend#805](https://github.com/stellar/wallet-backend/issues/805), [wallet-backend#818](https://github.com/stellar/wallet-backend/issues/818) |
 | [`revoke.cascade-offers-pool-shares`](https://xdrproof.dev/docs/corpus/entries/revoke-cascade-offers-pool-shares) | 2 | dropped | Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust. | [wallet-backend#817](https://github.com/stellar/wallet-backend/issues/817) |
 | [`sac.xlm-transfer-creates-account`](https://xdrproof.dev/docs/corpus/entries/sac-xlm-transfer-creates-account) | 4 | dropped | An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation. | [wallet-backend#804](https://github.com/stellar/wallet-backend/issues/804), [wallet-backend#816](https://github.com/stellar/wallet-backend/issues/816) |
@@ -59,6 +67,8 @@ One session replays one ledger, one distinct variant (its bytes and its network)
 ### Serve the ledger
 
 `replay/lib/mock-rpc.mjs` serves the ledger as stellar-rpc v30.0.1 would: `getLedgers`, `getHealth`, `getLatestLedger`, `getNetwork`, `getVersionInfo`, and `getLedgerEntries` from the state the ledger leaves behind. Pagination, page limits and validation errors follow stellar-rpc word for word.
+
+The mock knows only what the ledger states, so it knows less than stellar-rpc in three ways, each recorded per session: a method it does not serve, or a request such as a history-archive fetch, is refused; a ledger entry the ledger does not touch is answered "not found", though on a real network it may exist; and a contract entry whose TTL the ledger leaves untouched is served without `liveUntilLedgerSeq`. A verdict other than `handled` in a session that read such state is flagged and traced in the indexer's code before it is recorded.
 
 </Step>
 <Step>

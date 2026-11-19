@@ -1,5 +1,9 @@
 # Quickstart (/docs/start/quickstart)
 
+**What it is.** The shortest path from nothing to a checked corpus: clone the repository, run one command, read the result.
+
+**Why it matters.** You don't have to trust any number on this site. `make verify` re-checks every entry on your own machine in seconds.
+
 <Steps>
 <Step>
 
@@ -24,6 +28,7 @@ cd xdrproof
 | `make generate`, `make generate-quick`, `make order-scan` | Docker, Node ≥ 22.15, npm, curl, jq, perl |
 | `make conformance` | Node, Rust, Docker |
 | `make replay` | Docker, Node ≥ 22.15, Rust, git; the network on the first run only |
+| `make lint-selftest`, `make lint` | Docker (a pinned Go image); `make lint` also Node ≥ 22.15 and git |
 
 </Step>
 <Step>
@@ -60,9 +65,11 @@ make generate      # rebuild every generated variant from scratch, twice
 make order-scan    # which ledgers vary in change order
 make conformance   # every corpus variant and vector through the SDK builds
 make replay        # the whole corpus into wallet-backend, and every fix before and after
+make lint-selftest # the linter against its seeded violations and mutants
+make lint          # the linter on wallet-backend, stellar-etl and go-stellar-sdk
 ```
 
-Each target has its own page under [Tools](/docs/tools). `make all` runs verify, oracle, coverage, generate, conformance and replay.
+Each target has its own page under [Tools](/docs/tools). `make all` runs verify, oracle, coverage, generate, conformance, replay, lint-selftest and lint.
 
 </Step>
 </Steps>

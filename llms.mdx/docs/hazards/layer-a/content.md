@@ -2,6 +2,8 @@
 
 Muxed accounts, signed-payload, hash-x and pre-auth signers, contract, liquidity-pool and claimable-balance addresses, and fee-bump sources: the places where an address is longer, or stranger, than a G key.
 
+**Why it matters.** An address is the key an indexer files everything under. When it is longer or stranger than a G… key, rows land under the wrong account, or the insert fails.
+
 ### H-A1: Muxed account (`M…`) treated as a plain account: ID dropped, truncated, or used as identity
 
 In the corpus. Checks: conformance, linter, replay probe.

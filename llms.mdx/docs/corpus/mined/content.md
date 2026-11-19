@@ -1,5 +1,9 @@
 # Mined ledgers (/docs/corpus/mined)
 
+**What it is.** Real mainnet and testnet ledgers, downloaded from the public data lake with their hashes and the query that found them.
+
+**Why it matters.** Some shapes only happen on a live network, such as eviction at the per-ledger cap or a validator vote. These are the real bytes, not a reconstruction.
+
 37 ledgers · 47 shape records · 34 mainnet, 3 testnet · protocols P12 P22 P28 P29 P30
 
 Some shapes only happen on a real network, and some are worth having as real network bytes. Examples:

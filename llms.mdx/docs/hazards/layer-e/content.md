@@ -2,6 +2,8 @@
 
 Unified events (CAP-0067), event data carrying muxed IDs and deep maps, and diagnostic events emitted twice.
 
+**Why it matters.** Events are the easiest way to follow contract activity, and the easiest to over-trust: some repeat, some carry deep data, some come from failed calls.
+
 ### H-E1: Unified events (CAP-0067): classic ops emit events; fee events before and after all txs
 
 In the corpus. Checks: replay probe.

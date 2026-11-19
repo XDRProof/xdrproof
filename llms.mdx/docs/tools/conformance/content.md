@@ -1,10 +1,18 @@
 # Conformance (/docs/tools/conformance)
 
+**What it is.** The same corpus bytes and test vectors, run through 6 builds of the JavaScript, WebAssembly, Rust, Go and Python SDKs, with every answer compared; 5 older releases run the fixed-bug regressions.
+
+**Why it matters.** When two SDKs read the same bytes differently, one of them is wrong, and every app built on it inherits the mistake. This finds it first.
+
 ```bash
 make conformance     # conformance/run.sh: about 2 minutes once the builds are cached
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.
+
+Figure: how conformance works. The same bytes (every corpus variant, strkeys, invalid input and a depth ladder) go through each SDK build; every answer is compared with native rs-stellar-xdr (the bytes, SEP-0051 JSON, every expected fact), and the matrix marks each result pass or known (pinned with its cause).
+
+![A terminal: make conformance runs the corpus through the SDK builds, prints the matrix by family and build, with known differences marked, and ends with OK: every result matches the pre-registered expectations.](https://xdrproof.dev/gifs/conformance.gif)
 
 ## The builds
 
@@ -69,7 +77,7 @@ Each build's `conformance/expectations/<testee>.json` lists every check it is kn
 | python@17.0.1 | 1 | StellarCN/py-stellar-base#1262 (closed): non-zero XDR padding accepted; fixed on main |
 | python@17.0.1 | 1 | StellarCN/py-stellar-base#1263 (closed): any non-zero optional flag read as present; fixed on main |
 | rust@30.0.0, xdr-json@30.0.0 | 2 | stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true |
-| xdr-json@30.0.0 | 13 | F-1 (findings/REPORT.md): js-stellar-xdr-json hard-codes XDR_MAX_DEPTH = 500 (src/lib.rs:10, set to mirror the Soroban host's budget limit) and applies it to the whole LedgerCloseMeta, so it refuses ledgers stellar-core wrote whose auth tree is 245 levels deep. Not reported upstream yet. |
+| xdr-json@30.0.0 | 13 | F-1 (findings/REPORT.md): js-stellar-xdr-json hard-codes XDR_MAX_DEPTH = 500 (src/lib.rs:10, set to mirror the Soroban host's budget limit) and applies it to the whole LedgerCloseMeta, so it refuses ledgers stellar-core wrote whose auth tree is 245 levels deep. Reported as stellar/js-stellar-xdr-json#67. |
 
 ## How deep each SDK reads
 
