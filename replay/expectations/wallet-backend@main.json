@@ -21,7 +21,9 @@
         "balance.native GDYWDQPVQ6NGDRTI3X5GEKN5H3ASTFOTDED74YLWQOIVMIRMMW6CXDUB"
       ],
       "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
-      "upstream": null
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/834"
+      ]
     },
     "contract.sac-deploy-from-asset@p28-mainnet-generated": {
       "verdict": "dropped",
@@ -75,7 +77,9 @@
         "balance.native GDYWDQPVQ6NGDRTI3X5GEKN5H3ASTFOTDED74YLWQOIVMIRMMW6CXDUB"
       ],
       "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
-      "upstream": null
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/834"
+      ]
     },
     "preauth.failing-tx-still-removes-signer@p30-mainnet-generated": {
       "verdict": "dropped",
