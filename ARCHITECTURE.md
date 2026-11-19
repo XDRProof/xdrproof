@@ -18,7 +18,7 @@ Built before any funding, public, and re-runnable with one command each:
 | Manifest schema (JSON Schema 2020-12) with every field the RFP names | built | `make verify` |
 | Hazard registry: 78 named ways readers of the ledger break, in eight layers | built | `caps/registry.json`, [`COVERAGE.md`](COVERAGE.md) |
 | Corpus: 263 entries, 634 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
-| Independent readers: stellar-core's own decoder and a schema walker confirm 737 expected values | built | `make oracle` |
+| Independent readers: stellar-core's own decoder and a schema walker find 737 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
 | Coverage: 417 of 499 `LedgerCloseMeta` union arms reached; the other 82 classified with a stellar-core source line | built | `make coverage-report` |
 | SDK conformance runner: 6 SDK builds on the whole corpus, 5 older releases on fixed-bug regressions | built | `make conformance` |
 | Indexer replay harness with a wallet-backend adapter | built | `make replay` |
