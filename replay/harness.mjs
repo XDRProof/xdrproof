@@ -8,22 +8,22 @@
 //   --sightings  replay only the variants replay/sightings.json lists for this target
 //
 // Exit: 0 when every verdict matches replay/expectations/<adapter>@<target>.json, 1 on any difference,
-// 2 on a harness, adapter or control failure.
+// 2 on a harness, adapter or control failure (an `error` verdict is never a finding).
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, createWriteStream } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
 import { parse as parseToml } from '../tools/node_modules/smol-toml/dist/index.js';
-import { derive, variantBytes, headerXdr, ledgerEntries, decodeXdr } from './lib/derive.mjs';
+import { variantBytes, decodeXdr } from './lib/derive.mjs';
 import { startMockRpc } from './lib/mock-rpc.mjs';
 import { decode as strkeyDecode } from '../tools/strkey.mjs';
 const strkeyPayload = (s) => strkeyDecode(s).payload;
 
 const HERE = dirname(fileURLToPath(import.meta.url)), ROOT = join(HERE, '..');
 const NETWORK = { 'Public Global Stellar Network ; September 2015': 'pubnet', 'Test SDF Network ; September 2015': 'testnet' };
-const SEVERITY = ['handled', 'dropped', 'mishandled', 'crashed', 'halted', 'error'];
+const SEVERITY = ['handled', 'dropped', 'mishandled', 'stalled', 'crashed', 'halted', 'error'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
@@ -73,6 +73,10 @@ const wantVariants = opt.sightings
   ? new Set(JSON.parse(readFileSync(join(HERE, 'sightings.json'), 'utf8')).sightings.filter((x) => opt.target in x.verdicts).flatMap((x) => x.variants))
   : opt.variants && new Set(opt.variants.split(','));
 if (wantVariants && wantVariants.size === 0) die(`no sighting names target ${opt.target}`);
+const known = new Set(entries.flatMap((e) => e.variants.map((v) => `${e.id}@${v.key}`)));
+for (const id of wantEntries ?? []) if (!entries.some((e) => e.id === id)) die(`no corpus entry ${id}`);
+for (const vid of wantVariants ?? []) if (!known.has(vid)) die(`no corpus variant ${vid}`);
+const partial = Boolean(wantEntries || (wantVariants && !opt.sightings)); // a subset: the judged-set check is skipped
 const controls = JSON.parse(readFileSync(join(HERE, 'controls.json'), 'utf8')).controls;
 const variants = [];
 for (const e of entries) for (const v of e.variants) {
@@ -102,16 +106,30 @@ const controlSessions = controls.filter((c) => c.protocol <= T.protocol_max).map
 });
 
 // ---- one session ------------------------------------------------------------------------------------------
-// Everything read from the ledger with the native reader (probes, header, end state), cached on disk and
-// computed before any session starts: the native calls are synchronous, and would stall every session's watch.
-const DERIVE_VERSION = 2;
+// Everything read from the ledger with the native reader (probes, header, end state), computed before any
+// session starts in a child process per ledger (lib/derive-cli.mjs), and cached on disk. The harness itself
+// never holds a ledger's JSON, so its memory does not depend on ledger size or corpus size.
+// The cache key is the ledger's bytes (checked against the manifest's sha256), the network, and a
+// fingerprint of the code that derives (derive.mjs, derive-cli.mjs, strkey.mjs and the native reader), so a
+// changed probe rule or reader is never judged with facts derived by the old one.
+const FINGERPRINT = sha(Buffer.concat(['replay/lib/derive.mjs', 'replay/lib/derive-cli.mjs', 'tools/strkey.mjs', 'tools/native/target/release/xdrproof-native']
+  .map((f) => readFileSync(join(ROOT, f))))).slice(0, 16);
+const deriveFile = (s) => join(WORK, 'derive', `${s.sha256}-${sha(s.passphrase).slice(0, 8)}-${FINGERPRINT}.json`);
+let deriveChildPeak = 0;
+function prepareDerived(s) {
+  if (!s.bytesChecked) {
+    const got = sha(variantBytes(s.path));
+    if (got !== s.sha256) throw new Error(`${s.path} has sha256 ${got}, the manifest says ${s.sha256}`);
+    s.bytesChecked = true;
+  }
+  const f = deriveFile(s);
+  if (existsSync(f)) return;
+  const peak = Number(execFileSync(process.execPath, [join(HERE, 'lib', 'derive-cli.mjs'), s.path, s.passphrase, f], { maxBuffer: 2 ** 20 }).toString());
+  deriveChildPeak = Math.max(deriveChildPeak, peak);
+}
 function derived(s) {
-  const f = join(WORK, 'derive', `${s.sha256}-${sha(s.passphrase).slice(0, 8)}.json`);
-  if (existsSync(f)) { const c = JSON.parse(readFileSync(f, 'utf8')); if (c.v === DERIVE_VERSION) return c; }
-  const bytes = variantBytes(s.path);
-  const d = { v: DERIVE_VERSION, ...derive(bytes, s.passphrase), header_xdr: headerXdr(bytes).toString('base64'), state: ledgerEntries(bytes) };
-  writeFileSync(f, JSON.stringify(d));
-  return d;
+  prepareDerived(s);
+  return JSON.parse(readFileSync(deriveFile(s), 'utf8'));
 }
 
 async function supervise(env, mock, last, logFile) {
@@ -121,12 +139,21 @@ async function supervise(env, mock, last, logFile) {
   let exited = null;
   p.on('close', (code, signal) => { exited = { code, signal }; });
   const t0 = Date.now(), ledgerMs = (A.timeouts?.ledger_s ?? 30) * 1000, capMs = (A.timeouts?.session_s ?? 120) * 1000;
-  let cursor = null, lastMove = Date.now(), outcome;
+  let cursor = null, lastMove = Date.now(), failingSince = null, outcome;
   for (;;) {
     const r = await run('cursor', env, { timeoutS: 20 });
-    const c = r.code === 0 && /^\d+$/.test(r.stdout.trim()) ? Number(r.stdout.trim()) : null;
+    const ok = r.code === 0 && /^\d+$/.test(r.stdout.trim());
+    // a cursor the adapter cannot read is the adapter's failure, never a stall
+    if (!ok) { failingSince ??= Date.now(); if (Date.now() - failingSince > CURSOR_FAIL_MS) { outcome = { passed: false, reason: 'adapter', error: `cursor: ${(r.stderr || r.stdout).trim().slice(-300)}` }; break; } }
+    else failingSince = null;
+    const c = ok ? Number(r.stdout.trim()) : cursor;
     if (c !== cursor) { cursor = c; lastMove = Date.now(); }
-    if (c !== null && c >= last) { outcome = { passed: true }; break; }
+    if (c !== null && c >= last) {
+      // in follow mode the indexer must keep running after the ledger: an exit now is a crash on it
+      for (let i = 0; i < 4 && !exited; i++) await sleep(250);
+      outcome = { passed: true, ...(exited && (exited.code !== 0 || exited.signal) ? { exited_after_commit: exited } : {}) };
+      break;
+    }
     if (exited) { outcome = { passed: false, reason: 'exited', ...exited }; break; }
     if (Date.now() - lastMove > ledgerMs) { outcome = { passed: false, reason: 'stalled' }; break; }
     if (Date.now() - t0 > capMs) { outcome = { passed: false, reason: 'timeout' }; break; }
@@ -141,6 +168,8 @@ async function supervise(env, mock, last, logFile) {
   log.end();
   return { ...outcome, cursor, ms: Date.now() - t0, memory_peak_bytes: mem, requests: mock.log.length };
 }
+
+const CURSOR_FAIL_MS = 10000;
 
 // Invariants: answered over everything the indexer stored for the session, not per fact.
 //   addresses.valid  every stored address decodes and is one the ledger names
@@ -159,12 +188,17 @@ function judge(d, answers) {
   for (const p of probes) {
     if (!supported.has(p.kind)) { out.na++; continue; }
     const a = byId.get(p.id);
-    if (!a || a.status === 'unsupported') { out.na++; continue; }
+    // the adapter declared this kind: it must answer present or absent
+    if (!a) { out.failures.push({ id: p.id, kind: p.kind, status: 'error', got: 'no answer for a probe kind the adapter declares' }); continue; }
+    if (a.status === 'unsupported') { out.failures.push({ id: p.id, kind: p.kind, status: 'error', got: `answered unsupported for a declared kind: ${a.value ?? ''}` }); continue; }
     if (a.status === 'error') { out.failures.push({ id: p.id, kind: p.kind, status: 'error', got: a.value }); continue; }
-    if (p.kind === 'facts.extra') { // nothing stored that the ledger does not state
-      const want = new Set(d.probes.filter((q) => EXTRA_KINDS.includes(q.kind)).map(factKey));
-      const extra = (a.value ?? []).filter((f) => !want.has(factKey(f)));
-      if (extra.length) out.failures.push({ id: p.id, kind: p.kind, status: 'mishandled', expect: 'only facts the ledger states', got: extra });
+    if (p.kind === 'facts.extra') { // nothing stored that the ledger does not state, and nothing stored twice
+      const want = new Map();
+      for (const q of d.probes) if (EXTRA_KINDS.includes(q.kind)) want.set(factKey(q), (want.get(factKey(q)) ?? 0) + (d.fact_counts?.[q.id] ?? 1));
+      const have = new Map();
+      for (const f of a.value ?? []) have.set(factKey(f), (have.get(factKey(f)) ?? 0) + 1);
+      const extra = [...have].filter(([k, n]) => n > (want.get(k) ?? 0)).map(([k, n]) => ({ fact: k, stored: n, stated: want.get(k) ?? 0 }));
+      if (extra.length) out.failures.push({ id: p.id, kind: p.kind, status: 'mishandled', expect: 'only facts the ledger states, as often as it states them', got: extra });
       else out.pass++;
       continue;
     }
@@ -214,7 +248,8 @@ async function session(s, n) {
       rec.attempts.push(a);
     }
     rec.memory_peak_bytes = Math.max(...rec.attempts.map((x) => x.memory_peak_bytes ?? 0)) || null;
-    const passedFirst = rec.attempts[0].passed, passedEver = rec.attempts.some((x) => x.passed);
+    if (rec.attempts.some((x) => x.reason === 'adapter')) throw new Error(rec.attempts.find((x) => x.reason === 'adapter').error);
+    const first = rec.attempts[0], passedFirst = first.passed && !first.exited_after_commit, passedEver = rec.attempts.some((x) => x.passed);
     if (passedEver) {
       const o = await must('observe', env, { input: JSON.stringify({ probes: d.probes.filter((p) => supported.has(p.kind)).concat(INVARIANTS.filter((p) => supported.has(p.kind))) }), timeoutS: 300 });
       const obs = JSON.parse(o.stdout);
@@ -223,7 +258,9 @@ async function session(s, n) {
       rec.probes = { total: d.probes.length + INVARIANTS.length, pass: j.pass, not_applicable: j.na, failed: j.failures.length };
       rec.failures = j.failures;
       const worst = j.failures.some((f) => f.status === 'error') ? 'error' : j.failures.some((f) => f.status === 'mishandled') ? 'mishandled' : j.failures.some((f) => f.status === 'dropped') ? 'dropped' : 'handled';
-      rec.verdict = passedFirst ? worst : 'crashed';
+      // the first attempt exited on the ledger (before or after committing it): crashed; it stopped making
+      // progress without exiting and the restart got past: stalled
+      rec.verdict = worst === 'error' ? 'error' : passedFirst ? worst : first.exited_after_commit || first.reason === 'exited' ? 'crashed' : 'stalled';
     } else rec.verdict = 'halted';
   } catch (e) {
     rec.verdict = 'error'; rec.error = String(e.message ?? e);
@@ -232,6 +269,7 @@ async function session(s, n) {
     rec.unserved = [...mock.stats.unserved];
     // ledger entries the indexer read that the corpus does not hold (answered "not found"; recorded)
     rec.unknown_keys = [...mock.stats.unknownKeys]; // decoded after the run
+    rec.ttl_unknown = mock.stats.ttlUnknown.size;
     rec.delivered = mock.stats.delivered.has(d.ledger_seq);
     writeFileSync(join(OUT, 'sessions', `${id}.mock.json`), JSON.stringify(mock.log));
     await mock.close();
@@ -259,7 +297,7 @@ console.log(`${A.name}@${opt.target} (${T.ref.slice(0, 12)}, protocol_max ${T.pr
 try { await must('setup', {}, { timeoutS: A.timeouts?.setup_s ?? 1200 }); } catch (e) { die(e.message); }
 
 // read every ledger first (synchronous native calls; cached across runs)
-for (const s of [...controlSessions, ...sessions.values()]) { try { derived(s); } catch { /* reported by its session */ } }
+for (const s of [...controlSessions, ...sessions.values()]) { try { prepareDerived(s); } catch { /* reported by its session */ } }
 const ctl = await pool(controlSessions, Number(opt.jobs), session);
 for (const c of ctl) {
   console.log(`  control ${c.control}: ${c.verdict}${c.error ? ` (${c.error})` : ''}`);
@@ -279,20 +317,30 @@ const EXP = join(HERE, 'expectations', `${A.name}@${opt.target}.json`);
 const exp = existsSync(EXP) ? JSON.parse(readFileSync(EXP, 'utf8')) : { verdicts: {} };
 if (existsSync(EXP) && exp.ref !== T.ref) die(`${EXP} was recorded at ${exp.ref}, the target is ${T.ref}: re-record it`);
 const kinds = (r) => [...new Set((r.failures ?? []).map((f) => f.kind))].sort();
+const failedIds = (r) => [...new Set((r.failures ?? []).map((f) => f.id))].sort(); // the exact facts, not just their kind
 const diffs = [];
 for (const [vid, r] of [...verdicts].sort(([a], [b]) => (a < b ? -1 : 1))) {
   if (r.verdict === 'unsupported') continue;
-  const want = exp.verdicts[vid] ?? { verdict: 'handled', probes: [] };
-  const got = { verdict: r.verdict, probes: kinds(r) };
-  if (want.verdict !== got.verdict || JSON.stringify(want.probes ?? []) !== JSON.stringify(got.probes)) diffs.push({ vid, want, got });
+  const want = exp.verdicts[vid] ?? { verdict: 'handled', failed: [] };
+  const got = { verdict: r.verdict, failed: failedIds(r) };
+  if (want.verdict !== got.verdict || JSON.stringify(want.failed ?? []) !== JSON.stringify(got.failed)) diffs.push({ vid, want, got });
 }
-for (const vid of Object.keys(exp.verdicts)) if (!verdicts.has(vid) && !wantEntries && (!wantVariants || opt.sightings)) diffs.push({ vid, want: exp.verdicts[vid], got: { verdict: 'missing' } });
+for (const vid of Object.keys(exp.verdicts)) if (!verdicts.has(vid) && !partial) diffs.push({ vid, want: exp.verdicts[vid], got: { verdict: 'missing' } });
+// the set of variants judged must be the recorded one: a variant cannot drop out (a lowered protocol_max,
+// a removed or renamed variant) without failing the run
+const judgedList = [...verdicts].filter(([, r]) => r.verdict !== 'unsupported').map(([v]) => v).sort();
+const judged = { count: judgedList.length, sha256: sha(judgedList.join('\n')) };
+const unsupportedList = [...verdicts].filter(([, r]) => r.verdict === 'unsupported').map(([v]) => v).sort();
+if (!partial && (exp.judged?.count !== judged.count || exp.judged?.sha256 !== judged.sha256))
+  diffs.push({ vid: '(the set of judged variants)', want: { verdict: `${exp.judged?.count ?? 'none recorded'}` }, got: { verdict: `${judged.count} (${judged.sha256.slice(0, 12)})` } });
+if (!partial && JSON.stringify(exp.unsupported ?? []) !== JSON.stringify(unsupportedList))
+  diffs.push({ vid: '(the unsupported variants)', want: { verdict: `${(exp.unsupported ?? []).length}` }, got: { verdict: `${unsupportedList.length}` } });
 
 // ---- report -----------------------------------------------------------------------------------------------
 const count = {};
 for (const r of verdicts.values()) count[r.verdict] = (count[r.verdict] ?? 0) + 1;
 const report = { schema: 'xdrproof.replay-report/v1', adapter: A.name, target: opt.target, ref: T.ref, protocol_max: T.protocol_max, at: new Date().toISOString(),
-  counts: count, harness_peak_rss_bytes: process.resourceUsage().maxRSS * 1024, controls: ctl, sessions: recs, unsupported: Object.fromEntries([...verdicts].filter(([, r]) => r.verdict === 'unsupported').map(([k, r]) => [k, r.why])) };
+  counts: count, harness_peak_rss_bytes: process.resourceUsage().maxRSS * 1024, derive_child_peak_rss_bytes: deriveChildPeak || null, controls: ctl, sessions: recs, unsupported: Object.fromEntries([...verdicts].filter(([, r]) => r.verdict === 'unsupported').map(([k, r]) => [k, r.why])) };
 writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 1));
 const bad = [...verdicts].filter(([, r]) => !['handled', 'unsupported'].includes(r.verdict)).sort(([a, x], [b, y]) => SEVERITY.indexOf(y.verdict) - SEVERITY.indexOf(x.verdict) || (a < b ? -1 : 1));
 const md = [`# ${A.name}@${opt.target} (${T.ref.slice(0, 12)})`, '', `Variants: ${verdicts.size}. ` + Object.entries(count).map(([k, v]) => `${k} ${v}`).join(', ') + '.', '',
@@ -303,22 +351,32 @@ console.log(`\n${Object.entries(count).map(([k, v]) => `${k} ${v}`).join(', ')} 
 const unknown = new Map();
 for (const r of recs) for (const k of r.unknown_keys ?? []) { const t = typeof k === 'string' ? k : Object.keys(k)[0]; unknown.set(t, (unknown.get(t) ?? 0) + 1); }
 if (unknown.size) console.log(`  the indexer read ledger entries the corpus does not hold: ${[...unknown].map(([t, n]) => `${t} x${n}`).join(', ')} (answered not found)`);
-const unserved = new Set(recs.flatMap((r) => r.unserved));
+const unserved = new Set(recs.flatMap((r) => r.unserved ?? []));
 if (unserved.size) console.log(`  the indexer asked the mock for: ${[...unserved].join(', ')} (refused; recorded per session)`);
-const halts = recs.filter((r) => ['halted', 'crashed'].includes(r.verdict));
-if (halts.length && opt.target === 'main') console.log(`\n  ${halts.length} session(s) halted or crashed on ${opt.target}: triage under findings/policy.md before anything is committed.`);
+const halts = recs.filter((r) => ['halted', 'crashed', 'stalled'].includes(r.verdict));
+if (halts.length && opt.target === 'main') console.log(`\n  ${halts.length} session(s) halted, crashed or stalled on ${opt.target}: triage under findings/policy.md before anything is committed.`);
 
+const caveated = recs.filter((r) => !['handled', 'unsupported'].includes(r.verdict) && (r.unknown_keys?.length || r.ttl_unknown || r.unserved?.length));
+if (caveated.length) console.log(`  ${caveated.length} non-handled session(s) also read state the mock lacks (unknown keys, TTLs or methods): their causes must be traced in code, not to the mock`);
 if (opt.record) {
-  const draft = { adapter: A.name, target: opt.target, ref: T.ref, verdicts: {} };
+  const draft = { adapter: A.name, target: opt.target, ref: T.ref, judged, unsupported: unsupportedList, verdicts: {} };
   for (const [vid, r] of [...verdicts].sort(([a], [b]) => (a < b ? -1 : 1))) {
     if (['handled', 'unsupported'].includes(r.verdict)) continue;
-    draft.verdicts[vid] = { verdict: r.verdict, probes: kinds(r), why: exp.verdicts[vid]?.why ?? 'TODO', upstream: exp.verdicts[vid]?.upstream ?? null };
+    draft.verdicts[vid] = { verdict: r.verdict, failed: failedIds(r), why: exp.verdicts[vid]?.why ?? 'TODO', upstream: exp.verdicts[vid]?.upstream ?? null };
   }
   console.log(JSON.stringify(draft, null, 2));
 }
 if (diffs.length) {
   console.log(`\nMISMATCH: ${diffs.length} verdict(s) differ from ${EXP.replace(ROOT + '/', '')}`);
-  for (const x of diffs.slice(0, 40)) console.log(`  ${x.vid}: expected ${x.want.verdict} [${(x.want.probes ?? []).join(', ')}], got ${x.got.verdict} [${(x.got.probes ?? []).join(', ')}]`);
-  process.exit(1);
+  for (const x of diffs.slice(0, 40)) console.log(`  ${x.vid}: expected ${x.want.verdict} [${(x.want.failed ?? []).length} failed], got ${x.got.verdict} [${(x.got.failed ?? []).length} failed]`);
 }
+// (6) an adapter or harness failure is never a finding: exit 2, whatever the expectations say
+const errors = [...ctl, ...recs].filter((r) => r.verdict === 'error');
+if (errors.length) {
+  console.log(`\nERROR: ${errors.length} session(s) failed in the adapter or the harness, not in the indexer:`);
+  for (const r of errors.slice(0, 10)) console.log(`  ${r.session} (${r.variants.join(', ') || r.control}): ${r.error ?? (r.failures ?? []).filter((f) => f.status === 'error').map((f) => `${f.id}: ${f.got}`).slice(0, 2).join('; ')}`);
+  process.exit(2);
+}
+if (diffs.length) process.exit(1);
+if (partial) console.log(`partial run (${judged.count} variants judged): each matches its expectation; the judged-set check needs a full run.`);
 console.log(`OK: every verdict matches ${EXP.replace(ROOT + '/', '')}.`);

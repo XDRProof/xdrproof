@@ -2,20 +2,31 @@
   "adapter": "wallet-backend",
   "target": "main",
   "ref": "18db88f4ba481c49a782d157be42177700c4385e",
-  "about": "Every variant replayed at this target that is not handled, with the probes that failed. A run must match exactly (replay/README.md, Expectations).",
+  "about": "Every variant replayed at this target that is not handled, with the exact probes that failed; judged pins the set of variants judged (count and sha256 of their sorted ids). A run must match exactly (replay/README.md, Expectations).",
+  "judged": {
+    "count": 634,
+    "sha256": "10f75f432e213f43379f7111edcf6b250e278134e84a4f4908873c9c77520b49"
+  },
+  "unsupported": [],
   "verdicts": {
     "backfill.p22-refunds-in-tx-changes-after@p22-mainnet-mined-l56085459": {
       "verdict": "mishandled",
-      "probes": [
-        "balance.native"
+      "failed": [
+        "balance.native GACPXYT7LPAEGYIQ2YJCPL7HZDLNNPZT4ZNTDXBOY76BMZQG7GWLPKX2",
+        "balance.native GAIWHGDRZUNO7EF3BEPR5NKPXQ5NMS667LC7KVRQDJJMYJ5Y42QLD5XW",
+        "balance.native GBGWQFSJSOMJ2BTOH5RLZUTZPV544YR2DF5CGYL7WDZ2Y6OSRHR6TUBE",
+        "balance.native GC7VM6DPQOCNPLRBKYCVROT3DVJLAS43MMIY6HSX4TNYZF3GWQKN4PDS",
+        "balance.native GCTAII57Z4TCMFOTDMSM7KIJIZT6FSH3K45Y2RSXPZDBQIHKZ36H3J7T",
+        "balance.native GDNYETQBYWKW3VXJSS6R5EULD6I5FMFN24I6UESAVUTZPM645FJSJDOH",
+        "balance.native GDYWDQPVQ6NGDRTI3X5GEKN5H3ASTFOTDED74YLWQOIVMIRMMW6CXDUB"
       ],
       "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
       "upstream": null
     },
     "contract.sac-deploy-from-asset@p28-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "contract.created"
+      "failed": [
+        "contract.created 1c66930b21af9f49ba43ced118374ba070285224c45e5f502c66a5e3f6d0ad0a CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG"
       ],
       "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
       "upstream": [
@@ -24,8 +35,8 @@
     },
     "contract.sac-deploy-from-asset@p28-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "contract.created"
+      "failed": [
+        "contract.created a4327e3e89349f37abc4f425c24382b8d1490a5f59666c822e10dd73f3abc74b CBRDUZVZSMQJDBGSVV64VHIFDCUZFPPXE3BLTZK2NDEPACGV72MIYNFE"
       ],
       "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
       "upstream": [
@@ -34,8 +45,8 @@
     },
     "contract.sac-deploy-from-asset@p30-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "contract.created"
+      "failed": [
+        "contract.created 1c66930b21af9f49ba43ced118374ba070285224c45e5f502c66a5e3f6d0ad0a CDFHSHLQOMFLCUBG5K36JGP2QH24MM6X5DLCTPXHHUPYF6CSRPQDXZUG"
       ],
       "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
       "upstream": [
@@ -44,8 +55,8 @@
     },
     "contract.sac-deploy-from-asset@p30-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "contract.created"
+      "failed": [
+        "contract.created a4327e3e89349f37abc4f425c24382b8d1490a5f59666c822e10dd73f3abc74b CBRDUZVZSMQJDBGSVV64VHIFDCUZFPPXE3BLTZK2NDEPACGV72MIYNFE"
       ],
       "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
       "upstream": [
@@ -54,16 +65,22 @@
     },
     "failure.manage-buy-offer.buy-not-authorized-p22@p22-mainnet-mined-l56085459": {
       "verdict": "mishandled",
-      "probes": [
-        "balance.native"
+      "failed": [
+        "balance.native GACPXYT7LPAEGYIQ2YJCPL7HZDLNNPZT4ZNTDXBOY76BMZQG7GWLPKX2",
+        "balance.native GAIWHGDRZUNO7EF3BEPR5NKPXQ5NMS667LC7KVRQDJJMYJ5Y42QLD5XW",
+        "balance.native GBGWQFSJSOMJ2BTOH5RLZUTZPV544YR2DF5CGYL7WDZ2Y6OSRHR6TUBE",
+        "balance.native GC7VM6DPQOCNPLRBKYCVROT3DVJLAS43MMIY6HSX4TNYZF3GWQKN4PDS",
+        "balance.native GCTAII57Z4TCMFOTDMSM7KIJIZT6FSH3K45Y2RSXPZDBQIHKZ36H3J7T",
+        "balance.native GDNYETQBYWKW3VXJSS6R5EULD6I5FMFN24I6UESAVUTZPM645FJSJDOH",
+        "balance.native GDYWDQPVQ6NGDRTI3X5GEKN5H3ASTFOTDED74YLWQOIVMIRMMW6CXDUB"
       ],
       "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
       "upstream": null
     },
     "preauth.failing-tx-still-removes-signer@p30-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "signer.removed"
+      "failed": [
+        "signer.removed 11b0ddb8392387578dc52dfe3b5cb8c81bf5b78a497394247be8a89c4b298956 GAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725T2NV TAI3BXNYHERYOV4NYUW74O24XDEBX5NXRJEXHFBEPPUKRHCLFGEVNRQA"
       ],
       "why": "Core removes a used pre-auth signer in txChangesBefore even when the transaction fails (CAP-0028); wallet-backend reads signer changes from operation effects only.",
       "upstream": [
@@ -73,8 +90,8 @@
     },
     "preauth.failing-tx-still-removes-signer@p30-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "signer.removed"
+      "failed": [
+        "signer.removed d7e2cedfb0a8a49434f9bc52eaf0a81c8941fa6fc59dbf5d4411089c96b8a69e GAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725T2NV TDL6FTW7WCUKJFBU7G6FF2XQVAOISQP2N7CZ3P25IQIQRHEWXCTJ5LYH"
       ],
       "why": "Core removes a used pre-auth signer in txChangesBefore even when the transaction fails (CAP-0028); wallet-backend reads signer changes from operation effects only.",
       "upstream": [
@@ -84,8 +101,8 @@
     },
     "revoke.cascade-offers-pool-shares@p30-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.removed"
+      "failed": [
+        "trustline.removed 26d6033133ec2dc867f7aac1b864b7bbfe3cc5568b087f170127e2f2332b1990 GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB pool:LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
       ],
       "why": "Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust.",
       "upstream": [
@@ -94,8 +111,8 @@
     },
     "revoke.cascade-offers-pool-shares@p30-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.removed"
+      "failed": [
+        "trustline.removed 7d03a8a11de02ce6523f56100d644ca6be541030927b9ed3c8e62e9f7de53105 GCFSYENZ7U3H5KYBDU3BPO4K4SHAW6EWJ5B347BNEGQA2GQFZ4UEOCKB pool:LB2A2DMGYZEIZULRB455CUNOJ7AQB26GVRJMCCM7AHMQ5ETRWQ7UNKNV"
       ],
       "why": "Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust.",
       "upstream": [
@@ -104,8 +121,8 @@
     },
     "sac.xlm-transfer-creates-account@p28-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "account.created"
+      "failed": [
+        "account.created 25c76de6f0f2f7d7d703cd67d91cbb2f657c31b967633efc9c255b105dcdb26e GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
       ],
       "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
       "upstream": [
@@ -115,8 +132,8 @@
     },
     "sac.xlm-transfer-creates-account@p28-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "account.created"
+      "failed": [
+        "account.created 239698f027a29d559d6bc76ec811bbbc04451f632efc8380317eea8cc4e32c83 GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
       ],
       "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
       "upstream": [
@@ -126,8 +143,8 @@
     },
     "sac.xlm-transfer-creates-account@p30-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "account.created"
+      "failed": [
+        "account.created 25c76de6f0f2f7d7d703cd67d91cbb2f657c31b967633efc9c255b105dcdb26e GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
       ],
       "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
       "upstream": [
@@ -137,8 +154,8 @@
     },
     "sac.xlm-transfer-creates-account@p30-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "account.created"
+      "failed": [
+        "account.created 239698f027a29d559d6bc76ec811bbbc04451f632efc8380317eea8cc4e32c83 GBVH5MEG2HCEBX25SQI5UR3Y6JRXCECPOFFH3F7JZ3R4JAINMDZNKNCF"
       ],
       "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
       "upstream": [
@@ -148,8 +165,8 @@
     },
     "signer.preauth-removed-by-core@p30-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "signer.removed"
+      "failed": [
+        "signer.removed 4e4301bf9373721f5c285686adfc2220010a5ef696541095a04fb317e5af111d GAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725T2NV TBHEGAN7SNZXEH24FBLINLP4EIQACCS662LFIEEVUBH3GF7FV4IR3NRX"
       ],
       "why": "Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers.",
       "upstream": [
@@ -158,8 +175,8 @@
     },
     "signer.preauth-removed-by-core@p30-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "signer.removed"
+      "failed": [
+        "signer.removed 43831a79ad31ddc3e2631d5530801494ad89f27f34e11f2470cac246be4418e5 GAABVUK6MOPXX3F7EVSKOTYPNUFIZHYAUQTZ6Q2DNBECTD64L725T2NV TBBYGGTZVUY53Q7CMMOVKMEACSKK3CPSP42OCHZEODFMERV6IQMOK623"
       ],
       "why": "Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers.",
       "upstream": [

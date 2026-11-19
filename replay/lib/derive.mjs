@@ -167,9 +167,13 @@ export function derive(bytes, passphrase) {
   const envs = envelopes(L, lcmArm);
   if (envs.length !== hashes.length) throw new Error('envelope count differs from hash count');
   const envByHash = new Map(hashes.map((h, i) => [h, envs[i]]));
-  const probes = [], seen = new Set();
+  const probes = [], seen = new Set(), factCounts = {};
+  const COUNTED = new Set(['account.created', 'contract.created', 'account.removed', 'trustline.added', 'trustline.removed']);
   const add = (kind, at, expect) => {
     const id = [kind, ...Object.values(at)].join(' ');
+    // how often the ledger states a creation, merge or trustline change (an account can be created,
+    // merged and created again in one transaction): facts.extra compares the indexer's rows to it
+    if (COUNTED.has(kind)) factCounts[id] = (factCounts[id] ?? 0) + 1;
     if (seen.has(id)) return; // one probe per fact (a fact can be stated twice, e.g. two ops by one source)
     seen.add(id); probes.push({ id, kind, ...at, expect });
   };
@@ -261,6 +265,7 @@ export function derive(bytes, passphrase) {
     hash: L.ledger_header.hash,
     tx_count: tps.length,
     probes,
+    fact_counts: factCounts,
     addresses: [...addressSet(json, passphrase)].sort(),
   };
 }

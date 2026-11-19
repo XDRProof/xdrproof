@@ -37,7 +37,10 @@ export function startMockRpc(session, { host = '0.0.0.0' } = {}) {
   }
 
   const log = [];
-  const stats = { delivered: new Set(), byMethod: {}, unserved: new Set(), unknownKeys: new Set(), firstRequestAt: null };
+  // unserved: methods and HTTP requests refused; unknownKeys: entries the corpus does not hold (answered not
+  // found); ttlUnknown: contract entries served without liveUntilLedgerSeq because the ledger left their TTL
+  // untouched. Each is a place where the mock knows less than stellar-rpc, reported with the session's verdict.
+  const stats = { delivered: new Set(), byMethod: {}, unserved: new Set(), unknownKeys: new Set(), ttlUnknown: new Set(), firstRequestAt: null };
   const closeTime = (l) => l.closeTime;
 
   const ledgerInfo = (l, format) => {
@@ -98,6 +101,7 @@ export function startMockRpc(session, { host = '0.0.0.0' } = {}) {
           Object.assign(r, { keyJson: kj.json, dataJson: dj.json, extJson: xj.json });
         } else Object.assign(r, { xdr: e.xdr, extXdr: e.ext });
         if (e.live_until !== undefined) r.liveUntilLedgerSeq = e.live_until;
+        else if ([6, 7].includes(Buffer.from(k, 'base64').readInt32BE(0))) stats.ttlUnknown.add(k); // CONTRACT_DATA, CONTRACT_CODE
         out.push(r);
       }
       return { entries: out, latestLedger: last.seq };

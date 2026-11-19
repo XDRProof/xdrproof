@@ -2,12 +2,17 @@
   "adapter": "wallet-backend",
   "target": "764a4f5b",
   "ref": "764a4f5bcbff5abb0949d93da37f769063013ea0",
-  "about": "Every variant replayed at this target that is not handled, with the probes that failed. A run must match exactly (replay/README.md, Expectations).",
+  "about": "Every variant replayed at this target that is not handled, with the exact probes that failed; judged pins the set of variants judged (count and sha256 of their sorted ids). A run must match exactly (replay/README.md, Expectations).",
+  "judged": {
+    "count": 4,
+    "sha256": "db74d1ec3c674501304ee890eebb83dfa353d8144cdec8ab07b85acc63bb8349"
+  },
+  "unsupported": [],
   "verdicts": {
     "sac.trust.address-credentials@p28-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.added"
+      "failed": [
+        "trustline.added 864822d57bb73eba9cf261f2da0c6deb4745d824a01cc15045828c1d0819607c GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW XPF:GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
       ],
       "why": "A trustline created by the asset contract's trust() has no event and gets no TRUSTLINE ADD.",
       "upstream": [
@@ -16,8 +21,8 @@
     },
     "sac.trust.address-credentials@p28-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.added"
+      "failed": [
+        "trustline.added c60b63be70cf098e611cdc3f37d322bf9199c8dd9bd2fb0aacb83b35a5e5471b GCMODYROTNOOYFT526MAXFDYHAYCZWOPVSGPJN75TJ76WGKU6XABYFKW XPF:GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
       ],
       "why": "A trustline created by the asset contract's trust() has no event and gets no TRUSTLINE ADD.",
       "upstream": [
@@ -26,8 +31,8 @@
     },
     "sac.trust.creates-trustline@p28-mainnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.added"
+      "failed": [
+        "trustline.added 1c6f4a6c2322a8c5ce54c45fd912668abd3c96cc529b118e11117f85645296a1 GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF XPF:GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
       ],
       "why": "A trustline created by the asset contract's trust() has no event and gets no TRUSTLINE ADD.",
       "upstream": [
@@ -36,8 +41,8 @@
     },
     "sac.trust.creates-trustline@p28-testnet-generated": {
       "verdict": "dropped",
-      "probes": [
-        "trustline.added"
+      "failed": [
+        "trustline.added dceee6b4bcbec3104472e88ca94ff46b1fe214c9a0ebc1b2afe7fb6237614a59 GCDNGZ7NJFNBWBP7DXYQKJRBG2VAIR5DCCCLUDBZW5B3VGUFKDG5ALZF XPF:GCZO464TMIO5MTFNDEW54VMCZGUY77I4DKJXMBVNQSXGTVFOBVSCAZND"
       ],
       "why": "A trustline created by the asset contract's trust() has no event and gets no TRUSTLINE ADD.",
       "upstream": [

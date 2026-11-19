@@ -21,20 +21,23 @@ images and Go modules are cached: the ledgers come from the corpus through a moc
 Measured on a laptop under Docker, 6 sessions at a time: the full `make replay` (634 variants in 364 sessions
 against `main`, plus 30 sighting sessions at ten older commits) takes 9.5 minutes once the eleven builds are
 cached; a session takes 5.8 s on average and 8.9 s at most. wallet-backend's peak memory in any session is
-99 MiB. The harness's own peak is 520 MiB, set by the largest single ledger (a 1.4 MB pubnet ledger read as
-JSON); sessions stream from disk, so it does not grow with the corpus.
+99 MiB. The harness's own peak is 134 MiB for the whole corpus: each ledger is read as JSON in a short-lived
+child process (310 MiB at most, for a 1.4 MB pubnet ledger), and sessions read their facts back from disk one
+at a time, so the harness does not grow with the corpus.
 
 ## A session
 
 One session replays one ledger (one distinct variant: its bytes and its network) into a fresh store.
 
 1. **Derive.** `lib/derive.mjs` reads the ledger with rs-stellar-xdr and lists the **probes**: the facts a correct
-   indexer has stored after ingesting it (below). They come from the ledger alone.
+   indexer has stored after ingesting it (below). They come from the ledger alone, and are cached under the
+   ledger's bytes (checked against the manifest) and a fingerprint of the code that derives them.
 2. **Serve.** `lib/mock-rpc.mjs` serves the ledger as stellar-rpc v30.0.1 would (below).
 3. **Prepare.** The adapter gives the indexer a clean store whose cursor sits just before the ledger.
 4. **Start and watch.** The adapter starts the indexer pointed at the mock. The harness polls the indexer's
    cursor until it passes the ledger, the process exits, the cursor stops moving for `ledger_s`, or the attempt
-   reaches `session_s`.
+   reaches `session_s`. Once the ledger is passed, the process must still be running a second later. A cursor
+   the adapter cannot read for 10 s is the adapter's failure, never a stall.
 5. **Restart once.** If the ledger was not passed, the indexer is started again on the same store.
 6. **Observe.** The adapter answers every probe from what the indexer stored. The harness compares.
 
@@ -48,10 +51,11 @@ protocol the target can decode. Each must get past its ledger, or the run stops 
 | `handled` | the cursor passed the ledger and every applicable probe matches |
 | `dropped` | the cursor passed, and a fact the ledger states is not stored |
 | `mishandled` | the cursor passed, and a stored value differs from the ledger, or an invariant fails |
-| `crashed` | the first attempt did not pass the ledger, the restart did; probes are judged as well |
+| `stalled` | the first attempt stopped making progress on the ledger without exiting, the restart got past it; probes are judged as well |
+| `crashed` | the first attempt exited on the ledger, before or right after committing it, and the restart got past it; probes are judged as well |
 | `halted` | neither attempt passed the ledger (the process exits each time, or stops moving) |
 | `unsupported` | the ledger's protocol is newer than the target decodes (`protocol_max`), or its network is not supported |
-| `error` | an adapter command failed; never a finding |
+| `error` | an adapter command failed, or the adapter left a probe kind it declares unanswered; never a finding (the run exits 2) |
 
 ## Probes
 
@@ -80,6 +84,10 @@ Two **invariants** are judged over everything the indexer stored for the session
 | `addresses.valid` | every stored address decodes as a strkey and is one the ledger names (with `M…` as `G…`, `W…` as `C…`, and the asset contract of every classic asset it names) |
 | `facts.extra` | every stored account or contract creation, account merge and trustline add or remove is one the ledger states |
 
+The invariants are coarse on purpose: `addresses.valid` cannot tell one valid address the ledger names from
+another, and `facts.extra` covers creations, merges and trustline changes only. The per-fact probes catch
+substitutions of the facts they key.
+
 Facts on which indexers differ on purpose are not asserted: the participants of a failed transaction beyond the
 accounts that paid, whether an account's master key is a "signer", and balances the ledger does not change
 (a session starts without the indexer's prior state).
@@ -93,9 +101,13 @@ validation errors follow stellar-rpc v30.0.1 word for word. `getLedgerEntries` a
 session's ledgers leave behind: the entry, its extension, its last-modified ledger and its TTL
 (`tools/native`'s `ledger_entries`).
 
-What the mock cannot answer from the corpus it refuses or reports as not found, and records: a method it does not
-serve, an HTTP request (such as a history-archive fetch), or a ledger entry the corpus does not hold. The report
-lists them per session, so a verdict never rests on an answer the mock made up.
+The mock knows only what the session's ledger states, so it knows less than stellar-rpc in three ways, each
+recorded per session: a method it does not serve, or an HTTP request such as a history-archive fetch, is refused;
+a ledger entry the ledger does not touch is answered "not found", though on a real network it may exist; and a
+contract entry whose TTL the ledger leaves untouched is served without `liveUntilLedgerSeq`. A verdict other than
+`handled` in a session that read such state is flagged, and its cause must be traced in the indexer's code before
+it is recorded. wallet-backend reads two Blend backstop contract instances in every session (its Blend validator,
+at startup); every recorded verdict is traced to code that does not involve them.
 
 ## Adapter contract
 
@@ -117,7 +129,7 @@ An adapter is a directory under `adapters/` with an `adapter.toml`:
 | `prepare` | yes | per session: a clean store with the cursor at `XDRPROOF_FIRST_LEDGER - 1` |
 | `start` | yes | per session: run the indexer in the foreground against `XDRPROOF_RPC_URL` |
 | `cursor` | yes | print the last ledger the indexer committed |
-| `observe` | no | read `{"probes": [...]}` on stdin, write `{"answers": [{id, status, value}]}`; read-only |
+| `observe` | no | read `{"probes": [...]}` on stdin, write `{"answers": [{id, status, value}]}`; read-only; every probe of a declared kind must be answered `present` or `absent` |
 | `stop`, `finish`, `teardown` | no | stop the indexer (optionally print `{"memory_peak_bytes": n}`), drop the session store, clean up |
 
 `status` is `present` (with the stored `value`), `absent`, `unsupported` or `error`. Each command gets
@@ -134,7 +146,10 @@ against the mock, and answers probes with one read of the session database.
 ## Expectations
 
 `expectations/<adapter>@<target>.json` lists every variant that is not `handled` at that target, with its
-verdict, the probes that failed, the cause, and the upstream issue. A run must match it exactly: a new failure,
-a changed failure and a fixed one all fail `make replay`. `node replay/harness.mjs ... --record` prints the draft
+verdict, the exact probes that failed (by id, so seven wrong balances turning into eight is a change), the cause,
+and the upstream issue. It also pins the set of variants judged (their count and the sha256 of their ids) and the
+variants reported unsupported, so none can drop out of a run unnoticed. A run must match it exactly: a new
+failure, a changed failure and a fixed one all fail `make replay` (exit 1); an adapter or harness failure exits 2.
+`--entries` and `--variants` runs check each variant they judge but not the set. `node replay/harness.mjs ... --record` prints the draft
 from a measured run; each cause is then written by hand after triage. Failures that let anyone halt or crash an
 indexer are handled under [findings/policy.md](../findings/policy.md) before anything is committed.
