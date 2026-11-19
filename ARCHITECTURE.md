@@ -154,7 +154,7 @@ reported privately first, through SDF's security channel, and are not published 
 Reported so far: [stellar/wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) (native balances
 miss refunds on protocol 20 to 22 ledgers, with a fix replayed against the whole corpus),
 [stellar/js-stellar-xdr-json#67](https://github.com/stellar/js-stellar-xdr-json/issues/67) (the decoder refuses a
-transaction the network applied), and a bounded walk offered on
+transaction a standalone stellar-core applied), and a bounded walk offered on
 [stellar/wallet-backend#820](https://github.com/stellar/wallet-backend/issues/820). A Python SDK crash was already
 fixed on its main branch.
 

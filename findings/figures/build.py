@@ -122,11 +122,11 @@ def f1_figure():
     ticks = "".join(f'<div class="tick" style="left:{x(t):.1f}px">{t}</div>' for t in range(450, 561, 10))
     body = f"""<div class="sheet">{crosses()}
 <div class="eyebrow">@stellar/stellar-xdr-json 30.0.0 · XDR depth limit</div>
-<h1>The network allows 500 levels per auth entry. The decoder allows 500 for the whole value.</h1>
-<p class="sub">One transaction with a 245-deep auth tree, the deepest the network runs. Each bar is the smallest depth limit at which rs&#8209;stellar&#8209;xdr 30.0.0 decodes that part.</p>
+<h1>stellar-core allows 500 levels per auth entry. The decoder allows 500 for the whole value.</h1>
+<p class="sub">One transaction with a 245-deep auth tree, the deepest stellar-core v30.0.0 applies (standalone, raised Soroban test limits). Each bar is the smallest depth limit at which rs&#8209;stellar&#8209;xdr 30.0.0 decodes that part.</p>
 <div class="chart"><div class="axis">
  <div class="limit" style="left:{x(500):.1f}px"><span>limit 500</span></div>
- {bar(14, 499, "SorobanAuthorizationEntry", "what the network checks", "fits", "ok")}
+ {bar(14, 499, "SorobanAuthorizationEntry", "what stellar-core checks", "fits", "ok")}
  {bar(74, 507, "TransactionEnvelope", "one transaction", "refused", "no")}
  {bar(134, 519, "LedgerCloseMeta", "the ledger it is in", "refused", "no")}
 </div><div class="ticks">{ticks}</div><div class="brk"></div></div>
@@ -158,13 +158,13 @@ def f820_figure():
     body = f"""<div class="sheet">{crosses()}
 <div class="eyebrow">wallet-backend #820 · contract-deploy auth walk</div>
 <h1>Give the walk a limit, and make the limit stop the walk instead of failing the ledger</h1>
-<p class="sub">The walk follows every nested invocation a transaction declares. The network already applies trees 245 deep.</p>
+<p class="sub">The walk follows every nested invocation a transaction declares. stellar-core already applies trees 245 deep.</p>
 <div class="cols">
  <div class="chainv">
   <div class="n gold" style="top:0"></div><div class="nl" style="top:-1px"><b>depth 0</b> · root invocation</div>
   <div class="n" style="top:40px"></div><div class="nl" style="top:39px"><b>depth 1</b></div>
   <div class="n" style="top:80px"></div><div class="nl" style="top:79px"><b>depth 2</b> …</div>
-  <div class="n gold" style="top:140px"></div><div class="nl" style="top:136px"><b>depth 244</b> · 245 invocations<small>the deepest the network applies (protocol 30)</small></div>
+  <div class="n gold" style="top:140px"></div><div class="nl" style="top:136px"><b>depth 244</b> · 245 invocations<small>the deepest stellar-core applies (protocol 30)</small></div>
   <div class="cut" style="top:196px"><span>bound: depth 256</span></div>
   <div class="fade"></div>
   <div class="n dim" style="top:222px"></div><div class="nl" style="top:219px;color:var(--muted)">deeper declarations<small>not walked; counted and logged</small></div>
