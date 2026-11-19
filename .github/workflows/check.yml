@@ -1,0 +1,39 @@
+# check: the fast claims on every push and pull request.
+#   verify         schema, hashes, the native rs-stellar-xdr round trip of all 634 variants, every expected fact,
+#                  the mined ledgers and the SEP-0023 vectors (make verify)
+#   novelty        no entry is redundant (make novelty)
+#   lint-selftest  xplint catches every seeded violation and mutant and flags no good case (make lint-selftest)
+# The longer runs (conformance across SDK builds, the wallet-backend replay, xplint on real indexers) are run with
+# make and recorded in conformance/, replay/ and linter/expectations.json; their workflows come with Tranche 2.
+name: check
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  corpus:
+    name: verify and novelty
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: make verify
+        run: make verify
+      - name: make novelty
+        run: make novelty
+  linter:
+    name: linter self-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: make lint-selftest
+        run: make lint-selftest
