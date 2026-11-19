@@ -25,11 +25,11 @@ Built before any funding, public, and re-runnable with one command each:
 | `xplint`, a Go linter for the three ingestion mistakes the RFP names | built | `make lint-selftest`, `make lint` |
 | Findings reported upstream | 3 posted | [`findings/REPORT.md`](findings/REPORT.md) |
 
-What the grant funds is the work that turns this into something every team uses and that stays current (§12):
-the indexer-hardening guide and its expert review, the RFP checks not yet built (a per-CAP manifest, agreement with
-stellar-core's golden files, a memory gate on replay), packages for JavaScript, Go and Rust, CI workflows and a
-GitHub Action, two more indexer adapters, conformance runners for the other official SDKs, the documentation site,
-and 18 months of upkeep through protocol upgrades.
+The $60,000 award funds 120 future engineer-days through the v1.0 release: the reviewed guide, per-CAP and golden
+agreement reports, a replay memory gate, packages for JavaScript, Go and Rust, CI workflows and a GitHub Action, two
+more indexer adapters, five more SDK runners, and the documentation site (§12). The existing corpus, generator,
+oracle, conformance runner, wallet-backend replay and linter are pre-award work, charged at $0. After v1.0, XDRProof
+is maintained for 18 months, outside the award budget (§13).
 
 ## 2. The RFP's deliverables, mapped
 
@@ -38,9 +38,9 @@ and 18 months of upkeep through protocol upgrades.
 | A corpus of real and synthetic XDR shapes, each tagged with its CAP and protocol | `entries/` with `manifest.json`; each variant records `protocol`, `source` (mined with lake URL and sha256, or generated with core version, flags and recipe) and `synthetic` |
 | Expected decoded values for each entry | `expected.facts`, each backed by `construction`, `snapshot`, `core`, `walker` or `review`; none rests on one decoder alone |
 | A coverage report per CAP and per arm | `COVERAGE.md` per arm and per hazard today; per CAP is funded (Tranche 1) |
-| Agreement with stellar-core's golden files | `make coverage-goldens` compares arm coverage today (core's 866 goldens reach 254 arms); arm-path agreement is funded (Tranche 1) |
+| Agreement with stellar-core's golden files | `make coverage-goldens` compares arm coverage today (core's 866 goldens reach 254 arms); a `--check-lcm` comparison of decoded field paths and values at a pinned core revision is funded (Tranche 1) |
 | A replay harness for indexers, with bounded memory | `replay/` with a documented adapter contract; wallet-backend peaks at 99 MiB per session, the harness at 134 MiB for the whole corpus; a CI gate is funded |
-| A linter for the three ingestion mistakes, clean on current wallet-backend | `linter/`: 4 true findings on wallet-backend `main`, 0 with XDRProof's two patches (§9) |
+| A linter for the three ingestion mistakes, clean on current wallet-backend | `linter/` catches all three. On unmodified wallet-backend `18db88f4` it reports 4 findings, all true (§9), and 0 with XDRProof's two tested patches, which are offered upstream. Until an unmodified current revision runs clean, this check stays open; each tranche reports the then-current revision's run |
 | An indexer-hardening guide, reviewed by a core or platform engineer | funded (Tranches 1 and 3), published only after that review |
 | Findings filed upstream | §11 |
 
@@ -177,13 +177,21 @@ and fails CI until an entry or an exclusion covers it. The upstream watch turns 
 the coverage change. After delivery, XDRProof is maintained for 18 months: new protocol shapes, issue triage, and a
 release for each protocol upgrade.
 
-## 14. Security
+## 14. Independence, infrastructure, tracking and status
+
+XDRProof's corpus, schema, tools and adapter contract are Apache-2.0 and run from a clone, with no XDRProof service in
+the path; that is how it stays usable by anyone, whatever happens to its maintainer. GitHub hosts the source, CI and
+releases; xdrproof.dev hosts the generated documentation. The command-line tool, packages and Action collect no
+analytics; the docs site will say so if it ever measures traffic. Milestone status and protocol-upgrade notes are
+posted publicly in the repository.
+
+## 15. Security
 
 The generator runs stellar-core with no network, no keys and no funds. Nothing in the repository holds a secret.
 Every generated ledger is reproducible from its recipe; releases will carry checksums and build attestations (§12). The replay harness runs each indexer in a container with a
 memory limit, and treats an out-of-memory kill as a crash with the number attached.
 
-## 15. Technology
+## 16. Technology
 
 | Part | Choice | Why |
 |---|---|---|
