@@ -74,7 +74,11 @@ def strkey_decode(i):
 
 
 def native(i):
-    return {"value": canon(scval.to_native(xdr.SCVal.from_xdr(i["xdr"])))}
+    v = xdr.SCVal.from_xdr(i["xdr"])
+    try:
+        return {"value": canon(scval.to_native(v))}
+    except Exception as e:  # a deliberate refusal by the projection
+        return err("native", e)
 
 
 OPS = {"decode": decode, "encode_json": encode_json, "strkey_decode": strkey_decode, "native": native}

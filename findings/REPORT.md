@@ -9,8 +9,8 @@ unexpected pass and the row is updated. Issues that let anyone halt or crash an 
 
 | ID | Where | What | Status |
 |---|---|---|---|
-| F-1 | `@stellar/stellar-xdr-json` 30.0.0 (rs-stellar-xdr compiled to WASM) | Refuses 13 corpus variants that stellar-core wrote: ledgers whose Soroban auth tree is 245 levels deep (`depth limit exceeded`). The package hard-codes `XDR_MAX_DEPTH = 500` ([src/lib.rs](https://github.com/stellar/js-stellar-xdr-json/blob/main/src/lib.rs), line 10), set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr with a larger limit read them. It also decodes nested `ScVal`s only 64 levels deep. | not filed; filing is the maintainer's call |
-| F-2 | `stellar-sdk` 17.0.1 (Python) | `to_json` raises `Unknown SCAddress type: 5` on a CAP-0084 muxed contract address that `from_xdr` decodes (2 corpus variants). Not covered by py-stellar-base#1269. | fixed on main by the switch to `stellar-xdr` (py-stellar-base#1268): `stellar-xdr` 0.2.1 passes |
+| F-1 | `@stellar/stellar-xdr-json` 30.0.0 (rs-stellar-xdr compiled to WASM) | Refuses 13 corpus variants that stellar-core wrote (`depth limit exceeded`): 8 whose Soroban auth tree is 245 levels deep, the deepest that applies, and 5 at 246, which core includes and traps. The package hard-codes `XDR_MAX_DEPTH = 500` ([src/lib.rs](https://github.com/stellar/js-stellar-xdr-json/blob/main/src/lib.rs), line 10), set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr with a larger limit read them. Of the sampled nested-`ScVal` depths it decodes 64 and refuses 100. | not filed; filing is the maintainer's call |
+| F-2 | `stellar-sdk` 17.0.1 (Python) | `to_json` raises `Unknown SCAddress type: 5` on a CAP-0084 muxed contract address that `from_xdr` decodes (2 corpus variants). py-stellar-base#1234, the protocol 30 tracking issue, asked for CAP-0084 support and warned that muxed contract values would fail; this exact failure is not reported, and #1269 does not cover it. | fixed on main by the switch to `stellar-xdr` (py-stellar-base#1268): `stellar-xdr` 0.2.1 passes |
 | H-B16 | soroban-env-host, every signer | A v1 create-contract authorization is signed over its V2 rendering, not its own bytes. By design since protocol 22 ([stellar discussion #1501](https://github.com/orgs/stellar/discussions/1501)): a hazard for offline signers and signature verifiers, not a bug. `tools/auth-payload-check.mjs` checks it without any SDK. | documented in the corpus |
 
 ## Reproduced from upstream reports
@@ -27,10 +27,10 @@ unexpected pass and the row is updated. Issues that let anyone halt or crash an 
 
 ## Measured: how deep each SDK decodes a nested `ScVal`
 
-`conformance/vectors/depth.json` nests an `ScVal` vector 64 to 4000 levels. Nothing crashes; each SDK refuses
-cleanly past its limit.
+`conformance/vectors/depth.json` nests an `ScVal` vector at 15 sampled depths from 64 to 4000. Nothing crashes;
+each SDK refuses cleanly past its limit. The table gives the deepest sampled depth decoded; the next sample was refused.
 
-| SDK | Deepest decoded | Limit |
+| SDK | Deepest sampled depth decoded | Limit |
 |---|---|---|
 | go-stellar-sdk v0.9.0 | 513 levels | built into its decoder |
 | js-stellar-sdk 17.4.0 | 256 levels | built into js-xdr |

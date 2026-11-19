@@ -39,7 +39,8 @@
    }
   },
   "expect": "accept",
-  "why": "the same as SEP-0051 JSON"
+  "expect_xdr": "AAAAAAAAAA0AAAAAAAAAAAAAAAoAAAAABwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcAAAAAAAAAAAAAAAEAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+  "why": "the same as SEP-0051 JSON; must encode to exactly control/path-5"
  },
  {
   "id": "truncated",

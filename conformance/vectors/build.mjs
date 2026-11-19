@@ -30,7 +30,7 @@ const ppssJson = (n) => ({ source_account: null, body: { path_payment_strict_sen
 const laneS = [
   { id: 'control/u64', op: 'decode', type: 'ScVal', xdr: b64(cat(u32(SCV.U64), u64(42))), expect: 'accept', why: 'a valid SCV_U64' },
   { id: 'control/path-5', op: 'decode', type: 'Operation', xdr: b64(ppss(5)), expect: 'accept', why: 'a path of five assets, the maximum' },
-  { id: 'control/path-5-json', op: 'encode_json', type: 'Operation', json: ppssJson(5), expect: 'accept', why: 'the same as SEP-0051 JSON' },
+  { id: 'control/path-5-json', op: 'encode_json', type: 'Operation', json: ppssJson(5), expect: 'accept', expect_xdr: b64(ppss(5)), why: 'the same as SEP-0051 JSON; must encode to exactly control/path-5' },
   { id: 'truncated', op: 'decode', type: 'ScVal', xdr: b64(cat(u32(SCV.U64), u64(42)).subarray(0, 11)), expect: 'reject', why: 'SCV_U64 with 7 of its 8 bytes' },
   { id: 'trailing-bytes', op: 'decode', type: 'ScVal', xdr: b64(cat(u32(SCV.U32), u32(7), u32(0))), expect: 'reject', why: 'a complete SCV_U32 followed by four more bytes' },
   { id: 'bool-word-2', op: 'decode', type: 'ScVal', xdr: b64(cat(u32(SCV.BOOL), u32(2))), expect: 'reject', why: 'an XDR bool must be 0 or 1' },

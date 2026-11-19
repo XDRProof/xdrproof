@@ -1,7 +1,19 @@
 {
  "testee": "go@v0.7.1",
  "about": "the release before the #1766 twin was fixed",
+ "unsupported": {
+  "sightings/asset-order/xdr-vs-strkey/pool-share-change-trust/helper": "no such helper in this SDK",
+  "sightings/scmap/colliding-keys/to-native": "no such helper in this SDK",
+  "sightings/muxed/id-canonical/hex-string": "no such helper in this SDK",
+  "sightings/muxed/id-canonical/empty-string": "no such helper in this SDK",
+  "sightings/offer-id/above-2^53-as-number": "no such helper in this SDK",
+  "sightings/offer-id/negative": "no such helper in this SDK",
+  "sightings/offer-id/empty-string": "no such helper in this SDK"
+ },
  "fail": {
-  "sightings/asset-order/xdr-vs-strkey/compare": "go-stellar-sdk twin of stellar/js-stellar-sdk#1766 (Asset.LessThan by strkey text); fixed in v0.7.2"
+  "sightings/asset-order/xdr-vs-strkey/compare": {
+   "reason": "go-stellar-sdk twin of stellar/js-stellar-sdk#1766 (Asset.LessThan by strkey text); fixed in v0.7.2",
+   "detail": "^wrong value: 1$"
+  }
  }
 }

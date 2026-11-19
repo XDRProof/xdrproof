@@ -33,7 +33,7 @@ const ops = {
     const f = STRKEY[strkey[0]]; if (!f || typeof StrKey[f] !== 'function') return { status: 'unsupported', reason: `no StrKey.${f ?? strkey[0]}` };
     try { return { kind: strkey[0], payload: Buffer.from(StrKey[f](strkey)).toString('hex') }; } catch (e) { return err('decode', e); }
   },
-  native: ({ xdr: b64 }) => ({ value: canon(scValToNative(xdr.ScVal.fromXDR(b64, 'base64'))) }),
+  native: ({ xdr: b64 }) => { const v = xdr.ScVal.fromXDR(b64, 'base64'); try { return { value: canon(scValToNative(v)) }; } catch (e) { return err('native', e); } },
   // sighting ops (vectors/sightings.json)
   asset_compare: ({ a, b }) => ({ value: Asset.compare(Asset.fromOperation(xdr.Asset.fromXDR(a, 'base64')), Asset.fromOperation(xdr.Asset.fromXDR(b, 'base64'))) }),
   operation_decode: ({ xdr: b64 }) => { const op = Operation.fromXDRObject(xdr.Operation.fromXDR(b64, 'base64')); return { value: { type: op.type } }; },

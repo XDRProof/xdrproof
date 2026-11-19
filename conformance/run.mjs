@@ -15,7 +15,8 @@ const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf
 const RECORD = process.argv.includes('--record');
 const ONLY = arg('--only')?.split(','), FAMILIES = arg('--families')?.split(',');
 const ALL = ['corpus', 'strkey', 'lane-s', 'depth', 'sdk-check', 'sightings'];
-const GO = (v) => `docker run --rm -i -e SDK_VERSION=${v} -v ${W}/go:/out:ro alpine:3.22 /out/testee-go-${v}`;
+const ALPINE = readFileSync(join(HERE, 'testees/go/runtime-image'), 'utf8').trim();
+const GO = (v) => `docker run --rm -i -v ${W}/go:/out:ro ${ALPINE} /out/testee-go-${v}`;
 const TESTEES = [
   { name: 'js@17.4.0', cmd: `node ${HERE}/testees/js/testee.cjs ${W}/js-17.4.0`, families: ALL },
   { name: 'xdr-json@30.0.0', cmd: `node ${HERE}/testees/xdr-json/testee.mjs ${W}/xdr-json-30.0.0`, families: ['corpus', 'lane-s', 'depth'] },
@@ -70,33 +71,51 @@ const refDecode = async (type, b64) => { const r = await new Promise((res) => { 
 
 const testees = TESTEES.map((t) => new Testee(t));
 const EXP = Object.fromEntries(testees.map((t) => { const p = join(HERE, 'expectations', `${t.name}.json`); return [t.name, existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : { fail: {}, depth_max: null }]; }));
-// Known, upstream-reported SEP-0051 differences of a testee, as rules applied to its JSON before the comparison, so any
-// other difference still fails: { rule: 'enum_prefix_underscore', enums: [...] } (a result-code name written without the
-// underscore after its tx/op prefix, as a key or a value), { rule: 'rename_key', from, to }, { rule: 'unwrap_asset_code' }
-// ({"credit_alphanum4": "ABC"} for "ABC"), { rule: 'hex_contract_id' } (64-hex contract_id for its C strkey).
+// Known, upstream-reported SEP-0051 differences of a testee, as rules applied to its JSON before the comparison. Each
+// rule acts only where its upstream report says the difference is, so any other difference still fails:
+//   { rule: 'enum_prefix_underscore', enums: ['TransactionResultCode', 'OperationResultCode'] }: a result-code name
+//     written without the underscore after tx/op, only as the arm of a transaction result (the object or string at a
+//     "result" key) and of each operation result (the elements of tx_success / tx_failed);
+//   { rule: 'rename_key', from, to, in }: a key renamed, only inside the object held under key `in`;
+//   { rule: 'unwrap_asset_code' }: {"credit_alphanum4": "ABC"} for "ABC", only as allow_trust.asset;
+//   { rule: 'hex_contract_id' }: a 64-hex contract_id for its C strkey, only in a ContractEvent (has type and body)
+//     or a ConfigUpgradeSetKey (has content_hash).
 const SEP51_ENUMS = JSON.parse(readFileSync(join(ROOT, 'tools/coverage/defs/sep0051-enum-names.json'), 'utf8')).enums;
 const { contract: cStrkey } = await import('../tools/strkey.mjs');
 function knownJson(rules = []) {
   if (!rules.length) return null;
-  const rename = new Map(), keyRename = new Map(); let unwrap = false, hexC = false;
+  const tx = new Map(), op = new Map(), keyRules = []; let unwrap = false, hexC = false;
   for (const r of rules) {
-    if (r.rule === 'enum_prefix_underscore') for (const e of r.enums) for (const v of Object.values(SEP51_ENUMS[e] ?? {})) rename.set(v.replace(/^(tx|op)_/, '$1'), v);
-    else if (r.rule === 'rename_key') keyRename.set(r.from, r.to);
+    if (r.rule === 'enum_prefix_underscore') for (const e of r.enums) for (const v of Object.values(SEP51_ENUMS[e] ?? {})) (e === 'OperationResultCode' ? op : tx).set(v.replace(/^(tx|op)_/, '$1'), v);
+    else if (r.rule === 'rename_key') keyRules.push(r);
     else if (r.rule === 'unwrap_asset_code') unwrap = true;
     else if (r.rule === 'hex_contract_id') hexC = true;
     else throw new Error('unknown json_known rule ' + r.rule);
   }
-  const fix = (v, key) => {
-    if (typeof v === 'string') return hexC && key === 'contract_id' && /^[0-9a-f]{64}$/.test(v) ? cStrkey(Buffer.from(v, 'hex')) : rename.get(v) ?? v;
-    if (Array.isArray(v)) return v.map((x) => fix(x, key));
+  const opResult = (x) => {
+    if (typeof x === 'string') return op.get(x) ?? x;
+    if (x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).length === 1) { const [k] = Object.keys(x); const nk = op.get(k) ?? k; return { [nk]: walk(x[k], nk, x, null) }; }
+    return walk(x, null, null, null);
+  };
+  // v sits under `key` in object `holder`, which itself sits under `holderKey`
+  const walk = (v, key, holder, holderKey) => {
+    if (Array.isArray(v)) return key === 'tx_success' || key === 'tx_failed' ? v.map(opResult) : v.map((x) => walk(x, key, holder, holderKey));
+    if (typeof v === 'string') {
+      if (key === 'result' && tx.has(v)) return tx.get(v);
+      if (hexC && key === 'contract_id' && /^[0-9a-f]{64}$/.test(v) && holder && (('type' in holder && 'body' in holder) || 'content_hash' in holder)) return cStrkey(Buffer.from(v, 'hex'));
+      return v;
+    }
     if (v && typeof v === 'object') {
       const ks = Object.keys(v);
-      if (unwrap && key === 'asset' && ks.length === 1 && /^credit_alphanum(4|12)$/.test(ks[0]) && typeof v[ks[0]] === 'string') return v[ks[0]];
-      return Object.fromEntries(ks.map((k) => { const nk = keyRename.get(k) ?? rename.get(k) ?? k; return [nk, fix(v[k], nk)]; }));
+      if (unwrap && key === 'asset' && holderKey === 'allow_trust' && ks.length === 1 && /^credit_alphanum(4|12)$/.test(ks[0]) && typeof v[ks[0]] === 'string') return v[ks[0]];
+      return Object.fromEntries(ks.map((k) => {
+        const nk = (key === 'result' && ks.length === 1 && tx.get(k)) || keyRules.find((r) => r.from === k && r.in === key)?.to || k;
+        return [nk, walk(v[k], nk, v, key)];
+      }));
     }
     return v;
   };
-  return (doc) => fix(doc, '');
+  return (doc) => walk(doc, null, null, null);
 }
 const KNOWN = Object.fromEntries(testees.map((t) => [t.name, knownJson(EXP[t.name].json_known)]));
 const inFamily = (f) => testees.filter((t) => t.families.includes(f));
@@ -122,12 +141,12 @@ if (families.includes('corpus') || families.includes('sdk-check')) {
         put(t, `${c}/decode`, why ? 'fail' : 'pass', why ?? '');
         if (why) return;
         put(t, `${c}/roundtrip`, r.xdr === b64 ? 'pass' : 'fail', r.xdr === b64 ? '' : 're-encoded bytes differ');
-        if (r.json_error) return put(t, `${c}/json`, 'fail', `SEP-0051 rendering raised: ${r.json_error}`);
-        if (r.json === undefined) return put(t, `${c}/json`, 'na', 'no SEP-0051 JSON');
+        if (r.json_error) { put(t, `${c}/json`, 'fail', `SEP-0051 rendering raised: ${r.json_error}`); return put(t, `${c}/facts`, 'fail', 'no JSON to check the facts on'); }
+        if (r.json === undefined) { put(t, `${c}/json`, 'na', 'no SEP-0051 JSON'); return put(t, `${c}/facts`, 'na', 'no SEP-0051 JSON'); }
         const json = KNOWN[t.name] ? KNOWN[t.name](r.json) : r.json;
         const d = firstDiff(json, reference);
         put(t, `${c}/json`, d ? 'fail' : 'pass', d ?? (KNOWN[t.name] && stable(json) !== stable(r.json) ? 'equal after the known differences' : ''));
-        const bad = d ? facts.map((x) => [x, checkFact(x, json)]).filter(([, w]) => w) : [];
+        const bad = facts.map((x) => [x, checkFact(x, json)]).filter(([, w]) => w); // every fact, on the testee's own JSON
         put(t, `${c}/facts`, bad.length ? 'fail' : 'pass', bad.map(([x, w]) => `"${x.says.slice(0, 50)}": ${w}`).join('; '));
       }));
       // sdk-check: each entry's expected.sdk_checks, on the value the path points at (reference JSON -> XDR)
@@ -139,7 +158,7 @@ if (families.includes('corpus') || families.includes('sdk-check')) {
           const r = await t.ask('native', { type: 'ScVal', xdr: scval });
           const c = `sdk-check/${id}@${v.key}/${k}`;
           if (r.status === 'unsupported') return put(t, c, 'na', r.reason);
-          if (r.status === 'error') return put(t, c, 'pass', 'rejected');
+          if (r.status === 'error' && r.error?.stage === 'native') return put(t, c, 'pass', 'rejected');
           const why = failed(r); if (why) return put(t, c, 'fail', why);
           const got = r.value?.$object?.length;
           put(t, c, got === n ? 'pass' : 'fail', got === n ? 'lossless' : `kept ${got} of ${n} entries`);
@@ -165,7 +184,7 @@ if (families.includes('lane-s')) for (const vec of load('lane-s.json')) await Pr
   if (r.status === 'unsupported') return put(t, c, 'na', r.reason);
   if (r.status === 'crash' || r.status === 'timeout') return put(t, c, 'fail', r.status);
   if (vec.expect === 'reject') return put(t, c, r.status === 'error' ? 'pass' : 'fail', r.status === 'error' ? 'rejected' : 'accepted');
-  const ok = r.status === 'ok' && (vec.op === 'encode_json' || r.xdr === vec.xdr);
+  const ok = r.status === 'ok' && r.xdr === (vec.op === 'encode_json' ? vec.expect_xdr : vec.xdr);
   put(t, c, ok ? 'pass' : 'fail', ok ? '' : failed(r) ?? 're-encoding differs');
 }));
 const depthMax = {};
@@ -177,7 +196,8 @@ if (families.includes('depth')) for (const t of inFamily('depth')) {
     const ok = r.status === 'ok' && r.xdr === vec.xdr;
     if (ok) max = Math.max(max, vec.depth);
     // a refusal is an acceptable answer to depth; a crash or a timeout is not
-    put(t, `depth/${vec.id}`, r.status === 'crash' || r.status === 'timeout' ? 'fail' : 'pass', ok ? 'decoded' : failed(r) ?? 're-encoding differs');
+    const bad = r.status === 'crash' || r.status === 'timeout' || (r.status === 'ok' && !ok);
+    put(t, `depth/${vec.id}`, bad ? 'fail' : 'pass', ok ? 'decoded' : failed(r) ?? 're-encoding differs');
   }
   depthMax[t.name] = max;
 }
@@ -206,20 +226,30 @@ for (const t of testees) {
   const exp = EXP[t.name];
   const mine = results.get(t.name) ?? new Map();
   const counts = {};
+  // expected failures name their cause: { reason, detail } where detail is a regular expression the result must match;
+  // checks a testee cannot do are registered as unsupported: { "<glob>": reason }
+  const glob = (g) => new RegExp('^' + g.split('*').map((x) => x.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*') + '$');
+  const unsupported = Object.keys(exp.unsupported ?? {}).map(glob);
   for (const [check, r] of mine) {
-    const fam = check.split('/')[0], known = check in (exp.fail ?? {});
+    const fam = check.split('/')[0], known = exp.fail?.[check];
     counts[fam] ??= { pass: 0, expected: 0, unexpected: 0, na: 0 };
-    if (r.verdict === 'na') counts[fam].na++;
+    const miss = (why) => { counts[fam].unexpected++; unexpected.push(`${t.name} ${check}: ${why}`); };
+    if (r.verdict === 'na') { if (unsupported.some((re) => re.test(check))) counts[fam].na++; else miss(`not supported (${r.detail}), and not registered as unsupported`); }
     else if (r.verdict === 'pass' && !known) counts[fam].pass++;
-    else if (r.verdict === 'fail' && known) counts[fam].expected++;
-    else { counts[fam].unexpected++; unexpected.push(`${t.name} ${check}: ${r.verdict === 'pass' ? 'PASSES but is expected to fail (' + exp.fail[check] + ')' : 'FAILS: ' + r.detail}`); }
+    else if (r.verdict === 'pass') miss(`PASSES but is expected to fail (${known.reason})`);
+    else if (!known) miss(`FAILS: ${r.detail}`);
+    else if (!new RegExp(known.detail).test(r.detail)) miss(`fails for another reason: ${r.detail} (expected /${known.detail}/)`);
+    else counts[fam].expected++;
   }
+  const want = t.name.slice(t.name.indexOf('@') + 1).replace(/^v/, ''), got = String(hello[t.name]?.version ?? '').replace(/^v/, '');
+  if (!got.startsWith(want)) unexpected.push(`${t.name}: the testee reports version ${got || 'none'}, not ${want}`);
   for (const k of Object.keys(exp.fail ?? {})) if (!mine.has(k) && (FAMILIES ?? ALL).includes(k.split('/')[0]) && !ONLY?.length) unexpected.push(`${t.name} ${k}: expected to fail, but the check did not run`);
   if (t.name in depthMax && exp.depth_max !== undefined && exp.depth_max !== null && depthMax[t.name] !== exp.depth_max) unexpected.push(`${t.name} depth: decodes to ${depthMax[t.name]} levels, expected ${exp.depth_max}`);
   summary.push({ name: t.name, implementation: hello[t.name], counts, depth_max: depthMax[t.name] ?? null });
   if (RECORD) {
     const draft = { testee: t.name, implementation: hello[t.name], depth_max: depthMax[t.name] ?? null, ...(exp.json_known ? { json_known: exp.json_known } : {}),
-      fail: Object.fromEntries([...mine].filter(([, r]) => r.verdict === 'fail').map(([k, r]) => [k, exp.fail?.[k] ?? `TODO: ${r.detail}`])) };
+      unsupported: exp.unsupported ?? Object.fromEntries([...mine].filter(([, r]) => r.verdict === 'na').map(([k, r]) => [k, r.detail])),
+      fail: Object.fromEntries([...mine].filter(([, r]) => r.verdict === 'fail').map(([k, r]) => [k, exp.fail?.[k] ?? { reason: 'TODO', detail: '^' + r.detail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$' }])) };
     mkdirSync(join(HERE, 'expectations'), { recursive: true });
     writeFileSync(join(HERE, 'expectations', `${t.name}.draft.json`), JSON.stringify(draft, null, 1) + '\n');
   }

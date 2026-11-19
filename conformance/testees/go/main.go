@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"os"
+	"runtime/debug"
 
 	"github.com/stellar/go-stellar-sdk/strkey"
 	"github.com/stellar/go-stellar-sdk/xdr"
@@ -38,11 +39,23 @@ func roundtrip(b64 string, v interface{}) obj {
 
 const base32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
+// the go-stellar-sdk version this binary was actually built with, from its module build info
+func sdkVersion() string {
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		for _, d := range bi.Deps {
+			if d.Path == "github.com/stellar/go-stellar-sdk" {
+				return d.Version
+			}
+		}
+	}
+	return "unknown"
+}
+
 func handle(r req) obj {
 	switch r.Op {
 	case "hello":
 		return obj{"status": "ok", "protocol": 1,
-			"implementation": map[string]string{"sdk": "go", "package": "github.com/stellar/go-stellar-sdk", "version": os.Getenv("SDK_VERSION"), "runtime": "go"},
+			"implementation": map[string]string{"sdk": "go", "package": "github.com/stellar/go-stellar-sdk", "version": sdkVersion(), "runtime": "go"},
 			"ops": []string{"hello", "decode", "strkey_decode", "asset_compare"}}
 	case "decode":
 		var in struct{ Type, Xdr string }

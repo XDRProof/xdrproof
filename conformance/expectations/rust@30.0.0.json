@@ -2,7 +2,20 @@
  "testee": "rust@30.0.0",
  "about": "rs-stellar-xdr has no default depth limit; the testee uses Limits { depth: 1500 }, as the corpus reader does",
  "depth_max": 256,
+ "unsupported": {
+  "sdk-check/*": "no native ScVal projection",
+  "sightings/asset-order/xdr-vs-strkey/pool-share-change-trust/helper": "no such helper in this SDK",
+  "sightings/scmap/colliding-keys/to-native": "no such helper in this SDK",
+  "sightings/muxed/id-canonical/hex-string": "no such helper in this SDK",
+  "sightings/muxed/id-canonical/empty-string": "no such helper in this SDK",
+  "sightings/offer-id/above-2^53-as-number": "no such helper in this SDK",
+  "sightings/offer-id/negative": "no such helper in this SDK",
+  "sightings/offer-id/empty-string": "no such helper in this SDK"
+ },
  "fail": {
-  "lane-s/bool-word-2": "stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true"
+  "lane-s/bool-word-2": {
+   "reason": "stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true",
+   "detail": "^accepted$"
+  }
  }
 }
