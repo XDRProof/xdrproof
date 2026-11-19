@@ -5,6 +5,7 @@
   - [Quickstart](/docs/start/quickstart): Clone the repository and run make verify: strkey vectors, every entry against its schema, hashes, a byte-for-byte round trip and every fact, and every mined ledger, in seconds.
   - [How it works](/docs/start/how-it-works): Recipes drive a bare stellar-core to emit rare shapes; the bytes become entries with facts; independent readers check them, real indexers ingest them, and SDK builds read the same bytes.
   - [Architecture](/docs/start/architecture): How the parts fit: where the ledgers come from, where 'correct' comes from, the three tools that run the corpus against real code, and what the Stellar Community Fund grant would fund.
+  - [Security](/docs/start/security): How to report a vulnerability in XDRProof, how XDRProof handles the bugs it finds in other projects, and its threat model: what it runs, what it protects, the threats with what is in place and what is planned, and the risks still open.
   - [Concepts](/docs/start/concepts): The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order.
 - Use it: Test your own SDK, lint your Go indexer, replay your indexer
   - [Use it on your code](/docs/use): For SDK and indexer teams: test your own SDK against every corpus ledger, lint your Go indexer for the three ingestion mistakes, and replay the corpus into your indexer. Each page is a copy-paste start, run in a clean folder before it was written down.
@@ -399,5 +400,5 @@
   - [Layer H: Reader robustness (SDK-only)](/docs/hazards/layer-h): Every hazard in layer H of the registry, each with its evidence and the test the corpus holds or will hold for it.
 - Findings: What building the corpus found, what XDRProof reported upstream, and the upstream bugs it reproduces
   - [Found while building](/docs/findings): What building the corpus measured about stellar-core, its metadata and the decoders. Each one is a hazard for indexers.
-  - [Reported upstream](/docs/findings/reported): Two bugs XDRProof's runs found that nobody had reported, now filed upstream with a figure and a reproduction: a lost refund in wallet-backend and a decoder that refuses a ledger stellar-core closed. And a tested fix offered on an issue that was already open.
+  - [Reported upstream](/docs/findings/reported): Two bugs XDRProof's runs found that nobody had reported, now filed upstream with a figure and a reproduction: a lost refund in wallet-backend and a decoder that refuses a ledger stellar-core closed. A tested fix offered on an issue that was already open, evidence added to another, and where else each finding was checked.
   - [Upstream bugs](/docs/findings/reproduced): Real bugs in wallet-backend and the SDKs, reproduced from corpus ledgers and test vectors, plus what the runs found that nobody had reported. Each is pinned, so a fix upstream shows up as an unexpected pass.

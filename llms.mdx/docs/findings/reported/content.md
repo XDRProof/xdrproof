@@ -1,6 +1,6 @@
 # Reported upstream (/docs/findings/reported)
 
-**What it is.** Two bugs XDRProof found in other projects' code that nobody had reported, filed upstream, and a tested fix offered on a third that was already open.
+**What it is.** Two bugs XDRProof found in other projects' code that nobody had reported, filed upstream; a tested fix offered on an issue that was already open; and evidence added to another team's own report.
 
 **Why it matters.** A test kit earns trust by what it catches. Each report below comes with a figure, a reproduction anyone can run, and, where we could, a tested fix. Filing is done the way the projects ask: a duplicate search first, one issue per bug.
 
@@ -42,6 +42,25 @@ wallet-backend walks the authorization tree a transaction declares with no depth
 
 The fix offered bounds the walk well above anything the network applies today, and stops at the limit instead of failing. Our first version failed at depth 64, which would have halted ingestion on the 245-deep ledgers in the corpus; that mistake is now a linter rule of its own, `XP002/budget-fails`.
 
+
+## Evidence added to an existing report
+
+Reported: [evidence posted · java-stellar-sdk#835](https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020)
+
+When one SDK fails a corpus entry, the same entry goes through the others. For F-1, java-stellar-sdk 6.0.0 refuses the same 13 ledgers at its default decoding depth; with a higher limit, every one decodes and round-trips.
+
+Its maintainer had already opened [#835](https://github.com/lightsail-network/java-stellar-sdk/issues/835) on 16 November, so this is not a new report: the ledgers and the depth each one needs were posted there as evidence for that issue's third point. The exact depths are in the table below.
+
+
+## Where else each finding was checked
+
+The sibling sweeps from [`findings/REPORT.md`](https://github.com/XDRProof/xdrproof/blob/main/findings/REPORT.md): **tested** means the entries were run through it; **inferred** means read from its code, not run.
+
+| Finding | Where else it was checked | Status |
+|---|---|---|
+| F-1: 13 deep-auth-tree variants refused by `@stellar/stellar-xdr-json` 30.0.0 | java-stellar-sdk 6.0.0 (`fromXdrByteArray`, default depth 200; the variants need 267 and 268; all decode and round-trip at 1,500), 19 Nov 2026. `master` at d0938106 keeps the same default | **tested, affected**: evidence for point 3 of [lightsail-network/java-stellar-sdk#835](https://github.com/lightsail-network/java-stellar-sdk/issues/835), which its maintainer opened on 16 Nov; the 13 ledgers and their depths were [posted there](https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020) on 19 Nov |
+| F-1 | js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1, stellar-xdr 0.2.1, rs-stellar-xdr 30.0.0 at depth 1,500 (`make conformance`); stellar-php-sdk 1.18.0 (all 634 variants round-trip, separate sweep, 19 Nov 2026) | **tested, not affected** |
+| F-3: pre-protocol-23 Soroban refunds in `txChangesAfter` missing from wallet-backend's `native_balances` | Horizon and stellar-etl read ledger changes through go-stellar-sdk `LedgerTransaction.GetChanges()`, which includes `TxChangesAfter` for TransactionMeta v2, v3 and v4 (`ingest/ledger_transaction.go`, `changesWithSplit`) | **inferred, not affected**; the Horizon and stellar-etl replays (Tranches 2 and 3) will test it |
 
 ## Found, not filed
 

@@ -12,7 +12,7 @@ The full map, with every tool and its numbers:
 
 ## 1. Make the shapes
 
-A **[recipe](/docs/corpus/recipes)** is a deterministic script that drives one fresh standalone stellar-core v30.0.0 over its HTTP port. The core image is pinned by digest. There is no RPC, no network, and no keys or funds: seeds and close times are fixed. Core writes every closed ledger as `LedgerCloseMeta`.
+A **[recipe](/docs/corpus/recipes)** is a deterministic script that drives one fresh standalone stellar-core v30.0.0 over its HTTP port. The core image is pinned by digest. There is no RPC and no network (no peers); the keys are test-only, from fixed seeds, there are no real funds, and close times are fixed. Core writes every closed ledger as `LedgerCloseMeta`.
 
 Some shapes only happen on a real network, or are worth having as real network bytes, so they are **mined** from public ledger history instead. [`mined/`](/docs/corpus/mined) holds 37 real mainnet and testnet ledgers; 37 entries are built from 22 of them, the testnet ledger where wallet-backend halted among them.
 

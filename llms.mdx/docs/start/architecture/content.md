@@ -13,7 +13,7 @@
 | Manifest schema (JSON Schema 2020-12) with every field the RFP names | built | `make verify` |
 | Hazard registry: 78 named ways readers of the ledger break, in 8 layers | built | [`caps/registry.json`](/docs/hazards) |
 | Corpus: 263 entries, 634 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
-| Independent readers: stellar-core's own decoder and a schema walker confirm 737 expected values | built | `make oracle` |
+| Independent readers: stellar-core's own decoder and a schema walker find 737 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
 | Coverage: 417 of 499 union arms reached; the other 82 each classified with a stellar-core source line | built | `make coverage-report` |
 | SDK conformance runner: 6 SDK builds on the corpus and test vectors, 5 older releases on fixed-bug regressions | built | `make conformance` |
 | Indexer replay harness, with a wallet-backend adapter | built | `make replay` |
@@ -25,7 +25,7 @@ Everything above is pre-award work. The $60,000 award funds 120 engineer-days th
 - the indexer-hardening guide, reviewed by a stellar-core or platform engineer;
 - per-CAP and golden-agreement reports, and a memory gate on replay;
 - packages for JavaScript, Go and Rust, CI workflows and a GitHub Action;
-- two more indexer adapters, and runners for five more SDKs;
+- two more indexer adapters (stellar-etl and Horizon), and runners for five more SDKs (Java, Swift, Flutter/Dart, PHP and .NET);
 - this documentation site.
 
 After v1.0, XDRProof is maintained for 18 months, outside the award budget.
@@ -45,7 +45,7 @@ After v1.0, XDRProof is maintained for 18 months, outside the award budget.
 
 ## Where the ledgers come from
 
-- **Made on a bare stellar-core.** [Recipes](/docs/corpus/recipes) drive a standalone stellar-core v30.0.0, pinned by image digest, with no network, no keys and no funds. `make generate` rebuilds every run twice from scratch and checks that each pair agrees. 226 entries come from here.
+- **Made on a bare stellar-core.** [Recipes](/docs/corpus/recipes) drive a standalone stellar-core v30.0.0, pinned by image digest, with no peers, test-only keys committed in the recipes and no real funds. `make generate` rebuilds every run twice from scratch and checks that each pair agrees. 226 entries come from here.
 - **Order is measured, not assumed.** stellar-core writes some changes in an order that varies between runs. `make order-scan` runs each recipe lane 20 times and records which ledgers vary; the corpus ships the rarer orderings as bytes, so a reader that depends on order fails.
 - **Mined from the real networks.** [`mined/`](/docs/corpus/mined) keeps 37 mainnet and testnet ledgers from the public data lake, with their URLs and hashes, for shapes that are cheaper to find than to make. 36 entries come only from mined ledgers; 1 from both.
 
@@ -54,7 +54,7 @@ After v1.0, XDRProof is maintained for 18 months, outside the award budget.
 Expected values never come from the SDK under test.
 
 - `make verify` round-trips every variant, byte for byte, through native rs-stellar-xdr 30.0.0 and checks every fact.
-- `make oracle` confirms each checkable value with two readers that share no code with any SDK: stellar-core's own C++ decoder and XDRProof's schema walker.
+- `make oracle` looks for each checkable value with two readers that share no code with any SDK, stellar-core's own C++ decoder and XDRProof's schema walker, and fails if either does not find it.
 - `make novelty` checks that no entry is redundant: over 1,226 atoms, 182 entries hold something no other entry does, and the other 81 differ by where the hazard sits.
 
 ## Three tools that run it against real code
@@ -81,24 +81,24 @@ Figure: how xplint decides. A value from ScAddress.String(), which may be a muxe
 
 Ordinary bugs are written up and reported upstream after a duplicate search, each with a figure, a reproduction and, where possible, a tested fix. Halts and crashes anyone can trigger are reported privately first, through SDF's security channel, and are not published until a fix ships or 90 days pass.
 
-## Distribution and CI (funded)
+## Distribution and CI
 
 - **npm:** `xdrproof`, the command-line tool, and `@xdrproof/corpus`, the corpus with a loader and test helpers for Vitest and Jest.
 - **Go** and **Rust:** the corpus as a Go module with a table-test helper, and a Rust loader crate.
-- **Workflows** with actions pinned by SHA and read-only permissions: check, conformance, replay, determinism, golden agreement, an upstream watch that opens a pull request when stellar-xdr, stellar-core or an SDK tags a release, and release with checksums and provenance.
+- **Workflows** with actions pinned by SHA and a read-only token by default. `check` already runs `make verify`, `make novelty` and the linter self-test on every push and pull request; the grant adds the oracle and coverage gate to it, then conformance, replay (with the memory gate), determinism, golden agreement, an upstream watch that opens a pull request when stellar-xdr, stellar-core or an SDK tags a release, and release with checksums and provenance.
 - **A GitHub Action**, `XDRProof/action`, that runs the checks on a pinned corpus in another team's CI and uploads SARIF.
 
 ## Protocol upgrades
 
-stellar-xdr's definitions are the input. A new arm, enum member or CAP shows up as unclassified coverage and fails CI until an entry or an exclusion covers it. The upstream watch turns each release into a pull request with the coverage change. After v1.0, XDRProof is maintained for 18 months: new protocol shapes, issue triage, and a release for each protocol upgrade.
+stellar-xdr's definitions are the input. A new union arm shows up as unclassified coverage and fails `make coverage-report` until an entry or an exclusion covers it (a CI gate from Tranche 2); enum members and CAPs are counted but not yet gated. The upstream watch turns each release into a pull request with the coverage change. After v1.0, XDRProof is maintained for 18 months: new protocol shapes, issue triage, and a release for each protocol upgrade.
 
 ## Independence
 
-The corpus, schema, tools and adapter contract are Apache-2.0 and run from a clone, with no XDRProof service in the path, so anyone can keep using them whatever happens to the maintainer. GitHub hosts the source, CI and releases; this site is generated from the repository. The tools collect no analytics. Milestone status and protocol-upgrade notes are posted publicly in the repository.
+The corpus, schema, tools and adapter contract are Apache-2.0 and run from a clone, with no XDRProof service in the path, so anyone can keep using them whatever happens to the maintainer. GitHub hosts the source, CI and releases; this site is generated from the repository. The tools collect no analytics. Milestone status is posted publicly in [`STATUS.md`](https://github.com/XDRProof/xdrproof/blob/main/STATUS.md) and weekly in #scf-general on the Stellar developer Discord.
 
 ## Security
 
-The generator runs stellar-core with no network, no keys and no funds, and nothing in the repository holds a secret. Every generated ledger is reproducible from its recipe. The replay harness runs each indexer in a container with a memory limit, and treats an out-of-memory kill as a crash.
+The generator runs a standalone stellar-core (no peers) in Docker, with test-only keys committed in the recipes and no real funds or production credentials; its HTTP port is published on the host while it runs. The repository needs no secrets. Every generated ledger is reproducible from its recipe. The replay harness runs each indexer in a container with a memory limit; an indexer that is killed ends its session and is judged from its process and cursor. Halts and crashes anyone can trigger are reported privately first. The threat model, what is in place and what is still open, is on [Security](/docs/start/security).
 
 ## Technology
 

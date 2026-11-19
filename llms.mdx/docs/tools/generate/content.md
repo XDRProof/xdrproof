@@ -13,7 +13,7 @@ It needs Docker, Node ≥ 22.15, npm, curl, jq and perl, and host ports 21700–
 
 ## The matrix
 
-`make generate` runs **10 pairs**, which is 20 fresh standalone cores, 6 at a time. There is no RPC, no network, and no keys or funds.
+`make generate` runs **10 pairs**, which is 20 fresh standalone cores, 6 at a time. There is no RPC and no network: each core is standalone (no peers), with test-only keys committed in the recipes and no real funds.
 
 | Lane | Protocol | Passphrase | Flag profile |
 |---|---|---|---|
