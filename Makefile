@@ -1,7 +1,7 @@
 # XDRProof. Each target re-runs a claim and prints its result.
 # Fast and offline:   make verify   make novelty   make coverage   make coverage-report
 # Need Docker:        make generate   make conformance   make replay
-.PHONY: verify oracle novelty coverage coverage-report coverage-goldens build generate generate-quick order-scan conformance replay replay-729 replay-731 native all
+.PHONY: verify oracle novelty coverage coverage-report coverage-goldens build generate generate-quick order-scan conformance replay replay-main replay-sightings native all
 
 NATIVE := tools/native/target/release/xdrproof-native
 
@@ -42,13 +42,14 @@ order-scan: tools/node_modules        ## 20 fresh runs per lane; records which l
 conformance:                          ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/
 	conformance/run.sh
 
-replay: replay-729 replay-731         ## every wallet-backend sighting
+replay: tools/node_modules $(NATIVE)  ## the whole corpus into wallet-backend main, and every sighting before and after its fix; must match replay/expectations/ (~20 min cold)
+	replay/run.sh all
 
-replay-729:                           ## wallet-backend #729 halted / #716 mishandled / fixed handled (~8 min cold)
-	replay/run.sh 729
+replay-main: tools/node_modules $(NATIVE)  ## every corpus variant into wallet-backend main, one isolated session per ledger
+	replay/run.sh main
 
-replay-731:                           ## wallet-backend #731 dropped / fixed handled, on XDRProof's own CAP-0073 entry (~2 min cold)
-	replay/run.sh 731
+replay-sightings: tools/node_modules $(NATIVE)  ## #729/#716, #731, #745 and #753 at the commits before and after each fix
+	replay/run.sh sightings
 
 native: $(NATIVE)                     ## build the native rs-stellar-xdr reader (~1 min once)
 

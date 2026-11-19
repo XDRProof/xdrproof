@@ -1,0 +1,57 @@
+{
+  "about": "Upstream wallet-backend failures this corpus reproduces. Each lists the corpus variants that trigger it and the verdict at the commit before the fix and at the fix. `make replay-sightings` replays them at every commit named here; replay/expectations/wallet-backend@<commit>.json pins each measured verdict, so a regression or a changed failure fails the run. Commits must decode the variant's protocol: these pin go-stellar-sdk v0.7.3 (protocol 29 at most), so the protocol 28 variants are used.",
+  "adapter": "wallet-backend",
+  "sightings": [
+    {
+      "issue": "https://github.com/stellar/wallet-backend/pull/729",
+      "related": ["https://github.com/stellar/wallet-backend/issues/716"],
+      "what": "SetOptions adds a signed-payload (P...) signer, on testnet ledger 4437357",
+      "variants": ["signer.signed-payload.set-options@p28-testnet-mined"],
+      "verdicts": {
+        "79ea2acd": "mishandled: the signer is stored as 33 bytes, its payload cut off (#716)",
+        "6e5a5910": "halted: #693 stopped the truncation, so the 41-byte key is refused at persist",
+        "2a0a84ea": "halted: the commit before #729",
+        "2c873353": "handled: #729 stores the full signer"
+      }
+    },
+    {
+      "issue": "https://github.com/stellar/wallet-backend/issues/731",
+      "related": ["https://github.com/stellar/wallet-backend/pull/734"],
+      "what": "a Stellar Asset Contract trust() creates a trustline with no event (CAP-0073)",
+      "variants": ["sac.trust.creates-trustline@p28-mainnet-generated", "sac.trust.creates-trustline@p28-testnet-generated", "sac.trust.address-credentials@p28-mainnet-generated", "sac.trust.address-credentials@p28-testnet-generated"],
+      "verdicts": {
+        "764a4f5b": "dropped: no TRUSTLINE ADD state change",
+        "c152783c": "handled: #734 records it"
+      }
+    },
+    {
+      "issue": "https://github.com/stellar/wallet-backend/pull/753",
+      "related": ["https://github.com/stellar/wallet-backend/issues/716"],
+      "what": "a muxed (M...) source on ExtendFootprintTTL and RestoreFootprint, with a text memo",
+      "variants": ["muxed.soroban-ttl-tx-source-text-memo@p28-mainnet-generated", "muxed.soroban-ttl-tx-source-text-memo@p28-testnet-generated", "muxed.soroban-restore-op-source-text-memo@p28-mainnet-generated", "muxed.soroban-restore-op-source-text-memo@p28-testnet-generated"],
+      "verdicts": {
+        "f8e5786d": "halted: the operation's participant is added as M... while the classic path adds G..., a duplicate key at persist",
+        "bb0b162b": "handled: #753 reduces the source to its base account"
+      }
+    },
+    {
+      "issue": "https://github.com/stellar/wallet-backend/issues/745",
+      "what": "a contract deploy whose deployer is a claimable-balance (B...) address, refused by the host but in the ledger",
+      "variants": ["deploy.from-claimable-balance-address@p28-mainnet-generated", "deploy.from-claimable-balance-address@p28-testnet-generated"],
+      "verdicts": {
+        "71625b21": "halted: the B... deployer has a 33-byte payload, which the account column refuses",
+        "ce0820d7": "handled: #745 skips deploys from address kinds it cannot store"
+      }
+    },
+    {
+      "issue": "https://github.com/stellar/wallet-backend/issues/745",
+      "related": ["https://github.com/stellar/wallet-backend/issues/746"],
+      "what": "a contract deploy whose deployer is a liquidity-pool (L...) address, refused by the host but in the ledger",
+      "variants": ["deploy.from-liquidity-pool-address@p28-mainnet-generated", "deploy.from-liquidity-pool-address@p28-testnet-generated"],
+      "verdicts": {
+        "71625b21": "mishandled: an ACCOUNT CREATE for a contract that never existed, created by a pool (#746's pattern)",
+        "ce0820d7": "handled: #745 skips the deploy"
+      }
+    }
+  ]
+}

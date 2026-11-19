@@ -1,0 +1,170 @@
+{
+  "adapter": "wallet-backend",
+  "target": "main",
+  "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+  "about": "Every variant replayed at this target that is not handled, with the probes that failed. A run must match exactly (replay/README.md, Expectations).",
+  "verdicts": {
+    "backfill.p22-refunds-in-tx-changes-after@p22-mainnet-mined-l56085459": {
+      "verdict": "mishandled",
+      "probes": [
+        "balance.native"
+      ],
+      "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
+      "upstream": null
+    },
+    "contract.sac-deploy-from-asset@p28-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "contract.created"
+      ],
+      "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/815"
+      ]
+    },
+    "contract.sac-deploy-from-asset@p28-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "contract.created"
+      ],
+      "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/815"
+      ]
+    },
+    "contract.sac-deploy-from-asset@p30-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "contract.created"
+      ],
+      "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/815"
+      ]
+    },
+    "contract.sac-deploy-from-asset@p30-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "contract.created"
+      ],
+      "why": "A Stellar Asset Contract deploy declares no auth entry, and wallet-backend records contract creations only from auth entries and the operation's own FromAddress preimage.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/815"
+      ]
+    },
+    "failure.manage-buy-offer.buy-not-authorized-p22@p22-mainnet-mined-l56085459": {
+      "verdict": "mishandled",
+      "probes": [
+        "balance.native"
+      ],
+      "why": "F-3. Before protocol 23 a Soroban fee refund is credited in txChangesAfter; wallet-backend's native balances read fee changes, operation changes and post-apply refunds (protocol 23+) only, so the 7 refunded accounts of pubnet ledger 56085459 end short by exactly their refund, while its own BALANCE history rows add up to the ledger.",
+      "upstream": null
+    },
+    "preauth.failing-tx-still-removes-signer@p30-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "signer.removed"
+      ],
+      "why": "Core removes a used pre-auth signer in txChangesBefore even when the transaction fails (CAP-0028); wallet-backend reads signer changes from operation effects only.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/805",
+        "https://github.com/stellar/wallet-backend/issues/818"
+      ]
+    },
+    "preauth.failing-tx-still-removes-signer@p30-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "signer.removed"
+      ],
+      "why": "Core removes a used pre-auth signer in txChangesBefore even when the transaction fails (CAP-0028); wallet-backend reads signer changes from operation effects only.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/805",
+        "https://github.com/stellar/wallet-backend/issues/818"
+      ]
+    },
+    "revoke.cascade-offers-pool-shares@p30-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "trustline.removed"
+      ],
+      "why": "Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/817"
+      ]
+    },
+    "revoke.cascade-offers-pool-shares@p30-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "trustline.removed"
+      ],
+      "why": "Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/817"
+      ]
+    },
+    "sac.xlm-transfer-creates-account@p28-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "account.created"
+      ],
+      "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/804",
+        "https://github.com/stellar/wallet-backend/issues/816"
+      ]
+    },
+    "sac.xlm-transfer-creates-account@p28-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "account.created"
+      ],
+      "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/804",
+        "https://github.com/stellar/wallet-backend/issues/816"
+      ]
+    },
+    "sac.xlm-transfer-creates-account@p30-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "account.created"
+      ],
+      "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/804",
+        "https://github.com/stellar/wallet-backend/issues/816"
+      ]
+    },
+    "sac.xlm-transfer-creates-account@p30-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "account.created"
+      ],
+      "why": "An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/804",
+        "https://github.com/stellar/wallet-backend/issues/816"
+      ]
+    },
+    "signer.preauth-removed-by-core@p30-mainnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "signer.removed"
+      ],
+      "why": "Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/818"
+      ]
+    },
+    "signer.preauth-removed-by-core@p30-testnet-generated": {
+      "verdict": "dropped",
+      "probes": [
+        "signer.removed"
+      ],
+      "why": "Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers.",
+      "upstream": [
+        "https://github.com/stellar/wallet-backend/issues/818"
+      ]
+    }
+  }
+}

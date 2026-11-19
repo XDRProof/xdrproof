@@ -1,8 +1,8 @@
 # Findings
 
-What XDRProof's runs turn up in SDKs and decoders, triaged. Every row is reproduced by a command
-(`make conformance`, `make verify`) and pinned in `conformance/expectations/`, so a fix upstream shows up as an
-unexpected pass and the row is updated. Issues that let anyone halt or crash an indexer are not listed here
+What XDRProof's runs turn up in SDKs, decoders and indexers, triaged. Every row is reproduced by a command
+(`make conformance`, `make replay`, `make verify`) and pinned in `conformance/expectations/` or
+`replay/expectations/`, so a fix upstream shows up as an unexpected pass and the row is updated. Issues that let anyone halt or crash an indexer are not listed here
 (see [policy.md](policy.md)).
 
 ## Not reported upstream before XDRProof
@@ -11,7 +11,32 @@ unexpected pass and the row is updated. Issues that let anyone halt or crash an 
 |---|---|---|---|
 | F-1 | `@stellar/stellar-xdr-json` 30.0.0 (rs-stellar-xdr compiled to WASM) | Refuses 13 corpus variants that stellar-core wrote (`depth limit exceeded`): 8 whose Soroban auth tree is 245 levels deep, the deepest that applies, and 5 at 246, which core includes and traps. The package hard-codes `XDR_MAX_DEPTH = 500` ([src/lib.rs](https://github.com/stellar/js-stellar-xdr-json/blob/main/src/lib.rs), line 10), set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr with a larger limit read them. Of the sampled nested-`ScVal` depths it decodes 64 and refuses 100. | not filed; filing is the maintainer's call |
 | F-2 | `stellar-sdk` 17.0.1 (Python) | `to_json` raises `Unknown SCAddress type: 5` on a CAP-0084 muxed contract address that `from_xdr` decodes (2 corpus variants). py-stellar-base#1234, the protocol 30 tracking issue, asked for CAP-0084 support and warned that muxed contract values would fail; this exact failure is not reported, and #1269 does not cover it. | fixed on main by the switch to `stellar-xdr` (py-stellar-base#1268): `stellar-xdr` 0.2.1 passes |
+| F-3 | wallet-backend `main` (`18db88f4`), native balances | Before protocol 23 a Soroban fee refund is credited in `txChangesAfter`. wallet-backend builds `native_balances` from fee changes, operation changes and the protocol 23+ post-apply refunds only ([accounts.go](https://github.com/stellar/wallet-backend/blob/18db88f4ba481c49a782d157be42177700c4385e/internal/indexer/processors/accounts.go#L96-L122)), so on pubnet ledger 56085459 (protocol 22) the 7 refunded accounts end short by exactly their refund (2,985,957 stroops for one of them), while wallet-backend's own `BALANCE` history rows for the same account add up to the ledger. It bites only when live ingestion processes protocol 20-22 ledgers, such as a catch-up from the data lake; current ledgers carry the refund in `postTxApplyFeeProcessing`, which it reads. No issue or PR mentions it (searched "refund", "txChangesAfter", "protocol 22"). | not filed; filing is the maintainer's call |
 | H-B16 | soroban-env-host, every signer | A v1 create-contract authorization is signed over its V2 rendering, not its own bytes. By design since protocol 22 ([stellar discussion #1501](https://github.com/orgs/stellar/discussions/1501)): a hazard for offline signers and signature verifiers, not a bug. `tools/auth-payload-check.mjs` checks it without any SDK. | documented in the corpus |
+
+## Reproduced in wallet-backend by `make replay`
+
+The whole corpus replayed into wallet-backend `main` (`18db88f4`, 2026-11-18): 618 of 634 variants handled, none
+halted. The 16 that are not are each pinned with its cause in `replay/expectations/wallet-backend@main.json`:
+
+| Shape | Corpus entries | Verdict | Upstream |
+|---|---|---|---|
+| An account created by an XLM transfer through the native asset contract (CAP-0073) has no ACCOUNT CREATE | `sac.xlm-transfer-creates-account` (4) | dropped | [#804](https://github.com/stellar/wallet-backend/issues/804), [#816](https://github.com/stellar/wallet-backend/issues/816) (open, filed 13 and 15 November) |
+| A Stellar Asset Contract deploy has no ACCOUNT CREATE | `contract.sac-deploy-from-asset` (4) | dropped | [#815](https://github.com/stellar/wallet-backend/issues/815) (open) |
+| A pre-auth signer core removes in `txChangesBefore`, also when the transaction fails, has no SIGNER REMOVE | `signer.preauth-removed-by-core`, `preauth.failing-tx-still-removes-signer` (4) | dropped | [#805](https://github.com/stellar/wallet-backend/issues/805), [#818](https://github.com/stellar/wallet-backend/issues/818) (open) |
+| A pool-share trustline removed by an authorization revocation has no TRUSTLINE REMOVE | `revoke.cascade-offers-pool-shares` (2) | dropped | [#817](https://github.com/stellar/wallet-backend/issues/817) (open) |
+| Pre-protocol-23 Soroban refunds missing from native balances | the protocol 22 pubnet ledger (2 entries) | mishandled | F-3 above |
+
+Each fixed failure the corpus reproduces is replayed at the commit before its fix and at the fix
+(`replay/sightings.json`):
+
+| Upstream | Corpus entries | Before the fix | At the fix |
+|---|---|---|---|
+| [#716](https://github.com/stellar/wallet-backend/issues/716), [#729](https://github.com/stellar/wallet-backend/pull/729) | testnet ledger 4437357 (a `P…` signer) | `79ea2acd` mishandled: the signer stored as 33 bytes; `6e5a5910`, `2a0a84ea` halted | `2c873353` handled |
+| [#731](https://github.com/stellar/wallet-backend/issues/731) | `sac.trust.creates-trustline`, `sac.trust.address-credentials` (P28) | `764a4f5b` dropped | `c152783c` handled |
+| [#753](https://github.com/stellar/wallet-backend/pull/753) | `muxed.soroban-ttl-tx-source-text-memo`, `muxed.soroban-restore-op-source-text-memo` (P28) | `f8e5786d` halted | `bb0b162b` handled |
+| [#745](https://github.com/stellar/wallet-backend/issues/745) | `deploy.from-claimable-balance-address` (P28) | `71625b21` halted | `ce0820d7` handled |
+| [#745](https://github.com/stellar/wallet-backend/issues/745), [#746](https://github.com/stellar/wallet-backend/issues/746) | `deploy.from-liquidity-pool-address` (P28) | `71625b21` mishandled: an ACCOUNT CREATE for a contract never created, by a pool | `ce0820d7` handled |
 
 ## Reproduced from upstream reports
 

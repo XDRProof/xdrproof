@@ -1,0 +1,76 @@
+# XDRProof replay adapter for stellar/wallet-backend (format: replay/README.md, "Adapter contract").
+schema = "xdrproof.adapter/v1"
+name   = "wallet-backend"
+repo   = "https://github.com/stellar/wallet-backend"
+
+[delivery]
+kind = "rpc"      # the harness serves the session's ledgers through a mock stellar-rpc (getLedgers)
+mode = "follow"   # live ingestion: the indexer keeps running; the harness watches its cursor
+
+[supports]
+networks = ["pubnet", "testnet"]
+# observe answers these probe kinds; every other kind is reported as not applicable for this indexer
+probes = [
+  "tx.present", "tx.result", "tx.fee_charged", "tx.operations", "tx.participant", "op.participant",
+  "account.created", "account.removed", "contract.created",
+  "signer.added", "signer.removed", "signer.updated",
+  "trustline.added", "trustline.removed",
+  "balance.native", "balance.trustline",
+  "addresses.valid", "facts.extra",
+]
+
+# Refs this adapter builds. protocol_max: the newest protocol whose ledgers the ref's go-stellar-sdk decodes
+# (v0.7.x adds protocol 28 in v0.7.0; protocol 30 arrives in v0.8.0). Newer ledgers are reported as
+# unsupported for that ref, never as a halt.
+[targets.main]
+ref = "18db88f4ba481c49a782d157be42177700c4385e"   # main on 2026-11-18 (#807), go-stellar-sdk v0.8.0
+protocol_max = 30
+
+[targets.79ea2acd]
+ref = "79ea2acd1dc65a07166133cc04b12e76db314db0"   # before #693: truncates muxed and signed-payload addresses (#716)
+protocol_max = 29
+[targets.6e5a5910]
+ref = "6e5a59101158dc2996295450190142366062cd05"   # #693 merged: stops truncating, halts on a P... signer (#729)
+protocol_max = 29
+[targets.2a0a84ea]
+ref = "2a0a84ea12523b6c92e278c0c84b443041240095"   # the commit before #729
+protocol_max = 29
+[targets.2c873353]
+ref = "2c873353c1f0f3c9b145e25a7d009023ad104a1c"   # #729: stores the full signed-payload signer
+protocol_max = 29
+[targets.764a4f5b]
+ref = "764a4f5bcbff5abb0949d93da37f769063013ea0"   # the commit before #734 (#731)
+protocol_max = 29
+[targets.c152783c]
+ref = "c152783c054c765c8b51fd26ed313fd1ebc1c50c"   # #734: records SAC-created trustlines (#731)
+protocol_max = 29
+[targets.71625b21]
+ref = "71625b21f832478aece23c2212ddf458c8a2f134"   # the commit before #745
+protocol_max = 29
+[targets.ce0820d7]
+ref = "ce0820d75073d232fcbd9cb44faf9ca40751a1c8"   # #745: skips deploys from unstorable address kinds
+protocol_max = 29
+[targets.f8e5786d]
+ref = "f8e5786d22c04adad16318f2e126728beec5aac9"   # the commit before #753
+protocol_max = 29
+[targets.bb0b162b]
+ref = "bb0b162b072583c7dabffbdee664d1c117e5ba56"   # #753: reduces a Soroban operation's source to its base account
+protocol_max = 29
+
+[commands]          # run from this directory with the environment in replay/README.md
+setup    = "./setup.sh"      # once per target: build the ref, start the database, migrate a template
+prepare  = "./prepare.sh"    # per session: a fresh database from the template, cursor at FIRST_LEDGER - 1
+start    = "./start.sh"      # per session: wallet-backend ingest in the foreground (live mode, RPC backend)
+cursor   = "./cursor.sh"     # prints the last ledger the indexer has committed
+observe  = "node observe.mjs"  # probes as JSON on stdin, answers as JSON on stdout; read-only
+stop     = "./stop.sh"       # per session: stop the indexer; prints {"memory_peak_bytes": n}
+finish   = "./finish.sh"     # per session: drop the session database
+teardown = "./teardown.sh"   # once: remove the database container and network
+
+[timeouts]
+setup_s  = 1200   # a cold build downloads Go modules
+ledger_s = 30     # no cursor progress and no new request for this long: stalled
+session_s = 120   # hard cap per attempt
+
+[limits]
+memory_mb = 1024  # docker --memory for the indexer; an OOM kill is a crash with the number attached

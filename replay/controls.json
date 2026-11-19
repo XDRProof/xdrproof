@@ -1,0 +1,8 @@
+{
+  "about": "Control ledgers. Before any verdict counts, the harness replays each control the target can decode; each must get past its ledger (any verdict but halted, crashed or error), or the setup is broken and the run stops. They are the plainest ledgers of each protocol in the corpus.",
+  "controls": [
+    { "variant": "executable-ref.invoke@p28-mainnet-generated", "protocol": 28, "why": "one contract call, protocol 28" },
+    { "variant": "failure.path-payment-strict-send.no-destination-mainnet@p29-mainnet-mined-l65517499", "protocol": 29, "why": "a pubnet ledger at protocol 29, as every deployment ingested it" },
+    { "variant": "event.classic.payment-transfer@p30-mainnet-generated", "protocol": 30, "why": "one payment, protocol 30" }
+  ]
+}
