@@ -8,7 +8,7 @@
   - [Concepts](/docs/start/concepts): The handful of words the corpus uses: entry, variant, hazard, placement, fact, evidence, focus, change order.
 - Use it: Test your own SDK, lint your Go indexer, replay your indexer
   - [Use it on your code](/docs/use): For SDK and indexer teams: test your own SDK against every corpus ledger, lint your Go indexer for the three ingestion mistakes, and replay the corpus into your indexer. Each page is a copy-paste start, run in a clean folder before it was written down.
-  - [Test your SDK](/docs/use/sdk): A copy-paste test in JavaScript, Go, Rust or Python: every ledger in the XDRProof corpus must decode and re-encode to the exact same bytes. Run in a clean folder for each language; all four pass on all 634 variants.
+  - [Test your SDK](/docs/use/sdk): A copy-paste test in JavaScript, Go, Rust or Python: every ledger in the XDRProof corpus must decode and re-encode to the exact same bytes. Nothing to clone: the test fetches the pinned corpus and checks every file's sha256. All four pass on all 634 variants.
   - [Lint your Go indexer](/docs/use/lint): Run xplint on your own Go repository with one command: it points at the lines that make the three ingestion mistakes, as text, JSON or SARIF for GitHub code scanning. Run from an empty folder against a fresh clone of wallet-backend.
   - [Replay your indexer](/docs/use/replay): Write a small adapter (a TOML file and a few shell commands) and the harness replays every corpus ledger into your indexer, one fresh session each, and judges each one from what your indexer stored. wallet-backend is the worked example.
 - Corpus: The entries, the schema and how entries are made

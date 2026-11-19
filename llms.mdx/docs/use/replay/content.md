@@ -8,7 +8,7 @@ Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a
 
 ## Try it on wallet-backend first
 
-From a fresh clone, with Docker and Node 22.15 or later:
+The replay harness runs from the repository today, so this one needs a clone, with Docker and Node 22.15 or later. The planned `xdrproof` command-line tool (Tranche 1, by 2 February 2027) brings `xdrproof replay` without one.
 
 ```bash
 git clone --depth 1 https://github.com/XDRProof/xdrproof && cd xdrproof

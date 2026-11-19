@@ -22,7 +22,7 @@ From your repository's root, with Go 1.26 or later and the same cgo setup your p
 go run github.com/XDRProof/xdrproof/linter/cmd/xplint@latest ./...
 ```
 
-Go fetches the linter's module straight from GitHub (`github.com/XDRProof/xdrproof/linter`); no clone is needed. Run from an empty folder on a fresh clone of [stellar/wallet-backend](https://github.com/stellar/wallet-backend) at `18db88f`, in the `golang:1.27` image with an empty module cache, it printed:
+Go fetches the linter's module straight from GitHub (`github.com/XDRProof/xdrproof/linter`); nothing is cloned or installed. It needs no module of its own either: run from an empty folder, `go run github.com/XDRProof/xdrproof/linter/cmd/xplint@latest -list` printed every rule. Run from an empty folder on a fresh clone of [stellar/wallet-backend](https://github.com/stellar/wallet-backend) at `18db88f`, in the `golang:1.27` image with an empty module cache, it printed:
 
 ```text
 internal/indexer/processors/contract_deploy.go:116:2: XP002/walk-unbudgeted: closure walkInvocation recurses over SorobanAuthorizedInvocation with no depth or node budget
