@@ -292,6 +292,54 @@ func budgetChecks(info *types.Info, u *unit, cycle map[types.Object]bool, mutate
 
 var errorIface = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
 
+// stops: a budget check that actually ends the descent. Its over-limit branch returns, breaks or
+// continues, or every recursive call of the unit sits inside one branch of it, or it is a loop condition.
+// A check that only logs and carries on is not a budget.
+func stops(info *types.Info, is *ast.IfStmt, u *unit, cycle map[types.Object]bool) bool {
+	if !is.If.IsValid() {
+		return true // a loop condition: the loop ends at the limit
+	}
+	exits := func(n ast.Node) bool {
+		found := false
+		ast.Inspect(n, func(m ast.Node) bool {
+			switch x := m.(type) {
+			case *ast.FuncLit:
+				return false
+			case *ast.ReturnStmt:
+				found = true
+			case *ast.BranchStmt:
+				if x.Tok == token.BREAK || x.Tok == token.CONTINUE {
+					found = true
+				}
+			}
+			return !found
+		})
+		return found
+	}
+	if exits(is.Body) {
+		return true
+	}
+	inside := func(n ast.Node) bool {
+		if n == nil {
+			return false
+		}
+		all, any := true, false
+		ast.Inspect(u.body, func(m ast.Node) bool {
+			call, ok := m.(*ast.CallExpr)
+			if !ok || !cycle[calleeObj(info, call)] {
+				return true
+			}
+			any = true
+			if call.Pos() < n.Pos() || call.End() > n.End() {
+				all = false
+			}
+			return true
+		})
+		return any && all
+	}
+	return inside(is.Body) || is.Else != nil && inside(is.Else)
+}
+
 // failsOnBudget: the budget check's own block returns a non-nil error.
 func failsOnBudget(info *types.Info, is *ast.IfStmt) (token.Pos, bool) {
 	for _, st := range is.Body.List {
@@ -460,7 +508,11 @@ func structural(pass *analysis.Pass) []Finding {
 		var checks []*ast.IfStmt
 		names := []string{}
 		for o := range cycle {
-			checks = append(checks, budgetChecks(info, byObj[o], cycle, mutated)...)
+			for _, is := range budgetChecks(info, byObj[o], cycle, mutated) {
+				if stops(info, is, byObj[o], cycle) {
+					checks = append(checks, is)
+				}
+			}
 			names = append(names, byObj[o].name)
 		}
 		sort.Strings(names)
@@ -473,6 +525,9 @@ func structural(pass *analysis.Pass) []Finding {
 			continue
 		}
 		for _, is := range budgetChecks(info, u, cycle, mutated) {
+			if !stops(info, is, u, cycle) {
+				continue
+			}
 			if pos, bad := failsOnBudget(info, is); bad {
 				report(pos, "XP002/budget-fails", u.name+" returns an error when its budget over "+tn+" is exceeded")
 			}

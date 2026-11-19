@@ -2,6 +2,8 @@
 package xp003
 
 import (
+	"encoding/hex"
+
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/stellar/go-stellar-sdk/ingest"
 	"github.com/stellar/go-stellar-sdk/xdr"
@@ -52,15 +54,16 @@ func BadDeclaredDeploy(op xdr.InvokeHostFunctionOp) []builder {
 	return out
 }
 
-// Bad: a "seen" set is deduplication, not confirmation.
+// Bad: a "seen" set is deduplication, not confirmation. (The seen set itself never leaves the function,
+// so adding to it is not attribution; adding to out is.)
 func BadDedupeGuard(op xdr.InvokeHostFunctionOp) set.Set[string] {
 	seen := set.NewThreadUnsafeSet[string]()
 	out := set.NewThreadUnsafeSet[string]()
 	for _, e := range op.Auth {
 		a, _ := addressOf(e.Credentials)
 		if !seen.Contains(a) {
-			seen.Add(a) // want XP003/declared-auth
-			out.Add(a)  // want XP003/declared-auth
+			seen.Add(a)
+			out.Add(a) // want XP003/declared-auth
 		}
 	}
 	return out
@@ -75,6 +78,55 @@ func GoodMetaConfirmed(op xdr.InvokeHostFunctionOp, created map[string]bool) []b
 		if _, ok := created[id]; ok {
 			out = append(out, builder{}.WithAccount(id))
 		}
+	}
+	return out
+}
+
+// fromAddressOf: the deployer preimage of a declared CreateContract.
+func fromAddressOf(inv xdr.SorobanAuthorizedInvocation) (xdr.ContractIdPreimageFromAddress, bool) {
+	cc := inv.Function.CreateContractHostFn
+	if cc == nil || cc.ContractIdPreimage.FromAddress == nil {
+		return xdr.ContractIdPreimageFromAddress{}, false
+	}
+	return *cc.ContractIdPreimage.FromAddress, true
+}
+
+func deployerOf(p xdr.ContractIdPreimageFromAddress) string {
+	if p.Address.Type != xdr.ScAddressTypeScAddressTypeAccount {
+		return ""
+	}
+	return p.Address.AccountId.Address()
+}
+
+// contractIDFrom stands in for the hash of the preimage: the ID binds the deployer address and salt.
+func contractIDFrom(p xdr.ContractIdPreimageFromAddress) string {
+	return hex.EncodeToString(p.Salt[:]) + deployerOf(p)
+}
+
+// Good: the deployer is recorded only when the contract ID computed from its preimage is among the
+// instances the meta created, which confirms the preimage too (wallet-backend contract_deploy.go at
+// 18db88f4).
+func GoodDeployerConfirmedByID(op xdr.InvokeHostFunctionOp, created map[string]bool) []builder {
+	var out []builder
+	for _, e := range op.Auth {
+		from, ok := fromAddressOf(e.RootInvocation)
+		if !ok {
+			continue
+		}
+		if _, found := created[contractIDFrom(from)]; found {
+			out = append(out, builder{}.WithCreator(deployerOf(from)))
+		}
+	}
+	return out
+}
+
+// Bad: the meta confirms one declared deploy and the deployer of another is recorded.
+func BadConfirmedOtherDeploy(a, b xdr.SorobanAuthorizedInvocation, created map[string]bool) []builder {
+	var out []builder
+	fa, _ := fromAddressOf(a)
+	fb, _ := fromAddressOf(b)
+	if _, found := created[contractIDFrom(fa)]; found {
+		out = append(out, builder{}.WithCreator(deployerOf(fb))) // want XP003/declared-auth
 	}
 	return out
 }
@@ -133,6 +185,31 @@ func GoodGateInCaller(tx ingest.LedgerTransaction) set.Set[string] {
 		}
 	}
 	return out
+}
+
+// Bad: exported, so another package can call it for a failed transaction, whatever its local caller does.
+func AddDestinations(op xdr.Operation, out set.Set[string]) {
+	for _, a := range destinations(op) {
+		out.Add(a.Address()) // want XP003/op-body-ungated
+	}
+}
+
+// (Its only local caller is gated; that does not cover callers elsewhere.)
+func GoodGateBeforeExported(tx ingest.LedgerTransaction, out set.Set[string]) {
+	if tx.Successful() {
+		for _, op := range tx.Envelope.Operations() {
+			AddDestinations(op, out)
+		}
+	}
+}
+
+// Good: a local deduplication map is not attribution.
+func GoodLocalDedupe(op xdr.Operation) int {
+	seen := map[string]bool{}
+	for _, a := range destinations(op) {
+		seen[a.Address()] = true
+	}
+	return len(seen)
 }
 
 // ---- XP003/events-ungated ----------------------------------------------------------------------------

@@ -12,7 +12,7 @@ Each rule has sub-rules with stable IDs, used as the SARIF `ruleId`:
 
 | Sub-rule | Level | Flags | Instead |
 |---|---|---|---|
-| `XP001/text-bytes` | warning | memo text, `ScString`, `ScSymbol` or data values (raw bytes core does not check) stored or JSON-encoded unchecked | check `utf8.ValidString` (and NUL) first, or store hex or base64 |
+| `XP001/text-bytes` | warning | memo text, `ScString`, `ScSymbol` or data values (raw bytes core does not check) stored or JSON-encoded unchecked | check `utf8.ValidString` first (a Postgres TEXT column also refuses NUL), or store hex or base64 |
 | `XP001/muxed-as-account` | error | a muxed address (`MuxedAccount.Address`, `ScAddress.String`, which can return M, W, L or B) used as an account: a set member, a map key, a builder's account | `ToAccountId().Address()`, or switch on the address kind first |
 | `XP001/mux-id-as-identity` | warning | `MuxedAccount.GetId` with its error dropped (a G account reads as ID 0), or the ID narrowed to `int64` or a float | check the error; keep the ID as `uint64` or a decimal string |
 | `XP001/contract-number` | warning | an integer from an `ScVal` used as an exponent, a size or a shift count with no bound | compare it with a constant first |
@@ -49,7 +49,8 @@ make lint            # wallet-backend, stellar-etl, go-stellar-sdk, history and 
 ```
 
 Both run in a pinned Go image (`linter/toolchain-image`, Go 1.27.4 on Debian, with gcc for cgo) through
-`linter/go.sh`.
+`linter/go.sh`. `make lint` type-checks stellar-etl with Go 1.27.3, the version its `go.mod` names: Go 1.27.4
+refuses the LLVM bitcode section in a prebuilt cgo library it links (`targets.json` has the details).
 
 ## How it works
 
@@ -60,19 +61,30 @@ Both run in a pinned Go image (`linter/toolchain-image`, Go 1.27.4 on Debian, wi
   event. Sources are named SDK accessors (`sdk.go`), conversions (`string(ScString)`), field reads (an `*Op`
   struct's account fields, `Memo.Text`) and types that only occur in the envelope
   (`SorobanAuthorizationEntry` and the rest of the auth tree).
-- **Propagation** follows SSA values, memory (with first-level struct fields and constant map keys kept
-  apart, and a map's keys apart from its values), closures and their free variables, and calls. Each function
-  gets a summary (what its results carry, which arguments flow to them, which arguments reach a sink, whether
-  it checks UTF-8), exported to importing packages as an analysis fact.
-- **Gates** count only when they dominate the sink: a success check (`Successful()`, the result code), a
-  membership test against a collection built from the meta, a UTF-8 check, a bound against a constant, a
-  switch on the address kind. A gate in a block whose every incoming edge carries the check counts
-  (`case A, B:`), and so does a success check in every local caller of a function.
+- **Propagation** follows SSA values, memory (with first-level struct fields, package variables and
+  constant map keys kept apart, and a map's keys apart from its values), closures and their free variables,
+  and calls. Each function gets a summary (what its results carry, which arguments flow to them, which
+  arguments reach a sink, whether it checks UTF-8), exported to importing packages as an analysis fact.
+- **Sinks** are where a value is kept: a JSON- or db-tagged field, a map key, a set or a builder's account.
+  A map, set or builder counts only when it outlives the function (returned, stored, passed on, or held by a
+  parameter, a receiver or a package variable): a scratch map for deduplication or lookup is not
+  attribution.
+- **Gates** count only when they dominate the sink, and only for the value they checked. A UTF-8 check or a
+  bound holds for the value checked and what is computed from it (through string and `[]byte` conversions);
+  a bound counts on the branch where the value is below the constant. A switch on the address kind clears
+  the address it was read from, on the account or contract branch. A membership test against a collection
+  built from the meta confirms the key and, when a plain function computed the key (a contract ID hashed
+  from its preimage), that function's arguments. A success check (`Successful()`, the result code) clears
+  operation bodies and events on its branch, and in an unexported function or closure every one of whose
+  callers is success-gated. A gate in a block whose every incoming edge carries the check counts
+  (`case A, B:`).
 - **XP002** finds recursion with a per-package call graph. The recursive XDR types are computed from the SDK's
   own type graph, so `SorobanDelegateSignature.NestedDelegates` (CAP-0071, hazard H-B14) is covered without a
   list; `ClaimPredicate` and `ScpQuorumSet` are excluded because stellar-core caps them at depth 4
   (v30.0.0 `CreateClaimableBalanceOpFrame.cpp:78`, `QuorumSetUtils.cpp:16,60`). A budget is an integer that
-  changes across the recursion (a stepped parameter, or a counter outside the walker) and is compared.
+  changes across the recursion (a stepped parameter, or a counter outside the walker), is compared, and stops
+  the descent: the branch past the limit returns, breaks or continues. A check that only logs is not a
+  budget.
 
 Tests and generated files are skipped.
 
@@ -83,9 +95,9 @@ Every finding below is pinned, with its triage, in [`expectations.json`](expecta
 
 | Target | Findings | Triage |
 |---|---|---|
-| wallet-backend `main` (`18db88f4`) | 5 | all true positives: `walkInvocation` (#820, open) and four places where the Blend decoder uses `ScAddress.String` as an account, the shape #756 fixed in the SEP-41 processor |
+| wallet-backend `main` (`18db88f4`) | 4 | all true positives: `walkInvocation` (#820, open) and three places where the Blend decoder uses `ScAddress.String` as an account, the shape #756 fixed in the SEP-41 processor |
 | `main` + the #820 patch + the Blend address patch | **0** | |
-| stellar-etl `master` (`7e3fc9af`) | 13 | all true positives: #504 (memo bytes to JSON) ×2, #462 (contract ID from the footprint) ×8, #488 (balance changes from diagnostic events of failed transactions) ×2, and one success-ungated `Participants()` nothing calls |
+| stellar-etl `master` (`7e3fc9af`) | 12 | all true positives: #504 (memo bytes to JSON) ×2, #462 (contract ID from the footprint) ×8, #488 (balance changes from diagnostic events of failed transactions) ×2 |
 | go-stellar-sdk v0.9.0 `ingest/`, `processors/` | 0 | |
 
 **History.** Each fixed upstream bug of these kinds is caught before its fix and gone after it:
@@ -94,7 +106,7 @@ Every finding below is pinned, with its triage, in [`expectations.json`](expecta
 |---|---|
 | wallet-backend `f8e5786d` → `bb0b162b` (#753) | `muxed-as-account` in `contract_operations.go`: 10 → 3 |
 | `bb0b162b` → `666a64d4` (#756) | `muxed-as-account` in `contracts/sac.go`: 1 → 0 |
-| `666a64d4` → `4bbb1ecb` (`9538b3ca`, `80121f3a`) | `declared-auth` 23 → 0, the remaining `muxed-as-account` 3 → 0, `op-body-ungated` 2 → 0 (the success check moved first), the auth-tree participant walk 1 → 0; only `walkInvocation` (#820) stays |
+| `666a64d4` → `4bbb1ecb` (`9538b3ca`, `80121f3a`) | `declared-auth` 23 → 0, the remaining `muxed-as-account` 3 → 0, `op-body-ungated` 1 → 0 (the success check moved first), the auth-tree participant walk 1 → 0; only `walkInvocation` (#820) stays |
 | `e967ce8b` → `ff73ff46` (#803) | `text-bytes` on Blend pool names: 1 → 0 |
 
 **Mutants of `main`.** Five fixed bugs put back into current code; each makes its rule fire: the deploy's
@@ -102,14 +114,16 @@ meta confirmation removed (`declared-auth`), the success gate of `GetOperationPa
 (`op-body-ungated`), #753 reverted (`muxed-as-account`), the Blend UTF-8 check removed (`text-bytes`), and the
 first, wrong #820 patch that fails at depth 64 (`budget-fails`).
 
-**Fixtures.** `make lint-selftest`: 25 seeded violations across all twelve default sub-rules (each modelled on
-real code, named in the fixture), every one caught, and no finding on the 21 good cases; 17 mutants of the good
-cases (a guard removed, a fixed bug put back), every one caught.
+**Fixtures.** `make lint-selftest`: 36 seeded violations across all twelve default sub-rules (each modelled on
+real code, named in the fixture), every one caught at its marked line, and no finding on the 28 good cases;
+17 mutants of the good cases (a guard removed, a fixed bug put back), each caught at the line it breaks. The
+near misses are seeded too: a check on a different memo or address than the one stored, a bound on the wrong
+branch, `max` as a bound, a budget that only logs, a meta check that confirms a different deploy.
 
 ## Does it run clean on current wallet-backend?
 
 The RFP's check is that the linter "runs clean on current wallet-backend". We read that as: **no false
-positives**. `make lint` reports five findings on `main`, and each is a true positive:
+positives**. `make lint` reports four findings on `main`, and each is a true positive:
 
 1. `contract_deploy.go:116` `walkInvocation` walks the declared authorization tree with no depth or node bound
    (wallet-backend#820, open, filed by another entrant). It is hardening: at today's limits the deepest tree a
@@ -117,19 +131,34 @@ positives**. `make lint` reports five findings on `main`, and each is a true pos
    depth 256 and 4096 nodes, above anything core applies, and stops (counted and logged) instead of failing;
    our first version failed at depth 64 and would have halted on the 245-deep ledgers in the corpus, which is
    what `XP002/budget-fails` now catches.
-2. Four sites in `internal/services/blend` use `ScAddress.String()` (via `addrString`) as an account key.
-   wallet-backend fixed exactly this in its SEP-41 processor (#756), noting that "a real contract cannot emit
-   them today"; the Blend decoder (#798, added later) does not use the same helper. It is not reachable today:
-   only Blend WASM the indexer pinned is decoded, and Blend takes `Address` arguments, which the host limits to
-   G and C. `patches/wallet-backend-blend-address.diff` routes it through `types.StorableAddressString`.
+2. Three sites in `internal/services/blend` use `ScAddress.String()` (via `addrString`) as an account: a
+   history row's account and two map keys that outlive the call. wallet-backend fixed exactly this in its
+   SEP-41 processor (#756), noting that "a real contract cannot emit them today"; the Blend decoder (#798,
+   added later) does not use the same helper. It is not reachable today: only Blend WASM the indexer pinned is
+   decoded, Blend takes `Address` arguments, and the host refuses the other kinds where Blend would carry
+   them (the corpus entries `deploy.from-claimable-balance-address` and `deploy.from-liquidity-pool-address`
+   record B and L addresses refused, `scval.muxed-address-key-trapped` a muxed address in a contract-data
+   key). `patches/wallet-backend-blend-address.diff` routes it through `types.StorableAddressString`.
+
+An earlier version of xplint reported a fourth Blend site, `prices.go:328`. Its sink was a lookup map local to
+`fetchCometState`, keyed by ledger-key XDR from the RPC reply; since sinks must outlive the function, it is no
+longer reported. The same change dropped stellar-etl's `dedupeParticipants` scratch map.
 
 With both patches, xplint reports nothing on wallet-backend, and wallet-backend's own `go build`, `go vet` and its
 processor and Blend tests (against TimescaleDB) pass, as they do on `main`. Opening the pull requests is the maintainers' call.
 
 ## Limits
 
-- Calls through interfaces and function values are not followed (except closures, which are); the call graph
-  for summaries is per package, with facts across packages for the SDK and the loaded modules.
+- Calls through interfaces and function values are not followed (except closures, which are), and neither
+  are values sent over channels; the call graph for summaries is per package, with facts across packages for
+  the SDK and the loaded modules.
+- A success check counts on the branch it dominates, or for a whole function only when every caller is
+  known (unexported, never used as a value); an exported function attributing operation bodies is reported
+  even when its callers check first.
+- `XP001/text-bytes` clears on a UTF-8 check; it does not also ask for a NUL check, which a Postgres TEXT
+  column needs too.
+- `XP002/decode-unlimited` sees `DecodeUnlimitedDepth` and constant depths; a depth computed at run time is
+  not followed.
 - Flows through a database are not followed. wallet-backend #802 (Blend decimals stored, read back by the API
   and used as an exponent) is out of reach for that reason; the in-memory shape is caught.
 - Memory is field-sensitive one level deep; deeper fields and slice elements share their root's labels.
@@ -137,7 +166,7 @@ processor and Blend tests (against TimescaleDB) pass, as they do on `main`. Open
   `WithCreator`, ...); a role spelled otherwise is not seen.
 - The sources and sinks are a catalogue of go-stellar-sdk and standard-library APIs (`xplint/sdk.go`); code
   that reads XDR through its own types needs entries added.
-- No false-positive rate is claimed: the 18 findings on the three codebases' current code, and every finding
+- No false-positive rate is claimed: the 16 findings on the three codebases' current code, and every finding
   on the history commits, are triaged true, but three codebases are too few to state a rate.
 
 The guide carries the same three checks as a language-neutral checklist for indexers written in other languages.

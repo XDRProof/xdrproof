@@ -29,6 +29,9 @@ type mutation struct {
 	To     string `json:"to"`
 	Expect string `json:"expect"`
 	Why    string `json:"why"`
+	At     string `json:"at"`     // text on the line the finding must be on, searched from the change
+	Whole  bool   `json:"whole"`  // search for At from the start of the file instead
+	Offset int    `json:"offset"` // the finding is this many lines below At's line
 }
 
 var want = regexp.MustCompile(`// want ((?:XP00\d/[a-z-]+ ?)+)\s*$`)
@@ -114,15 +117,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
-	count := func(ds []xplint.Diagnostic, rule, file string) int {
-		n := 0
-		for _, d := range ds {
-			if d.Rule == rule && d.File == file {
-				n++
-			}
-		}
-		return n
-	}
 	killed := 0
 	for _, m := range ms {
 		path := filepath.Join(abs, m.File)
@@ -132,18 +126,36 @@ func main() {
 			failed++
 			continue
 		}
+		at := strings.Index(string(src), m.From)
 		mutated := strings.Replace(string(src), m.From, m.To, 1)
+		from := at
+		if m.Whole {
+			from = 0
+		}
+		k := strings.Index(mutated[from:], m.At)
+		if m.At == "" || k < 0 {
+			fmt.Printf("  BAD MUTANT  %s: %q is not in the mutated file\n", m.Name, m.At)
+			failed++
+			continue
+		}
+		line := strings.Count(mutated[:from+k], "\n") + 1 + m.Offset
 		ds, err := xplint.Run(abs, []string{"./..."}, map[string][]byte{path: []byte(mutated)}, nil)
 		if err != nil {
 			fmt.Printf("  BAD MUTANT  %s: %v\n", m.Name, err)
 			failed++
 			continue
 		}
-		if count(ds, m.Expect, m.File) > count(base, m.Expect, m.File) {
+		hit := false
+		for _, d := range ds {
+			if d.Rule == m.Expect && d.File == m.File && d.Line == line {
+				hit = true
+			}
+		}
+		if hit {
 			killed++
-			fmt.Printf("  caught      %-40s %s\n", m.Name, m.Expect)
+			fmt.Printf("  caught      %-50s %s at line %d\n", m.Name, m.Expect, line)
 		} else {
-			fmt.Printf("  SURVIVED    %-40s %s (%s)\n", m.Name, m.Expect, m.Why)
+			fmt.Printf("  SURVIVED    %-50s %s at line %d (%s)\n", m.Name, m.Expect, line, m.Why)
 			failed++
 		}
 	}

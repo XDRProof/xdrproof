@@ -51,7 +51,7 @@ replay-main: tools/node_modules $(NATIVE)  ## every corpus variant into wallet-b
 replay-sightings: tools/node_modules $(NATIVE)  ## #729/#716, #731, #745 and #753 at the commits before and after each fix
 	replay/run.sh sightings
 
-lint-selftest:                       ## xplint against its 25 seeded violations and 17 mutants: every one caught, no good case flagged (~2 min warm)
+lint-selftest:                       ## xplint against its 36 seeded violations and 17 mutants: every one caught, no good case flagged (~2 min warm)
 	linter/go.sh sh -c 'go vet ./... && go build -o /xdrproof/linter/.work/bin/xplint-selftest ./cmd/xplint-selftest && /xdrproof/linter/.work/bin/xplint-selftest'
 
 lint: tools/node_modules              ## xplint on wallet-backend, stellar-etl and go-stellar-sdk, the commits around upstream fixes, a patched tree and real-code mutants; must match linter/expectations.json (~15 min cold)

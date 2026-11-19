@@ -58,7 +58,10 @@ function lint(t, tree) {
 }
 
 // ---- run -----------------------------------------------------------------------------------------------
-const key = (f) => `${f.rule} ${f.file}:${f.line}`;
+// a finding is its rule, place and message: the message names the source and the sink, so a different
+// flow on the same line is a different finding
+const key = (f) => `${f.rule} ${f.file}:${f.line} ${f.message}`;
+const place = (f) => `${f.rule} ${f.file}:${f.line}`;
 const results = {};
 let bad = 0;
 for (const t of T.targets) {
@@ -91,10 +94,13 @@ if (opt.record) {
   for (const t of T.targets) {
     const fs = results[t.name] ?? null;
     if (!fs) { out.targets[t.name] = EXP.targets[t.name] ?? []; continue; }
-    const old = new Map((EXP.targets[t.name] ?? []).map((f) => [key(f), f]));
-    out.targets[t.name] = fs.map((f) => ({ rule: f.rule, file: f.file, line: f.line, verdict: old.get(key(f))?.verdict ?? 'TODO', why: old.get(key(f))?.why ?? f.message, upstream: old.get(key(f))?.upstream ?? null }));
+    const old = new Map((EXP.targets[t.name] ?? []).map((f) => [place(f), f]));
+    out.targets[t.name] = fs.map((f) => ({ rule: f.rule, file: f.file, line: f.line, message: f.message, verdict: old.get(place(f))?.verdict ?? 'TODO', why: old.get(place(f))?.why ?? 'TODO', upstream: old.get(place(f))?.upstream ?? null }));
   }
-  console.log(JSON.stringify(out, null, 2));
+  writeFileSync(EXP_FILE, JSON.stringify(out, null, 2) + '\n');
+  const todo = Object.values(out.targets).flat().filter((f) => f.verdict === 'TODO').length;
+  console.log(`\nrecorded linter/expectations.json${todo ? `: ${todo} finding(s) need triage (verdict TODO)` : ''}`);
+  process.exit(0);
 }
 
 // ---- recorded.md ---------------------------------------------------------------------------------------
@@ -112,11 +118,12 @@ if (!opt.only && !opt.record) {
     md.push(`### ${t.name}`, '', t.note ?? '', '');
     const fs = EXP.targets[t.name] ?? [];
     if (!fs.length) { md.push('No findings.', ''); continue; }
-    md.push('| Rule | Where | Verdict | Why | Upstream |', '|---|---|---|---|---|');
-    for (const f of fs) md.push(`| ${f.rule} | \`${f.file}:${f.line}\` | ${f.verdict} | ${f.why} | ${f.upstream ? `[${f.upstream.replace(/^https:\/\/github.com\//, '').replace('/issues/', '#').replace('/pull/', '#')}](${f.upstream})` : '—'} |`);
+    md.push('| Rule | Where | Finding | Verdict | Why | Upstream |', '|---|---|---|---|---|---|');
+    for (const f of fs) md.push(`| ${f.rule} | \`${f.file}:${f.line}\` | ${f.message.replaceAll('|', '\\|')} | ${f.verdict} | ${f.why} | ${f.upstream ? `[${f.upstream.replace(/^https:\/\/github.com\//, '').replace('/issues/', '#').replace('/pull/', '#')}](${f.upstream})` : '—'} |`);
     md.push('');
   }
   writeFileSync(join(HERE, 'recorded.md'), md.join('\n') + '\n');
 }
 if (bad) { console.log(`\nMISMATCH: ${bad} target(s) differ from linter/expectations.json`); process.exit(1); }
-if (!opt.record) console.log('\nOK: every target matches linter/expectations.json and every mutant fires its rule.');
+if (opt.only) console.log(`\npartial run (--only ${opt.only}): the targets run match; the others were not checked.`);
+else if (!opt.record) console.log('\nOK: every target matches linter/expectations.json and every mutant fires its rule.');

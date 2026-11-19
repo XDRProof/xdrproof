@@ -2,10 +2,11 @@
 package xp002
 
 import (
+	"bytes"
 	"errors"
 
-	xdr3 "github.com/stellar/go-xdr/xdr3"
 	"github.com/stellar/go-stellar-sdk/xdr"
+	xdr3 "github.com/stellar/go-xdr/xdr3"
 )
 
 // ---- XP002/walk-unbudgeted ----------------------------------------------------------------------------
@@ -71,6 +72,18 @@ func BadFakeBudget(inv xdr.SorobanAuthorizedInvocation, tag int) int { // want X
 	n := tag
 	for _, sub := range inv.SubInvocations {
 		n += BadFakeBudget(sub, tag)
+	}
+	return n
+}
+
+// Bad: the depth is checked, but the walk only logs and goes on descending.
+func BadCosmeticBudget(inv xdr.SorobanAuthorizedInvocation, depth int, log func(string)) int { // want XP002/walk-unbudgeted
+	if depth > 256 {
+		log("deep tree")
+	}
+	n := 1
+	for _, sub := range inv.SubInvocations {
+		n += BadCosmeticBudget(sub, depth+1, log)
 	}
 	return n
 }
@@ -168,12 +181,11 @@ func GoodBudgetStops(inv xdr.SorobanAuthorizedInvocation, depth int, truncated *
 
 // ---- XP002/decode-unlimited ---------------------------------------------------------------------------
 
-// Bad: the decoder's depth limit turned off.
+// Bad: the decoder's depth limit turned off, and the value decoded with it.
 func BadUnlimited(b []byte) (xdr.ScVal, error) {
 	var v xdr.ScVal
-	d := xdr3.NewDecoderWithOptions(nil, xdr3.DecodeOptions{MaxDepth: xdr3.DecodeUnlimitedDepth}) // want XP002/decode-unlimited
-	_ = d
-	err := xdr.SafeUnmarshal(b, &v)
+	d := xdr3.NewDecoderWithOptions(bytes.NewReader(b), xdr3.DecodeOptions{MaxDepth: xdr3.DecodeUnlimitedDepth}) // want XP002/decode-unlimited
+	_, err := d.Decode(&v)
 	return v, err
 }
 
