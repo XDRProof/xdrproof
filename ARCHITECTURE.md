@@ -169,20 +169,26 @@ fixed on its main branch.
 - **npm:** `xdrproof`, the command-line tool (`verify`, `coverage`, `conformance`, `replay`, `guide check`, `check`),
   and `@xdrproof/corpus`, the corpus with `loadEntries({hazards, caps, protocol})` and test helpers for Vitest and Jest.
 - **Go:** the corpus embedded in a Go module with a table-test helper. **Rust:** a loader crate.
-- **Workflows**, with actions pinned by SHA and read-only permissions. `check` already runs `make verify`,
-  `make novelty` and the linter self-test on every push and pull request; the grant adds the oracle and coverage gate to
+- **Workflows**, with actions pinned by SHA and a read-only token by default (release publishing and SARIF upload get
+  only the write scopes they need). `check` already runs `make verify`, `make novelty` and the linter self-test on
+  every push to `main` and every pull request; the grant adds the oracle and coverage gate to
   it, conformance, replay (sharded, with the memory gate), determinism, golden agreement, an upstream
-  watch that opens a pull request when stellar-xdr, stellar-core or an SDK tags a release, and release (tarball,
-  `SHA256SUMS`, build attestation, npm provenance).
+  watch that opens a pull request when stellar-xdr, stellar-core or an SDK tags a release, with an SDK-pin check
+  (`sdk-support.json`: which SDK releases read every corpus variant), and release (tarball, `SHA256SUMS`, build
+  attestation, npm provenance).
 - **GitHub Action:** `XDRProof/action` runs `xdrproof check` on a pinned corpus in another team's CI and uploads
-  SARIF.
+  SARIF. A pre-commit hook and a golangci-lint plugin run the linter locally. A GitHub App is deliberately not built:
+  it would need hosting, a private key and a list of who installed it.
+- **Docs:** a page per corpus entry, and a README badge teams can add (Tranche 3).
 
 ## 13. Protocol upgrades and maintenance
 
 stellar-xdr's definitions are the input: a new arm, a new enum member or a new CAP shows up as unclassified coverage
-and fails CI until an entry or an exclusion covers it. The upstream watch turns each release into a pull request with
+and fails `make coverage-report` until an entry or an exclusion covers it (a CI gate from Tranche 2). Enum members
+and CAPs are counted but not yet gated. The upstream watch turns each release into a pull request with
 the coverage change. After delivery, XDRProof is maintained for 18 months: new protocol shapes, issue triage, and a
-release for each protocol upgrade.
+release for each protocol upgrade. Before each upgrade, an upgrade-readiness report says which SDK and indexer
+versions read the next protocol's shapes (Tranche 3, with the upgrade drill).
 
 ## 14. Independence, infrastructure, tracking and status
 
@@ -190,13 +196,20 @@ XDRProof's corpus, schema, tools and adapter contract are Apache-2.0 and run fro
 the path; that is how it stays usable by anyone, whatever happens to its maintainer. GitHub hosts the source, CI and
 releases; xdrproof.dev hosts the generated documentation. The command-line tool, packages and Action collect no
 analytics; the docs site will say so if it ever measures traffic. Milestone status and protocol-upgrade notes are
-posted publicly in the repository.
+posted publicly in the repository (`STATUS.md`) and weekly in the Stellar developer Discord's #scf-general.
 
 ## 15. Security
 
-The generator runs stellar-core with no network, no keys and no funds. Nothing in the repository holds a secret.
+The generator runs a standalone stellar-core (no peers) in Docker, with test-only keys committed in the recipes and no
+real funds or production credentials; its HTTP port is published on the host while it runs. The repository needs no
+secrets.
 Every generated ledger is reproducible from its recipe; releases will carry checksums and build attestations (§12). The replay harness runs each indexer in a container with a
-memory limit, and treats an out-of-memory kill as a crash with the number attached.
+memory limit; an indexer that is killed ends its session and is judged from its process and cursor (crashed, or
+halted after a retry). Its peak memory is read while it runs, so an out-of-memory kill is recorded without the peak.
+A threat model
+([`THREAT-MODEL.md`](THREAT-MODEL.md)) covers what XDRProof handles and how it is protected; Tranche 2 completes it with
+a monitoring plan (what is watched, what triggers action, who responds), as SCF requires. Disclosure follows
+[`findings/policy.md`](findings/policy.md): halts and crashes anyone can trigger are reported privately first.
 
 ## 16. Technology
 

@@ -15,6 +15,17 @@ What XDRProof's runs turn up in SDKs, decoders and indexers, triaged. Every row 
 | F-4 | wallet-backend `main`, Blend decoder | `internal/services/blend/scval.go` `addrString` turns any `ScAddress` into a string with `String()`, and three call sites use it as an account (two map keys that outlive the call, and `WithAccount`); a fourth stores it as the BLND token's contract ID (`comet.go:337`). wallet-backend fixed this shape in its SEP-41 processor (#756) with `types.StorableAddressString`, noting that "a real contract cannot emit them today"; the Blend decoder, added later (#798), does not use it. Not reachable today: only pinned Blend WASM is decoded, Blend takes `Address` arguments, and the host refuses B and L addresses and a muxed address in a contract-data key (corpus `deploy.from-claimable-balance-address`, `deploy.from-liquidity-pool-address`, `scval.muxed-address-key-trapped`). Found by `xplint` (`XP001/muxed-as-account`); `linter/patches/wallet-backend-blend-address.diff` fixes it, and wallet-backend's build, vet and Blend tests pass with it. | not filed: no reachable case today, and the Stellar contribution guide asks not to file speculative findings. Fix ready on [`fix/blend-storable-address`](https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/blend-storable-address) |
 | H-B16 | soroban-env-host, every signer | A v1 create-contract authorization is signed over its V2 rendering, not its own bytes. By design since protocol 22 ([stellar discussion #1501](https://github.com/orgs/stellar/discussions/1501)): a hazard for offline signers and signature verifiers, not a bug. `tools/auth-payload-check.mjs` checks it without any SDK. | documented in the corpus |
 
+## Sibling sweeps
+
+When a finding turns up in one SDK or indexer, the same entries go through the others. Statuses: **tested, affected**;
+**tested, not affected**; **inferred** (read from the code, not run); **not tested**.
+
+| Finding | Where else it was checked | Status |
+|---|---|---|
+| F-1: 13 deep-auth-tree variants refused by `@stellar/stellar-xdr-json` 30.0.0 | java-stellar-sdk 6.0.0 (`fromXdrByteArray`, default depth 200; the variants need 267 and 268; all decode and round-trip at 1,500), 19 Nov 2026. `master` at d0938106 keeps the same default | **tested, affected**: evidence for point 3 of [lightsail-network/java-stellar-sdk#835](https://github.com/lightsail-network/java-stellar-sdk/issues/835), which its maintainer opened on 16 Nov; the 13 ledgers and their depths were [posted there](https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020) on 19 Nov |
+| F-1 | js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1, stellar-xdr 0.2.1, rs-stellar-xdr 30.0.0 at depth 1,500 (`make conformance`); stellar-php-sdk 1.18.0 (all 634 variants round-trip, separate sweep, 19 Nov 2026) | **tested, not affected** |
+| F-3: pre-protocol-23 Soroban refunds in `txChangesAfter` missing from wallet-backend's `native_balances` | Horizon and stellar-etl read ledger changes through go-stellar-sdk `LedgerTransaction.GetChanges()`, which includes `TxChangesAfter` for TransactionMeta v2, v3 and v4 (`ingest/ledger_transaction.go`, `changesWithSplit`) | **inferred, not affected**; the Horizon and stellar-etl replays (Tranches 2 and 3) will test it |
+
 ## Reproduced in wallet-backend by `make replay`
 
 The whole corpus replayed into wallet-backend `main` (`18db88f4`, 2026-11-18): 618 of 634 variants handled, none
