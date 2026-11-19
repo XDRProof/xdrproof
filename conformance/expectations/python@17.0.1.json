@@ -1,0 +1,40 @@
+{
+ "testee": "python@17.0.1",
+ "about": "stellar-sdk 17.0.1 (py-stellar-base). Its stellar_sdk.xdr layer is replaced by the standalone stellar-xdr package in the next major release (py-stellar-base#1268), which passes every check here (see python-xdr@0.2.1).",
+ "json_known": [
+  {
+   "rule": "enum_prefix_underscore",
+   "enums": [
+    "TransactionResultCode",
+    "OperationResultCode"
+   ],
+   "ref": "StellarCN/py-stellar-base#1269: txSUCCESS and opINNER written txsuccess and opinner (keys and values)"
+  },
+  {
+   "rule": "rename_key",
+   "from": "from_",
+   "to": "from",
+   "ref": "StellarCN/py-stellar-base#1269: ClawbackOp.from written from_ (the Python keyword escape)"
+  },
+  {
+   "rule": "unwrap_asset_code",
+   "ref": "StellarCN/py-stellar-base#1269: AllowTrustOp.asset (AssetCode) written {\"credit_alphanum4\": ...} instead of the bare code"
+  },
+  {
+   "rule": "hex_contract_id",
+   "ref": "StellarCN/py-stellar-base#1269: contract_id written as hex instead of a C strkey (ContractEvent, ConfigUpgradeSetKey)"
+  }
+ ],
+ "depth_max": 256,
+ "fail": {
+  "corpus/sac.xlm-transfer-muxed-contract@p30-mainnet-generated/json": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; not reported upstream; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+  "corpus/sac.xlm-transfer-muxed-contract@p30-testnet-generated/json": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; not reported upstream; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+  "sdk-check/scval.map.keys-collide-on-native-conversion@p30-mainnet-generated/0": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+  "sdk-check/scval.map.keys-collide-on-native-conversion@p28-mainnet-generated/0": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+  "sdk-check/scval.map.keys-collide-on-native-conversion@p30-testnet-generated/0": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+  "sdk-check/scval.map.keys-collide-on-native-conversion@p28-testnet-generated/0": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+  "lane-s/bool-word-2": "a bool of 2 decodes as true (stellar-core's reading; rs-stellar-xdr reads false, rs-stellar-xdr#622); same class as #1262/#1263, rejected by stellar-xdr 0.2.1 on main",
+  "lane-s/non-zero-padding": "StellarCN/py-stellar-base#1262 (closed): non-zero XDR padding accepted; fixed on main",
+  "lane-s/optional-flag-2": "StellarCN/py-stellar-base#1263 (closed): any non-zero optional flag read as present; fixed on main"
+ }
+}

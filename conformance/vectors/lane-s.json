@@ -1,0 +1,151 @@
+[
+ {
+  "id": "control/u64",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAABQAAAAAAAAAq",
+  "expect": "accept",
+  "why": "a valid SCV_U64"
+ },
+ {
+  "id": "control/path-5",
+  "op": "decode",
+  "type": "Operation",
+  "xdr": "AAAAAAAAAA0AAAAAAAAAAAAAAAoAAAAABwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcAAAAAAAAAAAAAAAEAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+  "expect": "accept",
+  "why": "a path of five assets, the maximum"
+ },
+ {
+  "id": "control/path-5-json",
+  "op": "encode_json",
+  "type": "Operation",
+  "json": {
+   "source_account": null,
+   "body": {
+    "path_payment_strict_send": {
+     "send_asset": "native",
+     "send_amount": "10",
+     "destination": "GADQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOZPI",
+     "dest_asset": "native",
+     "dest_min": "1",
+     "path": [
+      "native",
+      "native",
+      "native",
+      "native",
+      "native"
+     ]
+    }
+   }
+  },
+  "expect": "accept",
+  "why": "the same as SEP-0051 JSON"
+ },
+ {
+  "id": "truncated",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAABQAAAAAAAAA=",
+  "expect": "reject",
+  "why": "SCV_U64 with 7 of its 8 bytes"
+ },
+ {
+  "id": "trailing-bytes",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAAAwAAAAcAAAAA",
+  "expect": "reject",
+  "why": "a complete SCV_U32 followed by four more bytes"
+ },
+ {
+  "id": "bool-word-2",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAAAAAAAAI=",
+  "expect": "reject",
+  "why": "an XDR bool must be 0 or 1"
+ },
+ {
+  "id": "unknown-discriminant",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAAYw==",
+  "expect": "reject",
+  "why": "SCValType 99 does not exist"
+ },
+ {
+  "id": "negative-discriminant",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "/////w==",
+  "expect": "reject",
+  "why": "SCValType -1 does not exist"
+ },
+ {
+  "id": "symbol-33",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAADwAAACFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEAAAA=",
+  "expect": "reject",
+  "why": "SCSymbol is string<32>"
+ },
+ {
+  "id": "non-zero-padding",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAADQAAAAFBAQID",
+  "expect": "reject",
+  "why": "XDR padding bytes must be zero (RFC 4506 section 3)"
+ },
+ {
+  "id": "optional-flag-2",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAAEAAAAAIAAAAA",
+  "expect": "reject",
+  "why": "SCV_VEC holds an optional SCVec; its presence word must be 0 or 1"
+ },
+ {
+  "id": "huge-length-no-data",
+  "op": "decode",
+  "type": "ScVal",
+  "xdr": "AAAADX////8=",
+  "expect": "reject",
+  "why": "a length of 2^31-1 with no bytes behind it; must fail fast, without allocating for the length (rs-stellar-xdr#581)"
+ },
+ {
+  "id": "path-6",
+  "op": "decode",
+  "type": "Operation",
+  "xdr": "AAAAAAAAAA0AAAAAAAAAAAAAAAoAAAAABwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcAAAAAAAAAAAAAAAEAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "expect": "reject",
+  "why": "PathPaymentStrictSendOp.path is Asset<5>"
+ },
+ {
+  "id": "path-6-json",
+  "op": "encode_json",
+  "type": "Operation",
+  "json": {
+   "source_account": null,
+   "body": {
+    "path_payment_strict_send": {
+     "send_asset": "native",
+     "send_amount": "10",
+     "destination": "GADQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOZPI",
+     "dest_asset": "native",
+     "dest_min": "1",
+     "path": [
+      "native",
+      "native",
+      "native",
+      "native",
+      "native",
+      "native"
+     ]
+    }
+   }
+  },
+  "expect": "reject",
+  "why": "the same as SEP-0051 JSON: an encoder must not emit invalid XDR (rs-stellar-xdr#598)"
+ }
+]

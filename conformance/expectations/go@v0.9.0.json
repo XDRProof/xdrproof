@@ -1,0 +1,8 @@
+{
+ "testee": "go@v0.9.0",
+ "about": "go-stellar-sdk has no SEP-0051 JSON and no native ScVal projection",
+ "depth_max": 513,
+ "fail": {
+  "strkey/sep23/invalid/BAAT6DBUX6J22DMZOHIEZTEQ64CVCHEDRKWZONFEUL5Q26QD7R76RGXACA": "stellar/go-stellar-sdk#6042, #6046 (open): strkey.DecodeAny accepts a claimable-balance key whose type byte is not 0 (SEP-0023 invalid vector)"
+ }
+}

@@ -1,0 +1,12 @@
+{
+ "testee": "js@17.2.1",
+ "about": "fixes #1766 only",
+ "fail": {
+  "sightings/scmap/colliding-keys/to-native": "stellar/js-stellar-sdk#1789 (scValToNative silently drops colliding map keys); fixed in 17.3.0",
+  "sightings/muxed/id-canonical/hex-string": "stellar/js-stellar-sdk#1785 (non-canonical muxed IDs accepted); fixed in 17.3.0",
+  "sightings/muxed/id-canonical/empty-string": "stellar/js-stellar-sdk#1785; fixed in 17.3.0",
+  "sightings/offer-id/above-2^53-as-number": "stellar/js-stellar-sdk#1785 (offer IDs past 2^53 rounded); fixed in 17.3.0",
+  "sightings/offer-id/negative": "stellar/js-stellar-sdk#1785; fixed in 17.3.0",
+  "sightings/offer-id/empty-string": "stellar/js-stellar-sdk#1785; fixed in 17.3.0"
+ }
+}

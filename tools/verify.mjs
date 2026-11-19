@@ -26,7 +26,7 @@ import { createInterface } from 'node:readline';
 import { zstdDecompressSync } from 'node:zlib';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { sha256, stable, pointer, normalise, decodeWasm as wasmDecode } from './lib.mjs';
+import { sha256, stable, pointer, checkFact, normalise, decodeWasm as wasmDecode } from './lib.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WRITE = process.argv.includes('--write');
@@ -47,21 +47,6 @@ const nativeDecode = (type, bytes) => new Promise((resolve) => {
   const id = String(nextId++); waiting.set(id, resolve);
   native.stdin.write(JSON.stringify({ id, type, xdr: Buffer.from(bytes).toString('base64') }) + '\n');
 });
-
-function checkFact(fact, doc) {
-  const at = pointer(doc, fact.path);
-  if ('equals' in fact) return stable(at) === stable(fact.equals) ? null : `expected ${stable(fact.equals)}, got ${stable(at)}`;
-  if ('length' in fact) {
-    const n = Array.isArray(at) ? at.length : at && typeof at === 'object' ? Object.keys(at).length : undefined;
-    return n === fact.length ? null : `expected length ${fact.length}, got ${n}`;
-  }
-  if ('some' in fact) {
-    if (!Array.isArray(at)) return `expected an array at ${fact.path}`;
-    const hit = at.some((el) => Object.entries(fact.some).every(([p, want]) => stable(pointer(el, p)) === stable(want)));
-    return hit ? null : `no element matches ${stable(fact.some)}`;
-  }
-  return 'fact has no check';
-}
 
 // Transaction hashes present in a LedgerCloseMeta (outer and, for fee bumps, inner).
 function txHashes(doc) {

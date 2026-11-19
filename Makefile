@@ -39,7 +39,7 @@ order-scan: tools/node_modules        ## 20 fresh runs per lane; records which l
 	recipes/order-scan.sh classic 20
 	recipes/order-scan.sh soroban 20 30
 
-conformance:                          ## js-stellar-sdk #1766 #1785 #1789 + go-stellar-sdk twin (~5 min cold)
+conformance:                          ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/
 	conformance/run.sh
 
 replay: replay-729 replay-731         ## every wallet-backend sighting

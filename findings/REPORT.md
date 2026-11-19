@@ -1,0 +1,42 @@
+# Findings
+
+What XDRProof's runs turn up in SDKs and decoders, triaged. Every row is reproduced by a command
+(`make conformance`, `make verify`) and pinned in `conformance/expectations/`, so a fix upstream shows up as an
+unexpected pass and the row is updated. Issues that let anyone halt or crash an indexer are not listed here
+(see [policy.md](policy.md)).
+
+## Not reported upstream before XDRProof
+
+| ID | Where | What | Status |
+|---|---|---|---|
+| F-1 | `@stellar/stellar-xdr-json` 30.0.0 (rs-stellar-xdr compiled to WASM) | Refuses 13 corpus variants that stellar-core wrote: ledgers whose Soroban auth tree is 245 levels deep (`depth limit exceeded`). The package hard-codes `XDR_MAX_DEPTH = 500` ([src/lib.rs](https://github.com/stellar/js-stellar-xdr-json/blob/main/src/lib.rs), line 10), set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr with a larger limit read them. It also decodes nested `ScVal`s only 64 levels deep. | not filed; filing is the maintainer's call |
+| F-2 | `stellar-sdk` 17.0.1 (Python) | `to_json` raises `Unknown SCAddress type: 5` on a CAP-0084 muxed contract address that `from_xdr` decodes (2 corpus variants). Not covered by py-stellar-base#1269. | fixed on main by the switch to `stellar-xdr` (py-stellar-base#1268): `stellar-xdr` 0.2.1 passes |
+| H-B16 | soroban-env-host, every signer | A v1 create-contract authorization is signed over its V2 rendering, not its own bytes. By design since protocol 22 ([stellar discussion #1501](https://github.com/orgs/stellar/discussions/1501)): a hazard for offline signers and signature verifiers, not a bug. `tools/auth-payload-check.mjs` checks it without any SDK. | documented in the corpus |
+
+## Reproduced from upstream reports
+
+| Where | What | Upstream |
+|---|---|---|
+| rs-stellar-xdr 30.0.0, native and WASM | A bool of 2 decodes as `false` and re-encodes as 0; stellar-core reads it as true. js-stellar-sdk, go-stellar-sdk and `stellar-xdr` 0.2.1 reject it; py-stellar-base 17.0.1 reads true. | [stellar/rs-stellar-xdr#622](https://github.com/stellar/rs-stellar-xdr/issues/622) (open) |
+| go-stellar-sdk v0.9.0 | `strkey.DecodeAny` accepts SEP-0023's invalid claimable-balance key with a non-zero type byte | [stellar/go-stellar-sdk#6042](https://github.com/stellar/go-stellar-sdk/issues/6042), [#6046](https://github.com/stellar/go-stellar-sdk/issues/6046) (open) |
+| py-stellar-base 17.0.1 | SEP-0051 JSON: result codes as `txsuccess`/`opinner`, `ClawbackOp.from_`, `AllowTrustOp.asset` as an object, `contract_id` as hex. With exactly these four differences allowed, its JSON equals rs-stellar-xdr's on all 634 variants and every expected fact holds. | [StellarCN/py-stellar-base#1269](https://github.com/StellarCN/py-stellar-base/issues/1269) (fixed on main) |
+| py-stellar-base 17.0.1 | `scval.to_native` keeps 2 of 5 colliding map keys, silently | [#1250](https://github.com/StellarCN/py-stellar-base/issues/1250) (fixed on main) |
+| py-stellar-base 17.0.1 | Accepts non-zero XDR padding, an optional flag of 2 and a bool of 2 | [#1262](https://github.com/StellarCN/py-stellar-base/issues/1262), [#1263](https://github.com/StellarCN/py-stellar-base/issues/1263) (fixed on main) |
+| js-stellar-sdk 17.2.0, 17.2.1 | Asset order by strkey text; colliding map keys dropped; non-canonical muxed and offer IDs | [#1766](https://github.com/stellar/js-stellar-sdk/issues/1766) (fixed in 17.2.1), [#1785](https://github.com/stellar/js-stellar-sdk/issues/1785) and [#1789](https://github.com/stellar/js-stellar-sdk/issues/1789) (fixed in 17.3.0) |
+| go-stellar-sdk v0.7.1 | The #1766 twin | fixed in v0.7.2 |
+
+## Measured: how deep each SDK decodes a nested `ScVal`
+
+`conformance/vectors/depth.json` nests an `ScVal` vector 64 to 4000 levels. Nothing crashes; each SDK refuses
+cleanly past its limit.
+
+| SDK | Deepest decoded | Limit |
+|---|---|---|
+| go-stellar-sdk v0.9.0 | 513 levels | built into its decoder |
+| js-stellar-sdk 17.4.0 | 256 levels | built into js-xdr |
+| rs-stellar-xdr 30.0.0 | 256 levels | `Limits { depth: 1500 }`, chosen by the caller (it has no default) |
+| stellar-sdk 17.0.1 and stellar-xdr 0.2.1 (Python) | 256 levels | `max_depth=500` |
+| @stellar/stellar-xdr-json 30.0.0 | 64 levels | `XDR_MAX_DEPTH = 500` |
+
+A depth limit counts XDR nesting, and one `ScVal` level costs several units, so equal limits do not mean equal
+reach: the WASM decoder and the Python packages both use 500 and differ fourfold.

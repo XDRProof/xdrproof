@@ -22,7 +22,7 @@ XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stel
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach **254 of 499** | + git (downloads ~76 MB once) | ~1 min |
 | `make generate` | Every recipe run is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0, pinned by image digest (no RPC, no network, no keys or funds): both lanes, mainnet and testnet passphrases, Soroban at P30 and P28, three emitter-flag profiles. Every pair agrees, byte for byte or after normalisation, and every shipped generated variant is reproduced | Docker | ~10 min (`make generate-quick` ~3 min) |
 | `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | ~15 min |
-| `make conformance` | js-stellar-sdk **#1766, #1785, #1789 fail on pre-fix tags and pass on fixed ones**, and #1766's twin fails on go-stellar-sdk v0.7.1 and passes on v0.7.2 | Node, Rust, Docker | ~5 min cold |
+| `make conformance` | Every corpus variant, 164 strkeys, 14 invalid-input vectors and a depth ladder run through **11 SDK builds**: js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1, plus the releases around upstream fixes. **js-stellar-sdk 17.4.0 and `stellar-xdr` 0.2.1 read all 634 variants exactly as rs-stellar-xdr does**, bytes, SEP-0051 JSON and every expected fact; every other difference is pinned with its cause in [`conformance/expectations/`](conformance/expectations), and an unexpected failure or pass fails the run ([`findings/REPORT.md`](findings/REPORT.md)) | Node, Rust, Docker | ~2 min warm |
 | `make replay` | Real wallet-backend builds fed corpus ledgers through a mock stellar-rpc. Testnet 4437356–4437359: **#729 halts** before the fix, **#716 stores the signer as 33 bytes**, the fix stores the full 41-byte key. Our own CAP-0073 entry: **#731 drops the trustline** (no TRUSTLINE/ADD) before the fix, records it after | Docker | ~10 min cold |
 
 Verdicts come from state (the ingest cursor and the rows stored), never from log text; the process exit code is printed alongside but does not decide.
@@ -85,7 +85,8 @@ recipes/flags/        emitter-flag profiles: base, galexie, bare
 recipes/core-image    the stellar-core image, pinned by digest
 mined/                37 ledgers from SDF's public lake (zstd), index.json with provenance and findings, queries/ that located them
 tools/                build, verify, oracle (core-facts + walker), novelty, coverage-report, order-scan, native/ (rs-stellar-xdr reader)
-conformance/          orchestrator + JS/Rust/Go testees + vectors + recorded matrix
+conformance/          runner, testee protocol, JS/WASM/Rust/Go/Python testees, vectors, expectations, recorded matrix
+findings/             REPORT.md (triaged SDK findings with upstream links), policy.md (disclosure)
 replay/               wallet-backend replay through a mock stellar-rpc (#729, #716, #731) + recorded runs
 ```
 

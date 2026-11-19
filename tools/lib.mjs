@@ -90,3 +90,20 @@ export const decode = (type, bytes) => {
 };
 export const encode = (type, json) => Buffer.from(xdr().encode(type, json), 'base64');
 export const normalisedSha256 = (type, bytes) => sha256(stable(normalise(JSON.parse(decode(type, bytes)))));
+
+// One expected fact against a decoded document (SEP-0051 JSON): null when it holds, else why not. Shared by
+// verify.mjs (rs-stellar-xdr's JSON) and the conformance runner (each SDK's own JSON).
+export function checkFact(fact, doc) {
+  const at = pointer(doc, fact.path);
+  if ('equals' in fact) return stable(at) === stable(fact.equals) ? null : `expected ${stable(fact.equals)}, got ${stable(at)}`;
+  if ('length' in fact) {
+    const n = Array.isArray(at) ? at.length : at && typeof at === 'object' ? Object.keys(at).length : undefined;
+    return n === fact.length ? null : `expected length ${fact.length}, got ${n}`;
+  }
+  if ('some' in fact) {
+    if (!Array.isArray(at)) return `expected an array at ${fact.path}`;
+    const hit = at.some((el) => Object.entries(fact.some).every(([p, want]) => stable(pointer(el, p)) === stable(want)));
+    return hit ? null : `no element matches ${stable(fact.some)}`;
+  }
+  return 'fact has no check';
+}

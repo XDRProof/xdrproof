@@ -1,0 +1,5 @@
+{
+ "testee": "js@17.4.0",
+ "depth_max": 256,
+ "fail": {}
+}

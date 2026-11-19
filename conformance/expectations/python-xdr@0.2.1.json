@@ -1,0 +1,5 @@
+{
+ "testee": "python-xdr@0.2.1",
+ "depth_max": 256,
+ "fail": {}
+}

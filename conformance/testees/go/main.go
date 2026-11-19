@@ -1,11 +1,15 @@
-// XDRProof conformance testee (prototype) for go-stellar-sdk. Line-delimited JSON on stdin/stdout.
+// XDRProof conformance testee (protocol 1) for go-stellar-sdk. See conformance/README.md.
+// Line-delimited JSON on stdin/stdout. go-stellar-sdk has no SEP-0051 JSON and no native ScVal projection,
+// so decode answers bytes only, and those ops answer "unsupported".
 package main
 
 import (
 	"bufio"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 
+	"github.com/stellar/go-stellar-sdk/strkey"
 	"github.com/stellar/go-stellar-sdk/xdr"
 )
 
@@ -14,24 +18,32 @@ type req struct {
 	Op    string          `json:"op"`
 	Input json.RawMessage `json:"input"`
 }
+type obj = map[string]interface{}
 
-func roundtrip(b64 string, v interface{}) map[string]interface{} {
+func fail(stage string, err error) obj {
+	return obj{"status": "error", "error": map[string]string{"stage": stage, "message": err.Error()}}
+}
+
+// decodes into v with go-stellar-sdk's bounded decoder, then re-encodes
+func roundtrip(b64 string, v interface{}) obj {
 	if err := xdr.SafeUnmarshalBase64(b64, v); err != nil {
-		return map[string]interface{}{"status": "error", "error": map[string]string{"stage": "decode", "message": err.Error()}}
+		return fail("decode", err)
 	}
 	out, err := xdr.MarshalBase64(v)
 	if err != nil {
-		return map[string]interface{}{"status": "error", "error": map[string]string{"stage": "encode", "message": err.Error()}}
+		return fail("encode", err)
 	}
-	return map[string]interface{}{"status": "ok", "xdr": out} // no SEP-51 in go-stellar-sdk: json omitted
+	return obj{"status": "ok", "xdr": out}
 }
 
-func handle(r req) map[string]interface{} {
+const base32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+
+func handle(r req) obj {
 	switch r.Op {
 	case "hello":
-		return map[string]interface{}{"status": "ok", "protocol": 0,
-			"implementation": map[string]string{"sdk": "go", "package": "github.com/stellar/go-stellar-sdk", "version": os.Getenv("SDK_VERSION")},
-			"ops": []string{"decode", "asset_compare"}, "limits": map[string]int{"depth": 1500}}
+		return obj{"status": "ok", "protocol": 1,
+			"implementation": map[string]string{"sdk": "go", "package": "github.com/stellar/go-stellar-sdk", "version": os.Getenv("SDK_VERSION"), "runtime": "go"},
+			"ops": []string{"hello", "decode", "strkey_decode", "asset_compare"}}
 	case "decode":
 		var in struct{ Type, Xdr string }
 		json.Unmarshal(r.Input, &in)
@@ -44,18 +56,24 @@ func handle(r req) map[string]interface{} {
 			return roundtrip(in.Xdr, &xdr.Asset{})
 		case "TransactionEnvelope":
 			return roundtrip(in.Xdr, &xdr.TransactionEnvelope{})
-		case "TransactionMeta":
-			return roundtrip(in.Xdr, &xdr.TransactionMeta{})
 		case "LedgerCloseMeta":
 			return roundtrip(in.Xdr, &xdr.LedgerCloseMeta{})
 		}
-		return map[string]interface{}{"status": "unsupported", "reason": "type not wired"}
+		return obj{"status": "unsupported", "reason": "type not wired"}
+	case "strkey_decode":
+		var in struct{ Strkey string }
+		json.Unmarshal(r.Input, &in)
+		vb, payload, err := strkey.DecodeAny(in.Strkey)
+		if err != nil {
+			return fail("decode", err)
+		}
+		return obj{"status": "ok", "kind": string(base32[byte(vb)>>3]), "payload": hex.EncodeToString(payload)}
 	case "asset_compare":
 		var in struct{ A, B string }
 		json.Unmarshal(r.Input, &in)
 		var a, b xdr.Asset
 		if xdr.SafeUnmarshalBase64(in.A, &a) != nil || xdr.SafeUnmarshalBase64(in.B, &b) != nil {
-			return map[string]interface{}{"status": "error", "error": map[string]string{"stage": "decode", "message": "bad asset"}}
+			return obj{"status": "error", "error": map[string]string{"stage": "decode", "message": "bad asset"}}
 		}
 		v := 0
 		if a.LessThan(b) {
@@ -63,14 +81,14 @@ func handle(r req) map[string]interface{} {
 		} else if b.LessThan(a) {
 			v = 1
 		}
-		return map[string]interface{}{"status": "ok", "value": v}
+		return obj{"status": "ok", "value": v}
 	}
-	return map[string]interface{}{"status": "unsupported"}
+	return obj{"status": "unsupported", "reason": "no such helper in go-stellar-sdk"}
 }
 
 func main() {
 	sc := bufio.NewScanner(os.Stdin)
-	sc.Buffer(make([]byte, 1<<20), 256<<20)
+	sc.Buffer(make([]byte, 1<<20), 512<<20)
 	w := bufio.NewWriter(os.Stdout)
 	for sc.Scan() {
 		var r req

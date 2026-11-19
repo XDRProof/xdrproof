@@ -886,6 +886,7 @@ name = "xdrproof-testee-rust"
 version = "0.0.0"
 dependencies = [
  "serde_json",
+ "stellar-strkey",
  "stellar-xdr",
 ]
 
