@@ -1,0 +1,1195 @@
+{
+  "about": "Every finding of every target in targets.json, triaged by hand from the code and the upstream history. make lint must reproduce exactly these (rule, file, line). Verdicts: 'true positive' (the code does what the rule describes), 'true positive, fixed upstream' (gone at the fix named), 'true positive (hardening)' (real, not reachable today), 'the mutant' (the finding a mutant exists to produce). No finding is a false positive.",
+  "targets": {
+    "wallet-backend@main": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 116,
+        "verdict": "true positive",
+        "why": "walkInvocation walks the declared authorization tree with no depth or node bound; harmless at today's limits (245 levels apply), hardening. Fixed by linter/patches/wallet-backend-820.diff (bounds 256 and 4096, stops instead of failing)",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/prices.go",
+        "line": 328,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 387,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/scval.go",
+        "line": 182,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      }
+    ],
+    "stellar-etl@master": [
+      {
+        "rule": "XP001/text-bytes",
+        "file": "cmd/export_transactions.go",
+        "line": 43,
+        "verdict": "true positive",
+        "why": "MEMO_TEXT bytes, which core does not validate as UTF-8, exported to JSON unchecked",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/504"
+      },
+      {
+        "rule": "XP003/events-ungated",
+        "file": "internal/transform/operation.go",
+        "line": 1102,
+        "verdict": "true positive",
+        "why": "asset_balance_changes built from diagnostic events with no check that the transaction succeeded (InSuccessfulContractCall is per call)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/488"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1111,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1132,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1157,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1164,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP003/events-ungated",
+        "file": "internal/transform/operation.go",
+        "line": 1725,
+        "verdict": "true positive",
+        "why": "asset_balance_changes built from diagnostic events with no check that the transaction succeeded (InSuccessfulContractCall is per call)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/488"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1734,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1755,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1780,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP001/declared-footprint",
+        "file": "internal/transform/operation.go",
+        "line": 1787,
+        "verdict": "true positive",
+        "why": "contract_id is the first contract-data key of the declared footprint, which can name the wrong contract (factory patterns, multi-contract footprints)",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/462"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/transform/operation.go",
+        "line": 2210,
+        "verdict": "true positive (no callers)",
+        "why": "Participants() collects operation-body accounts with no success check; nothing calls it at this commit",
+        "upstream": null
+      },
+      {
+        "rule": "XP001/text-bytes",
+        "file": "internal/transform/transaction.go",
+        "line": 247,
+        "verdict": "true positive",
+        "why": "MEMO_TEXT bytes, which core does not validate as UTF-8, exported to JSON unchecked",
+        "upstream": "https://github.com/stellar/stellar-etl/issues/504"
+      }
+    ],
+    "go-stellar-sdk@v0.9.0": [],
+    "wallet-backend@main+820-patch": [
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/prices.go",
+        "line": 328,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 387,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/scval.go",
+        "line": 182,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      }
+    ],
+    "wallet-backend@main+820-patch+blend-address-patch": [],
+    "wallet-backend@666a64d4": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 84,
+        "verdict": "true positive",
+        "why": "walkInvocation, still open as #820",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 89,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 96,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 104,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 132,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 53,
+        "verdict": "true positive, fixed upstream",
+        "why": "participantsFromInvocationAndSubInvocations walked the auth tree unbounded; removed by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 78,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 82,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 90,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 94,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 98,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 102,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 120,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 124,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 172,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 180,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 188,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 270,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 274,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 314,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 318,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 355,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 360,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 364,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/participants.go",
+        "line": 173,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/transaction_operation_wrapper.go",
+        "line": 600,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      }
+    ],
+    "wallet-backend@4bbb1ecb": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 110,
+        "verdict": "true positive",
+        "why": "walkInvocation, still open as #820",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      }
+    ],
+    "wallet-backend@f8e5786d": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 84,
+        "verdict": "true positive",
+        "why": "walkInvocation, still open as #820",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 89,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 96,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 104,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 132,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 53,
+        "verdict": "true positive, fixed upstream",
+        "why": "participantsFromInvocationAndSubInvocations walked the auth tree unbounded; removed by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 78,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 82,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 90,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 94,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 98,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 102,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 120,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 124,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 156,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 172,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 172,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 180,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 180,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 188,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 188,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 259,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 270,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 274,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 303,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 314,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 318,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 347,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 355,
+        "verdict": "true positive, fixed upstream",
+        "why": "an operation source or auth address used as an account unreduced: 7 of these 10 fixed by #753 (bb0b162b), the other 3 (auth-tree addresses) by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/753"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 360,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 364,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contracts/sac.go",
+        "line": 199,
+        "verdict": "true positive, fixed upstream",
+        "why": "a SAC event address of any kind used as an account; fixed by #756",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/participants.go",
+        "line": 173,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/transaction_operation_wrapper.go",
+        "line": 600,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      }
+    ],
+    "wallet-backend@bb0b162b": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 84,
+        "verdict": "true positive",
+        "why": "walkInvocation, still open as #820",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 89,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 96,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 104,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 132,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 53,
+        "verdict": "true positive, fixed upstream",
+        "why": "participantsFromInvocationAndSubInvocations walked the auth tree unbounded; removed by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 70,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 78,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 82,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 90,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 94,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 98,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 102,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 117,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 120,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 124,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 172,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 180,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 188,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 270,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 274,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 314,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 318,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 355,
+        "verdict": "true positive, fixed upstream",
+        "why": "auth-tree addresses used as accounts unreduced; removed with the auth-tree participants by 9538b3ca",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 360,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 364,
+        "verdict": "true positive, fixed upstream",
+        "why": "participants and deploys taken from the declared auth tree; removed by 9538b3ca and 80121f3a ('derive Soroban participants from executed meta, not the auth tree')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contracts/sac.go",
+        "line": 199,
+        "verdict": "true positive, fixed upstream",
+        "why": "a SAC event address of any kind used as an account; fixed by #756",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/participants.go",
+        "line": 173,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/transaction_operation_wrapper.go",
+        "line": 600,
+        "verdict": "true positive, fixed upstream",
+        "why": "operation-body accounts attributed before the success check; 9538b3ca moved the check first ('A failed transaction changes no state beyond its fee')",
+        "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a"
+      }
+    ],
+    "wallet-backend@e967ce8b": [
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/prices.go",
+        "line": 324,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 387,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/text-bytes",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive, fixed upstream",
+        "why": "Blend pool names stored without a UTF-8 check; fixed by #803",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/803"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/scval.go",
+        "line": 170,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      }
+    ],
+    "wallet-backend@ff73ff46": [
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/prices.go",
+        "line": 324,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 387,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/scval.go",
+        "line": 182,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      }
+    ],
+    "mutant: drop the meta confirmation of a declared deploy": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 116,
+        "verdict": "true positive",
+        "why": "walkInvocation walks the declared authorization tree with no depth or node bound; harmless at today's limits (245 levels apply), hardening. Fixed by linter/patches/wallet-backend-820.diff (bounds 256 and 4096, stops instead of failing)",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 137,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: #746 reverted: a deploy the auth tree declares is recorded whether it ran or not",
+        "upstream": null
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 142,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: #746 reverted: a deploy the auth tree declares is recorded whether it ran or not",
+        "upstream": null
+      },
+      {
+        "rule": "XP003/declared-auth",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 149,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: #746 reverted: a deploy the auth tree declares is recorded whether it ran or not",
+        "upstream": null
+      }
+    ],
+    "mutant: attribute operation bodies of failed transactions": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 116,
+        "verdict": "true positive",
+        "why": "walkInvocation walks the declared authorization tree with no depth or node bound; harmless at today's limits (245 levels apply), hardening. Fixed by linter/patches/wallet-backend-820.diff (bounds 256 and 4096, stops instead of failing)",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP003/op-body-ungated",
+        "file": "internal/indexer/processors/participants.go",
+        "line": 179,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: the success gate of GetOperationParticipants removed",
+        "upstream": null
+      }
+    ],
+    "mutant: muxed Soroban source added as M...": [
+      {
+        "rule": "XP002/walk-unbudgeted",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 116,
+        "verdict": "true positive",
+        "why": "walkInvocation walks the declared authorization tree with no depth or node bound; harmless at today's limits (245 levels apply), hardening. Fixed by linter/patches/wallet-backend-820.diff (bounds 256 and 4096, stops instead of failing)",
+        "upstream": "https://github.com/stellar/wallet-backend/issues/820"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/indexer/processors/contract_operations.go",
+        "line": 75,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: #753 reverted",
+        "upstream": null
+      }
+    ],
+    "mutant: Blend strings stored without the UTF-8 check": [
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/prices.go",
+        "line": 328,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 387,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      },
+      {
+        "rule": "XP001/text-bytes",
+        "file": "internal/services/blend/processor.go",
+        "line": 579,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: #803 reverted (the UTF-8 half)",
+        "upstream": null
+      },
+      {
+        "rule": "XP001/muxed-as-account",
+        "file": "internal/services/blend/scval.go",
+        "line": 183,
+        "verdict": "true positive (hardening)",
+        "why": "Blend's addrString stringifies any ScAddress with no kind check and the result keys accounts. The same shape #756 fixed in the SEP-41 processor with types.StorableAddressString ('a real contract cannot emit them today'). Unreachable today: only pinned Blend WASM is decoded, and Blend takes Address arguments, which the host limits to G and C. Fixed by linter/patches/wallet-backend-blend-address.diff",
+        "upstream": "https://github.com/stellar/wallet-backend/pull/756"
+      }
+    ],
+    "mutant: the auth-tree walk fails at depth 64": [
+      {
+        "rule": "XP002/budget-fails",
+        "file": "internal/indexer/processors/contract_deploy.go",
+        "line": 118,
+        "verdict": "the mutant",
+        "why": "fires as the mutant intends: the first, wrong #820 patch: an error at the limit halts on the 245-deep ledgers core applies",
+        "upstream": null
+      }
+    ]
+  }
+}

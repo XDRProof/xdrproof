@@ -2,7 +2,7 @@
 
 **Test your Stellar indexer and SDK against the ledger's rarest shapes.**
 
-XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stellar-core actually emitted. Each entry is tagged with the CAP that introduced it and carries the values a correct reader must return. Around the corpus sit tools that check it with independent readers, replay it into real indexers, and run JavaScript, Go and Rust SDK builds against test vectors for the same shapes. A linter for three known ingestion mistakes is planned.
+XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stellar-core actually emitted. Each entry is tagged with the CAP that introduced it and carries the values a correct reader must return. Around the corpus sit tools that check it with independent readers, replay it into real indexers, run JavaScript, Go, Rust and Python SDK builds against test vectors for the same shapes, and lint Go indexer code for the three ingestion mistakes the corpus is built around.
 
 > **Status: early, built in public.** This repository backs our proposal to the Stellar Community Fund's RFP *XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide* (SCF #46). It holds the manifest schema, the hazard registry, 263 corpus entries, the generator recipes and runnable reproductions of real upstream bugs. Every number below is re-measured by the command next to it.
 
@@ -24,8 +24,10 @@ XDRProof is a shared corpus of rare but valid Stellar ledger data, as bytes stel
 | `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | ~15 min |
 | `make conformance` | Every corpus variant, 164 strkeys, 14 invalid-input vectors and a depth ladder run through **11 SDK builds**: js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1, plus the releases around upstream fixes. **js-stellar-sdk 17.4.0 and `stellar-xdr` 0.2.1 read all 634 variants exactly as rs-stellar-xdr does**, bytes, SEP-0051 JSON and every expected fact; every other difference is pinned with its cause in [`conformance/expectations/`](conformance/expectations), and an unexpected failure or pass fails the run ([`findings/REPORT.md`](findings/REPORT.md)) | Node, Rust, Docker | ~2 min warm |
 | `make replay` | Every corpus ledger replayed into **real wallet-backend builds**, one isolated session each, through a mock stellar-rpc that serves only what the ledger states. Each variant gets a verdict (handled, dropped, mishandled, stalled, crashed, halted) from the indexer's cursor, process and stored rows, judged against probes derived from the ledger itself. **`main`: 618 of 634 variants handled, none halted**; the other 16 reproduce five open upstream issues and one new finding (F-3). **Every fixed failure the corpus holds reproduces before its fix and not after**: #716, #729, #731, #745 and #753, across ten commits. Any indexer can join through a TOML adapter ([`replay/README.md`](replay/README.md)) | Docker | ~20 min cold |
+| `make lint-selftest` | The linter (`linter/`, XP001 unvalidated fields, XP002 unbounded recursion, XP003 participants from the envelope; 12 sub-rules) against 25 seeded violations modelled on real code and 17 mutants: **every one caught, no good case flagged** | Docker | ~2 min warm |
+| `make lint` | The linter on **wallet-backend `main`: 5 findings, all true** (#820 and the Blend decoder's unchecked addresses, #756's shape), **0 with the two patches in `linter/patches/`**; stellar-etl: 13, all matching open issues (#504, #462, #488); go-stellar-sdk ingest: 0. It also fires before each upstream fix of these mistakes and goes quiet after (#753, #756, #803, 9538b3ca), and on five fixed bugs put back into `main`. Every finding is pinned and triaged in `linter/expectations.json` | Docker | ~3 min warm |
 
-Verdicts come from state (the ingest cursor, the process and the rows stored), never from log text; every verdict is pinned in [`replay/expectations/`](replay/expectations), so a new failure, a changed one and a fixed one all fail the run ([`replay/recorded/wallet-backend.md`](replay/recorded/wallet-backend.md)).
+Replay verdicts come from state (the ingest cursor, the process and the rows stored), never from log text; every verdict is pinned in [`replay/expectations/`](replay/expectations), so a new failure, a changed one and a fixed one all fail the run ([`replay/recorded/wallet-backend.md`](replay/recorded/wallet-backend.md)).
 
 ## The corpus
 
@@ -89,6 +91,7 @@ tools/                build, verify, oracle (core-facts + walker), novelty, cove
 conformance/          runner, testee protocol, JS/WASM/Rust/Go/Python testees, vectors, expectations, recorded matrix
 findings/             REPORT.md (triaged SDK and indexer findings with upstream links), policy.md (disclosure)
 replay/               harness, mock stellar-rpc, wallet-backend adapter, sightings, expectations, recorded matrix
+linter/               xplint (Go analyzers), fixtures and mutants, targets, triaged expectations, patches for wallet-backend
 ```
 
 ## Independence and licence

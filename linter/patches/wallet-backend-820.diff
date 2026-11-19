@@ -1,0 +1,389 @@
+diff -ruN -x zz_xdrproof_* wb-head/docs/deploy/observability.md wb-fix/docs/deploy/observability.md
+--- a/docs/deploy/observability.md	2026-11-12 21:46:45
++++ b/docs/deploy/observability.md	2026-11-18 19:23:10
+@@ -201,6 +201,7 @@
+ | `wallet_ingestion_protocol_state_processing_duration_seconds` | histogram | `protocol_id`, `phase` | Protocol state time per phase: `process_ledger`, `persist_history`, `persist_current_state` |
+ | `wallet_ingestion_wasm_classification_failures_total` | counter | `protocol_id`, `reason` | WASM classification errors. `protocol_id` is the validator tried, or `unknown`. `reason` is `spec_extraction_error` or `validate_error`. Re-run `protocol-setup` to recover |
+ | `wallet_ingestion_external_ref_contracts_total` | counter | none | Contract instances whose executable is a CAP-0085 external reference with no WASM hash. These stay unclassified |
++| `wallet_ingestion_auth_tree_walk_truncations_total` | counter | `bound` | InvokeHostFunction operations whose declared auth trees exceeded the contract-deploy walk bounds. `bound` is `depth` or `nodes`. The operation is still ingested; nested deploys declared past the bound are not recorded |
+ 
+ ### Protocol migration
+ 
+diff -ruN -x zz_xdrproof_* wb-head/internal/indexer/processors/contract_deploy.go wb-fix/internal/indexer/processors/contract_deploy.go
+--- a/internal/indexer/processors/contract_deploy.go	2026-11-12 21:46:45
++++ b/internal/indexer/processors/contract_deploy.go	2026-11-18 19:24:15
+@@ -5,12 +5,30 @@
+ 	"fmt"
+ 	"time"
+ 
++	"github.com/stellar/go-stellar-sdk/support/log"
+ 	"github.com/stellar/go-stellar-sdk/xdr"
+ 
+ 	"github.com/stellar/wallet-backend/internal/indexer/types"
+ 	"github.com/stellar/wallet-backend/internal/metrics"
+ )
+ 
++// Bounds on the walk of one operation's declared auth invocation trees. The trees are
++// submitter input: without these the walk is as deep and as wide as whatever the XDR
++// decoder, core and the host happen to accept. Past a bound the walk stops descending
++// and the operation keeps what was found so far. It must never return an error for
++// this: core has already included the transaction, so an error here would fail the
++// same ledger on every retry.
++//
++// Both bounds sit above what a transaction in a closed ledger carries today, so they
++// drop no real deploy. The deepest auth tree stellar-core v30.0.0 applies is 245
++// invocations in one chain (246 is included but fails): the host decodes each auth
++// entry with an XDR depth limit of 500, two levels per nested invocation. A
++// transaction of the maximum size (132,096 bytes) holds fewer than 2,600 invocations.
++const (
++	maxAuthWalkDepth = 256
++	maxAuthWalkNodes = 4096
++)
++
+ // ContractDeployProcessor emits state changes for contract deployments.
+ type ContractDeployProcessor struct {
+ 	networkPassphrase string
+@@ -33,7 +51,7 @@
+ }
+ 
+ // ProcessOperation emits a state change for each contract deployment (including subinvocations).
+-func (p *ContractDeployProcessor) ProcessOperation(_ context.Context, op *TransactionOperationWrapper) ([]types.StateChange, error) {
++func (p *ContractDeployProcessor) ProcessOperation(ctx context.Context, op *TransactionOperationWrapper) ([]types.StateChange, error) {
+ 	if op.OperationType() != xdr.OperationTypeInvokeHostFunction {
+ 		return nil, ErrInvalidOpType
+ 	}
+@@ -112,8 +130,23 @@
+ 	if err != nil {
+ 		return nil, err
+ 	}
+-	var walkInvocation func(inv xdr.SorobanAuthorizedInvocation) error
+-	walkInvocation = func(inv xdr.SorobanAuthorizedInvocation) error {
++	// No instance was created, so no declaration can be confirmed: skip the walk.
++	if len(created) == 0 {
++		return stateChanges, nil
++	}
++	// visited counts invocations across every auth entry of the operation; truncatedBy
++	// names the first bound that cut the walk short ("depth" or "nodes").
++	visited := 0
++	truncatedBy := ""
++	var walkInvocation func(inv xdr.SorobanAuthorizedInvocation, depth int) error
++	walkInvocation = func(inv xdr.SorobanAuthorizedInvocation, depth int) error {
++		if depth >= maxAuthWalkDepth {
++			if truncatedBy == "" {
++				truncatedBy = "depth"
++			}
++			return nil
++		}
++		visited++
+ 		// Bind the args to a local first: a field of a function's return value is not
+ 		// addressable.
+ 		var preimage *xdr.ContractIdPreimage
+@@ -140,16 +173,38 @@
+ 			}
+ 		}
+ 		for _, sub := range inv.SubInvocations {
+-			if err := walkInvocation(sub); err != nil {
++			if visited >= maxAuthWalkNodes {
++				if truncatedBy == "" {
++					truncatedBy = "nodes"
++				}
++				break
++			}
++			if err := walkInvocation(sub, depth+1); err != nil {
+ 				return err
+ 			}
+ 		}
+ 		return nil
+ 	}
+ 	for _, auth := range invokeHostOp.Auth {
+-		if err := walkInvocation(auth.RootInvocation); err != nil {
++		if visited >= maxAuthWalkNodes {
++			if truncatedBy == "" {
++				truncatedBy = "nodes"
++			}
++			break
++		}
++		if err := walkInvocation(auth.RootInvocation, 0); err != nil {
+ 			return nil, err
+ 		}
++	}
++	if truncatedBy != "" {
++		// Count and log it rather than fail: the ledger is valid, only this walk is cut short.
++		if p.metricsService != nil {
++			p.metricsService.AuthTreeWalkTruncationsTotal.WithLabelValues(truncatedBy).Inc()
++		}
++		log.Ctx(ctx).Warnf(
++			"processor: %s: auth tree walk stopped at the %s bound (max depth %d, max nodes %d); nested deploys declared past it are not recorded: txHash: %s, opID: %d",
++			p.Name(), truncatedBy, maxAuthWalkDepth, maxAuthWalkNodes, op.Transaction.Result.TransactionHash.HexString(), opID,
++		)
+ 	}
+ 
+ 	return stateChanges, nil
+diff -ruN -x zz_xdrproof_* wb-head/internal/indexer/processors/contract_deploy_test.go wb-fix/internal/indexer/processors/contract_deploy_test.go
+--- a/internal/indexer/processors/contract_deploy_test.go	2026-11-12 21:46:45
++++ b/internal/indexer/processors/contract_deploy_test.go	2026-11-18 19:24:15
+@@ -6,12 +6,15 @@
+ 	"strings"
+ 	"testing"
+ 
++	"github.com/prometheus/client_golang/prometheus"
++	"github.com/prometheus/client_golang/prometheus/testutil"
+ 	"github.com/stellar/go-stellar-sdk/network"
+ 	"github.com/stellar/go-stellar-sdk/xdr"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ 
+ 	"github.com/stellar/wallet-backend/internal/indexer/types"
++	"github.com/stellar/wallet-backend/internal/metrics"
+ 	"github.com/stellar/wallet-backend/internal/utils"
+ )
+ 
+@@ -538,4 +541,191 @@
+ 	stateChanges, err := proc.ProcessOperation(context.Background(), op)
+ 	require.NoError(t, err)
+ 	assert.Empty(t, stateChanges)
++}
++
++// declaredCreate is a CreateContract auth node for deployerAccountID with TestSalt, and the
++// contract ID that preimage derives.
++func declaredCreate(t *testing.T) (xdr.SorobanAuthorizedInvocation, string) {
++	t.Helper()
++	preimage := xdr.ContractIdPreimageFromAddress{Address: makeScAddress(deployerAccountID), Salt: TestSalt}
++	contractID, err := calculateContractID(network.TestNetworkPassphrase, preimage)
++	require.NoError(t, err)
++	return xdr.SorobanAuthorizedInvocation{
++		Function: xdr.SorobanAuthorizedFunction{
++			Type: xdr.SorobanAuthorizedFunctionTypeSorobanAuthorizedFunctionTypeCreateContractHostFn,
++			CreateContractHostFn: &xdr.CreateContractArgs{
++				ContractIdPreimage: xdr.ContractIdPreimage{
++					Type:        xdr.ContractIdPreimageTypeContractIdPreimageFromAddress,
++					FromAddress: &preimage,
++				},
++				Executable: xdr.ContractExecutable{Type: xdr.ContractExecutableTypeContractExecutableWasm, WasmHash: &xdr.Hash{}},
++			},
++		},
++	}, contractID
++}
++
++// contractFnNode is an auth node that declares a plain contract call.
++func contractFnNode(subs ...xdr.SorobanAuthorizedInvocation) xdr.SorobanAuthorizedInvocation {
++	return xdr.SorobanAuthorizedInvocation{
++		Function: xdr.SorobanAuthorizedFunction{
++			Type:       xdr.SorobanAuthorizedFunctionTypeSorobanAuthorizedFunctionTypeContractFn,
++			ContractFn: &xdr.InvokeContractArgs{ContractAddress: makeScContract(invokedContractID), FunctionName: "f"},
++		},
++		SubInvocations: subs,
++	}
++}
++
++// chainAbove wraps leaf in depth contract-call nodes, so leaf sits depth levels below the root.
++func chainAbove(leaf xdr.SorobanAuthorizedInvocation, depth int) xdr.SorobanAuthorizedInvocation {
++	node := leaf
++	for i := 0; i < depth; i++ {
++		node = contractFnNode(node)
++	}
++	return node
++}
++
++// opWithAuthRoots builds a successful InvokeContract operation that declares the given auth
++// trees, round-trips the auth entries through XDR the way they arrive from a ledger, and
++// attaches a meta in which createdContractID's instance was created.
++func opWithAuthRoots(t *testing.T, createdContractID string, roots ...xdr.SorobanAuthorizedInvocation) *TransactionOperationWrapper {
++	t.Helper()
++	op := makeInvokeContractOp()
++	for _, root := range roots {
++		entry := xdr.SorobanAuthorizationEntry{
++			Credentials:    xdr.SorobanCredentials{Type: xdr.SorobanCredentialsTypeSorobanCredentialsSourceAccount},
++			RootInvocation: root,
++		}
++		raw, err := entry.MarshalBinary()
++		require.NoError(t, err)
++		var decoded xdr.SorobanAuthorizationEntry
++		require.NoError(t, xdr.SafeUnmarshal(raw, &decoded), "the tree must be one the XDR decoder accepts")
++		op.Operation.Body.InvokeHostFunctionOp.Auth = append(op.Operation.Body.InvokeHostFunctionOp.Auth, decoded)
++	}
++	setOperationMeta(op, xdr.LedgerEntryChanges{contractInstanceCreated(createdContractID)}, nil)
++	return op
++}
++
++// Test_ContractDeployProcessor_Process_oversizedAuthTreeNeverFails pins the two properties of
++// the auth-tree walk bounds. The tree is submitter input and core includes the transaction
++// whatever its shape, so (1) no tree may make ProcessOperation return an error, because an
++// error fails the ledger on every retry, and (2) a tree past a bound is cut short, counted
++// and logged, while a tree inside the bounds is walked in full.
++func Test_ContractDeployProcessor_Process_oversizedAuthTreeNeverFails(t *testing.T) {
++	create, contractID := declaredCreate(t)
++	wide := func(siblings int) xdr.SorobanAuthorizedInvocation {
++		subs := make([]xdr.SorobanAuthorizedInvocation, 0, siblings+1)
++		for i := 0; i < siblings; i++ {
++			subs = append(subs, contractFnNode())
++		}
++		return contractFnNode(append(subs, create)...)
++	}
++
++	testCases := []struct {
++		name        string
++		roots       []xdr.SorobanAuthorizedInvocation
++		wantDeploy  bool
++		wantTruncBy string
++	}{
++		{
++			name:       "65_deep_chain_is_walked_in_full",
++			roots:      []xdr.SorobanAuthorizedInvocation{chainAbove(create, 65)},
++			wantDeploy: true,
++		},
++		{
++			// The deepest tree stellar-core v30.0.0 applies is 245 invocations in one chain.
++			name:       "245_deep_chain_the_deepest_core_applies_is_walked_in_full",
++			roots:      []xdr.SorobanAuthorizedInvocation{chainAbove(create, 244)},
++			wantDeploy: true,
++		},
++		{
++			// A 246-deep chain is included in a ledger too (today its transaction fails).
++			name:       "246_deep_chain_is_walked_in_full",
++			roots:      []xdr.SorobanAuthorizedInvocation{chainAbove(create, 245)},
++			wantDeploy: true,
++		},
++		{
++			name:       "deploy_on_the_deepest_level_walked",
++			roots:      []xdr.SorobanAuthorizedInvocation{chainAbove(create, maxAuthWalkDepth-1)},
++			wantDeploy: true,
++		},
++		{
++			name:        "deploy_one_level_past_the_depth_bound_is_skipped",
++			roots:       []xdr.SorobanAuthorizedInvocation{chainAbove(create, maxAuthWalkDepth)},
++			wantTruncBy: "depth",
++		},
++		{
++			name:        "chain_far_past_the_depth_bound_is_skipped",
++			roots:       []xdr.SorobanAuthorizedInvocation{chainAbove(create, maxAuthWalkDepth+300)},
++			wantTruncBy: "depth",
++		},
++		{
++			name:       "wide_tree_inside_the_node_bound_is_walked_in_full",
++			roots:      []xdr.SorobanAuthorizedInvocation{wide(maxAuthWalkNodes - 2)},
++			wantDeploy: true,
++		},
++		{
++			name:        "wide_tree_past_the_node_bound_is_skipped",
++			roots:       []xdr.SorobanAuthorizedInvocation{wide(maxAuthWalkNodes + 1000)},
++			wantTruncBy: "nodes",
++		},
++		{
++			name: "node_bound_spans_the_auth_entries_of_one_operation",
++			roots: []xdr.SorobanAuthorizedInvocation{
++				wide(maxAuthWalkNodes/2 - 2).SubInvocations[0], // one node
++				chainAbove(contractFnNode(), 10),
++				contractFnNode(wide(maxAuthWalkNodes).SubInvocations[:maxAuthWalkNodes]...),
++				create,
++			},
++			wantTruncBy: "nodes",
++		},
++	}
++
++	for _, tc := range testCases {
++		t.Run(tc.name, func(t *testing.T) {
++			ingestionMetrics := metrics.NewMetrics(prometheus.NewRegistry()).Ingestion
++			proc := NewContractDeployProcessor(network.TestNetworkPassphrase, ingestionMetrics)
++			op := opWithAuthRoots(t, contractID, tc.roots...)
++
++			stateChanges, err := proc.ProcessOperation(context.Background(), op)
++			require.NoError(t, err, "an oversized declared auth tree must never fail the operation")
++
++			if tc.wantDeploy {
++				assertStateChangesElementsMatch(t, []types.StateChange{
++					NewStateChangeBuilder(12345, closeTime.Unix(), op.TransactionID()).
++						WithOperationID(op.ID()).
++						WithReason(types.StateChangeReasonCreate).
++						WithCategory(types.StateChangeCategoryAccount).
++						WithCreator(deployerAccountID).
++						WithAccount(contractID).
++						Build(),
++				}, stateChanges)
++			} else {
++				assert.Empty(t, stateChanges)
++			}
++
++			for _, bound := range []string{"depth", "nodes"} {
++				want := 0.0
++				if bound == tc.wantTruncBy {
++					want = 1.0
++				}
++				assert.Equal(t, want, testutil.ToFloat64(ingestionMetrics.AuthTreeWalkTruncationsTotal.WithLabelValues(bound)), "truncations counted for bound %q", bound)
++			}
++		})
++	}
++}
++
++// Test_ContractDeployProcessor_Process_noCreatedInstanceSkipsAuthWalk: with no created
++// instance in the meta nothing can be confirmed, so the declared trees are not walked at
++// all, however large, and nothing is counted as truncated.
++func Test_ContractDeployProcessor_Process_noCreatedInstanceSkipsAuthWalk(t *testing.T) {
++	create, contractID := declaredCreate(t)
++	ingestionMetrics := metrics.NewMetrics(prometheus.NewRegistry()).Ingestion
++	proc := NewContractDeployProcessor(network.TestNetworkPassphrase, ingestionMetrics)
++	op := opWithAuthRoots(t, contractID, chainAbove(create, maxAuthWalkDepth+300))
++	setOperationMeta(op, nil, nil)
++
++	stateChanges, err := proc.ProcessOperation(context.Background(), op)
++	require.NoError(t, err)
++	assert.Empty(t, stateChanges)
++	assert.Equal(t, 0.0, testutil.ToFloat64(ingestionMetrics.AuthTreeWalkTruncationsTotal.WithLabelValues("depth")))
+ }
+diff -ruN -x zz_xdrproof_* wb-head/internal/metrics/ingestion.go wb-fix/internal/metrics/ingestion.go
+--- a/internal/metrics/ingestion.go	2026-11-12 21:46:45
++++ b/internal/metrics/ingestion.go	2026-11-18 19:22:12
+@@ -95,6 +95,15 @@
+ 	// "BLEND"); kind is "event" or "entry".
+ 	// PromQL: rate(wallet_ingestion_protocol_decode_failures_total[5m]) > 0
+ 	ProtocolDecodeFailuresTotal *prometheus.CounterVec
++	// AuthTreeWalkTruncationsTotal counts InvokeHostFunction operations whose
++	// declared auth invocation trees were larger than the contract-deploy
++	// processor walks. The bound label is "depth" or "nodes". The operation is
++	// still ingested; a nested deploy declared past the bound gets no
++	// contract-deploy state change. The bounds sit above what a successful
++	// transaction can carry at current network limits, so any non-zero value
++	// means those limits were raised and the bounds need a review.
++	// PromQL: increase(wallet_ingestion_auth_tree_walk_truncations_total[1h]) > 0
++	AuthTreeWalkTruncationsTotal *prometheus.CounterVec
+ }
+ 
+ func newIngestionMetrics(reg prometheus.Registerer) *IngestionMetrics {
+@@ -191,6 +200,10 @@
+ 			Name: "wallet_ingestion_protocol_decode_failures_total",
+ 			Help: "Contract events and ledger entries with a recognized key/topic symbol that failed to decode, by protocol_id and kind (\"event\" or \"entry\"). A recognized symbol with an unexpected payload signals probable contract drift; the affected event or entry is dropped.",
+ 		}, []string{"protocol_id", "kind"}),
++		AuthTreeWalkTruncationsTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
++			Name: "wallet_ingestion_auth_tree_walk_truncations_total",
++			Help: "InvokeHostFunction operations whose declared auth invocation trees exceeded the contract-deploy walk bounds, by bound (\"depth\" or \"nodes\"). The operation is still ingested; nested deploys declared past the bound are not recorded.",
++		}, []string{"bound"}),
+ 	}
+ 	reg.MustRegister(
+ 		m.LatestLedger,
+@@ -213,6 +226,7 @@
+ 		m.WasmClassificationFailuresTotal,
+ 		m.ExternalRefContractsTotal,
+ 		m.ProtocolDecodeFailuresTotal,
++		m.AuthTreeWalkTruncationsTotal,
+ 	)
+ 	return m
+ }
+diff -ruN -x zz_xdrproof_* wb-head/internal/metrics/ingestion_test.go wb-fix/internal/metrics/ingestion_test.go
+--- a/internal/metrics/ingestion_test.go	2026-11-12 21:46:45
++++ b/internal/metrics/ingestion_test.go	2026-11-18 19:22:12
+@@ -31,6 +31,7 @@
+ 	require.NotNil(t, m.StateChangesTotal)
+ 	require.NotNil(t, m.WasmClassificationFailuresTotal)
+ 	require.NotNil(t, m.ProtocolDecodeFailuresTotal)
++	require.NotNil(t, m.AuthTreeWalkTruncationsTotal)
+ }
+ 
+ func TestIngestionMetrics_WasmClassificationFailures(t *testing.T) {
+@@ -240,6 +241,7 @@
+ 		m.WasmClassificationFailuresTotal,
+ 		m.ExternalRefContractsTotal,
+ 		m.ProtocolDecodeFailuresTotal,
++		m.AuthTreeWalkTruncationsTotal,
+ 	} {
+ 		problems, err := testutil.CollectAndLint(c)
+ 		require.NoError(t, err)

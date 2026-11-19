@@ -1,0 +1,138 @@
+[
+ {
+  "name": "text: drop the UTF-8 check",
+  "file": "xp001/xp001.go",
+  "from": "\tif utf8.ValidString(memo) {\n\t\tout.Memo = memo\n\t}",
+  "to": "\tout.Memo = memo",
+  "expect": "XP001/text-bytes",
+  "why": "memo stored unchecked"
+ },
+ {
+  "name": "text: drop the hex encoding",
+  "file": "xp001/xp001.go",
+  "from": "out.Memo = hex.EncodeToString([]byte(tx.Memo()))",
+  "to": "_ = hex.EncodeToString\n\tout.Memo = tx.Memo()",
+  "expect": "XP001/text-bytes",
+  "why": "raw memo stored"
+ },
+ {
+  "name": "text: drop the validator (#803 reverted)",
+  "file": "xp001/xp001.go",
+  "from": "\tif err := validName(s); err != nil {\n\t\treturn err\n\t}\n",
+  "to": "",
+  "expect": "XP001/text-bytes",
+  "why": "contract string stored unchecked"
+ },
+ {
+  "name": "muxed: Address() instead of ToAccountId (#753 reverted)",
+  "file": "xp001/xp001.go",
+  "from": "\tacct := src.ToAccountId()\n\treturn set.NewThreadUnsafeSet(acct.Address())",
+  "to": "\treturn set.NewThreadUnsafeSet(src.Address())",
+  "expect": "XP001/muxed-as-account",
+  "why": "M... in the participant set"
+ },
+ {
+  "name": "muxed: drop the kind switch",
+  "file": "xp001/xp001.go",
+  "from": "\tif a.Type == xdr.CryptoKeyTypeKeyTypeMuxedEd25519 {\n\t\tdetails[\"account_muxed\"] = a.Address()\n\t}",
+  "to": "\tbyAccount := map[string]bool{}\n\tbyAccount[a.Address()] = true",
+  "expect": "XP001/muxed-as-account",
+  "why": "muxed address keys an account map"
+ },
+ {
+  "name": "mux id: drop the error check",
+  "file": "xp001/xp001.go",
+  "from": "\tid, err := a.GetId()\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn strconv.FormatUint(id, 10), nil",
+  "to": "\tid, _ := a.GetId()\n\treturn strconv.FormatUint(id, 10), nil",
+  "expect": "XP001/mux-id-as-identity",
+  "why": "G account reads as ID 0"
+ },
+ {
+  "name": "number: drop the decimals cap (#802 reverted)",
+  "file": "xp001/xp001.go",
+  "from": "\tif d > 70 {\n\t\treturn nil, errors.New(\"decimals above 70\")\n\t}\n",
+  "to": "",
+  "expect": "XP001/contract-number",
+  "why": "unbounded exponent"
+ },
+ {
+  "name": "footprint: contract from the envelope",
+  "file": "xp001/xp001.go",
+  "from": "\t\t\ts, _ := c.Post.Data.MustContractData().Contract.String()\n\t\t\tdetails[\"contract_id\"] = s",
+  "to": "\t\t\t_ = c\n\t\t\tdetails[\"contract_id\"] = contractIdFromTxEnvelope(xdr.TransactionEnvelope{})",
+  "expect": "XP001/declared-footprint",
+  "why": "declared contract recorded"
+ },
+ {
+  "name": "walk: drop the depth check",
+  "file": "xp002/xp002.go",
+  "from": "\tif depth > 256 {\n\t\treturn 0\n\t}\n\tn := 1\n\tfor _, sub := range inv.SubInvocations {\n\t\tn += GoodDepthParam(sub, depth+1)",
+  "to": "\tn := 1\n\tfor _, sub := range inv.SubInvocations {\n\t\tn += GoodDepthParam(sub, depth+1)",
+  "expect": "XP002/walk-unbudgeted",
+  "why": "depth parameter never compared"
+ },
+ {
+  "name": "walk: drop the node budget",
+  "file": "xp002/xp002.go",
+  "from": "\tif w.nodes > w.limit {\n\t\treturn\n\t}\n",
+  "to": "",
+  "expect": "XP002/walk-unbudgeted",
+  "why": "node count never compared"
+ },
+ {
+  "name": "walk: fail at the budget (first #820 patch)",
+  "file": "xp002/xp002.go",
+  "from": "\t\t*truncated++\n\t\treturn nil",
+  "to": "\t\t*truncated++\n\t\treturn errors.New(\"too deep\")",
+  "expect": "XP002/budget-fails",
+  "why": "budget check fails the ledger"
+ },
+ {
+  "name": "decode: turn the limit off",
+  "file": "xp002/xp002.go",
+  "from": "func GoodSafeUnmarshal(b []byte) (xdr.ScVal, error) {\n\tvar v xdr.ScVal",
+  "to": "func GoodSafeUnmarshal(b []byte) (xdr.ScVal, error) {\n\t_ = xdr3.DecodeOptions{MaxDepth: xdr3.DecodeUnlimitedDepth}\n\tvar v xdr.ScVal",
+  "expect": "XP002/decode-unlimited",
+  "why": "unlimited decoder"
+ },
+ {
+  "name": "alloc: drop the bound",
+  "file": "xp002/xp002.go",
+  "from": "\tif tx.Tx.Fee > 1<<16 {\n\t\treturn nil\n\t}\n\treturn make([]byte, tx.Tx.Fee)",
+  "to": "\treturn make([]byte, tx.Tx.Fee)",
+  "expect": "XP002/alloc-from-wire",
+  "why": "allocation from a wire integer"
+ },
+ {
+  "name": "auth: drop the meta confirmation (#746 reverted)",
+  "file": "xp003/xp003.go",
+  "from": "\t\tif _, ok := created[id]; ok {\n\t\t\tout = append(out, builder{}.WithAccount(id))\n\t\t}",
+  "to": "\t\t_ = created\n\t\tout = append(out, builder{}.WithAccount(id))",
+  "expect": "XP003/declared-auth",
+  "why": "declared deploy recorded unconfirmed"
+ },
+ {
+  "name": "op body: drop the success gate",
+  "file": "xp003/xp003.go",
+  "from": "\tif !tx.Successful() {\n\t\treturn out\n\t}\n\tfor _, a := range destinations(op) {",
+  "to": "\tfor _, a := range destinations(op) {",
+  "expect": "XP003/op-body-ungated",
+  "why": "failed transaction attributes destinations"
+ },
+ {
+  "name": "op body: drop the gate in the only caller",
+  "file": "xp003/xp003.go",
+  "from": "\tif tx.Successful() {\n\t\tfor _, op := range tx.Envelope.Operations() {\n\t\t\taddDestinations(op, out)\n\t\t}\n\t}",
+  "to": "\tfor _, op := range tx.Envelope.Operations() {\n\t\taddDestinations(op, out)\n\t}",
+  "expect": "XP003/op-body-ungated",
+  "why": "helper no longer gated by its caller"
+ },
+ {
+  "name": "events: drop the success gate",
+  "file": "xp003/xp003.go",
+  "from": "\tout := set.NewThreadUnsafeSet[string]()\n\tif !tx.Successful() {\n\t\treturn out, nil\n\t}\n\tevs, err := tx.GetDiagnosticEvents()",
+  "to": "\tout := set.NewThreadUnsafeSet[string]()\n\tevs, err := tx.GetDiagnosticEvents()",
+  "expect": "XP003/events-ungated",
+  "why": "diagnostic events of a failed transaction attributed"
+ }
+]

@@ -1,0 +1,246 @@
+{
+  "about": "What make lint runs xplint on. Each target is a repository at a pinned commit, optionally changed by a patch or by exact text edits, linted with a pinned Go toolchain image. linter/expectations.json pins every finding of every target, with its triage; a run must match it exactly. 'history' targets are the commits before and after upstream fixes of the mistakes the rules describe; 'mutant' targets put a fixed bug back into wallet-backend main, and must make the named rule fire.",
+  "images": {
+    "go1.27.4": "golang@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea",
+    "go1.27.3": "golang@sha256:dc0963f32053e4bc451d24d87e3892d42d01021b61f093e98eb95c0352bb84b0"
+  },
+  "repos": {
+    "wallet-backend": "https://github.com/stellar/wallet-backend",
+    "stellar-etl": "https://github.com/stellar/stellar-etl",
+    "go-stellar-sdk": "https://github.com/stellar/go-stellar-sdk"
+  },
+  "targets": [
+    {
+      "name": "wallet-backend@main",
+      "kind": "codebase",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./..."
+      ],
+      "image": "go1.27.4",
+      "note": "main on 2026-11-18 (#807)"
+    },
+    {
+      "name": "stellar-etl@master",
+      "kind": "codebase",
+      "repo": "stellar-etl",
+      "ref": "7e3fc9af95359dad6ba939fa88791f49cdf531ae",
+      "patterns": [
+        "./..."
+      ],
+      "image": "go1.27.3",
+      "note": "master on 2026-11-17. Type-checked with Go 1.27.3, the version its go.mod names: Go 1.27.4 refuses the LLVM bitcode section in go-stellar-xdr-json's prebuilt arm64 libxdrjson.a (cmd/go security.go), and xplint only type-checks; nothing is linked or run"
+    },
+    {
+      "name": "go-stellar-sdk@v0.9.0",
+      "kind": "codebase",
+      "repo": "go-stellar-sdk",
+      "ref": "5410d3410e212331399d1518cc13150279969dac",
+      "patterns": [
+        "./ingest/...",
+        "./processors/..."
+      ],
+      "image": "go1.27.4",
+      "note": "the release; its ingestion packages"
+    },
+    {
+      "name": "wallet-backend@main+820-patch",
+      "kind": "patched",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./..."
+      ],
+      "image": "go1.27.4",
+      "patch": "patches/wallet-backend-820.diff",
+      "note": "main with XDRProof's patch for wallet-backend#820: the auth-tree walk bounded at depth 256 and 4096 nodes, stopping (counted and logged) instead of failing. XP002 goes quiet; nothing else changes"
+    },
+    {
+      "name": "wallet-backend@main+820-patch+blend-address-patch",
+      "kind": "patched",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./..."
+      ],
+      "image": "go1.27.4",
+      "patches": [
+        "patches/wallet-backend-820.diff",
+        "patches/wallet-backend-blend-address.diff"
+      ],
+      "note": "main with both patches: the #820 bound, and the Blend decoder's addresses taken through types.StorableAddressString as the SEP-41 processor does since #756. xplint reports nothing"
+    },
+    {
+      "name": "wallet-backend@f8e5786d",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "f8e5786d22c04adad16318f2e126728beec5aac9",
+      "patterns": [
+        "./internal/indexer/..."
+      ],
+      "image": "go1.27.4",
+      "note": "before #753: a Soroban operation's muxed source added as M..."
+    },
+    {
+      "name": "wallet-backend@bb0b162b",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "bb0b162b072583c7dabffbdee664d1c117e5ba56",
+      "patterns": [
+        "./internal/indexer/..."
+      ],
+      "image": "go1.27.4",
+      "note": "#753: the source reduced to its account"
+    },
+    {
+      "name": "wallet-backend@666a64d4",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "666a64d426263fa6bd2a0ee61ee8dfb1f4729019",
+      "patterns": [
+        "./internal/indexer/..."
+      ],
+      "image": "go1.27.4",
+      "note": "before 9538b3ca and 80121f3a: Soroban participants and declared deploys taken from the auth tree (wallet-backend#739, #746)"
+    },
+    {
+      "name": "wallet-backend@4bbb1ecb",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "4bbb1ecb25ff37e8c598964406a0ccfe93baeb0b",
+      "patterns": [
+        "./internal/indexer/..."
+      ],
+      "image": "go1.27.4",
+      "note": "after 9538b3ca and 80121f3a"
+    },
+    {
+      "name": "wallet-backend@e967ce8b",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "e967ce8b7362b79c277e700e789181d76fbb5967",
+      "patterns": [
+        "./internal/services/blend/..."
+      ],
+      "image": "go1.27.4",
+      "note": "before #803: Blend pool names stored without a UTF-8 check"
+    },
+    {
+      "name": "wallet-backend@ff73ff46",
+      "kind": "history",
+      "repo": "wallet-backend",
+      "ref": "ff73ff465093f6412d070462a5490bd255c748c6",
+      "patterns": [
+        "./internal/services/blend/..."
+      ],
+      "image": "go1.27.4",
+      "note": "#803: pool names validated (bytes and length)"
+    },
+    {
+      "name": "mutant: drop the meta confirmation of a declared deploy",
+      "kind": "mutant",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./internal/indexer/processors/..."
+      ],
+      "image": "go1.27.4",
+      "expect": "XP003/declared-auth",
+      "why": "#746 reverted: a deploy the auth tree declares is recorded whether it ran or not",
+      "edits": [
+        {
+          "file": "internal/indexer/processors/contract_deploy.go",
+          "from": "\t\t\tif _, ok := created[contractID]; ok {\n\t\t\t\tif err := emitCreate(contractID, fromAddr); err != nil {\n\t\t\t\t\treturn err\n\t\t\t\t}\n\t\t\t}",
+          "to": "\t\t\t_ = created\n\t\t\tif err := emitCreate(contractID, fromAddr); err != nil {\n\t\t\t\treturn err\n\t\t\t}"
+        }
+      ]
+    },
+    {
+      "name": "mutant: attribute operation bodies of failed transactions",
+      "kind": "mutant",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./internal/indexer/processors/..."
+      ],
+      "image": "go1.27.4",
+      "expect": "XP003/op-body-ungated",
+      "why": "the success gate of GetOperationParticipants removed",
+      "edits": [
+        {
+          "file": "internal/indexer/processors/participants.go",
+          "from": "\tif !op.Transaction.Successful() {\n\t\tparticipants := set.NewThreadUnsafeSet(op.Transaction.Envelope.SourceAccount().ToAccountId().Address())\n\t\tif op.Transaction.Envelope.IsFeeBump() {\n\t\t\tparticipants.Add(op.Transaction.Envelope.FeeBumpAccount().ToAccountId().Address())\n\t\t}\n\t\treturn participants, nil\n\t}\n",
+          "to": ""
+        }
+      ]
+    },
+    {
+      "name": "mutant: muxed Soroban source added as M...",
+      "kind": "mutant",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./internal/indexer/processors/..."
+      ],
+      "image": "go1.27.4",
+      "expect": "XP001/muxed-as-account",
+      "why": "#753 reverted",
+      "edits": [
+        {
+          "file": "internal/indexer/processors/contract_operations.go",
+          "from": "\tparticipants.Add(op.SourceAccount().ToAccountId().Address())\n\tif op.Operation.Body.Type != xdr.OperationTypeInvokeHostFunction {",
+          "to": "\tsrc := op.SourceAccount()\n\tparticipants.Add(src.Address())\n\tif op.Operation.Body.Type != xdr.OperationTypeInvokeHostFunction {"
+        }
+      ]
+    },
+    {
+      "name": "mutant: Blend strings stored without the UTF-8 check",
+      "kind": "mutant",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./internal/services/blend/..."
+      ],
+      "image": "go1.27.4",
+      "expect": "XP001/text-bytes",
+      "why": "#803 reverted (the UTF-8 half)",
+      "edits": [
+        {
+          "file": "internal/services/blend/scval.go",
+          "from": "\tif len(out) > maxStringLength || !utf8.ValidString(out) || strings.IndexByte(out, 0) >= 0 {",
+          "to": "\t_ = utf8.RuneError\n\tif len(out) > maxStringLength || strings.IndexByte(out, 0) >= 0 {"
+        }
+      ]
+    },
+    {
+      "name": "mutant: the auth-tree walk fails at depth 64",
+      "kind": "mutant",
+      "repo": "wallet-backend",
+      "ref": "18db88f4ba481c49a782d157be42177700c4385e",
+      "patterns": [
+        "./internal/indexer/processors/..."
+      ],
+      "image": "go1.27.4",
+      "expect": "XP002/budget-fails",
+      "why": "the first, wrong #820 patch: an error at the limit halts on the 245-deep ledgers core applies",
+      "edits": [
+        {
+          "file": "internal/indexer/processors/contract_deploy.go",
+          "from": "\tvar walkInvocation func(inv xdr.SorobanAuthorizedInvocation) error\n\twalkInvocation = func(inv xdr.SorobanAuthorizedInvocation) error {\n",
+          "to": "\tvar walkInvocation func(inv xdr.SorobanAuthorizedInvocation, depth int) error\n\twalkInvocation = func(inv xdr.SorobanAuthorizedInvocation, depth int) error {\n\t\tif depth > 64 {\n\t\t\treturn fmt.Errorf(\"auth invocation tree deeper than 64\")\n\t\t}\n"
+        },
+        {
+          "file": "internal/indexer/processors/contract_deploy.go",
+          "from": "\t\t\tif err := walkInvocation(sub); err != nil {",
+          "to": "\t\t\tif err := walkInvocation(sub, depth+1); err != nil {"
+        },
+        {
+          "file": "internal/indexer/processors/contract_deploy.go",
+          "from": "\t\tif err := walkInvocation(auth.RootInvocation); err != nil {",
+          "to": "\t\tif err := walkInvocation(auth.RootInvocation, 0); err != nil {"
+        }
+      ]
+    }
+  ]
+}
