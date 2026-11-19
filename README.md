@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png">
+  <img alt="xdrproof: If stellar-core can emit it, your code should survive it. A test kit for every program that reads the Stellar ledger." src=".github/assets/banner-light.png" width="100%">
+</picture>
+
 # XDRProof
 
 **Test your Stellar indexer and SDK against the ledger's rarest shapes.**
