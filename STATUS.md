@@ -3,6 +3,13 @@
 A dated public log of what has landed in XDRProof. Newest first. Weekly updates also go to #scf-general on the
 Stellar developer Discord.
 
+## 2026-11-20
+
+- **Submitted the SCF #46 Build application** for RFP 2.
+- **Pitch film (2:58):** [youtu.be/zABwPoJ835c](https://youtu.be/zABwPoJ835c). The same film is at
+  [xdrproof.dev/demo](https://xdrproof.dev/demo), where each chapter links to the page or issue that backs it.
+- **Upstream:** wallet-backend#834 and js-stellar-xdr-json#67 are open and waiting on maintainers.
+
 ## 2026-11-19
 
 - **Applied to SCF #46, RFP 2** (XDR/CAP-Coverage Audit Tool and Indexer-Hardening Guide). The interest form is under
