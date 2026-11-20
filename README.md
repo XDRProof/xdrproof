@@ -16,6 +16,7 @@
 </p>
 
 <p align="center">
+  <b><a href="https://xdrproof.dev/demo">▶ Pitch film (3 min)</a></b> ·
   <b><a href="https://xdrproof.dev/docs/start/quickstart">Quickstart</a></b> ·
   <a href="https://xdrproof.dev/docs">Docs</a> ·
   <a href="https://xdrproof.dev/docs/corpus">Corpus</a> ·
@@ -84,6 +85,16 @@ It gives every team the same hard cases, with the answers checked by stellar-cor
     <td align="center"><img alt="Python" src=".github/assets/logos/python.svg" height="34"><br><sub>py-stellar-base, stellar-xdr</sub></td>
   </tr>
 </table>
+
+## Watch the 3-minute pitch
+
+<p align="center">
+  <a href="https://xdrproof.dev/demo"><img alt="Play the XDRProof pitch film (2:58): Abu, who builds XDRProof, beside the words Rare ledgers. Real bugs." src=".github/assets/demo-cover.jpg" width="100%"></a>
+</p>
+
+A 2:58 film for SCF #46: what XDRProof is, the replay that found wallet-backend#834, the verify and conformance runs,
+and what the grant buys by date. Every terminal in it is a recorded real run.
+[Watch on YouTube](https://youtu.be/zABwPoJ835c) · [Chapters, each linked to its evidence](https://xdrproof.dev/demo)
 
 ## Reported upstream
 
