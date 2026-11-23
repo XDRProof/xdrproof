@@ -1,7 +1,17 @@
 # Conformance
 
-`make conformance` runs the corpus, and a set of vectors, through real SDK builds and prints one matrix: which
-SDK reads which ledger correctly. Every SDK runs as a **testee**, a process that speaks line-delimited JSON on
+`make conformance` runs the corpus, and a set of vectors, through real SDK builds and prints a card for each SDK build
+with known bugs: how many of the corpus ledgers it read back exactly as stellar-core wrote them, and each bug with a
+short title and a link to where it was reported (`bugs.json` holds the titles; every expected failure in `expectations/`
+names its bug). The builds with no bugs share one card, and the verdict says whether anything new broke. It fits any
+terminal from 40 to 120 columns. `make conformance V=1` adds each bug's state
+(open, fixed on main, fixed in a release), the older builds, the depths and the cache status. The full matrix, every
+family by every build, is written to `.work/matrix.md` and `.work/matrix.json` (`node conformance/run.mjs --format md`
+prints it).
+
+Each testee runs as a small pool of worker processes, so a slow SDK does not hold the others back. Results are cached in
+`.work/cache` per testee build, ledger file, entry and runner code, so a rerun with nothing changed takes about a second
+and starts no testee; `make conformance ARGS="--fresh"` ignores the cache. Every SDK runs as a **testee**, a process that speaks line-delimited JSON on
 stdin/stdout. The runner (`run.mjs`) judges every answer against a reference and against the SDK's
 **pre-registered expectations** (`expectations/<testee>.json`). An unexpected failure, and an unexpected pass,
 both fail the run, so a fixed bug and a new one are both visible.

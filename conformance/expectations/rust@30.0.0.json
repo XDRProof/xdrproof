@@ -15,6 +15,7 @@
  "fail": {
   "lane-s/bool-word-2": {
    "reason": "stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true",
+   "bug": "stellar/rs-stellar-xdr#622",
    "detail": "^accepted$"
   }
  }

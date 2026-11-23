@@ -1,0 +1,54 @@
+{
+  "$comment": "The known bugs behind conformance/expectations: one short plain title per bug (what `make conformance` prints), where it was reported, and its state. Every expected failure names one of these ids in its `bug` field.",
+  "bugs": {
+    "stellar/js-stellar-xdr-json#67": {
+      "title": "refuses very deep auth trees",
+      "state": "open",
+      "finding": "F-1"
+    },
+    "stellar/rs-stellar-xdr#622": {
+      "title": "accepts an invalid bool value",
+      "state": "open"
+    },
+    "stellar/go-stellar-sdk#6042": {
+      "title": "accepts an invalid strkey",
+      "state": "open"
+    },
+    "F-2": {
+      "title": "JSON fails on muxed contracts",
+      "state": "not filed, fixed on main",
+      "url": "https://github.com/XDRProof/xdrproof/blob/main/findings/REPORT.md",
+      "label": "F-2"
+    },
+    "StellarCN/py-stellar-base#1250": {
+      "title": "drops colliding map keys",
+      "state": "fixed on main"
+    },
+    "py-bool-2": {
+      "title": "accepts an invalid bool value",
+      "state": "fixed on main, same class as #1262",
+      "url": "https://github.com/StellarCN/py-stellar-base/pull/1268",
+      "label": "#1268"
+    },
+    "StellarCN/py-stellar-base#1262": {
+      "title": "accepts non-zero XDR padding",
+      "state": "fixed on main"
+    },
+    "StellarCN/py-stellar-base#1263": {
+      "title": "accepts a bad optional flag",
+      "state": "fixed on main"
+    },
+    "stellar/js-stellar-sdk#1766": {
+      "title": "sorts assets in the wrong order",
+      "state": "fixed in 17.2.1 (Go v0.7.2)"
+    },
+    "stellar/js-stellar-sdk#1789": {
+      "title": "drops colliding map keys",
+      "state": "fixed in 17.3.0"
+    },
+    "stellar/js-stellar-sdk#1785": {
+      "title": "mishandles muxed and offer IDs",
+      "state": "fixed in 17.3.0"
+    }
+  }
+}

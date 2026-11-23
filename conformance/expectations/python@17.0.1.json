@@ -40,46 +40,57 @@
  "fail": {
   "corpus/sac.xlm-transfer-muxed-contract@p30-mainnet-generated/json": {
    "reason": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; py-stellar-base#1234 (the protocol 30 tracking issue) asked for CAP-0084 support and warned muxed contract values would fail; this exact to_json failure is not reported; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+   "bug": "F-2",
    "detail": "^SEP-0051 rendering raised: ValueError: Unknown SCAddress type: 5$"
   },
   "corpus/sac.xlm-transfer-muxed-contract@p30-mainnet-generated/facts": {
    "reason": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; py-stellar-base#1234 (the protocol 30 tracking issue) asked for CAP-0084 support and warned muxed contract values would fail; this exact to_json failure is not reported; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+   "bug": "F-2",
    "detail": "^no JSON to check the facts on$"
   },
   "corpus/sac.xlm-transfer-muxed-contract@p30-testnet-generated/json": {
    "reason": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; py-stellar-base#1234 (the protocol 30 tracking issue) asked for CAP-0084 support and warned muxed contract values would fail; this exact to_json failure is not reported; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+   "bug": "F-2",
    "detail": "^SEP-0051 rendering raised: ValueError: Unknown SCAddress type: 5$"
   },
   "corpus/sac.xlm-transfer-muxed-contract@p30-testnet-generated/facts": {
    "reason": "F-2 (findings/REPORT.md): to_json raises \"Unknown SCAddress type: 5\" on a CAP-0084 muxed contract address that from_xdr decodes; py-stellar-base#1234 (the protocol 30 tracking issue) asked for CAP-0084 support and warned muxed contract values would fail; this exact to_json failure is not reported; fixed on main by the stellar-xdr switch (py-stellar-base#1268; python-xdr@0.2.1 passes)",
+   "bug": "F-2",
    "detail": "^no JSON to check the facts on$"
   },
   "sdk-check/scval.map.keys-collide-on-native-conversion@p30-mainnet-generated/0": {
    "reason": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+   "bug": "StellarCN/py-stellar-base#1250",
    "detail": "^kept 2 of 5 entries$"
   },
   "sdk-check/scval.map.keys-collide-on-native-conversion@p28-mainnet-generated/0": {
    "reason": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+   "bug": "StellarCN/py-stellar-base#1250",
    "detail": "^kept 2 of 5 entries$"
   },
   "sdk-check/scval.map.keys-collide-on-native-conversion@p30-testnet-generated/0": {
    "reason": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+   "bug": "StellarCN/py-stellar-base#1250",
    "detail": "^kept 2 of 5 entries$"
   },
   "sdk-check/scval.map.keys-collide-on-native-conversion@p28-testnet-generated/0": {
    "reason": "StellarCN/py-stellar-base#1250 (closed): scval.to_native keeps 2 of 5 colliding map keys silently; fixed on main by the stellar-xdr switch",
+   "bug": "StellarCN/py-stellar-base#1250",
    "detail": "^kept 2 of 5 entries$"
   },
   "lane-s/bool-word-2": {
    "reason": "a bool of 2 decodes as true (stellar-core's reading; rs-stellar-xdr reads false, rs-stellar-xdr#622); same class as #1262/#1263, rejected by stellar-xdr 0.2.1 on main",
+   "bug": "py-bool-2",
    "detail": "^accepted$"
   },
   "lane-s/non-zero-padding": {
    "reason": "StellarCN/py-stellar-base#1262 (closed): non-zero XDR padding accepted; fixed on main",
+   "bug": "StellarCN/py-stellar-base#1262",
    "detail": "^accepted$"
   },
   "lane-s/optional-flag-2": {
    "reason": "StellarCN/py-stellar-base#1263 (closed): any non-zero optional flag read as present; fixed on main",
+   "bug": "StellarCN/py-stellar-base#1263",
    "detail": "^accepted$"
   }
  }

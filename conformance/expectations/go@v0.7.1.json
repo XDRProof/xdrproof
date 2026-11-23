@@ -13,6 +13,7 @@
  "fail": {
   "sightings/asset-order/xdr-vs-strkey/compare": {
    "reason": "go-stellar-sdk twin of stellar/js-stellar-sdk#1766 (Asset.LessThan by strkey text); fixed in v0.7.2",
+   "bug": "stellar/js-stellar-sdk#1766",
    "detail": "^wrong value: 1$"
   }
  }

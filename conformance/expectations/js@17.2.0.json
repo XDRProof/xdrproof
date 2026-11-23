@@ -4,34 +4,42 @@
  "fail": {
   "sightings/asset-order/xdr-vs-strkey/compare": {
    "reason": "stellar/js-stellar-sdk#1766 (asset order by strkey text, not XDR bytes); fixed in 17.2.1 / go v0.7.2",
+   "bug": "stellar/js-stellar-sdk#1766",
    "detail": "^wrong value: 1$"
   },
   "sightings/asset-order/xdr-vs-strkey/pool-share-change-trust/helper": {
    "reason": "stellar/js-stellar-sdk#1766; fixed in 17.2.1",
+   "bug": "stellar/js-stellar-sdk#1766",
    "detail": "^api error: Assets are not in lexicographic order$"
   },
   "sightings/scmap/colliding-keys/to-native": {
    "reason": "stellar/js-stellar-sdk#1789 (scValToNative silently drops colliding map keys); fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1789",
    "detail": "^lossy: 1 of 2$"
   },
   "sightings/muxed/id-canonical/hex-string": {
    "reason": "stellar/js-stellar-sdk#1785 (non-canonical muxed IDs accepted); fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1785",
    "detail": "^wrong value: \\{\"address\":\"MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACBFZC\",\"id\":\"0x10\"\\}$"
   },
   "sightings/muxed/id-canonical/empty-string": {
    "reason": "stellar/js-stellar-sdk#1785; fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1785",
    "detail": "^accepted: \\{\"address\":\"MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5IG\",\"id\":\"\"\\}$"
   },
   "sightings/offer-id/above-2^53-as-number": {
    "reason": "stellar/js-stellar-sdk#1785 (offer IDs past 2^53 rounded); fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1785",
    "detail": "^wrong value: \\{\"offerId\":\"9007199254740992\"\\}$"
   },
   "sightings/offer-id/negative": {
    "reason": "stellar/js-stellar-sdk#1785; fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1785",
    "detail": "^accepted: \\{\"offerId\":\"-1\"\\}$"
   },
   "sightings/offer-id/empty-string": {
    "reason": "stellar/js-stellar-sdk#1785; fixed in 17.3.0",
+   "bug": "stellar/js-stellar-sdk#1785",
    "detail": "^accepted: \\{\"offerId\":\"0\"\\}$"
   }
  }
