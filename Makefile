@@ -39,8 +39,8 @@ order-scan: tools/node_modules        ## 20 fresh runs per lane; records which l
 	recipes/order-scan.sh classic 20
 	recipes/order-scan.sh soroban 20 30
 
-conformance:                          ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/ (V=1 for details, ARGS="--fresh" to ignore the cache)
-	@conformance/run.sh $(if $(V),--details) $(ARGS)
+conformance:                          ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/ (DETAILS=1 adds bug status and older releases, ARGS="--fresh" ignores the cache)
+	@conformance/run.sh $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 replay: tools/node_modules $(NATIVE)  ## the whole corpus into wallet-backend main, and every sighting before and after its fix; must match replay/expectations/ (~20 min cold)
 	replay/run.sh all

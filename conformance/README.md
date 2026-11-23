@@ -4,7 +4,7 @@
 with known bugs: how many of the corpus ledgers it read back exactly as stellar-core wrote them, and each bug with a
 short title and a link to where it was reported (`bugs.json` holds the titles; every expected failure in `expectations/`
 names its bug). The builds with no bugs share one card, and the verdict says whether anything new broke. It fits any
-terminal from 40 to 120 columns. `make conformance V=1` adds each bug's state
+terminal from 40 to 120 columns. `make conformance DETAILS=1` adds each bug's state
 (open, fixed on main, fixed in a release), the older builds, the depths and the cache status. The full matrix, every
 family by every build, is written to `.work/matrix.md` and `.work/matrix.json` (`node conformance/run.mjs --format md`
 prints it).

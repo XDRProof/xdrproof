@@ -480,7 +480,7 @@ const cleanCard = (list, right) => {
   flush(); cardEnd();
 };
 cleanCard(current.filter((x) => !x.bugs.length && !x.bad), total ? `${total}/${total}` : '');
-// Older releases run only the regression tests (bugs fixed later): with V=1, or when one of them went wrong.
+// Older releases run only the regression tests (bugs fixed later): with DETAILS=1, or when one of them went wrong.
 if (older.length && (DETAILS || older.some((r) => r.bad) || !current.length)) {
   if (current.length) ui.section(WIDTH >= 50 ? 'older releases · their bugs were fixed later' : 'older releases, fixed later');
   for (const r of older.filter((x) => x.bugs.length || x.bad)) card(r, DETAILS);
@@ -515,5 +515,6 @@ if (unexpected.length) {
   process.exit(1);
 }
 ui.verdict('gold', 'PASSED', 'No new bugs.', Date.now() - T0);
-if (!DETAILS) ui.out(`  ${ui.dim('details')}  make conformance V=1`);
+// the one hint: what the detailed view adds, in plain words, and the command for it
+if (!DETAILS) ui.out(`  ${ui.dim(WIDTH >= 64 ? 'bug status and older releases:' : 'more:')}  make conformance DETAILS=1`);
 // (end of the summary)
