@@ -19,7 +19,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline';
 import { zstdDecompressSync } from 'node:zlib';
-import { stable, pointer, checkFact, encode as wasmEncode } from '../tools/lib.mjs';
+import { stable, same, pointer, checkFact, encode as wasmEncode } from '../tools/lib.mjs';
 import { makeUI } from '../tools/ui.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url)), ROOT = join(HERE, '..'), W = join(HERE, '.work');
@@ -143,19 +143,6 @@ async function unit(t, key, fn) {
   if (!flaky(list)) t.used[key] = list;
 }
 const failed = (r) => (r.status === 'crash' || r.status === 'timeout' ? r.status : r.status === 'error' ? `${r.error?.stage} error: ${r.error?.message}` : null);
-// Equal as canonical JSON (what stable(a) === stable(b) decides: keys in any order, arrays in order, keys whose value is
-// undefined left out), without writing either document out; stops at the first difference.
-const same = (a, b) => {
-  if (a === b) return true;
-  if (typeof a === 'number' && typeof b === 'number') return JSON.stringify(a) === JSON.stringify(b);
-  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return a === undefined || b === undefined ? false : JSON.stringify(a) === JSON.stringify(b);
-  if (Array.isArray(a) !== Array.isArray(b)) return false;
-  if (Array.isArray(a)) { if (a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (!same(a[i] === undefined ? null : a[i], b[i] === undefined ? null : b[i])) return false; return true; }
-  const ka = Object.keys(a).filter((k) => a[k] !== undefined), kb = Object.keys(b).filter((k) => b[k] !== undefined);
-  if (ka.length !== kb.length) return false;
-  for (const k of ka) { if (!Object.prototype.hasOwnProperty.call(b, k) || b[k] === undefined || !same(a[k], b[k])) return false; }
-  return true;
-};
 // first JSON pointer where two documents differ, for a readable detail
 const firstDiff = (a, b, p = '') => {
   if (same(a, b)) return null;

@@ -33,6 +33,8 @@ for (const r of idx) {
     for (const [k, p] of Object.entries(f.json_paths ?? {})) { paths++; if (at(d.json, p) === undefined) bad.push(`${r.id}: ${f.shape} ${k} path ${p} does not resolve`); }
   }
 }
+// --json: one line for tools/verify.mjs, which prints every check together
+if (process.argv.includes('--json')) { console.log(JSON.stringify({ check: 'mined', records: idx.length, ledgers: files.length, paths, bad_ledgers: new Set(bad.map((x) => idx.find((r) => x.startsWith(r.id + ':'))?.file)).size, problems: bad })); process.exit(bad.length ? 1 : 0); }
 console.log(`mined: ${idx.length} records over ${files.length} ledgers, ${paths} JSON paths; native rs-stellar-xdr round trip, sha256, header and findings`);
 if (bad.length) { for (const x of bad) console.log('  - ' + x); process.exit(1); }
 console.log('OK: every mined ledger and finding verified');

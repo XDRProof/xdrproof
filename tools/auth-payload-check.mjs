@@ -27,6 +27,8 @@ const invocation = (f, arm) => Buffer.concat([u32(arm), createArgs(f), ...(arm =
 const preimage = (net, c, inv) => Buffer.concat([u32(9), sha(net), i64(c.nonce), u32(c.signature_expiration_ledger), inv]); // ENVELOPE_TYPE_SOROBAN_AUTHORIZATION 9
 const edKey = (raw) => createPublicKey({ key: Buffer.concat([hex('302a300506032b6570032100'), raw]), format: 'der', type: 'spki' });
 
+const JSON_OUT = process.argv.includes('--json'), problems = [];
+const say = (line) => { if (!JSON_OUT) console.log(line); };
 let bad = 0, n = 0;
 for (const [id, signedAs] of Object.entries(CASES)) {
   const entry = JSON.parse(readFileSync(join(ROOT, 'entries', id, 'entry.json'), 'utf8'));
@@ -35,16 +37,18 @@ for (const [id, signedAs] of Object.entries(CASES)) {
     const json = JSON.parse(decode('LedgerCloseMeta', f.endsWith('.zst') ? zstdDecompressSync(readFileSync(f)) : readFileSync(f)));
     const found = []; const walk = (x) => { if (Array.isArray(x)) x.forEach(walk); else if (x && typeof x === 'object') { if (x.root_invocation?.function?.create_contract_host_fn && x.credentials?.address) found.push(x); Object.values(x).forEach(walk); } };
     walk(Object.values(json)[0].tx_set);
-    if (found.length !== 1) { console.log(`${id}@${v.key}: expected one v1 create auth entry, found ${found.length}`); bad++; continue; }
+    if (found.length !== 1) { const x = `${id}@${v.key}: expected one v1 create auth entry, found ${found.length}`; problems.push(x); say(x); bad++; continue; }
     const { credentials: { address: c }, root_invocation: { function: { create_contract_host_fn: fn } } } = found[0];
     const m = Object.fromEntries(c.signature.vec[0].map.map((e) => [e.key.symbol, e.val.bytes]));
     const sig = hex(m.signature), key = edKey(hex(m.public_key));
     const ok = (arm) => verify(null, sha(preimage(v.network_passphrase, c, invocation(fn, arm))), key, sig);
     const [v1, v2] = [ok(1), ok(2)]; n++;
     const pass = signedAs === 'v1' ? v1 && !v2 : v2 && !v1;
-    if (!pass) bad++;
-    console.log(`${pass ? 'ok ' : 'BAD'} ${id}@${v.key}: signature verifies over the v1 bytes ${v1}, over the V2 rendering ${v2}`);
+    if (!pass) { bad++; problems.push(`${id}@${v.key}: signature verifies over the v1 bytes ${v1}, over the V2 rendering ${v2}`); }
+    say(`${pass ? 'ok ' : 'BAD'} ${id}@${v.key}: signature verifies over the v1 bytes ${v1}, over the V2 rendering ${v2}`);
   }
 }
+// --json: one line for tools/verify.mjs, which prints every check together
+if (JSON_OUT) { console.log(JSON.stringify({ check: 'auth', variants: n, problems })); process.exit(bad ? 1 : 0); }
 if (bad) { console.log(`\n${bad} variant(s) contradict H-B16.`); process.exit(1); }
 console.log(`\nOK: H-B16 holds in all ${n} variants, checked with hand-encoded preimages and node:crypto (no Stellar SDK, no host code).`);

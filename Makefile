@@ -5,11 +5,8 @@
 
 NATIVE := tools/native/target/release/xdrproof-native
 
-verify: tools/node_modules $(NATIVE)  ## schema, hazards, sha256, native rs-stellar-xdr round trip, focus, every fact (seconds)
-	node tools/strkey.test.mjs
-	node tools/verify.mjs
-	node tools/mined-verify.mjs
-	node tools/auth-payload-check.mjs
+verify: tools/node_modules $(NATIVE)  ## schema, hazards, sha256, native round trip, focus, every fact, mined ledgers, strkeys, H-B16 (seconds; DETAILS=1 lists every refused ledger)
+	@node tools/verify.mjs $(if $(or $(DETAILS),$(V)),--details)
 
 oracle: tools/node_modules             ## facts confirmed by stellar-core's own decoder and the schema walker (needs Docker; seconds)
 	node tools/oracle.mjs

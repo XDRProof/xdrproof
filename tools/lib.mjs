@@ -20,6 +20,20 @@ export const sha256 = (buf) => createHash('sha256').update(buf).digest('hex');
 export const stable = (v) => JSON.stringify(v, (_, x) => (x && typeof x === 'object' && !Array.isArray(x)
   ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, x[k]])) : x));
 
+// Equal as canonical JSON (what stable(a) === stable(b) decides: keys in any order, arrays in order, keys whose value
+// is undefined left out), without writing either document out; stops at the first difference.
+export const same = (a, b) => {
+  if (a === b) return true;
+  if (typeof a === 'number' && typeof b === 'number') return JSON.stringify(a) === JSON.stringify(b);
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return a === undefined || b === undefined ? false : JSON.stringify(a) === JSON.stringify(b);
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+  if (Array.isArray(a)) { if (a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (!same(a[i] === undefined ? null : a[i], b[i] === undefined ? null : b[i])) return false; return true; }
+  const ka = Object.keys(a).filter((k) => a[k] !== undefined), kb = Object.keys(b).filter((k) => b[k] !== undefined);
+  if (ka.length !== kb.length) return false;
+  for (const k of ka) { if (!Object.prototype.hasOwnProperty.call(b, k) || b[k] === undefined || !same(a[k], b[k])) return false; }
+  return true;
+};
+
 // RFC 6901 JSON Pointer.
 export const pointer = (doc, p) => p.split('/').slice(1).reduce((node, raw) => {
   if (node === undefined || node === null) return undefined;
