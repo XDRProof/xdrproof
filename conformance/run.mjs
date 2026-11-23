@@ -84,7 +84,7 @@ class Worker {
       this.child.stdin.write(JSON.stringify({ id, ...payload }) + '\n');
     });
   }
-  kill() { const c = this.child; this.child = null; if (c) killProc(c); }
+  kill() { const c = this.child; this.child = null; if (c) killProc(c); else if (this.container) spawn('docker', ['rm', '-f', this.container], { stdio: 'ignore' }).on('error', () => {}); }
   stop() { if (this.child) this.child.stdin.end(); }
 }
 class Pool {
@@ -101,7 +101,8 @@ class Pool {
   stop() { for (const w of this.workers) w.stop(); }
 }
 // Every process stays in `live` until it has exited; a container is stopped with docker kill, not only its client.
-function killProc(c) { c.kill('SIGKILL'); if (c.container) spawnSync('docker', ['kill', c.container], { stdio: 'ignore' }); }
+// docker rm -f, not docker kill: it also removes a container Docker created but never started (seen under heavy load)
+function killProc(c) { c.kill('SIGKILL'); if (c.container) spawnSync('docker', ['rm', '-f', c.container], { stdio: 'ignore' }); }
 const killAll = () => { for (const c of [...live]) killProc(c); };
 // After a normal run: close every stdin, give the processes a moment to exit, then kill what is left.
 async function shutdown(pools) {
