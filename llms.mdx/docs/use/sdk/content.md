@@ -449,10 +449,12 @@ The deepest valid ledgers in the corpus need more than 500 levels of XDR nesting
 <Callout type="warn" title="Planned, not published yet">
 These packages are what the grant funds. None exists today; the usage below shows the plan, and names and syntax may change at release.
 
-**Tranche 1, by 2 February 2027:** `xdrproof` on npm, the command-line tool (`verify`, `coverage`, `conformance`, `replay`, `guide check` and `check`), and `@xdrproof/corpus`, the corpus with `loadEntries({ hazards, caps, protocol })` and Vitest and Jest helpers.
+**Tranche 1, by 26 January 2027:** `xdrproof` on npm, the command-line tool (`verify`, `coverage`, `conformance`, `replay`, `guide check` and `check`), and `@xdrproof/corpus`, the corpus with `loadEntries({ hazards, caps, protocol })` and Vitest and Jest helpers.
 
-**Tranche 2, by 23 March 2027:** the GitHub Action `XDRProof/action`, which runs `xdrproof check` against a pinned corpus in your CI and uploads SARIF to code scanning; a Go module with the corpus embedded and a table-test helper; and a Rust crate that loads a corpus release.
+**Tranche 2, by 9 March 2027:** the GitHub Action `XDRProof/action`, which runs `xdrproof check` against a pinned corpus in your CI and uploads SARIF to code scanning; a Go module with the corpus embedded and a table-test helper; and a Rust crate that loads a corpus release.
 </Callout>
+
+<PlannedHelp />
 
 ```bash
 npx xdrproof check                                # planned, Tranche 1

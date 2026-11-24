@@ -107,8 +107,9 @@ Each build's `conformance/expectations/<testee>.json` lists every check it is kn
 | python@17.0.1 | 1 | a bool of 2 decodes as true (stellar-core's reading; rs-stellar-xdr reads false, rs-stellar-xdr#622); same class as #1262/#1263, rejected by stellar-xdr 0.2.1 on main |
 | python@17.0.1 | 1 | StellarCN/py-stellar-base#1262 (closed): non-zero XDR padding accepted; fixed on main |
 | python@17.0.1 | 1 | StellarCN/py-stellar-base#1263 (closed): any non-zero optional flag read as present; fixed on main |
-| rust@30.0.0, xdr-json@30.0.0 | 2 | stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true |
+| rust@30.0.0 | 1 | stellar/rs-stellar-xdr#622 (fixed on main by #644 on 19 Nov 2026; 30.0.0 still has it, and main passes this vector): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true |
 | xdr-json@30.0.0 | 13 | F-1 (findings/REPORT.md): js-stellar-xdr-json hard-codes XDR_MAX_DEPTH = 500 (src/lib.rs:10, set to mirror the Soroban host's budget limit) and applies it to the whole LedgerCloseMeta, so it refuses ledgers stellar-core wrote whose auth tree is 245 levels deep. Reported as stellar/js-stellar-xdr-json#67. |
+| xdr-json@30.0.0 | 1 | stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true |
 
 ## How deep each SDK reads
 

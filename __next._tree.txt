@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/0-ib-6wuwt7qy.css","style"]
-:HL["/_next/static/chunks/3w9r3z9hh0c1u.css","style"]
+:HL["/_next/static/chunks/0i0_3k_mzehhf.css","style"]
 :HL["/_next/static/media/BricolageGrotesque24_Medium-s.p.2z7vg1vcopys_.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/BricolageGrotesque96_Regular-s.p.1luzjr_zkj6oq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/InstrumentSans_Medium-s.p.3n-cep_pwimnq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
@@ -11,4 +11,4 @@
 :HL["/_next/static/chunks/3azyz2zbe2toh.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"(home)","h":96,"c":"$Q2"}]]
-0:{"b":"ltOb5g2XzDqgJYXJviw3n","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"xBOFai133llZbPovbBDvM","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

@@ -42,7 +42,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>47ff605b</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>ef33d938</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
