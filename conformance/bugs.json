@@ -8,7 +8,7 @@
     },
     "stellar/rs-stellar-xdr#622": {
       "title": "accepts an invalid bool value",
-      "state": "open"
+      "state": "fixed on main (#644, 19 Nov), not yet released"
     },
     "stellar/go-stellar-sdk#6042": {
       "title": "accepts an invalid strkey",

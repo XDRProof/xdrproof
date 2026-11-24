@@ -14,7 +14,7 @@
  },
  "fail": {
   "lane-s/bool-word-2": {
-   "reason": "stellar/rs-stellar-xdr#622 (open): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true",
+   "reason": "stellar/rs-stellar-xdr#622 (fixed on main by #644 on 19 Nov 2026; 30.0.0 still has it, and main passes this vector): a bool of 2 decodes as false (generated.rs: b = i == 1) where stellar-core reads it as true",
    "bug": "stellar/rs-stellar-xdr#622",
    "detail": "^accepted$"
   }

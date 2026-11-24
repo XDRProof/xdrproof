@@ -15,10 +15,13 @@ import { load, play, usedRows } from './emulate.mjs';
 import { terminal, strip, textPath, textWidth, loadFont, r1, esc } from './svg.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url)), REPO = join(HERE, '..', '..'), ASSETS = join(REPO, '.github', 'assets');
-const args = process.argv.slice(2).filter((a) => a !== '--dark'), DARK = process.argv.includes('--dark');
+const args = process.argv.slice(2).filter((a) => a !== '--dark' && a !== '--video'), DARK = process.argv.includes('--dark');
+// --video: the same banner at 16:9 (1920x1080) for X and Discord, where a video may be at most 2.39:1: the brand
+// column centred on the left, the terminal taller on the right (banner-video.svg; tools are run to film it)
+const VIDEO = process.argv.includes('--video');
 const [recording = join(HERE, 'recordings', 'verify-60.cast'), outDir = ASSETS] = args;
 const film = play(load(recording), { maxIdle: 1.2, fps: 15, hold: 0 });
-const used = usedRows(film), VR = 10;
+const used = usedRows(film);
 const date = new Date(film.recordedAt * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 // The chips say what the run showed, read from its final screen: only from a run that passed, and only from rows
 // it marked passed (✓); the third is the run's first known problem with its upstream link (a "!" row).
@@ -55,8 +58,9 @@ function placeSvg(file, x, y, h) {
   return { svg: `<svg x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" viewBox="${vb.join(' ')}">${inner}</svg>`, w };
 }
 
-function render(themeName) {
-  const T = THEMES[themeName], W = 1920, H = 600, C = W / 100; // C: 1% of the width, the unit the design was drawn in
+function render(themeName, { H = 600, video = false } = {}) {
+  const T = THEMES[themeName], W = 1920, C = W / 100; // C: 1% of the width, the unit the design was drawn in
+  const BH = 600, dyL = (H - BH) / 2; // the brand column is drawn for the banner's height and centred in a taller frame
   const bold = loadFont('InstrumentSans-Bold.ttf'), regular = loadFont('InstrumentSans-Regular.ttf'), monoBold = loadFont('JetBrainsMono-Bold.ttf');
   let out = '';
   // background, grid, crosses
@@ -66,6 +70,7 @@ function render(themeName) {
   out += cross(0.9 * C, 0.9 * C) + cross(0.9 * C, H - 0.9 * C - 24);
 
   // ---- the left: lockup, motto, sub line, SDKs and the site ----
+  if (dyL) out += `<g transform="translate(0 ${r1(dyL)})">`;
   const L = 3.4 * C;
   const mk = placeSvg(join(ASSETS, T.mark), L, 2.6 * C, 3.4 * C);
   out += mk.svg;
@@ -80,16 +85,20 @@ function render(themeName) {
   const subSize = 1.3 * C, subTop = mTop + mLine * 3 + 1.5 * C;
   ['A test kit for every program that reads the Stellar', 'ledger.'].forEach((l, i) => { out += `<path d="${textPath(regular, l, L, subTop + subSize * 1.35 * i + subSize, subSize).d}" fill="${T.sub}"/>`; });
   // the SDKs it checks, and the site
-  let lx = L; const ly = H - 2.4 * C - 1.7 * C;
+  let lx = L; const ly = BH - 2.4 * C - 1.7 * C;
   for (const [name, light, dark] of LOGOS) { const p = placeSvg(join(ASSETS, 'logos', themeName === 'dark' ? dark : light), lx, ly, 1.7 * C); out += `<g><title>${name}</title>${p.svg}</g>`; lx += p.w + 1 * C; }
   const site = textPath(monoBold, 'XDRPROOF.DEV', 0, 0, 1.15 * C, 0.12);
   out += `<path d="${textPath(monoBold, 'XDRPROOF.DEV', L + 33 * C - site.width, ly + 1.7 * C * 0.78, 1.15 * C, 0.12).d}" fill="${T.site}"/>`;
+  if (dyL) out += '</g>';
 
   // ---- the right: the terminal window ----
   const wx = 38.4 * C, wy = 2.2 * C, ww = W - 2.4 * C - wx, pad = 1.2 * C;
   const big = terminal({ fs: (ww - 2 * pad) / film.cols / 0.6, palette: termPalette(T.term), prefix: 'a' });
   const small = terminal({ fs: 1.25 * C, palette: termPalette(T.term), prefix: 'b' });
-  const barH = 2.76 * C, vpTop = wy + barH + 0.12 * C, vpPad = 0.6 * C, vpH = VR * big.H, chipsTop = vpTop + vpPad * 2 + vpH, wh = chipsTop + barH - wy;
+  const barH = 2.76 * C, vpTop = wy + barH + 0.12 * C, vpPad = 0.6 * C;
+  // the rows the window shows: 10 on the banner; as many as the taller frame holds in the video
+  const VR = video ? Math.floor((H - 2 * wy - 0.6 * C - 2 * barH - 0.12 * C - 2 * vpPad) / big.H) : 10;
+  const vpH = VR * big.H, chipsTop = vpTop + vpPad * 2 + vpH, wh = chipsTop + barH - wy;
   out += `<rect x="${r1(wx + 0.6 * C)}" y="${r1(wy + 0.6 * C)}" width="${r1(ww)}" height="${r1(wh)}" fill="${GOLD}"/>`;
   out += `<rect x="${r1(wx)}" y="${r1(wy)}" width="${r1(ww)}" height="${r1(wh)}" fill="${T.term}" stroke="${T.border}" stroke-width="2.3"/>`;
   // title bar: three dots (the first gold), the command, REC with the date and the run's clock
@@ -134,6 +143,12 @@ function render(themeName) {
 }
 
 mkdirSync(outDir, { recursive: true });
+if (VIDEO) {
+  const svg = render('light', { H: 1080, video: true }), file = join(outDir, 'banner-video.svg');
+  writeFileSync(file, svg);
+  console.log(`${file}: ${(svg.length / 1024).toFixed(0)} KB, 1920×1080`);
+  process.exit(0);
+}
 for (const t of DARK ? ['light', 'dark'] : ['light']) {
   const svg = render(t), file = join(outDir, t === 'light' ? 'banner.svg' : 'banner-dark.svg');
   writeFileSync(file, svg);

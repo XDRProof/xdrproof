@@ -19,6 +19,9 @@ Stellar developer Discord.
 - **wallet-backend#834:** a one-file Go test, with no Docker and nothing from XDRProof, is on the issue. It fails
   on `main` and passes with the fix.
 - `make conformance ARGS="--entries <id>"` runs only the named corpus entries.
+- **The SDKs' main branches, checked** ([record](conformance/recorded/main-branches-2026-11-24.md)): rs-stellar-xdr main reads
+  the corpus exactly as 30.0.0 and fixes rs-stellar-xdr#622 (a bool of 2), which our expectations pinned; recorded as
+  fixed on main, not yet released. `make conformance` now installs what it needs on a fresh clone.
 - **The "Reported upstream" table is now written from one list** (`findings/upstream.json`) into the README, the
   findings report, the docs and the org profile, with each report's status checked on GitHub (`make upstream-table`);
   CI fails when a copy differs. Every report has a figure now, java-stellar-sdk#835 included.

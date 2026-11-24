@@ -39,7 +39,7 @@ generate-quick: tools/node_modules    ## mainnet base P30 runs only, twice (~15 
 order-scan: tools/node_modules        ## 20 fresh runs per lane; records which ledgers vary in change order (~2–5 min)
 	@node recipes/order-scan.mjs $(if $(or $(DETAILS),$(V)),--details)
 
-conformance:                          ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/ (DETAILS=1 adds bug status and older releases, ARGS="--fresh" ignores the cache, ARGS="--entries <id>,<id>" runs only those entries)
+conformance: tools/node_modules $(NATIVE) ## every corpus variant, strkey, lane S, depth and sighting vectors through JS, WASM, Rust, Go and Python SDKs; must match conformance/expectations/ (DETAILS=1 adds bug status and older releases, ARGS="--fresh" ignores the cache, ARGS="--entries <id>,<id>" runs only those entries)
 	@conformance/run.sh $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 replay: tools/node_modules $(NATIVE)  ## the whole corpus into wallet-backend main, and every sighting before and after its fix; must match replay/expectations/ (~20 min cold)
