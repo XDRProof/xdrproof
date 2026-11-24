@@ -5,13 +5,49 @@ What XDRProof's runs turn up in SDKs, decoders and indexers, triaged. Every row 
 `replay/expectations/`, so a fix upstream shows up as an unexpected pass and the row is updated. Issues that let anyone halt or crash an indexer are not listed here
 (see [policy.md](policy.md)).
 
+## Reported upstream, at a glance
+
+<!-- upstream:start · written by tools/upstream-table.mjs from findings/upstream.json; do not edit -->
+Status checked on GitHub on 24 Nov 2026.
+
+<table>
+  <tr><th>Figure</th><th>Report and what breaks</th><th>Found by</th><th>Status</th></tr>
+  <tr>
+    <td width="220"><a href="https://github.com/stellar/wallet-backend/issues/834"><img src="../findings/figures/f3-refunds.png" width="220" alt="Where a Soroban fee refund lands before protocol 23, and the parts wallet-backend reads"></a></td>
+    <td><a href="https://github.com/stellar/wallet-backend/issues/834"><b>wallet-backend#834</b></a> · new bug<br>Native balances miss Soroban fee refunds on protocol 20–22 ledgers: on pubnet ledger 56085459, seven accounts end 3,349,302 stroops short</td>
+    <td>replay</td>
+    <td><img src="../findings/badges/open.svg" alt="open"><br><a href="https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances"><img src="../findings/badges/fix-ready.svg" alt="fix ready"></a></td>
+  </tr>
+  <tr>
+    <td width="220"><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><img src="../findings/figures/f1-depth.png" width="220" alt="The depth each part of a 245-deep transaction needs, against the decoder's limit of 500"></a></td>
+    <td><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><b>js-stellar-xdr-json#67</b></a> · new bug<br>The decoder Stellar Lab depends on refuses 13 ledgers stellar-core wrote (standalone v30.0.0, raised Soroban test limits): its limit is 500, and the deepest tree core applied needs 519</td>
+    <td>verify</td>
+    <td><img src="../findings/badges/open.svg" alt="open"></td>
+  </tr>
+  <tr>
+    <td width="220"><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><img src="../findings/figures/820-bounded-walk.png" width="220" alt="A bounded contract-deploy walk that stops at the limit instead of failing the ledger"></a></td>
+    <td><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><b>wallet-backend#820</b></a> · fix offered<br>The contract-deploy walk follows authorization trees with no limit; a tested bound offered that stops the walk instead of failing the ledger</td>
+    <td>the linter</td>
+    <td><img src="../findings/badges/open.svg" alt="open"><br><a href="https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/contract-deploy-auth-walk-bounds"><img src="../findings/badges/fix-ready.svg" alt="fix ready"></a></td>
+  </tr>
+  <tr>
+    <td width="220"><a href="https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020"><img src="../findings/figures/java-835-depth.png" width="220" alt="Java's default decoding depth of 200 against the 267 and 268 that 13 ledgers need"></a></td>
+    <td><a href="https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020"><b>java-stellar-sdk#835</b></a> · evidence added<br>The same 13 ledgers need a decoding depth of 267 or 268; Java's default is 200 (evidence on the maintainer's own issue)</td>
+    <td>other SDKs, same ledgers</td>
+    <td><img src="../findings/badges/open.svg" alt="open"></td>
+  </tr>
+</table>
+
+The replay also reproduces 5 fixed wallet-backend bugs at the commit before their fix, and each is gone once fixed: <a href="https://github.com/stellar/wallet-backend/issues/716">#716</a>, <a href="https://github.com/stellar/wallet-backend/pull/729">#729</a>, <a href="https://github.com/stellar/wallet-backend/issues/731">#731</a>, <a href="https://github.com/stellar/wallet-backend/issues/745">#745</a>, <a href="https://github.com/stellar/wallet-backend/pull/753">#753</a> (#716's fix exposed #729 on the same ledger, so that ledger passes after both).
+<!-- upstream:end -->
+
 ## Not reported upstream before XDRProof
 
 | ID | Where | What | Status |
 |---|---|---|---|
 | F-1 | `@stellar/stellar-xdr-json` 30.0.0 (rs-stellar-xdr compiled to WASM) | Refuses 13 corpus variants that stellar-core wrote (`depth limit exceeded`): 8 whose Soroban auth tree is 245 levels deep, the deepest that applies, and 5 at 246, which core includes and traps. The package hard-codes `XDR_MAX_DEPTH = 500` ([src/lib.rs](https://github.com/stellar/js-stellar-xdr-json/blob/main/src/lib.rs), line 10), set to mirror the Soroban host's budget limit, and applies it to the whole `LedgerCloseMeta`, whose path down to the auth tree is deeper. js-stellar-sdk 17.4.0, go-stellar-sdk v0.9.0, both Python decoders and native rs-stellar-xdr with a larger limit read them. Of the sampled nested-`ScVal` depths it decodes 64 and refuses 100. | [stellar/js-stellar-xdr-json#67](https://github.com/stellar/js-stellar-xdr-json/issues/67), filed 19 Nov 2026 with the measured depths (auth entry 499, transaction 507, ledger 519, against a limit of 500) and a reproducer |
 | F-2 | `stellar-sdk` 17.0.1 (Python) | `to_json` raises `Unknown SCAddress type: 5` on a CAP-0084 muxed contract address that `from_xdr` decodes (2 corpus variants). py-stellar-base#1234, the protocol 30 tracking issue, asked for CAP-0084 support and warned that muxed contract values would fail; this exact failure is not reported, and #1269 does not cover it. | fixed on main by the switch to `stellar-xdr` (py-stellar-base#1268): `stellar-xdr` 0.2.1 passes |
-| F-3 | wallet-backend `main` (`18db88f4`), native balances | Before protocol 23 a Soroban fee refund is credited in `txChangesAfter`. wallet-backend builds `native_balances` from fee changes, operation changes and the protocol 23+ post-apply refunds only ([accounts.go](https://github.com/stellar/wallet-backend/blob/18db88f4ba481c49a782d157be42177700c4385e/internal/indexer/processors/accounts.go#L96-L122)), so on pubnet ledger 56085459 (protocol 22) the 7 refunded accounts end short by exactly their refund (2,985,957 stroops for one of them), while wallet-backend's own `BALANCE` history rows for the same account add up to the ledger. It bites only when live ingestion processes protocol 20-22 ledgers, such as a catch-up from the data lake; current ledgers carry the refund in `postTxApplyFeeProcessing`, which it reads. No issue or PR mentions it (searched "refund", "txChangesAfter", "protocol 22"). | [stellar/wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834), filed 19 Nov 2026. Fix: [`fix/pre-p23-soroban-refund-balances`](https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances); the whole corpus replayed into it handles both variants of ledger 56085459 and changes no other verdict. A PR follows if a maintainer accepts the approach |
+| F-3 | wallet-backend `main` (`18db88f4`), native balances | Before protocol 23 a Soroban fee refund is credited in `txChangesAfter`. wallet-backend builds `native_balances` from fee changes, operation changes and the protocol 23+ post-apply refunds only ([accounts.go](https://github.com/stellar/wallet-backend/blob/18db88f4ba481c49a782d157be42177700c4385e/internal/indexer/processors/accounts.go#L96-L122)), so on pubnet ledger 56085459 (protocol 22) the 7 refunded accounts end short by exactly their refund (2,985,957 stroops for one of them), while wallet-backend's own `BALANCE` history rows for the same account add up to the ledger. It bites only when live ingestion processes protocol 20-22 ledgers, such as a catch-up from the data lake; current ledgers carry the refund in `postTxApplyFeeProcessing`, which it reads. No issue or PR mentions it (searched "refund", "txChangesAfter", "protocol 22"). | [stellar/wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834), filed 19 Nov 2026. Fix: [`fix/pre-p23-soroban-refund-balances`](https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances); the whole corpus replayed into it handles both variants of ledger 56085459 and changes no other verdict. A PR follows if a maintainer accepts the approach. On 20 Nov 2026 a [one-file Go test](https://github.com/stellar/wallet-backend/issues/834#issuecomment-7050147057) was added to the issue: no Docker and nothing from XDRProof, it downloads the ledger from the public data lake and runs `indexer.ProcessLedger`; it fails on `main` at 76194899 (7 balances, 3,349,302 stroops short) and passes on the fix branch and on 76194899 with the fix cherry-picked |
 | F-4 | wallet-backend `main`, Blend decoder | `internal/services/blend/scval.go` `addrString` turns any `ScAddress` into a string with `String()`, and three call sites use it as an account (two map keys that outlive the call, and `WithAccount`); a fourth stores it as the BLND token's contract ID (`comet.go:337`). wallet-backend fixed this shape in its SEP-41 processor (#756) with `types.StorableAddressString`, noting that "a real contract cannot emit them today"; the Blend decoder, added later (#798), does not use it. Not reachable today: only pinned Blend WASM is decoded, Blend takes `Address` arguments, and the host refuses B and L addresses and a muxed address in a contract-data key (corpus `deploy.from-claimable-balance-address`, `deploy.from-liquidity-pool-address`, `scval.muxed-address-key-trapped`). Found by `xplint` (`XP001/muxed-as-account`); `linter/patches/wallet-backend-blend-address.diff` fixes it, and wallet-backend's build, vet and Blend tests pass with it. | not filed: no reachable case today, and the Stellar contribution guide asks not to file speculative findings. Fix ready on [`fix/blend-storable-address`](https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/blend-storable-address) |
 | H-B16 | soroban-env-host, every signer | A v1 create-contract authorization is signed over its V2 rendering, not its own bytes. By design since protocol 22 ([stellar discussion #1501](https://github.com/orgs/stellar/discussions/1501)): a hazard for offline signers and signature verifiers, not a bug. `tools/auth-payload-check.mjs` checks it without any SDK. | documented in the corpus |
 
@@ -28,7 +64,7 @@ When a finding turns up in one SDK or indexer, the same entries go through the o
 
 ## Reproduced in wallet-backend by `make replay`
 
-The whole corpus replayed into wallet-backend `main` (`18db88f4`, 2026-11-18): 618 of 634 variants handled, none
+The whole corpus replayed into wallet-backend `main` (`76194899`, 2026-11-24; the same verdicts as `18db88f4` on 2026-11-18): 618 of 634 variants handled, none
 halted. The 16 that are not are each pinned with its cause in `replay/expectations/wallet-backend@main.json`:
 
 | Shape | Corpus entries | Verdict | Upstream |

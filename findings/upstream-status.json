@@ -1,0 +1,37 @@
+{
+  "checked": "2026-11-24",
+  "reports": {
+    "stellar/wallet-backend#834": {
+      "state": "open",
+      "reason": null,
+      "replies": 0,
+      "maintainer_replies": 0,
+      "last_reply": null,
+      "posted": "2026-11-19"
+    },
+    "stellar/js-stellar-xdr-json#67": {
+      "state": "open",
+      "reason": null,
+      "replies": 0,
+      "maintainer_replies": 0,
+      "last_reply": null,
+      "posted": "2026-11-19"
+    },
+    "stellar/wallet-backend#820": {
+      "state": "open",
+      "reason": null,
+      "replies": 0,
+      "maintainer_replies": 0,
+      "last_reply": null,
+      "posted": "2026-11-19"
+    },
+    "lightsail-network/java-stellar-sdk#835": {
+      "state": "open",
+      "reason": null,
+      "replies": 0,
+      "maintainer_replies": 0,
+      "last_reply": null,
+      "posted": "2026-11-19"
+    }
+  }
+}

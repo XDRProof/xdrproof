@@ -1,0 +1,12 @@
+{"version": 2, "width": 72, "height": 30, "timestamp": 1795523122, "title": "cargo test --release -- --nocapture", "env": {"TERM": "xterm-256color"}, "command": "cargo test --release -- --nocapture", "exit": 0}
+[0.3862, "o", "\u001b[1m\u001b[92m    Finished\u001b[0m \u001b]8;;https://doc.rust-lang.org/cargo/reference/profiles.html#default-profiles\u001b\\`release` profile [optimized]\u001b]8;;\u001b\\ target(s) in 0.33s\r\n"]
+[0.3887, "o", "\u001b[1m\u001b[92m     Running\u001b[0m unittests src/lib.rs (target/release/deps/xdrproof_demo-412538738dd1c5b2)\r\n"]
+[1.3777, "o", "\r\nrunning 0 tests\r\n\r\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\r\n\r\n"]
+[1.378, "o", "\u001b[1m\u001b[92m     Running\u001b[0m tests/xdrproof.rs (target/release/deps/xdrproof-c5f7c5e50d851f46)\r\n"]
+[2.527, "o", "\r\nrunning 1 test\r\n"]
+[50.2545, "o", "634 corpus variants round-trip\r\n"]
+[50.2551, "o", "test corpus_round_trips ... ok\r\n\r\ntest result: ok"]
+[50.2551, "o", ". 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 47.73s\r\n\r\n"]
+[50.2573, "o", "\u001b[1m\u001b[92m   Doc-tests\u001b[0m xdrproof_demo\r\n"]
+[51.0168, "o", "\r\nrunning 0 tests\r\n\r\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out"]
+[51.0169, "o", "; finished in 0.00s\r\n\r\n"]

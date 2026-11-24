@@ -74,7 +74,7 @@ flowchart LR
 | **SDF's public data lake** and **Hubble** (BigQuery) | 37 ledgers mined from the lake (mainnet and testnet, protocols 12 to 30), for shapes cheaper to find than to make: eviction, settings votes, protocol 20 to 22 refunds, V0 envelopes. Each keeps its lake URL, sha256 and the SQL, run on the public `crypto-stellar.crypto_stellar` dataset, that found it (`mined/`). | Maintenance: shapes each new protocol brings to the network are mined or generated into the corpus (§14). |
 | **Stellar RPC** API | The replay harness feeds each indexer through a mock stellar-rpc that answers `getLedgers`, `getLatestLedger`, `getHealth`, `getNetwork`, `getVersionInfo` and `getLedgerEntries` from the ledger file, so the indexer runs its own ingestion code unchanged. | T1: a memory gate for the replay. T2: replay sharded in CI. |
 | **Stellar SDKs** | Six builds run the whole corpus: js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and `stellar-xdr` 0.2.1 (Python). Five older releases run fixed-bug regressions, and 164 SEP-0023 strkey vectors cover all ten types. | T1: `@xdrproof/corpus` on npm, with Vitest and Jest helpers. T2: a Go module and a Rust crate; the SDK-pin check (`sdk-support.json`: which SDK releases read every variant). T3: runners for the Java, Swift (iOS and macOS), Flutter/Dart, PHP and .NET SDKs. |
-| **Indexers** | wallet-backend `18db88f4` replays all 634 variants and is judged on what it stores (§9). `xplint` runs on wallet-backend, stellar-etl and go-stellar-sdk's ingest packages (§10). | T2: the stellar-etl replay adapter. T3: the Horizon replay adapter. Both are judged with the same probes and verdicts. |
+| **Indexers** | wallet-backend `76194899` (`main` on 20 Nov 2026) replays all 634 variants and is judged on what it stores (§9). `xplint` runs on wallet-backend, stellar-etl and go-stellar-sdk's ingest packages (§10). | T2: the stellar-etl replay adapter. T3: the Horizon replay adapter. Both are judged with the same probes and verdicts. |
 | **CAPs and protocol versions** | Every variant records its protocol (12 to 30); entries are tagged with 26 CAPs, from CAP-0001 to CAP-0088, and pre-CAP behaviour. | T1: a per-CAP coverage report (entries, protocols, covered shapes and gaps for every CAP). |
 | **Stellar developers** | Findings go to Stellar's own repositories ([wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834), [js-stellar-xdr-json#67](https://github.com/stellar/js-stellar-xdr-json/issues/67), a bound on [wallet-backend#820](https://github.com/stellar/wallet-backend/issues/820)); halts go privately to SDF's security channel first (§12). Status is posted weekly in the Stellar developer Discord's #scf-general. | T2: the GitHub Action, pre-commit hook and golangci-lint plugin for teams' own CI. T3: the hardening guide, reviewed by a core or platform engineer, with an export ready to offer to developers.stellar.org. |
 
@@ -169,10 +169,10 @@ signers, trustlines, native and trustline balances, contract creations, address 
 gets `handled`, `dropped`, `mishandled`, `stalled`, `crashed` or `halted`, judged from the indexer's cursor, its
 process and its stored rows. Every verdict is pinned in `replay/expectations/`, together with a hash of the judged set.
 
-**Results on wallet-backend `main`** (`18db88f4`): 618 of 634 variants handled, none halted. 14 are dropped by causes
+**Results on wallet-backend `main`** (`76194899`, replayed 24 Nov 2026; the same as `18db88f4` on 18 Nov): 618 of 634 variants handled, none halted. 14 are dropped by causes
 already reported upstream (#804, #816, #815, #805, #818, #817) and 2 are mishandled by a bug XDRProof found and
-reported (#834). Five fixed bugs (#716, #729, #731, #745, #753) reproduce at the commit before their fix and pass at
-the fix.
+reported (#834). Five fixed bugs (#716, #729, #731, #745, #753) reproduce at the commit before their fix and are gone
+once fixed; #716's fix exposed #729 on the same ledger, which is handled only after #729's fix.
 
 ## 10. Linter
 

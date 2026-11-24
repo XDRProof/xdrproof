@@ -1,0 +1,11 @@
+{"version": 2, "width": 72, "height": 40, "timestamp": 1795523385, "title": "node tools/inspect.mjs classic muxed-payment", "env": {"TERM": "xterm-256color"}, "command": "node tools/inspect.mjs classic muxed-payment", "exit": 0}
+[0.089, "o", "\r\n"]
+[0.089, "o", "\u001b[1;7m XDRPROOF \u001b[0m  \u001b[1minspect\u001b[22m\u001b[2m  · classic · muxed-payment · p30-mainnet\u001b[22m\r\n\r\n"]
+[0.1064, "o", "  \u001b[2mLedger      \u001b[22m  5 (LedgerCloseMeta v2), 1 transaction\r\n  \u001b[2mTransaction \u001b[22m  tx_processing[0] ·\r\n"]
+[0.1064, "o", "  \u001b[2m            \u001b[22m  e789c6146d92616b7ff7196eda35e8340a94dc36f23dce29f425dfa…\r\n"]
+[0.1064, "o", "  \u001b[2mResult      \u001b[22m  {\"tx_success\":[{\"op_inner\":{\"payment\":\"success\"}}]}\r\n  \u001b[2mFee         \u001b[22m  charged 100 · fee changes 2 · post-apply 0\r\n"]
+[0.1067, "o", "  \u001b[2mMeta        \u001b[22m  changes before 2 · after 0 · events 1 · diagnostic 0\r\n"]
+[0.1068, "o", "  \u001b[2mOp 0        \u001b[22m  changes [state:account, updated:account, state:account,\r\n  \u001b[2m            \u001b[22m  updated:account] · events 1\r\n"]
+[0.1068, "o", "  \u001b[2m            \u001b[22m  first event:\r\n"]
+[0.1068, "o", "  \u001b[2m            \u001b[22m  {\"v0\":{\"topics\":[{\"symbol\":\"transfer\"},{\"address\":\"GBQX…\r\n"]
+[0.1068, "o", "\r\n"]

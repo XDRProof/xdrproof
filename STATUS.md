@@ -3,6 +3,26 @@
 A dated public log of what has landed in XDRProof. Newest first. Weekly updates also go to #scf-general on the
 Stellar developer Discord.
 
+## 2026-11-24
+
+- **Every command now shows what it is doing from the first second**, then ends with short result cards and one
+  verdict line. This covers `make oracle`, `novelty`, `coverage-report`, `build`, `generate`, `order-scan` and the
+  replay harness run on its own, joining `verify`, `conformance`, `replay`, `lint`, `lint-selftest` and `coverage`.
+  The first `make oracle` now says it is downloading stellar-core (about 2 GB, once) instead of sitting silent.
+- **Measured, and the stated times corrected:** `make generate` makes every generated ledger again from scratch in
+  47 seconds on 10 cores (it said ~10 min), `make order-scan` 2 minutes (it said ~15 min), `make oracle` 16 seconds.
+- **Every command has a real recorded run on its page** at [xdrproof.dev](https://xdrproof.dev), and so do the four
+  copy-paste SDK tests: JavaScript, Go, Rust and Python each read all 634 ledgers from an empty folder.
+- **Replayed the whole corpus into wallet-backend's latest `main`** (`76194899`, 20 Nov): the same verdicts as on
+  `18db88f4`. 618 of 634 handled, 14 dropped by causes already reported upstream, and the 2 variants of the #834
+  ledger still mishandled.
+- **wallet-backend#834:** a one-file Go test, with no Docker and nothing from XDRProof, is on the issue. It fails
+  on `main` and passes with the fix.
+- `make conformance ARGS="--entries <id>"` runs only the named corpus entries.
+- **The "Reported upstream" table is now written from one list** (`findings/upstream.json`) into the README, the
+  findings report, the docs and the org profile, with each report's status checked on GitHub (`make upstream-table`);
+  CI fails when a copy differs. Every report has a figure now, java-stellar-sdk#835 included.
+
 ## 2026-11-20
 
 - **Submitted the SCF #46 Build application** for RFP 2.

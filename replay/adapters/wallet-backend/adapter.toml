@@ -23,7 +23,7 @@ probes = [
 # (v0.7.x adds protocol 28 in v0.7.0; protocol 30 arrives in v0.8.0). Newer ledgers are reported as
 # unsupported for that ref, never as a halt.
 [targets.main]
-ref = "18db88f4ba481c49a782d157be42177700c4385e"   # main on 2026-11-18 (#807), go-stellar-sdk v0.8.0
+ref = "7619489951ea008c03c19cf676368d589c607cd4"   # main on 2026-11-20 (#837), go-stellar-sdk v0.8.0; 18db88f4 (#807) before
 protocol_max = 30
 
 [targets.79ea2acd]

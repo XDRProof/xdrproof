@@ -97,43 +97,56 @@ and what the grant buys by date. Every terminal in it is a recorded real run.
 
 Bugs this kit found are reported to the projects that own them, each with a figure and a reproduction:
 
+<!-- upstream:start · written by tools/upstream-table.mjs from findings/upstream.json; do not edit -->
+Status checked on GitHub on 24 Nov 2026.
+
 <table>
+  <tr><th>Figure</th><th>Report and what breaks</th><th>Found by</th><th>Status</th></tr>
   <tr>
-    <td width="34%"><a href="https://github.com/stellar/wallet-backend/issues/834"><img alt="Where a Soroban refund lands before protocol 23, and the parts wallet-backend reads" src="findings/figures/f3-refunds.png"></a></td>
-    <td><b><a href="https://github.com/stellar/wallet-backend/issues/834">stellar/wallet-backend#834</a></b><br>Native balances miss Soroban fee refunds on protocol 20 to 22 ledgers: on pubnet ledger 56085459, seven accounts end short by 3,349,302 stroops. A fix is ready; replaying the whole corpus into it fixes both affected variants and changes nothing else.</td>
+    <td width="220"><a href="https://github.com/stellar/wallet-backend/issues/834"><img src="findings/figures/f3-refunds.png" width="220" alt="Where a Soroban fee refund lands before protocol 23, and the parts wallet-backend reads"></a></td>
+    <td><a href="https://github.com/stellar/wallet-backend/issues/834"><b>wallet-backend#834</b></a> · new bug<br>Native balances miss Soroban fee refunds on protocol 20–22 ledgers: on pubnet ledger 56085459, seven accounts end 3,349,302 stroops short</td>
+    <td>replay</td>
+    <td><img src="findings/badges/open.svg" alt="open"><br><a href="https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances"><img src="findings/badges/fix-ready.svg" alt="fix ready"></a></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><img alt="The depth each part of a 245-deep transaction needs, against the decoder's limit of 500" src="findings/figures/f1-depth.png"></a></td>
-    <td><b><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67">stellar/js-stellar-xdr-json#67</a></b><br>The decoder Stellar Lab depends on refuses a transaction stellar-core applied (standalone core v30.0.0, with the raised Soroban test limits): its auth entry needs depth 499, the transaction 507 and its ledger 519, against a limit of 500.</td>
+    <td width="220"><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><img src="findings/figures/f1-depth.png" width="220" alt="The depth each part of a 245-deep transaction needs, against the decoder's limit of 500"></a></td>
+    <td><a href="https://github.com/stellar/js-stellar-xdr-json/issues/67"><b>js-stellar-xdr-json#67</b></a> · new bug<br>The decoder Stellar Lab depends on refuses 13 ledgers stellar-core wrote (standalone v30.0.0, raised Soroban test limits): its limit is 500, and the deepest tree core applied needs 519</td>
+    <td>verify</td>
+    <td><img src="findings/badges/open.svg" alt="open"></td>
   </tr>
   <tr>
-    <td><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><img alt="A bounded contract-deploy walk that stops at the limit instead of failing the ledger" src="findings/figures/820-bounded-walk.png"></a></td>
-    <td><b><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300">stellar/wallet-backend#820</a></b><br>A tested bound for wallet-backend's contract-deploy walk, which follows declared authorization trees with no limit: stop at the bound, count it and log it, never fail the ledger.</td>
+    <td width="220"><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><img src="findings/figures/820-bounded-walk.png" width="220" alt="A bounded contract-deploy walk that stops at the limit instead of failing the ledger"></a></td>
+    <td><a href="https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300"><b>wallet-backend#820</b></a> · fix offered<br>The contract-deploy walk follows authorization trees with no limit; a tested bound offered that stops the walk instead of failing the ledger</td>
+    <td>the linter</td>
+    <td><img src="findings/badges/open.svg" alt="open"><br><a href="https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/contract-deploy-auth-walk-bounds"><img src="findings/badges/fix-ready.svg" alt="fix ready"></a></td>
+  </tr>
+  <tr>
+    <td width="220"><a href="https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020"><img src="findings/figures/java-835-depth.png" width="220" alt="Java's default decoding depth of 200 against the 267 and 268 that 13 ledgers need"></a></td>
+    <td><a href="https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020"><b>java-stellar-sdk#835</b></a> · evidence added<br>The same 13 ledgers need a decoding depth of 267 or 268; Java's default is 200 (evidence on the maintainer's own issue)</td>
+    <td>other SDKs, same ledgers</td>
+    <td><img src="findings/badges/open.svg" alt="open"></td>
   </tr>
 </table>
 
-Evidence added to an existing report: the same 13 deep ledgers are refused by java-stellar-sdk 6.0.0 at its default
-depth of 200 (they need 267 and 268), posted on
-[lightsail-network/java-stellar-sdk#835](https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020),
-the maintainer's own issue about the depth limit.
+The replay also reproduces 5 fixed wallet-backend bugs at the commit before their fix, and each is gone once fixed: <a href="https://github.com/stellar/wallet-backend/issues/716">#716</a>, <a href="https://github.com/stellar/wallet-backend/pull/729">#729</a>, <a href="https://github.com/stellar/wallet-backend/issues/731">#731</a>, <a href="https://github.com/stellar/wallet-backend/issues/745">#745</a>, <a href="https://github.com/stellar/wallet-backend/pull/753">#753</a> (#716's fix exposed #729 on the same ledger, so that ledger passes after both).
+<!-- upstream:end -->
 
-The replay also reproduces five fixed wallet-backend bugs at the commit before their fix, and passes at the fix:
-#716, #729, #731, #745 and #753. Every finding, with its status, is in [`findings/REPORT.md`](findings/REPORT.md).
+Every finding, with its triage and the sibling checks, is in [`findings/REPORT.md`](findings/REPORT.md).
 
 ## Check every claim yourself
 
 | Command | What it proves | Needs | Time |
 |---|---|---|---|
 | `make verify` | All **263 entries (634 variants)**: every entry matches the schema and names known hazards; sha256 and size match; every variant **round-trips byte-for-byte through native rs-stellar-xdr 30.0.0** (depth limit 1500); its focus transaction is present; every expected fact holds; `manifest.json` is current. A second reader, the WASM build `@stellar/stellar-xdr-json`, must agree wherever it can decode | Node ≥ 22.15, Rust | seconds (first build ~1 min) |
-| `make oracle` | Every value-checkable fact is **found in stellar-core's own decoding of the ledger** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK): 737 values; `make verify` checks each at its exact field. Each of the 49 expected 64-bit values, changed in its last digit, is **rejected by both readers** | Docker | seconds |
-| `make novelty` | **No entry is redundant.** Leave-one-out over 1226 atoms: the arms and enum members an entry reaches (its own transaction and its ledger's shape), its hazards, sightings and placements. 182 entries hold an arm, enum member, hazard or sighting no other entry holds; the other 81 differ by placement, and the 11 whose structure sits wholly inside one other entry are listed for review | Rust | seconds |
+| `make oracle` | Every value-checkable fact is **found in stellar-core's own decoding of the ledger** (C++ `dump-xdr`, no code shared with any SDK) **and by XDRProof's schema walker** (no SDK): 737 values; `make verify` checks each at its exact field. Each of the 49 expected 64-bit values, changed in its last digit, is **rejected by both readers** | Docker | ~20 s (the stellar-core image, ~2 GB, downloads once) |
+| `make novelty` | **No entry is redundant.** Leave-one-out over 1226 atoms: the arms and enum members an entry reaches (its own transaction and its ledger's shape), its hazards, sightings and placements. 182 entries hold an arm, enum member, hazard or sighting no other entry holds; the other 81 differ by placement, and the 11 whose structure sits wholly inside one other entry are listed for review with `DETAILS=1` | Rust | seconds |
 | `make coverage` | 499 XDR union arms are reachable from `LedgerCloseMeta` at v30.0. The corpus entries reach **417**, including all 289 that the 37 mined mainnet and testnet ledgers in `mined/` reach | Python 3 | seconds |
 | `make coverage-report` | [`COVERAGE.md`](COVERAGE.md): **417 arms reached by an entry** (its own transaction, or its ledger's header and transaction-set shape; other transactions in the same ledger never count), and each of the other 82 classified with the stellar-core source line that decides it (39 validation-only, 17 never emitted, 18 historical, 8 network-only). Every arm core can still write at protocol 30 on a standalone network is in an entry. Fails if any arm is unclassified | Rust | seconds |
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach **254 of 499** | + git (downloads ~76 MB once) | ~1 min |
-| `make generate` | Every recipe run is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0, pinned by image digest (standalone, no peers or RPC; test-only keys; no real funds): both lanes, mainnet and testnet passphrases, Soroban at P30 and P28, three emitter-flag profiles. Every pair agrees, byte for byte or after normalisation, and every shipped generated variant is reproduced | Docker | ~10 min (`make generate-quick` ~3 min) |
-| `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | ~15 min |
+| `make generate` | Every recipe run is rebuilt **twice from scratch** by a bare standalone stellar-core v30.0.0, pinned by image digest (standalone, no peers or RPC; test-only keys; no real funds): both lanes, mainnet and testnet passphrases, Soroban at P30 and P28, three emitter-flag profiles. Every pair agrees, byte for byte or after normalisation, and every shipped generated variant is reproduced | Docker | ~1 min on 10 cores (`make generate-quick` ~15 s) |
+| `make order-scan` | 20 fresh runs per lane record which ledgers come out in more than one byte order, and prove the content never varies | Docker | 2 to 5 min |
 | `make conformance` | Every corpus variant, 164 strkeys, 14 invalid-input vectors and a depth ladder run through **6 SDK builds**: js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1. The regression vectors for bugs already fixed upstream also run through 5 older releases (js-stellar-sdk 17.2.0, 17.2.1 and 17.3.0, go-stellar-sdk v0.7.1 and v0.7.2). **js-stellar-sdk 17.4.0 and `stellar-xdr` 0.2.1 read all 634 variants exactly as rs-stellar-xdr does**, bytes, SEP-0051 JSON and every expected fact; every other difference is pinned with its cause in [`conformance/expectations/`](conformance/expectations), and an unexpected failure or pass fails the run ([`findings/REPORT.md`](findings/REPORT.md)) | Node, Rust, Docker | ~2 min warm |
-| `make replay` | Every corpus ledger replayed into **real wallet-backend builds**, one isolated session each, through a mock stellar-rpc that serves only what the ledger states. Each variant gets a verdict (handled, dropped, mishandled, stalled, crashed, halted) from the indexer's cursor, process and stored rows, judged against probes derived from the ledger itself. **`main`: 618 of 634 variants handled, none halted**; the other 16 reproduce five open upstream issues and one new finding (F-3). **Every fixed failure the corpus holds reproduces before its fix and not after**: #716, #729, #731, #745 and #753, across ten commits. Any indexer can join through a TOML adapter ([`replay/README.md`](replay/README.md)) | Docker | ~20 min cold |
+| `make replay` | Every corpus ledger replayed into **real wallet-backend builds**, one isolated session each, through a mock stellar-rpc that serves only what the ledger states. Each variant gets a verdict (handled, dropped, mishandled, stalled, crashed, halted) from the indexer's cursor, process and stored rows, judged against probes derived from the ledger itself. **`main`: 618 of 634 variants handled, none halted**; the other 16 reproduce six open upstream issues and one new finding (F-3). **Every fixed failure the corpus holds reproduces before its fix and not after**: #716, #729, #731, #745 and #753, across ten commits. Any indexer can join through a TOML adapter ([`replay/README.md`](replay/README.md)) | Docker | ~20 min cold |
 | `make lint-selftest` | The linter (`linter/`, XP001 unvalidated fields, XP002 unbounded recursion, XP003 participants from the envelope; 12 sub-rules) against 44 seeded violations modelled on real code and 17 mutants: **every one caught, no good case flagged** | Docker | ~2 min warm |
 | `make lint` | The linter on **wallet-backend `main`: 4 findings, all true** (#820 and the Blend decoder's unchecked addresses, #756's shape), **0 with the two patches in `linter/patches/`**; stellar-etl: 12, all matching open issues (#504, #462, #488); go-stellar-sdk ingest: 0. It also fires before each upstream fix of these mistakes and goes quiet after (#753, #756, #803, 9538b3ca), and on five fixed bugs put back into `main`. Every finding is pinned and triaged in `linter/expectations.json` | Docker | ~3 min warm |
 

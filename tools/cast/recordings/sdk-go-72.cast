@@ -1,0 +1,2 @@
+{"version": 2, "width": 72, "height": 30, "timestamp": 1795523100, "title": "go test ./...", "env": {"TERM": "xterm-256color"}, "command": "go test ./...", "exit": 0}
+[14.283, "o", "ok  \texample.com/xdrproof-demo\t10.989s\r\n"]

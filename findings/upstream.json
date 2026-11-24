@@ -1,0 +1,57 @@
+{
+  "$comment": "The one list of what XDRProof reported upstream. tools/upstream-table.mjs writes it, with each report's status from GitHub (findings/upstream-status.json), into README.md, findings/REPORT.md, the docs and the org profile; never edit those copies by hand. kind: new (a bug nobody had reported), fix-offered (a tested fix on an open issue), evidence (data added to someone else's report). Our issue's or comment's time comes from GitHub; replies are counted after it. fix: our tested branch, when there is one. org_label: the link's words on the org profile, when not just the issue.",
+  "author": "Blockchain-Oracle",
+  "reports": [
+    {
+      "ref": "stellar/wallet-backend#834",
+      "kind": "new",
+      "url": "https://github.com/stellar/wallet-backend/issues/834",
+      "what": "Native balances miss Soroban fee refunds on protocol 20–22 ledgers: on pubnet ledger 56085459, seven accounts end 3,349,302 stroops short",
+      "found_by": "replay",
+      "figure": "findings/figures/f3-refunds.png",
+      "alt": "Where a Soroban fee refund lands before protocol 23, and the parts wallet-backend reads",
+      "fix": "https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances"
+    },
+    {
+      "ref": "stellar/js-stellar-xdr-json#67",
+      "kind": "new",
+      "url": "https://github.com/stellar/js-stellar-xdr-json/issues/67",
+      "what": "The decoder Stellar Lab depends on refuses 13 ledgers stellar-core wrote (standalone v30.0.0, raised Soroban test limits): its limit is 500, and the deepest tree core applied needs 519",
+      "found_by": "verify",
+      "figure": "findings/figures/f1-depth.png",
+      "alt": "The depth each part of a 245-deep transaction needs, against the decoder's limit of 500",
+      "fix": null
+    },
+    {
+      "ref": "stellar/wallet-backend#820",
+      "kind": "fix-offered",
+      "url": "https://github.com/stellar/wallet-backend/issues/820#issuecomment-7009772300",
+      "comment": 7009772300,
+      "what": "The contract-deploy walk follows authorization trees with no limit; a tested bound offered that stops the walk instead of failing the ledger",
+      "found_by": "the linter",
+      "org_label": "a tested bound on wallet-backend#820",
+      "figure": "findings/figures/820-bounded-walk.png",
+      "alt": "A bounded contract-deploy walk that stops at the limit instead of failing the ledger",
+      "fix": "https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/contract-deploy-auth-walk-bounds"
+    },
+    {
+      "ref": "lightsail-network/java-stellar-sdk#835",
+      "kind": "evidence",
+      "url": "https://github.com/lightsail-network/java-stellar-sdk/issues/835#issuecomment-7016550020",
+      "comment": 7016550020,
+      "what": "The same 13 ledgers need a decoding depth of 267 or 268; Java's default is 200 (evidence on the maintainer's own issue)",
+      "found_by": "other SDKs, same ledgers",
+      "org_label": "13 deep ledgers on java-stellar-sdk#835",
+      "figure": "findings/figures/java-835-depth.png",
+      "alt": "Java's default decoding depth of 200 against the 267 and 268 that 13 ledgers need",
+      "fix": null
+    }
+  ],
+  "reproduced": [
+    { "ref": "#716", "url": "https://github.com/stellar/wallet-backend/issues/716" },
+    { "ref": "#729", "url": "https://github.com/stellar/wallet-backend/pull/729" },
+    { "ref": "#731", "url": "https://github.com/stellar/wallet-backend/issues/731" },
+    { "ref": "#745", "url": "https://github.com/stellar/wallet-backend/issues/745" },
+    { "ref": "#753", "url": "https://github.com/stellar/wallet-backend/pull/753" }
+  ]
+}
