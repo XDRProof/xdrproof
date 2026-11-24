@@ -6,13 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks. XDRProof's corpus holds rare but valid ledgers, each with the values a correct reader must return.
-        If a shape has bitten your SDK, indexer or wallet, or you suspect it could, describe it below. A shape
-        stellar-core can produce becomes a corpus entry, credited to this issue. An invalid input (bytes no ledger
-        can hold) becomes a test vector instead.
+        Thanks. XDRProof's corpus holds rare but valid ledgers, each with the values a correct reader must return. If a shape has bitten your SDK, indexer or wallet, or you suspect it could, describe it below. A shape stellar-core can produce becomes a corpus entry, credited to this issue. An invalid input (bytes no ledger can hold) becomes a test vector instead.
 
-        If the shape lets anyone halt or crash an indexer, please don't post it here: report it privately as
-        described in [SECURITY.md](https://github.com/XDRProof/xdrproof/blob/main/SECURITY.md).
+        If the shape lets anyone halt or crash an indexer, please don't post it here: report it privately as described in [SECURITY.md](https://github.com/XDRProof/xdrproof/blob/main/SECURITY.md).
   - type: textarea
     id: what
     attributes:
