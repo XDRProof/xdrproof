@@ -62,6 +62,8 @@ const STAMP = {
   1: { gold: '43;30', fail: '41;97', pass: '32', known: '33', bad: '31' },
 };
 
+const EPIPE_HANDLED = Symbol('xdrproof.epipe'); // one handler per stream, however many makeUI() calls
+
 export function makeUI({ stream = process.stdout, errStream = process.stderr } = {}) {
   const level = colourLevel(stream), links = linksOn(stream, level), live = level > 0 && errStream.isTTY;
   const C = STAMP[level] ?? null;
@@ -99,7 +101,7 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
       const m = String(ref).match(/([\w.-]+)\/([\w.-]+)#(\d+)/);
       return m ? ui.link(`${m[2]}#${m[3]}`, `https://github.com/${m[1]}/${m[2]}/issues/${m[3]}`) : String(ref);
     },
-    num: (n) => Number(n).toLocaleString('en-US'),
+    num: (n) => (typeof n === 'bigint' ? n : Number(n)).toLocaleString('en-US'), // a BigInt stays exact
     elapsed(ms) {
       const s = ms / 1000;
       return s < 60 ? `${s.toFixed(s < 10 ? 1 : 0)}s` : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
@@ -116,9 +118,18 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
     sub(label, text) { ui.out(`      ${ui.dim(label.padEnd(9))}  ${text}`); },
     verdict(kind, word, text, ms) {
       ui.clear(); ui.out();
-      const time = ms === undefined ? '' : ui.elapsed(ms);
-      ui.out(`${ui.stamp(kind, word)}  ${ui.bold(text)}${time ? '   ' + ui.dim(time) : ''}`);
+      const time = ms === undefined ? '' : ui.elapsed(ms), lead = ui.stampWidth(word) + 2;
+      // the stamp, then the words (wrapped under themselves when the terminal is narrow), then the time if it fits
+      const lines = ui.wrap(text, Math.max(10, ui.width - lead));
+      const last = lines.length - 1, withTime = time && lead + lines[last].length + 3 + time.length <= ui.width;
+      lines.forEach((l, k) => ui.out(`${k ? ' '.repeat(lead) : ui.stamp(kind, word) + '  '}${ui.bold(l)}${k === last && withTime ? '   ' + ui.dim(time) : ''}`));
+      if (time && !withTime) ui.out(' '.repeat(lead) + ui.dim(time));
       ui.out();
+    },
+    // a closing hint: "<label>:  <command>" when it fits the terminal, else "more:  <command>"
+    hint(label, command) {
+      const long = `${label}:  ${command}`;
+      ui.out(`  ${ui.dim(long.length + 2 <= ui.width ? label + ':' : 'more:')}  ${command}`);
     },
     // ---- proof cards ----
     // A card: its title and score on the top edge, one row per line (mark ✓ passed, ! known and reported, ✗ wrong)
@@ -150,7 +161,8 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
       const t = {
         start() { if (row.state === 'wait') { row.state = 'run'; row.t0 = Date.now(); } return t; },
         count(done, total) { t.start(); row.done = done; row.total = total; row.note = ''; return t; },
-        note(text) { t.start(); row.note = text; return t; },
+        // a note replaces the bar: the row says what it is doing now (count() brings the bar back)
+        note(text) { t.start(); row.note = text; row.total = 0; row.done = 0; return t; },
         done() { row.state = 'ok'; row.t1 = Date.now(); paint_(); return t; },
         fail() { row.state = 'fail'; row.t1 = Date.now(); paint_(); return t; },
         // a synchronous redraw, for loops that hold the event loop (the spinner cannot turn on its own there)
@@ -227,6 +239,8 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
   // Output printed while the block is up goes above it: erase, print, redraw.
   const out0 = ui.out;
   ui.out = (l = '') => { if (drawn) { erase_(); out0(l); paint_(); } else out0(l); };
+  // a reader that stops early (| head, | less then q) closes the pipe: end quietly, the way a shell tool does
+  if (stream.on && !stream[EPIPE_HANDLED]) { stream[EPIPE_HANDLED] = true; stream.on('error', (e) => { if (e.code === 'EPIPE') { ui.clear(); process.exit(141); } throw e; }); }
   // never leave a hidden cursor or a half-drawn block behind, whatever ends the process
   if (live) {
     process.once('exit', () => ui.clear());

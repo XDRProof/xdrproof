@@ -9,7 +9,9 @@
 import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
+import { readdirSync } from 'node:fs';
+import { availableParallelism } from 'node:os';
 import * as K from './strkey.mjs';
 import { escapeBytes } from './walker.mjs';
 
@@ -76,4 +78,58 @@ export function coreValues(buffers) {
     });
     return result;
   } finally { rmSync(dir, { recursive: true, force: true }); }
+}
+
+// ---- the same, without blocking: for a live progress row ------------------------------------------------------
+const run = (cmd, args) => new Promise((resolve) => {
+  const p = spawn(cmd, args, { stdio: ['ignore', 'ignore', 'pipe'] }); let err = '';
+  p.stderr.on('data', (d) => { err += d; });
+  p.on('error', (e) => resolve({ code: -1, err: e.message }));
+  p.on('close', (code) => resolve({ code, err }));
+});
+
+// Writes each ledger to a temporary folder and has stellar-core print every one, several at a time, in one
+// container (no network). Returns { file(i), failed(i), cleanup() }; parse a printout with valuesFromDump(file(i)).
+// onStatus(text) says what it is doing; onProgress(done, total) counts the printouts finished. The container and
+// the folder are removed on every exit, including Ctrl-C.
+export async function coreDump(buffers, { onStatus = () => {}, onProgress = () => {} } = {}) {
+  const dir = mkdtempSync(join(tmpdir(), 'xdrproof-core-'));
+  const name = `xdrproof-oracle-${process.pid}`, base = (i) => join(dir, `meta-${String(i).padStart(6, '0')}.xdr`);
+  let running = false;
+  const cleanup = () => {
+    if (running) { try { execFileSync('docker', ['rm', '-f', name], { stdio: 'ignore' }); } catch {} running = false; }
+    rmSync(dir, { recursive: true, force: true });
+  };
+  process.once('exit', cleanup);
+  // Ctrl-C or a kill would end the process without 'exit': stop the container and remove the folder first
+  for (const [sig, n] of [['SIGINT', 2], ['SIGTERM', 15], ['SIGHUP', 1]]) process.once(sig, () => { cleanup(); process.exit(128 + n); });
+  buffers.forEach((b, i) => {
+    const head = Buffer.alloc(4); head.writeUInt32BE((0x80000000 | b.length) >>> 0); // XDR record mark
+    writeFileSync(base(i), Buffer.concat([head, b]));
+  });
+  if ((await run('docker', ['image', 'inspect', CORE_IMAGE])).code !== 0) {
+    onStatus('downloading stellar-core (once)');
+    const pull = await run('docker', ['pull', '--quiet', CORE_IMAGE]);
+    if (pull.code !== 0) throw new Error(`docker pull ${CORE_IMAGE} failed: ${pull.err.trim().split('\n').pop()}`);
+  }
+  onStatus('starting stellar-core');
+  // each printout goes to its own file (large mainnet ledgers print tens of MB), written under a temporary name and
+  // renamed when complete, so a finished file is a finished printout; a failed one leaves an empty .fail marker
+  const par = Math.max(2, Math.min(availableParallelism() - 2, 8));
+  const script = `cd /work && ls meta-*.xdr | xargs -P ${par} -n 1 sh -c 'stellar-core dump-xdr "$1" > "$1.tmp" 2>/dev/null && mv "$1.tmp" "$1.json" || { rm -f "$1.tmp"; : > "$1.fail"; }' _`;
+  const tick = setInterval(() => {
+    try { onProgress(readdirSync(dir).filter((f) => f.endsWith('.json') || f.endsWith('.fail')).length, buffers.length); } catch {}
+  }, 250);
+  running = true;
+  const r = await run('docker', ['run', '--rm', '--name', name, '--network', 'none', '-v', `${dir}:/work`, '--entrypoint', 'sh', CORE_IMAGE, '-c', script]);
+  running = false; clearInterval(tick);
+  if (r.code !== 0) { cleanup(); throw new Error(`stellar-core could not run (docker exit ${r.code}): ${r.err.trim().split('\n').pop() ?? ''}`); }
+  onProgress(buffers.length, buffers.length);
+  return { file: (i) => base(i) + '.json', failed: (i) => existsSync(base(i) + '.fail') || !existsSync(base(i) + '.json'), cleanup };
+}
+
+// one printout's values, normalised as coreValues does
+export function valuesFromDump(file) {
+  const json = JSON.parse(readFileSync(file).toString('latin1'), (key, value, ctx) => (typeof value === 'number' && ctx?.source ? ctx.source : value));
+  const values = new Set(); collect(json, values); return values;
 }

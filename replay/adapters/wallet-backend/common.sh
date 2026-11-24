@@ -12,3 +12,6 @@ TPL=tpl_${SHORT}
 SDB=s_${XDRPROOF_SESSION_ID:-none}
 BIN=$WORK/bin/wb-$SHORT
 psql_() { docker exec -i "$DB" psql -q -v ON_ERROR_STOP=1 -U postgres -tA "$@"; }
+# pull_once <image> <what it is>: a missing image is downloaded with a status line first, so the live row says why
+# the step takes minutes (docker run would pull it silently)
+pull_once() { docker image inspect "$1" >/dev/null 2>&1 || { echo "status: downloading $2 (once)" >&2; docker pull -q "$1" >/dev/null || { echo "could not download $1" >&2; exit 1; }; }; }

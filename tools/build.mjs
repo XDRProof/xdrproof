@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// build.mjs [id ...]: compile catalog/<id>.json into entries/<id>/ (format: catalog/README.md).
+// build.mjs [id ...] [--details]: compile catalog/<id>.json into entries/<id>/ (format: catalog/README.md).
 // Needs the runs of a fresh `make generate` (recipes/<lane>/runs/g-*) and, for the base P30 mainnet variants,
 // the order scan's runs and report (`make order-scan`). Every fact is resolved to an exact JSON Pointer per
 // variant and must hold there, or the build fails: intent and outcome must agree before an entry exists.
@@ -184,10 +184,42 @@ function build(cat) {
   return `${cat.id}: ${variants.length} variant(s), ${facts.length} fact(s)`;
 }
 
-const wanted = process.argv.slice(2);
+const DETAILS = process.argv.includes('--details') || process.argv.includes('-v');
+const wanted = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 const cats = readdirSync(join(ROOT, 'catalog')).filter((f) => f.endsWith('.json')).map((f) => JSON.parse(readFileSync(join(ROOT, 'catalog', f), 'utf8')))
   .filter((c) => !wanted.length || wanted.includes(c.id));
-let failed = 0;
-for (const c of cats) { try { console.log('  ' + build(c)); } catch (e) { failed++; console.log(`  FAILED ${c.id}: ${e.message}`); } }
-console.log(`${cats.length - failed} of ${cats.length} entries built`);
-process.exit(failed ? 1 : 0);
+const { makeUI } = await import('./ui.mjs');
+const ui = makeUI(), T0 = Date.now();
+ui.header('build', [`${cats.length} catalog entr${cats.length === 1 ? 'y' : 'ies'} into entries/`, `${cats.length} entries`, '']);
+if (wanted.length && cats.length < wanted.length) {
+  const missing = wanted.filter((w) => !cats.some((c) => c.id === w));
+  ui.out('  ' + ui.bad(`not in catalog/: ${missing.join(', ')}`)); ui.verdict('fail', 'FAILED', 'Unknown entry', Date.now() - T0); process.exit(2);
+}
+const row = ui.task('Compiling the catalog').count(0, cats.length);
+let failed = 0, variants = 0, facts = 0;
+const problems = [], built = [];
+for (const [i, c] of cats.entries()) {
+  const file = join(ROOT, 'entries', c.id, 'entry.json');
+  try {
+    const line = build(c); built.push(line);
+    const e = JSON.parse(readFileSync(file, 'utf8')); variants += e.variants.length; facts += e.expected.facts.length;
+  } catch (e) { failed++; problems.push(`${c.id}: ${e.message}`); }
+  row.count(i + 1, cats.length).tick(); // the build holds the event loop: redraw here
+}
+failed ? row.fail() : row.done();
+ui.clear();
+ui.card({ title: 'Catalog compiled into entries', score: `${cats.length - failed}/${cats.length}`, details: DETAILS, lines: [
+  ...(failed ? [{ mark: '✗', text: `${failed} failed: a fact does not hold`, detail: problems.map((p) => p.split(':')[0]) }] : []),
+  { mark: '✓', text: ui.width < 60 ? `${cats.length - failed} built, facts hold` : `${cats.length - failed} built, every fact holds at its place`, right: `${ui.num(variants)} ledgers`, detail: built },
+] });
+if (failed) {
+  ui.out();
+  const cap = DETAILS ? 40 : 10;
+  for (const p of problems.slice(0, cap)) for (const [k, w] of ui.wrap(p, ui.width - 6).entries()) ui.out((k ? '      ' : '    ') + ui.bad(w));
+  if (problems.length > cap) ui.out('    ' + ui.dim(`… and ${problems.length - cap} more (DETAILS=1)`));
+  ui.verdict('fail', 'FAILED', `${failed} entr${failed === 1 ? 'y' : 'ies'} did not build`, Date.now() - T0);
+  process.exit(1);
+}
+ui.verdict('gold', 'PASSED', ui.width < 60 ? 'Every entry built.' : `Every entry built: ${ui.num(facts)} facts checked.`, Date.now() - T0);
+// the build writes the facts as the catalog states them; the oracle then adds which readers confirmed each one
+ui.hint('next', 'make verify, then node tools/oracle.mjs --write');

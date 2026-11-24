@@ -41,7 +41,13 @@ const { values: opt } = parseArgs({ options: {
 } });
 // a fatal error goes to stdout, the run's log under replay/run.sh, whose summary quotes it; on its own it also shows
 // in the terminal when stdout is redirected
+const ALONE = !process.send; // run by hand (a person, a repro in an issue), not under replay/run.mjs
+const T0 = Date.now();
 const die = (m, code = 2) => {
+  if (ALONE && process.stdout.isTTY) {
+    ui.clear(); for (const l of ui.wrap(String(m), ui.width - 4)) ui.out('  ' + ui.bad(l));
+    ui.verdict('fail', 'ERROR', 'The replay could not run', Date.now() - T0); process.exit(code);
+  }
   console.log(`replay: ${m}`);
   if (!process.env.XDRPROOF_START && !process.stdout.isTTY) console.error(`replay: ${m}`);
   process.exit(code);
@@ -307,7 +313,8 @@ async function pool(items, jobs, fn) {
 
 // ---- run --------------------------------------------------------------------------------------------------
 const list = [...sessions.values()];
-console.log(`${A.name}@${opt.target} (${T.ref.slice(0, 12)}, protocol_max ${T.protocol_max}): ${variants.length} variants, ${list.length} sessions, ${[...verdicts.values()].length} unsupported`);
+if (ALONE) ui.header('replay', [`${A.name} ${opt.target} · ${variants.length} ledger variant${variants.length === 1 ? '' : 's'} · ${list.length} session${list.length === 1 ? '' : 's'}`, `${A.name} · ${variants.length} variant${variants.length === 1 ? '' : 's'}`, '']);
+else console.log(`${A.name}@${opt.target} (${T.ref.slice(0, 12)}, protocol_max ${T.protocol_max}): ${variants.length} variants, ${list.length} sessions, ${[...verdicts.values()].length} unsupported`);
 const row = process.send
   ? { note: (t) => process.send({ note: t }), count: (done, total) => process.send({ done, total }), tick() {} }
   : ui.task(`${A.name} ${opt.target}`);
@@ -323,7 +330,7 @@ for (const [k, s] of toRead.entries()) {
 row.note(`checking the setup on ${controlSessions.length} control ledgers`);
 const ctl = await pool(controlSessions, Number(opt.jobs), session);
 for (const c of ctl) {
-  console.log(`  control ${c.control}: ${c.verdict}${c.error ? ` (${c.error})` : ''}`);
+  if (!ALONE) console.log(`  control ${c.control}: ${c.verdict}${c.error ? ` (${c.error})` : ''}`);
   if (!['handled', 'dropped', 'mishandled'].includes(c.verdict)) die(`control ${c.control} did not get past its ledger (${c.verdict}): the setup, not a finding; see ${OUT}/sessions/${c.session}.log`);
 }
 row.note(`starting ${list.length} sessions`);
@@ -375,6 +382,12 @@ const md = [`# ${A.name}@${opt.target} (${T.ref.slice(0, 12)})`, '', `Variants: 
   '| Variant | Verdict | Probes that failed |', '|---|---|---|',
   ...bad.map(([vid, r]) => `| \`${vid}\` | ${r.verdict} | ${kinds(r).join(', ') || (r.error ?? r.attempts?.map((a) => a.reason ?? 'passed').join(' → ') ?? '')} |`)];
 writeFileSync(join(OUT, 'summary.md'), md.join('\n') + '\n');
+if (ALONE && !opt.record) {
+  // on its own the cards are the whole output; the exit codes are the ones below: 2 harness error, 1 mismatch
+  const errs = [...ctl, ...recs].filter((r) => r.verdict === 'error');
+  aloneCards(errs);
+  process.exit(errs.length ? 2 : diffs.length ? 1 : 0);
+}
 console.log(`\n${Object.entries(count).map(([k, v]) => `${k} ${v}`).join(', ')}   (${OUT}/report.json; harness peak RSS ${(report.harness_peak_rss_bytes / 2 ** 20).toFixed(0)} MiB)`);
 const unknown = new Map();
 for (const r of recs) for (const k of r.unknown_keys ?? []) { const t = typeof k === 'string' ? k : Object.keys(k)[0]; unknown.set(t, (unknown.get(t) ?? 0) + 1); }
@@ -408,3 +421,55 @@ if (errors.length) {
 if (diffs.length) process.exit(1);
 if (partial) console.log(`partial run (${judged.count} variants judged): each matches its expectation; the judged-set check needs a full run.`);
 console.log(`OK: every verdict matches ${EXP.replace(ROOT + '/', '')}.`);
+
+// ---- run on its own: proof cards -------------------------------------------------------------------------------
+// One card per ledger the indexer did not handle (at most five; the rest are counted in the last card), naming the
+// known upstream issue behind it and the stored values that are wrong; then one card for the whole run; then the
+// verdict. The plain lines the harness logs under replay/run.mjs are not printed. Exit codes are unchanged.
+function aloneCards(errors) {
+  const BUGS = existsSync(join(HERE, 'bugs.json')) ? JSON.parse(readFileSync(join(HERE, 'bugs.json'), 'utf8')) : { issues: {} };
+  const issueNo = (url) => url?.match(/\/(?:issues|pull)\/(\d+)$/)?.[1] ?? '';
+  const short = (k) => (/^[GCMLBPTX][A-Z2-7]{55,}$/.test(k) ? `${k.slice(0, 6)}…${k.slice(-4)}` : k.length > 24 ? k.slice(0, 22) + '…' : k);
+  const num = (x) => (/^-?\d+$/.test(String(x)) ? ui.num(BigInt(x)) : String(x));
+  const notHandled = recs.filter((r) => !['handled', 'unsupported'].includes(r.verdict)).sort((a, b) => SEVERITY.indexOf(b.verdict) - SEVERITY.indexOf(a.verdict));
+  const narrow = ui.width < 60;
+  for (const r of notHandled.slice(0, 5)) {
+    const urls = [...new Set(r.variants.map((v) => exp.verdicts[v]?.upstream?.[0]).filter(Boolean))];
+    const lines = urls.length
+      ? urls.map((u) => ({ mark: '!', text: BUGS.issues[u]?.title ?? 'a known upstream issue', right: `#${issueNo(u)}`, url: u }))
+      : [{ mark: '✗', text: narrow ? `${r.verdict}, cause unknown` : `${r.verdict}, no known cause: triage first` }];
+    const facts = (r.failures ?? []).filter((f) => f.status !== 'error');
+    // the wrong stored values, the worst first: what a maintainer needs to see
+    const gap = (f) => { try { return BigInt(f.expect) - BigInt(f.got); } catch { return null; } };
+    const shown = [...facts].sort((a, b) => { const x = gap(a), y = gap(b); return x !== null && y !== null ? (y > x ? 1 : y < x ? -1 : 0) : 0; }).slice(0, 4);
+    lines[0].detail = [
+      ...shown.map((f) => { const g = gap(f), who = short(f.id.split(' ').slice(1).join(' ') || f.kind);
+        return g !== null && g > 0n ? `${who}  stored short by ${ui.num(g)}` : g !== null && g < 0n ? `${who}  stored ${ui.num(-g)} too much` : `${who}  expected ${num(f.expect)}, stored ${num(f.got)}`; }),
+      ...(facts.length > shown.length ? [`… ${facts.length - shown.length} more wrong value${facts.length - shown.length === 1 ? '' : 's'}`] : []),
+      ...(r.error ? [ui.trunc(String(r.error), 60)] : []),
+    ];
+    const ledger = r.ledger ?? r.variants[0]?.match(/l(\d+)$/)?.[1] ?? '?';
+    ui.card({ title: narrow ? `ledger ${ledger}` : `ledger ${ledger} · ${opt.target} ${T.ref.slice(0, 8)}`, score: r.verdict, lines, details: true });
+  }
+  const judgedN = [...verdicts.values()].filter((r) => r.verdict !== 'unsupported').length, handled = count.handled ?? 0;
+  ui.card({ title: narrow ? A.name : `${A.name} ${opt.target} · ${T.ref.slice(0, 8)}`, score: `${handled}/${judgedN}`, lines: [
+    ...(diffs.length ? [{ mark: '✗', text: `${diffs.length} differ from the expectations` }] : []),
+    ...(handled ? [{ mark: '✓', text: `${handled} handled` }] : []),
+    ...Object.entries(count).filter(([k]) => !['handled', 'unsupported'].includes(k)).map(([k, v]) => ({ mark: diffs.length ? '✗' : '!', text: `${v} ${k}`, right: notHandled.length > 5 ? 'see report' : '' })),
+    ...(count.unsupported ? [{ mark: '✓', text: narrow ? `${count.unsupported} not supported` : `${count.unsupported} skipped: not supported by the adapter` }] : []),
+  ], footer: narrow ? '' : `report: replay/runs/${A.name}@${opt.target}/report.json` });
+  // what the mock could not answer: never the cause of a verdict without a trace in the indexer's code
+  const unknownN = recs.reduce((n, r) => n + (r.unknown_keys?.length ?? 0), 0), unserved = [...new Set(recs.flatMap((r) => r.unserved ?? []))];
+  const notes = [
+    ...(unknownN ? [`The indexer read ${unknownN} ledger entr${unknownN === 1 ? 'y' : 'ies'} the corpus does not hold; the mock answered "not found".`] : []),
+    ...(unserved.length ? [`It asked the mock for ${unserved.join(', ')}, which the mock refuses.`] : []),
+  ];
+  if (notes.length) { ui.out(); for (const n of notes) for (const l of ui.wrap(n, ui.width - 4)) ui.out('  ' + ui.dim(l)); }
+  for (const r of errors.slice(0, 5)) ui.out('    ' + ui.bad(ui.trunc(`${r.session}: ${r.error ?? 'failed'}`, ui.width - 6)));
+  if (errors.length) { ui.verdict('fail', 'ERROR', `${errors.length} session(s) failed in the adapter or the harness`, Date.now() - T0); return; }
+  if (diffs.length) {
+    for (const x of diffs.slice(0, 10)) ui.out('    ' + ui.bad(ui.trunc(`${x.vid}: expected ${x.want.verdict}, got ${x.got.verdict}`, ui.width - 6)));
+    ui.verdict('fail', 'FAILED', `${diffs.length} result${diffs.length === 1 ? '' : 's'} differ from the expectations`, Date.now() - T0); return;
+  }
+  ui.verdict('gold', 'PASSED', notHandled.length ? 'No new bugs. The ones above are known and tracked.' : 'Every ledger handled.', Date.now() - T0);
+}

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // XDRProof conformance runner (protocol 1; conformance/README.md). Run through run.sh, which builds the testees.
-// usage: node conformance/run.mjs [--details] [--fresh] [--record] [--only name,name]
+// usage: node conformance/run.mjs [--details] [--fresh] [--record] [--only name,name] [--entries id,id]
 //                                 [--families corpus,strkey,lane-s,depth,sdk-check,sightings] [--format md] [--profile]
 //   --details    counts, n/a checks, the known causes in full, the older builds, depths and plain links
+//   --entries    only these corpus entries (and, unless --families says otherwise, only the corpus families)
 //   --fresh      ignore the result cache (.work/cache) and ask every testee again
 //   --record     also write expectations/<testee>.draft.json from this run (for review; never used as is)
 //   --format md  print the Markdown matrix (always written to .work/matrix.md) instead of the stamped summary
@@ -28,6 +29,8 @@ const arg = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
 const RECORD = argv.includes('--record'), FRESH = argv.includes('--fresh'), PROFILE = argv.includes('--profile') || !!process.env.XDRPROOF_PROFILE;
 const DETAILS = argv.includes('--details') || argv.includes('-v');
 const ONLY = arg('--only')?.split(','), FAMILIES = arg('--families')?.split(','), FORMAT = arg('--format');
+// a value that is another flag (or nothing) is no value: --entries with no ids is refused below, never "all" or "none"
+const ENTRIES = (() => { const v = arg('--entries'); return v === null ? null : !v || v.startsWith('--') ? [] : v.split(',').filter(Boolean); })();
 const ui = makeUI(), T0 = Date.now();
 const ALL = ['corpus', 'strkey', 'lane-s', 'depth', 'sdk-check', 'sightings'];
 const ALPINE = readFileSync(join(HERE, 'testees/go/runtime-image'), 'utf8').trim();
@@ -51,7 +54,15 @@ const TESTEES = [
 const unknownOnly = (ONLY ?? []).filter((n) => !TESTEES.some((t) => t.name === n));
 if (unknownOnly.length) { console.error(`unknown build(s) in --only: ${unknownOnly.join(', ')}\nbuilds: ${TESTEES.map((t) => t.name).join(', ')}`); process.exit(2); }
 const SELECTED = TESTEES.filter((t) => !ONLY || ONLY.includes(t.name));
-const families = (FAMILIES ?? ALL).filter((f) => ALL.includes(f));
+const families = (FAMILIES ?? (ENTRIES !== null ? ['corpus', 'sdk-check'] : ALL)).filter((f) => ALL.includes(f));
+// --entries: the corpus entries to run (all when absent); a check of another entry is not expected to run
+const ENTRY_IDS = readdirSync(join(ROOT, 'entries')).filter((d) => existsSync(join(ROOT, 'entries', d, 'entry.json'))).sort();
+const unknownEntries = (ENTRIES ?? []).filter((e) => !ENTRY_IDS.includes(e));
+if (argv.includes('--entries') && !ENTRIES?.length) { console.error('conformance: --entries needs at least one corpus entry id, e.g. --entries auth.tree-depth-246-trapped'); process.exit(2); }
+if (unknownEntries.length) { console.error(`conformance: no such corpus entr${unknownEntries.length === 1 ? 'y' : 'ies'}: ${unknownEntries.join(', ')}`); process.exit(2); }
+if (ENTRIES !== null && RECORD) { console.error('conformance: --record needs the whole corpus; drop --entries'); process.exit(2); }
+const pickedEntry = (id) => ENTRIES === null || ENTRIES.includes(id);
+const checkRan = (k) => { const [fam, rest = ''] = k.split('/'); return !(fam === 'corpus' || fam === 'sdk-check') || pickedEntry(rest.split('@')[0]); };
 const NATIVE = join(ROOT, 'tools/native/target/release/xdrproof-native');
 // Everything outside the testee that shapes a verdict: this runner, the shared checks, the reference reader.
 // (this file only up to its summary section: how results are shown does not change them)
@@ -215,7 +226,7 @@ const beat = PROFILE ? setInterval(() => ui.err(`[${((Date.now() - T0) / 1000).t
 beat?.unref();
 // ---- what this run checks, said at once: the header, then a live block (one row per kind of work) ------------
 const corpusCount = families.includes('corpus') || families.includes('sdk-check')
-  ? readdirSync(join(ROOT, 'entries')).filter((d) => existsSync(join(ROOT, 'entries', d, 'entry.json'))).reduce((n, d) => n + JSON.parse(readFileSync(join(ROOT, 'entries', d, 'entry.json'), 'utf8')).variants.length, 0) : 0;
+  ? ENTRY_IDS.filter(pickedEntry).reduce((n, d) => n + JSON.parse(readFileSync(join(ROOT, 'entries', d, 'entry.json'), 'utf8')).variants.length, 0) : 0;
 const builds0 = testees.filter((t) => !(t.families.length === 1 && t.families[0] === 'sightings')).length || testees.length; // as isOlder, below
 // (--format md prints only the matrix, as before: no header, no live rows)
 if (FORMAT !== 'md') ui.header('conformance', ui.width >= 64 ? `${builds0} SDK build${builds0 === 1 ? '' : 's'}${families.includes('corpus') && corpusCount ? ` · ${corpusCount} real ledgers` : ''}${FAMILIES ? ` · ${families.join(', ')} only` : ''}` : '');
@@ -239,7 +250,7 @@ phase('hello');
 // ---- family: corpus (and sdk-check, which reads the same ledgers) --------------------------------------------
 let corpusVariants = 0;
 if (families.includes('corpus') || families.includes('sdk-check')) {
-  const ids = readdirSync(join(ROOT, 'entries')).filter((d) => statSync(join(ROOT, 'entries', d)).isDirectory()).sort();
+  const ids = readdirSync(join(ROOT, 'entries')).filter((d) => statSync(join(ROOT, 'entries', d)).isDirectory() && pickedEntry(d)).sort();
   const work = [];
   for (const id of ids) {
     const text = readFileSync(join(ROOT, 'entries', id, 'entry.json'), 'utf8'), entry = JSON.parse(text), esha = sha(text);
@@ -388,7 +399,7 @@ for (const t of testees) {
   const want = t.name.slice(t.name.indexOf('@') + 1).replace(/^v/, ''), got = String(hello[t.name]?.version ?? '').replace(/^v/, '');
   if (!got.startsWith(want)) miss(`${t.name}: the testee reports version ${got || 'none'}, not ${want}`);
   // --only picks builds, not checks: a selected build still runs every check of its families
-  for (const k of Object.keys(exp.fail ?? {})) if (!mine.has(k) && families.includes(k.split('/')[0]) && t.families.includes(k.split('/')[0])) miss(`${t.name} ${k}: expected to fail, but the check did not run`);
+  for (const k of Object.keys(exp.fail ?? {})) if (!mine.has(k) && families.includes(k.split('/')[0]) && t.families.includes(k.split('/')[0]) && checkRan(k)) miss(`${t.name} ${k}: expected to fail, but the check did not run`);
   if (t.name in depthMax && exp.depth_max !== undefined && exp.depth_max !== null && depthMax[t.name] !== exp.depth_max) miss(`${t.name} depth: decodes to ${depthMax[t.name]} levels, expected ${exp.depth_max}`);
   summary.push({ name: t.name, implementation: hello[t.name], counts, depth_max: depthMax[t.name] ?? null });
   if (RECORD) {

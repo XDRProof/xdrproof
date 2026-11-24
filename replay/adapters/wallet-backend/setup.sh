@@ -4,11 +4,12 @@
 . "$(dirname "$0")/common.sh"
 mkdir -p "$WORK/bin" "$WORK/logs"
 if [ ! -x "$BIN" ]; then
-  [ -d "$WORK/src/.git" ] || git clone -q --filter=blob:none https://github.com/stellar/wallet-backend "$WORK/src"
-  git -C "$WORK/src" cat-file -e "$REF^{commit}" 2>/dev/null || git -C "$WORK/src" fetch -q origin
+  [ -d "$WORK/src/.git" ] || { echo "status: downloading the wallet-backend source (once)" >&2; git clone -q --filter=blob:none https://github.com/stellar/wallet-backend "$WORK/src"; }
+  git -C "$WORK/src" cat-file -e "$REF^{commit}" 2>/dev/null || { echo "status: fetching wallet-backend $SHORT" >&2; git -C "$WORK/src" fetch -q origin; }
   rm -rf "$WORK/tree-$SHORT" && mkdir -p "$WORK/tree-$SHORT"
   git -C "$WORK/src" archive "$REF" | tar -x -C "$WORK/tree-$SHORT"
   docker volume create xdrproof-gocache >/dev/null
+  pull_once "$GO_IMAGE" "the Go toolchain"
   echo "status: building wallet-backend $SHORT (minutes, once)" >&2
   # named, so teardown.sh (every container named xdrproof-wb-*) also removes a build that a stop left running
   docker run --rm --name "xdrproof-wb-build-$SHORT" -v "$WORK/tree-$SHORT":/src:ro -v xdrproof-gocache:/cache -v "$WORK/bin":/out \
@@ -18,6 +19,8 @@ if [ ! -x "$BIN" ]; then
   rm -rf "$WORK/tree-$SHORT"
 fi
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
+pull_once "$DB_IMAGE" "TimescaleDB"
+pull_once "$RUN_IMAGE" "a small Linux image for the sessions"
 echo "status: starting the database" >&2
 if ! docker inspect -f '{{.State.Running}}' "$DB" 2>/dev/null | grep -q true; then
   docker rm -f "$DB" >/dev/null 2>&1 || true

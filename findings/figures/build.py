@@ -25,12 +25,13 @@ body{font-family:"Instrument Sans",system-ui,sans-serif;color:var(--ink);-webkit
  background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
  background-size:24px 24px;border:1.5px solid var(--ink)}
 .eyebrow{font:600 11.5px/1 "JetBrains Mono",monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--label)}
-h1{font-weight:650;font-size:24px;line-height:1.2;letter-spacing:-.012em;margin-top:9px;max-width:800px}
-.sub{font-size:15px;line-height:1.45;color:var(--sub);margin-top:7px;max-width:790px}
+h1{font-weight:650;font-size:24px;line-height:1.2;letter-spacing:-.012em;margin-top:9px;max-width:800px;text-wrap:balance}
+.sub{font-size:15px;line-height:1.45;color:var(--sub);margin-top:7px;max-width:790px;text-wrap:pretty}
 .mono{font-family:"JetBrains Mono",monospace}
 .tb{position:absolute;right:-1px;bottom:-1px;display:flex;background:var(--node);border:1.5px solid var(--ink);font:500 11px/1 "JetBrains Mono",monospace;color:var(--sub)}
 .tb div{padding:7px 10px;border-left:1px solid var(--rule)} .tb div:first-child{border-left:0;font-weight:700;color:var(--ink)}
 .tb b{color:var(--ink);font-weight:700}
+.tb .logo{display:flex;align-items:center;padding:3px 10px} .tb .logo img{height:17px;display:block}
 .cross{position:absolute;width:13px;height:13px} .cross:before,.cross:after{content:"";position:absolute;background:var(--ink);opacity:.35}
 .cross:before{left:6px;top:0;width:1px;height:13px} .cross:after{top:6px;left:0;height:1px;width:13px}
 """
@@ -41,8 +42,11 @@ def page(body, h, extra=""):
 def crosses():
     return '<div class="cross" style="left:8px;top:8px"></div><div class="cross" style="right:8px;top:8px"></div>'
 
+LOGO = "data:image/svg+xml;base64," + __import__("base64").b64encode((HERE.parents[1] / ".github/assets/logo-light.svg").read_bytes()).decode()
+
 def titleblock(fig, data):
-    return f'<div class="tb"><div>XDRProof</div><div>{fig}</div><div>{data}</div></div>'
+    # the stamp in the corner: the XDRProof logo, the figure number, and where the data comes from
+    return f'<div class="tb"><div class="logo"><img src="{LOGO}" alt="XDRProof"></div><div>{fig}</div><div>{data}</div></div>'
 
 # ---- Figure: F-3, where the refund lands --------------------------------------------------------------
 F3_CSS = """
@@ -132,6 +136,33 @@ def f1_figure():
 </div><div class="ticks">{ticks}</div><div class="brk"></div></div>
 <div class="key"><span><i style="background:var(--gold)"></i>the auth tree: 245 invocations, 2 levels each</span><span><i style="background:var(--neu)"></i>the layers around it</span><span class="mono" style="color:var(--muted)">axis starts at 440</span></div>
 {titleblock("Fig. 1", "corpus entry <b>auth.tree-depth-245-max</b> · stellar-core <b>v30.0.0</b>")}</div>"""
+    return page(body, 494, F1_CSS)
+
+# ---- Figure: java-stellar-sdk#835, the default depth against what valid ledgers need ----------------------
+# Measured 19 Nov 2026 with java-stellar-sdk 6.0.0 (and master d0938106): the smallest maxDepth at which
+# LedgerCloseMeta.decode succeeds, by binary search, per variant (upstream/drafts/final/4-java-835-comment.md).
+def java_figure():
+    lo, hi = 180, 320  # room right of the longest bar for its label
+    span = W - 60 - 250 - 24
+    x = lambda d: (d - lo) / (hi - lo) * span
+    def bar(top, total, name, small, verdict, cls, dim=False):
+        dash = ";border-style:dashed" if dim else ""  # not a measured depth: drawn as an outline to the limit
+        return (f'<div class="bar" style="top:{top}px;width:{x(total):.1f}px{dash}"><div class="wrap" style="flex:1;border-left:0{";background:transparent" if dim else ""}"></div>'
+                f'<div class="blabel" style="top:2px">{name}<small>{small}</small></div></div>'
+                f'<div class="val {cls}" style="left:{x(total)+10:.1f}px;top:{top+10}px">{verdict}</div>')
+    ticks = "".join(f'<div class="tick" style="left:{x(t):.1f}px">{t}</div>' for t in range(180, 321, 20))
+    body = f"""<div class="sheet">{crosses()}
+<div class="eyebrow">java-stellar-sdk 6.0.0 · XDR decoding depth</div>
+<h1>Java reads to a depth of 200 by default. 13 ledgers stellar-core wrote need 267 or 268.</h1>
+<p class="sub">The lower bars are the smallest <span class="mono">maxDepth</span> at which <span class="mono">LedgerCloseMeta.decode</span> reads those ledgers (standalone stellar-core v30.0.0, raised Soroban test limits). The dashed one only marks that the rest fit.</p>
+<div class="chart"><div class="axis">
+ <div class="limit" style="left:{x(200):.1f}px"><span>default 200</span></div>
+ {bar(14, 200, "The other 621 ledgers", "the rest of the corpus", "within the default · read", "ok", dim=True)}
+ {bar(74, 267, "245-deep auth tree", "8 ledgers", "267 · refused", "no")}
+ {bar(134, 268, "246-deep, trapped by the host", "5 ledgers", "268 · refused", "no")}
+</div><div class="ticks">{ticks}</div><div class="brk"></div></div>
+<div class="key"><span class="mono" style="color:var(--muted)">axis starts at 180 · dashed: within the limit, depth not measured</span></div>
+{titleblock("Fig. 1", "corpus entries <b>auth.tree-depth-245-max</b>, <b>auth.tree-depth-246-trapped</b> · java-stellar-sdk <b>6.0.0</b>")}</div>"""
     return page(body, 494, F1_CSS)
 
 # ---- Figure: #820, stop the walk, never fail ----------------------------------------------------------
@@ -283,7 +314,7 @@ def gif(frames, h, out):
 if __name__ == "__main__":
     which = sys.argv[1:] or ["figs", "gifs"]
     if "figs" in which:
-        for name, (fn, h) in {"f3-refunds.png": (f3_figure, 470), "f1-depth.png": (f1_figure, 494), "820-bounded-walk.png": (f820_figure, 514)}.items():
+        for name, (fn, h) in {"f3-refunds.png": (f3_figure, 470), "f1-depth.png": (f1_figure, 494), "820-bounded-walk.png": (f820_figure, 514), "java-835-depth.png": (java_figure, 494)}.items():
             shoot(fn(), h, str(HERE / name)); print("wrote", name)
     if "gifs" in which:
         for name, (fn, h) in {"f1-repro.gif": (f1_gif, 262), "f3-repro.gif": (f3_gif, 500)}.items():

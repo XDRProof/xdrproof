@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// coverage-report.mjs [--check]: writes COVERAGE.md from the built entries, coverage/exclusions.json and the hazard
+// coverage-report.mjs [--check] [--details]: writes COVERAGE.md from the built entries, coverage/exclusions.json and the hazard
 // registry, and fails when the accounting does not close:
 //   - every union arm reachable from LedgerCloseMeta (stellar-xdr v30.0) is either reached by an entry (atoms.mjs:
 //     its own transaction or its ledger's shape) or classified in coverage/exclusions.json, never both, never neither;
@@ -9,13 +9,21 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { atoms as typeAtoms } from './walker.mjs';
 import { ROOT, DEFS, loadEntries, entryAtoms } from './atoms.mjs';
+import { makeUI } from './ui.mjs';
 
-const check = process.argv.includes('--check');
+const check = process.argv.includes('--check'), DETAILS = process.argv.includes('--details') || process.argv.includes('-v');
+const ui = makeUI(), T0 = Date.now();
 const ex = JSON.parse(readFileSync(join(ROOT, 'coverage/exclusions.json'), 'utf8'));
 const registry = JSON.parse(readFileSync(join(ROOT, 'caps/registry.json'), 'utf8'));
 const { arms: allArms, enums: allEnums } = typeAtoms(DEFS, ['LedgerCloseMeta']);
-const entries = loadEntries();
-const { atoms } = entryAtoms(entries);
+let entries;
+try { entries = loadEntries(); } catch (e) { ui.out('  ' + ui.bad(ui.trunc(e.message, ui.width - 4))); ui.verdict('fail', 'ERROR', 'Could not read the corpus', Date.now() - T0); process.exit(2); }
+ui.header(check ? 'coverage-report --check' : 'coverage-report', [`${ui.num(allArms.size)} union arms · ${registry.hazards.length} hazards · ${entries.length} entries`, `${ui.num(allArms.size)} arms · ${registry.hazards.length} hazards`, '']);
+const row = ui.task('Reading every entry').note('hashing transactions');
+let atoms;
+try { ({ atoms } = await entryAtoms(entries, { onProgress: (d, n) => row.count(d, n) })); }
+catch (e) { row.fail(); ui.clear(); ui.out('  ' + ui.bad(ui.trunc(e.message, ui.width - 4))); ui.verdict('fail', 'ERROR', 'Could not read the corpus', Date.now() - T0); process.exit(2); }
+row.done();
 
 // who reaches what
 const byArm = new Map(), byEnum = new Map(), byHazard = new Map();
@@ -84,10 +92,41 @@ out.push(`## Arms the entries reach (${byArm.size})`, '', '| Arm | Entries |', '
   ...[...byArm.keys()].sort().map((a) => `| ${code(a)} | ${byArm.get(a).length}: ${list(byArm.get(a))} |`), '');
 const text = out.join('\n');
 
-if (problems.length) { console.error('Coverage accounting does not close:\n  ' + problems.join('\n  ')); process.exit(1); }
-const file = join(ROOT, 'COVERAGE.md');
-if (check) {
-  if (!existsSync(file) || readFileSync(file, 'utf8') !== text) { console.error('COVERAGE.md is out of date: run make coverage-report'); process.exit(1); }
-} else writeFileSync(file, text);
-console.log(`arms: ${byArm.size} reached by entries, ${ORDER.map((c) => `${count(c)} ${c}`).join(', ')}; 0 unclassified. ` +
-  `hazards: ${registry.hazards.length - untargeted.length} of ${registry.hazards.length} targeted. ${check ? 'COVERAGE.md is up to date.' : 'COVERAGE.md written.'}`);
+// ---- the cards ----------------------------------------------------------------------------------------------
+ui.clear();
+const narrow = ui.width < 60, file = join(ROOT, 'COVERAGE.md');
+const stale = check && (!existsSync(file) || readFileSync(file, 'utf8') !== text);
+const armProblems = problems.filter((x) => !x.startsWith('H-')), hazardProblems = problems.filter((x) => x.startsWith('H-'));
+const explained = ex.arms.filter((x) => allArms.has(x.arm) && !byArm.has(x.arm)).length;
+const PLAIN = { 'network-only': 'only on the live network', historical: 'only in older protocols', 'validation-only': 'refused before a ledger closes', 'not-emitted': 'never written by core 30', todo: 'not yet in an entry' };
+ui.card({
+  title: narrow ? 'Every arm accounted' : 'Every union arm reached or explained', score: `${allArms.size - armProblems.filter((x) => x.includes('not classified')).length}/${allArms.size}`,
+  lines: [
+    ...(armProblems.length ? [{ mark: '✗', text: `${armProblems.length} not accounted for`, detail: armProblems }] : []),
+    { mark: '✓', text: `${byArm.size} reached by an entry` },
+    { mark: count('todo') ? '!' : '✓', text: narrow ? `${explained} explained` : `${explained} not reached, each with core's reason`,
+      detail: ORDER.filter((c) => count(c)).map((c) => `${count(c)} ${PLAIN[c] ?? c}`) },
+  ], details: DETAILS || armProblems.length > 0,
+});
+const targeted = registry.hazards.length - untargeted.length;
+ui.card({
+  title: narrow ? 'Every hazard covered' : 'Every hazard covered somewhere', score: `${registry.hazards.length - hazardProblems.length}/${registry.hazards.length}`,
+  lines: [
+    ...(hazardProblems.length ? [{ mark: '✗', text: `${hazardProblems.length} covered nowhere`, detail: hazardProblems }] : []),
+    { mark: '✓', text: `${targeted} in a corpus entry` },
+    ...(untargeted.length ? [{ mark: '✓', text: narrow ? `${untargeted.length} left to other checks` : `${untargeted.length} left to other checks or the guide`,
+      detail: untargeted.map((h) => `${h.id} ${(h.checks ?? []).map((c) => LATER[c]?.replace(/ \(.*\)$/, '') ?? c).join(', ')}`) }] : []),
+  ], details: DETAILS || hazardProblems.length > 0,
+});
+if (problems.length) {
+  ui.verdict('fail', 'FAILED', 'The coverage accounting does not close', Date.now() - T0);
+  process.exit(1);
+}
+if (stale) {
+  ui.out('  ' + ui.bad('COVERAGE.md is out of date.') + ui.dim('  run: make coverage-report'));
+  ui.verdict('fail', 'FAILED', 'COVERAGE.md differs from the corpus', Date.now() - T0);
+  process.exit(1);
+}
+if (!check) writeFileSync(file, text);
+ui.verdict('gold', 'PASSED', check ? 'COVERAGE.md is up to date.' : 'COVERAGE.md written.', Date.now() - T0);
+if (!DETAILS) ui.hint('why each arm is not reached', 'make coverage-report DETAILS=1');

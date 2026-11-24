@@ -2,6 +2,7 @@
 #   verify         schema, hashes, the native rs-stellar-xdr round trip of all 634 variants, every expected fact,
 #                  the mined ledgers and the SEP-0023 vectors (make verify)
 #   novelty        no entry is redundant (make novelty)
+#   upstream table README.md and findings/REPORT.md match findings/upstream.json (node tools/upstream-table.mjs --check)
 #   lint-selftest  xplint catches every seeded violation and mutant and flags no good case (make lint-selftest)
 # The longer runs (conformance across SDK builds, the wallet-backend replay, xplint on real indexers) are run with
 # make and recorded in conformance/, replay/ and linter/expectations.json; their workflows come with Tranche 2.
@@ -29,6 +30,10 @@ jobs:
         run: make verify
       - name: make novelty
         run: make novelty
+      # the "Reported upstream" table in README.md and findings/REPORT.md must match findings/upstream.json
+      # and its saved status (no network)
+      - name: upstream table
+        run: node tools/upstream-table.mjs --check
   linter:
     name: linter self-test
     runs-on: ubuntu-latest

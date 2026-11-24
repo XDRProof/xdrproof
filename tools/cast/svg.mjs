@@ -16,7 +16,7 @@ export const FONTS = join(HERE, 'fonts');
 export const loadFont = (file) => opentype.loadSync(join(FONTS, file));
 
 const r1 = (n) => Math.round(n * 10) / 10;
-const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Text set in a proportional font (the banner's motto), as one path: font, size, x, baseline y, tracking (em).
 export function textPath(font, text, x, y, size, tracking = 0) {

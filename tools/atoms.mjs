@@ -12,9 +12,12 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execFileSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { zstdDecompressSync } from 'node:zlib';
+import { availableParallelism } from 'node:os';
+import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
+import { once } from 'node:events';
 import { loadDefs, Walker } from './walker.mjs';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -28,29 +31,86 @@ export function loadEntries() {
     .map((id) => JSON.parse(readFileSync(join(ROOT, 'entries', id, 'entry.json'), 'utf8')));
 }
 
-// Returns { atoms: Map<entry id, Set<atom>>, variants: number }.
-export function entryAtoms(entries) {
+// The native reader's transaction hashes for every variant. The request is written line by line with backpressure,
+// yielding now and then, so the event loop (and a live row) never waits on one 100 MB string. Each file is checked
+// against the sha256 in its entry.json, here and again in the worker, so both reads see the same ledger.
+function nativeHashes(jobs) {
+  return new Promise((resolve, reject) => {
+    const p = spawn(NATIVE, { stdio: ['pipe', 'pipe', 'inherit'] }), out = [];
+    let settled = false;
+    const fail = (e) => { if (settled) return; settled = true; p.kill(); reject(e); };
+    p.stdout.on('data', (d) => out.push(d));
+    p.on('error', fail);
+    p.stdin.on('error', (e) => fail(new Error(`xdrproof-native stopped reading: ${e.message}`)));
+    p.on('close', (code) => { if (settled) return; settled = true; code === 0 ? resolve(Buffer.concat(out).toString()) : reject(new Error(`xdrproof-native exited ${code}`)); });
+    (async () => {
+      for (const [i, j] of jobs.entries()) {
+        if (settled) return;
+        const bytes = bytesOf(j.file);
+        if (sha256(bytes) !== j.v.sha256) throw new Error(`${j.e.id}@${j.v.key}: ${j.v.file} does not match the sha256 in entry.json`);
+        const line = JSON.stringify({ id: i, op: 'tx_hashes', xdr: bytes.toString('base64'), network_id: createHash('sha256').update(j.v.network_passphrase).digest('hex') }) + '\n';
+        if (!p.stdin.write(line)) await once(p.stdin, 'drain');
+        else if (i % 8 === 7) await new Promise(setImmediate);
+      }
+      p.stdin.end();
+    })().catch(fail);
+  });
+}
+const sha256 = (b) => createHash('sha256').update(b).digest('hex');
+
+// One variant's walk: the ledger's own segment, and the focus transaction's envelope and result meta segments.
+function walkOne(j) {
+  const bytes = bytesOf(j.file);
+  if (sha256(bytes) !== j.sha) return { i: j.i, error: 'the file changed while it was being read (sha256 differs from entry.json)' };
+  const w = new Walker(DEFS, 1500, [ENVELOPE, ...RESULT_META]); w.run(bytes, j.type);
+  const hits = [...w.segments[0].hits]; // the ledger's own shape: every reader of the file meets it
+  if (j.ledger) return { i: j.i, hits };
+  if (typeof j.hash !== 'string' || !j.hash) return { i: j.i, error: 'focus names neither the ledger nor a transaction hash' };
+  // a result meta starts with the result pair's transaction hash (after a void ext in V1): its first value read
+  const res = w.segments.filter((s) => RESULT_META.includes(s.type) && s.first === j.hash);
+  const env = w.segments.find((s) => s.type === ENVELOPE && s.index === j.env);
+  if (j.env < 0 || !env || res.length !== 1) return { i: j.i, error: `focus ${j.hash} not found (envelope ${j.env}, result metas ${res.length})` };
+  return { i: j.i, hits: [...hits, ...env.hits, ...res[0].hits] };
+}
+
+// a worker thread: walks its share and reports each result as it finishes
+if (!isMainThread && workerData?.atomsJobs) {
+  for (const j of workerData.atomsJobs) parentPort.postMessage(walkOne(j));
+}
+
+// Returns { atoms: Map<entry id, Set<atom>>, variants: number }. The walks are split across worker threads (the
+// walker is pure JavaScript and one ledger takes milliseconds to a second), largest files first, dealt round-robin.
+// onProgress(done, total) is called as variants finish.
+export async function entryAtoms(entries, { onProgress = () => {} } = {}) {
   // 1. transaction hashes of every variant's envelopes, in transaction-set order (one native call for all)
-  const jobs = entries.flatMap((e) => e.variants.map((v) => ({ e, v, bytes: bytesOf(join(ROOT, 'entries', e.id, v.file)) })));
-  const reqs = jobs.map((j, i) => JSON.stringify({ id: i, op: 'tx_hashes', xdr: j.bytes.toString('base64'),
-    network_id: createHash('sha256').update(j.v.network_passphrase).digest('hex') })).join('\n') + '\n';
-  const replies = execFileSync(NATIVE, { input: reqs, maxBuffer: 2 ** 31 }).toString().trim().split('\n').map(JSON.parse);
+  const jobs = entries.flatMap((e) => e.variants.map((v) => ({ e, v, file: join(ROOT, 'entries', e.id, v.file) })));
+  const replies = (await nativeHashes(jobs)).trim().split('\n').map(JSON.parse);
   for (const r of replies) if (r.status !== 'ok') throw new Error(`native tx_hashes failed for ${jobs[r.id].e.id}@${jobs[r.id].v.key}: ${r.message}`);
 
-  // 2. walk each variant once; take the ledger's own segment and the focus transaction's segments
+  // 2. walk each variant once, in parallel
+  const work = jobs.map((j, i) => ({ i, file: j.file, type: j.e.xdr_type, size: statSync(j.file).size, sha: j.v.sha256, ledger: !!j.v.focus?.ledger,
+    hash: j.v.focus?.tx_hash ?? null, env: j.v.focus?.ledger ? -1 : replies[i].hashes.indexOf(j.v.focus?.tx_hash) }));
+  const n = Math.max(1, Math.min(availableParallelism() - 1, 8, Math.ceil(work.length / 16)));
+  const shares = Array.from({ length: n }, () => []);
+  [...work].sort((a, b) => b.size - a.size).forEach((j, k) => shares[k % n].push(j));
+  const results = new Array(jobs.length); let done = 0;
+  await new Promise((resolve, reject) => {
+    const workers = []; let live = n, failed = false;
+    const stop = (err) => { if (failed) return; failed = true; Promise.allSettled(workers.map((w) => w.terminate())).then(() => reject(err)); };
+    for (const share of shares) {
+      let w;
+      try { w = new Worker(new URL(import.meta.url), { workerData: { atomsJobs: share } }); } catch (e) { stop(e); return; }
+      workers.push(w);
+      w.on('message', (r) => {
+        if (r.error) return stop(new Error(`${jobs[r.i].e.id}@${jobs[r.i].v.key}: ${r.error}`));
+        results[r.i] = r.hits; onProgress(++done, jobs.length);
+      });
+      w.on('error', stop);
+      w.on('exit', (code) => { if (code !== 0 && !failed) stop(new Error(`an atoms worker exited ${code}`)); else if (--live === 0 && !failed) resolve(); });
+    }
+  });
   const atoms = new Map(entries.map((e) => [e.id, new Set()]));
-  for (const [i, j] of jobs.entries()) {
-    const w = new Walker(DEFS, 1500, [ENVELOPE, ...RESULT_META]); w.run(j.bytes, j.e.xdr_type);
-    const mine = atoms.get(j.e.id); const take = (seg) => { for (const h of seg.hits) mine.add(h); };
-    take(w.segments[0]); // the ledger's own shape: every reader of the file meets it
-    if (j.v.focus.ledger) continue;
-    const hash = j.v.focus.tx_hash;
-    const env = replies[i].hashes.indexOf(hash);
-    // a result meta starts with the result pair's transaction hash (after a void ext in V1): its first value read
-    const res = w.segments.filter((s) => RESULT_META.includes(s.type) && s.first === hash);
-    if (env < 0 || res.length !== 1) throw new Error(`${j.e.id}@${j.v.key}: focus ${hash} not found (envelope ${env}, result metas ${res.length})`);
-    take(w.segments.find((s) => s.type === ENVELOPE && s.index === env)); take(res[0]);
-  }
+  for (const [i, j] of jobs.entries()) { const mine = atoms.get(j.e.id); for (const h of results[i]) mine.add(h); }
   for (const e of entries) {
     const mine = atoms.get(e.id);
     for (const h of e.hazards) { mine.add(`H:${h.id}`); mine.add(`P:${h.id}|${h.placement.trim().toLowerCase().replace(/\s+/g, ' ')}`); }
