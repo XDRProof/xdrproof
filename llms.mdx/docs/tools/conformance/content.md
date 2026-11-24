@@ -6,6 +6,8 @@
 
 ```bash
 make conformance     # a fresh run about 2 minutes; a repeat about a second (results are cached)
+make conformance ARGS="--entries auth.tree-depth-246-trapped"   # only these entries, every SDK
+make conformance ARGS="--only go@v0.9.0"                       # only this SDK build, everything
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.

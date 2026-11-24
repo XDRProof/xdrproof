@@ -26,6 +26,24 @@ make lint-selftest   # seeded fixtures and mutants (~2 min warm)
 make lint            # real code, against expectations.json (about 8 min fresh; seconds when nothing changed)
 ```
 
+A real run of `make lint-selftest`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   lint-selftest  · xplint · 44 seeded violations · 17 mutants
+
+  ╭─ Seeded violations ─────────────────────────────────── 44/44─╮
+  │ ✓ every seeded violation caught                           44 │
+  │ ✓ no finding on a line marked good                           │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Mutants ───────────────────────────────────────────── 17/17─╮
+  │ ✓ every mutant makes its rule fire                        17 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   xplint catches everything it should.   3:15
+
+  every rule and mutant:  make lint-selftest DETAILS=1
+```
+
 A real run of `make lint`, recorded 24 Nov 2026:
 
 ```text

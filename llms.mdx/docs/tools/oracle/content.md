@@ -9,6 +9,30 @@ make oracle          # node tools/oracle.mjs
 node tools/oracle.mjs --write  # also writes the evidence into entries
 ```
 
+A real run of `make oracle`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   oracle  · 263 entries · 634 ledgers · 1,296 facts
+
+  ╭─ stellar-core's own decoder ──────────────────────── 737/737─╮
+  │ ✓ found every fact in its printout                           │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Schema walker ───────────────────────────────────── 737/737─╮
+  │ ✓ found every fact in the ledger                             │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Planted errors (one digit changed) ────────────────── 49/49─╮
+  │ ✓ 49 rejected by both readers                                │
+  ╰──────────────────────────────────────────────────────────────╯
+
+  559 facts have no value to check (a length or a structure); make
+  verify checks those at their exact place.
+
+ PASSED   Every fact is confirmed by two readers.   14s
+
+  each entry, fact by fact:  make oracle DETAILS=1
+```
+
+
 A fact is only as good as the reader that produced it. The oracle asks two readers that share no code with any SDK:
 
 | Reader | How it runs |

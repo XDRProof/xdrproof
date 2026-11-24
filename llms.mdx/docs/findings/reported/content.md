@@ -4,13 +4,15 @@
 
 **Why it matters.** A test kit earns trust by what it catches. Each report below comes with a figure, a reproduction anyone can run, and, where we could, a tested fix. Filing is done the way the projects ask: a duplicate search first, one issue per bug.
 
+<UpstreamTable />
+
 ## F-3: balances stored short on protocol 20–22 ledgers
 
 Reported: [stellar/wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) · fix: [fix/pre-p23-soroban-refund-balances](https://github.com/Blockchain-Oracle/wallet-backend/compare/main...fix/pre-p23-soroban-refund-balances)
 
 ![Before protocol 23, each Soroban fee refund sits inside its own transaction's changes, which wallet-backend does not read; from protocol 23 all refunds come in one block it does read. On pubnet ledger 56085459, 7 of 7 refunded accounts are stored short.](https://xdrproof.dev/findings/f3-refunds.png)
 
-![A terminal: the replay harness runs the protocol 22 ledger into wallet-backend main and reports it mishandled; a jq query lists the seven accounts, each stored short by its refund.](https://xdrproof.dev/findings/f3-repro.gif)
+![A recorded run: the replay harness runs pubnet ledger 56085459 into wallet-backend main; its card names issue #834 and lists the accounts stored short by their refunds.](https://xdrproof.dev/findings/f3-repro.svg)
 
 Before protocol 23, stellar-core credits a Soroban fee refund inside the transaction's own changes. wallet-backend builds native balances from fees, operations and the newer, separate refund block only, so every refunded account on such a ledger is stored short by exactly its refund, while wallet-backend's own balance history adds up.
 

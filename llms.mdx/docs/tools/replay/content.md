@@ -12,15 +12,62 @@ node replay/harness.mjs --adapter wallet-backend --target main \
   --entries muxed.payment.every-position
 ```
 
+A real run of `make replay`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   replay  · wallet-backend · 634 ledgers · 4 upstream fixes
+
+  ╭─ wallet-backend main · 76194899 ──────────────────── 618/634─╮
+  │ ! misses SAC contract deploys                           #815 │
+  │ ! misses accounts created via SAC                       #804 │
+  │ ! balances short of fee refunds                         #834 │
+  │ ! misses failed-tx signer removal                       #805 │
+  │ ! misses revoked pool shares                            #817 │
+  │ ! misses pre-auth signer removal                        #818 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Caught before the fix, gone after ───────────────────── 4/4─╮
+  │ ✓ #729 signed-payload signers               halted → handled │
+  │ ✓ #731 SAC trust() trustlines              dropped → handled │
+  │ ✓ #753 muxed source on TTL ops              halted → handled │
+  │ ✓ #745 B and L address deployers            halted → handled │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every verdict matches its expectation.   16:49
+
+  issue details, timings and logs:  make replay DETAILS=1
+```
+
 Needs Docker, Node ≥ 22.15 and the native reader (`make native`). Once the images and Go modules are cached nothing reaches the network: the ledgers come from the corpus. On a laptop under Docker, six sessions at a time, the full run takes about 9.5 minutes once the builds are cached.
 
 Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a real indexer build with its own database; what it did (its cursor, its process, the rows it stored) is compared with probes derived from the same ledger, which gives a verdict: handled, dropped, mishandled, stalled, crashed or halted.
 
-![A terminal: the replay harness runs one protocol 22 ledger into wallet-backend main; three control ledgers are handled and the target is mishandled; a jq query over the harness's report lists the seven accounts stored short by their refunds.](https://xdrproof.dev/findings/f3-repro.gif)
+A real run of `node replay/harness.mjs --adapter wallet-backend --target main --entries backfill.p22-refunds-in-tx-changes-after`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   replay  · wallet-backend · 1 variant
+
+  ╭─ ledger 56085459 · main 76194899 ──────────────── mishandled─╮
+  │ ! balances short of fee refunds                         #834 │
+  │   GBGWQF…TUBE  stored short by 2,985,957                     │
+  │   GACPXY…PKX2  stored short by 66,847                        │
+  │   GDNYET…JDOH  stored short by 66,847                        │
+  │   GC7VM6…4PDS  stored short by 66,847                        │
+  │   … 3 more wrong values                                      │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ wallet-backend main · 76194899 ──────────────────────── 0/1─╮
+  │ ! 1 mishandled                                               │
+  │ report: replay/runs/wallet-backend@main/report.json          │
+  ╰──────────────────────────────────────────────────────────────╯
+
+  The indexer read 2 ledger entries the corpus does not hold; the mock
+  answered "not found".
+
+ PASSED   No new bugs. The ones above are known and tracked.   56s
+```
 
 ## wallet-backend main, the whole corpus
 
-The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>18db88f4</code>) it ingests 634 variants in 364 sessions: **618 handled, 0 halted**. The other 16 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
+The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>76194899</code>) it ingests 634 variants in 364 sessions: **618 handled, 0 halted**. The other 16 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|

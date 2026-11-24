@@ -5,8 +5,8 @@
 **Why it matters.** It proves the corpus is reproducible: nothing in it depends on our machine, our timing or our luck.
 
 ```bash
-make generate        # recipes/regenerate.sh, about 10 minutes
-make generate-quick  # only the two mainnet base P30 pairs, about 3 minutes
+make generate        # recipes/regenerate.mjs, about a minute on 10 cores
+make generate-quick  # only the two mainnet base P30 pairs, about 15 seconds
 ```
 
 It needs Docker, Node ≥ 22.15, npm, curl, jq and perl, and host ports 21700–21719. The stellar-core image is pinned by digest in `recipes/core-image`, and every run refuses anything but stellar-core v30.0.0.
@@ -49,4 +49,32 @@ The same recipe ledgers under the three flag profiles are compared, and the resu
 </Step>
 </Steps>
 
-It ends with `OK: every run reproduced; every shipped generated variant reproduced`.
+A real run of `make generate`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   generate  · 20 fresh runs
+
+  ╭─ Each configuration run twice, the same ────────────── 10/10─╮
+  │ ✓ classic P30 mainnet                              reordered │
+  │ ✓ soroban P30 mainnet                              reordered │
+  │ ✓ classic P30 testnet                              reordered │
+  │ ✓ classic P30 mainnet galexie                      reordered │
+  │ ✓ classic P30 mainnet bare                         reordered │
+  │ ✓ soroban P30 testnet                              reordered │
+  │ ✓ soroban P28 mainnet                              reordered │
+  │ ✓ soroban P28 testnet                              reordered │
+  │ ✓ soroban P30 mainnet galexie                      reordered │
+  │ ✓ soroban P30 mainnet bare                         reordered │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Corpus ledgers made again ───────────────────────── 597/597─╮
+  │ ✓ every generated ledger in the corpus, from scratch         │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Emitter flag profiles ───────────────────────────────── 2/2─╮
+  │ ✓ classic: the same ledgers under 3 flag sets        104/104 │
+  │ ✓ soroban: the same ledgers under 3 flag sets          93/93 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every generated ledger was made again from scratch.   47s
+
+  ledger counts per pair:  make generate DETAILS=1
+```

@@ -42,7 +42,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>d505bf2</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>47ff605b</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
@@ -57,6 +57,25 @@ The corpus rows are computed from the corpus at commit <code>d505bf2</code>, the
 | `validation-only`: set only where a transaction is validated for inclusion; a closed ledger never carries it at protocol 30 | 39 |
 | `not-emitted`: in the type graph, but stellar-core 30 never writes it into ledger-close meta | 17 |
 | Total | 499 |
+
+A real run of `make coverage-report`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   coverage-report  · 499 arms · 78 hazards
+
+  ╭─ Every union arm reached or explained ────────────── 499/499─╮
+  │ ✓ 417 reached by an entry                                    │
+  │ ✓ 82 not reached, each with core's reason                    │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Every hazard covered somewhere ────────────────────── 78/78─╮
+  │ ✓ 72 in a corpus entry                                       │
+  │ ✓ 6 left to other checks or the guide                        │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   COVERAGE.md written.   2.3s
+
+  why each arm is not reached:  make coverage-report DETAILS=1
+```
 
 Enum members reached by an entry: 333 of 411. The report is written to [`COVERAGE.md`](https://github.com/XDRProof/xdrproof/blob/main/COVERAGE.md), with the entries that target each hazard.
 

@@ -29,6 +29,20 @@ make build                     # every catalog file (minutes)
 node tools/build.mjs [id ...]  # only these entries
 ```
 
+A real run of `node tools/build.mjs upgrade.protocol-29-mainnet`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   build  · 1 catalog entry into entries/
+
+  ╭─ Catalog compiled into entries ───────────────────────── 1/1─╮
+  │ ✓ 1 built, every fact holds at its place           1 ledgers │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every entry built: 2 facts checked.   0.1s
+
+  next:  make verify, then node tools/oracle.mjs --write
+```
+
 The compiler takes the ledger bytes from a fresh [`make generate`](/docs/tools/generate) run (or from [`mined/`](/docs/corpus/mined)) and finds the focus transaction. It resolves every fact into an exact JSON Pointer for that variant, and records size, sha256, provenance and change-order data. It needs the runs of `make generate`, for the base P30 mainnet variants also those of [`make order-scan`](/docs/tools/order-scan) (it ships the most frequent byte ordering), and the native reader (`make native`). A fact that doesn't hold fails the build, and so does a variant whose focus doesn't match the catalog's (a transaction where the catalog says ledger, or none where it names one): intent and outcome must agree before an entry exists.
 
 </Step>
@@ -59,3 +73,20 @@ A fact names where it looks with `at`. The compiler resolves that address per va
 A value may be `{"$manifest": "contracts.kit2.CA1"}`. It is then read from the run's own manifest, so a fact holds on every network even though contract ids differ by passphrase.
 
 <Callout title="Authoring aid">`node tools/inspect.mjs <lane> <step> [variant]` reads a `make generate` run and prints the focus transaction's result and fee, and for each operation the kinds of its changes and its events.</Callout>
+
+A real run of `node tools/inspect.mjs classic muxed-payment`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   inspect  · classic · muxed-payment · p30-mainnet
+
+  Ledger        5 (LedgerCloseMeta v2), 1 transaction
+  Transaction   tx_processing[0] ·
+                e789c6146d92616b7ff7196eda35e8340a94dc36f23dce29f425dfa…
+  Result        {"tx_success":[{"op_inner":{"payment":"success"}}]}
+  Fee           charged 100 · fee changes 2 · post-apply 0
+  Meta          changes before 2 · after 0 · events 1 · diagnostic 0
+  Op 0          changes [state:account, updated:account, state:account,
+                updated:account] · events 1
+                first event:
+                {"v0":{"topics":[{"symbol":"transfer"},{"address":"GBQX…
+```

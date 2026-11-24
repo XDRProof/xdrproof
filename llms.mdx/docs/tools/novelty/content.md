@@ -9,6 +9,22 @@ make novelty                    # node tools/novelty.mjs
 node tools/novelty.mjs --json out.json   # also write the per-entry report
 ```
 
+A real run of `make novelty`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   novelty  · 263 entries · 634 ledger variants
+
+  ╭─ No entry repeats another ────────────────────────── 263/263─╮
+  │ ✓ 182 hold an arm, value, hazard or bug of their own         │
+  │ ✓ 81 differ only in where it sits in the ledger              │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every entry adds something.   3.2s
+
+  the 81 told apart by where they sit:  make novelty DETAILS=1
+```
+
+
 The corpus grows by purpose, not volume. Novelty checks that every entry earns its place. It describes each entry as a set of **atoms**:
 
 | Atom | What counts |
@@ -22,7 +38,7 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>d505bf2</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>47ff605b</code>: 0 redundant entries, over 1,226 atoms.
 
 | Entries | Count |
 |---|---:|

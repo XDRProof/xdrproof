@@ -5,8 +5,28 @@
 **Why it matters.** Code that assumes a fixed order works on one run and breaks on the next. The corpus ships the rarer orderings, so that code fails in a test instead.
 
 ```bash
-make order-scan   # 20 runs per lane, classic then Soroban (~15 min)
+make order-scan   # 20 runs per lane, classic then Soroban (2 to 5 min)
 ```
+
+A real run of `make order-scan`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   order-scan  · 40 fresh runs
+
+  ╭─ classic p30-mainnet-base · 20 runs ──────────────── 104/104─╮
+  │ ✓ 70 byte-identical in every run                             │
+  │ ✓ 34 differ only in the order of changes            up to 20 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ soroban p30-mainnet-base · 20 runs ────────────────── 93/93─╮
+  │ ✓ 76 byte-identical in every run                             │
+  │ ✓ 17 differ only in the order of changes            up to 19 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Only the order of changes varies, never the content.   1:16
+
+  which ledgers, and how the runs split:  make order-scan DETAILS=1
+```
+
 
 stellar-core iterates a hash map with a per-process random salt, so the changes within an operation can come out in a different order on every run. The order scan measures this. It runs each recipe lane 20 times on fresh cores, records every byte ordering seen per ledger, and fails if any ledger's **content** differs once order is normalised.
 

@@ -81,13 +81,40 @@ npm install @stellar/stellar-sdk@17.4.0
 node --test xdrproof.test.mjs
 ```
 
-From an empty folder, on Node 25.9, the first run (fetching the corpus) took 56 seconds; the second, from `.xdrproof/`, 3.5 seconds. The end of the run:
+From an empty folder, on Node 25.9: the first run fetches the corpus (98 seconds here, most of it the download); a second run reads `.xdrproof/` and takes under 5 seconds.
+
+A real run of `node --test xdrproof.test.mjs`, recorded 24 Nov 2026:
 
 ```text
+✔ upgrade.config-lanes-and-freeze@p30-testnet-generated (0.165958ms)
+✔ upgrade.config-lanes-and-freeze@p28-testnet-generated (0.246791ms)
+✔ upgrade.config-restore-and-unfreeze@p30-mainnet-generated (0.270292ms)
+✔ upgrade.config-restore-and-unfreeze@p28-mainnet-generated (0.178833ms)
+✔ upgrade.config-restore-and-unfreeze@p30-testnet-generated (0.156792ms)
+✔ upgrade.config-restore-and-unfreeze@p28-testnet-generated (0.231042ms)
+✔ upgrade.config-settings-vote-mainnet@p29-mainnet-mined-l65080525 (196.
+711958ms)
+✔ upgrade.config-short-lifetimes@p30-mainnet-generated (1.166208ms)
+✔ upgrade.config-short-lifetimes@p28-mainnet-generated (0.261ms)
+✔ upgrade.config-short-lifetimes@p30-testnet-generated (0.387208ms)
+✔ upgrade.config-short-lifetimes@p28-testnet-generated (0.208875ms)
+✔ upgrade.frozen-keys-mainnet@p29-mainnet-mined-l65273932 (83.980959ms)
+✔ upgrade.generated-header-fee-sizes-flags@p30-mainnet-generated (0.8324
+59ms)
+✔ upgrade.generated-header-fee-sizes-flags@p30-testnet-generated (0.1736
+25ms)
+✔ upgrade.generated-protocol-30@p30-mainnet-generated (1.149167ms)
+✔ upgrade.generated-protocol-30@p30-testnet-generated (0.673208ms)
+✔ upgrade.protocol-29-mainnet@p29-mainnet-mined-l64717645 (47.58325ms)
+✔ upgrade.protocol-30-testnet@p30-testnet-mined-l5540313 (17.706042ms)
 ℹ tests 634
 ℹ suites 0
 ℹ pass 634
 ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 98277.796
 ```
 
 </Tab>
@@ -198,10 +225,12 @@ go mod tidy
 go test ./...
 ```
 
-`go mod tidy` is needed: `go get` on the SDK's root module leaves the `xdr` package's own dependencies out of `go.sum`, and a first try without it stopped with `missing go.sum entry`. From an empty folder, on Go 1.27.4:
+`go mod tidy` is needed: `go get` on the SDK's root module leaves the `xdr` package's own dependencies out of `go.sum`, and a first try without it stopped with `missing go.sum entry`. From an empty folder, on Go 1.25.14 (the official `golang` Docker image, as this machine has no Go installed):
+
+A real run of `go test ./...`, recorded 24 Nov 2026:
 
 ```text
-ok  	example.com/check	15.015s
+ok  example.com/xdrproof-demo10.989s
 ```
 
 `go test -v` lists 634 passing subtests, one per ledger, and no failures.
@@ -293,12 +322,34 @@ cargo test --release -- --nocapture
 
 The types are at the crate root in 30.0.0 (a first try with `stellar_xdr::curr::…` did not compile). From an empty folder, on cargo 1.98.1:
 
+A real run of `cargo test --release -- --nocapture`, recorded 24 Nov 2026:
+
 ```text
+    Finished `release` profile [optimized] target(s) in 0.33s
+     Running unittests src/lib.rs (target/release/deps/xdrproof_demo-412
+538738dd1c5b2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered o
+ut; finished in 0.00s
+
+     Running tests/xdrproof.rs (target/release/deps/xdrproof-c5f7c5e50d8
+51f46)
+
 running 1 test
 634 corpus variants round-trip
 test corpus_round_trips ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 51.29s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered o
+ut; finished in 47.73s
+
+   Doc-tests xdrproof_demo
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered o
+ut; finished in 0.00s
 ```
 
 </Tab>
@@ -358,10 +409,22 @@ pip install stellar-sdk==17.0.1 zstandard pytest
 pytest -q
 ```
 
-From an empty folder, on Python 3.13.18 (the end of the run, fetching included):
+From an empty folder, on Python 3.13.13, fetching included:
+
+A real run of `pytest -q`, recorded 24 Nov 2026:
 
 ```text
-634 passed in 62.68s (0:01:02)
+................................................................ [ 10%]
+................................................................ [ 20%]
+................................................................ [ 30%]
+................................................................ [ 40%]
+................................................................ [ 50%]
+................................................................ [ 60%]
+................................................................ [ 70%]
+................................................................ [ 80%]
+................................................................ [ 90%]
+..........................................................       [100%]
+634 passed in 77.17s (0:01:17)
 ```
 
 </Tab>

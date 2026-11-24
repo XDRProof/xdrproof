@@ -39,6 +39,36 @@ cd xdrproof
 make verify
 ```
 
+A real run of `make verify`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   verify  · 263 entries · 634 ledger variants
+
+  ╭─ Second reader · stellar-xdr-json ────────────────── 621/634─╮
+  │ ! refuses very deep auth trees                           #67 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Corpus ──────────────────────────────────────────── 634/634─╮
+  │ ✓ entries match the schema and the hazard list           263 │
+  │ ✓ files match their sha256 and size                      634 │
+  │ ✓ ledgers read back byte for byte                        634 │
+  │ ✓ every focus transaction is in its ledger               634 │
+  │ ✓ expected values hold                                 1,715 │
+  │ ✓ ledgers with shuffled change order match                88 │
+  │ ✓ manifest.json is up to date                                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Mined pubnet ledgers ──────────────────────────────── 37/37─╮
+  │ ✓ 47 records and 223 values match the ledgers                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Keys and signatures ───────────────────────────────── 39/39─╮
+  │ ✓ strkeys: 10 valid accepted, 19 invalid refused          29 │
+  │ ✓ auth signatures hold (H-B16)                            10 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   The corpus is intact.   12s
+
+  every refused ledger and the hazards:  make verify DETAILS=1
+```
+
 The first run installs the tool dependencies (`npm ci`) and builds the native reader (`cargo build --release`), about a minute. Then it checks:
 
 - every SEP-0023 strkey test vector;

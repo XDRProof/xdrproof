@@ -17,23 +17,25 @@ node replay/harness.mjs --adapter wallet-backend --target main \
   --entries muxed.payment.every-position
 ```
 
-What it printed on 19 November 2026, in 113 seconds with the Docker images already cached (a cold build downloads Go modules first; the adapter allows 20 minutes):
+A real run, with the Docker images already on this machine (a first run also downloads them and builds wallet-backend, a few minutes; each step says so on its live row):
+
+A real run of `node replay/harness.mjs --adapter wallet-backend --target main --entries muxed.payment.every-position`, recorded 24 Nov 2026:
 
 ```text
-wallet-backend@main (18db88f4ba48, protocol_max 30): 2 variants, 2 sessions, 0 unsupported
-  3/3 sessions
-  control executable-ref.invoke@p28-mainnet-generated: handled
-  control failure.path-payment-strict-send.no-destination-mainnet@p29-mainnet-mined-l65517499: handled
-  control event.classic.payment-transfer@p30-mainnet-generated: handled
-  2/2 sessions
+ XDRPROOF   replay  · wallet-backend · 2 variants
 
-handled 2   (…/replay/runs/wallet-backend@main/report.json; harness peak RSS 79 MiB)
-  the indexer read ledger entries the corpus does not hold: contract_data x4 (answered not found)
-partial run (2 variants judged): each matches its expectation; the judged-set check needs a full run.
-OK: every verdict matches replay/expectations/wallet-backend@main.json.
+  ╭─ wallet-backend main · 76194899 ──────────────────────── 2/2─╮
+  │ ✓ 2 handled                                                  │
+  │ report: replay/runs/wallet-backend@main/report.json          │
+  ╰──────────────────────────────────────────────────────────────╯
+
+  The indexer read 4 ledger entries the corpus does not hold; the mock
+  answered "not found".
+
+ PASSED   Every ledger handled.   16s
 ```
 
-The control ledgers run first: the plainest ledger of each protocol the target decodes, each of which must get through before any session counts. The `contract_data` line is the mock telling you the indexer asked for state the ledger does not hold (wallet-backend reads two Blend contracts at startup); a verdict that depends on such a read is flagged and traced by hand. Drop `--entries` to replay the whole corpus.
+Before any session counts, one control ledger for each protocol the target decodes must get through; if one does not, the run stops, because the setup is wrong, not the indexer. When the indexer asks the mock for state the ledger does not hold (wallet-backend reads two Blend contracts at startup), the run says so under the cards, and a verdict that depends on such a read is traced by hand. Drop `--entries` to replay the whole corpus.
 
 ## Write an adapter for your indexer
 

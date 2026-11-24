@@ -1,0 +1,1 @@
+{"command":"go test ./...","cols":72,"used":1,"exit":0,"recordedAt":1795523100,"timelapse":1,"duration":5.2,"rows":[[{"text":"ok  example.com/xdrproof-demo10.989s","fg":null,"bg":null,"bold":false,"dim":false,"inv":false,"link":null}]],"frames":[{"t":1.2,"r":[0]}]}

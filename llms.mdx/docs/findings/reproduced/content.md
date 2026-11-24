@@ -27,7 +27,7 @@ Run by `make replay-sightings`: each fixed failure the corpus reproduces is repl
 
 ## wallet-backend main, still open
 
-The whole corpus replayed into `main` (<code>18db88f4</code>): 618 of 634 variants handled, 0 halted. The rest:
+The whole corpus replayed into `main` (<code>76194899</code>): 618 of 634 variants handled, 0 halted. The rest:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
