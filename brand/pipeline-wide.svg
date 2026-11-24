@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700" role="img" aria-labelledby="t d" class="xp-fig">
   <title id="t">XDRProof pipeline</title>
-  <desc id="d">Inputs: the hazard registry (78 hazards) says what to target; recipes drive a standalone stellar-core v30.0.0, pinned by image digest, to emit rare shapes; ledger history adds mined variants. The corpus (263 entries, 634 variants) holds the bytes and the facts a correct reader must return. Verify, Oracle and Coverage prove it with independent readers; it reaches 417 of 499 union arms. Replay feeds every corpus ledger to wallet-backend main (618 of 634 handled, 0 halted) and to the builds before and after each fix. Conformance runs the corpus and test vectors through 6 JavaScript, WebAssembly, Rust, Go and Python SDK builds, and the fixed-bug regressions through 5 older releases. The linter, xplint, checks Go indexer source for the three ingestion mistakes: 4 findings on wallet-backend main, 0 with XDRProof's two patches. Planned: a GitHub Action and the hardening guide.</desc>
+  <desc id="d">Inputs: the hazard registry (78 hazards) says what to target; recipes drive a standalone stellar-core v30.0.0, pinned by image digest, to emit rare shapes; ledger history adds mined variants. The corpus (264 entries, 635 variants) holds the bytes and the facts a correct reader must return. Verify, Oracle and Coverage prove it with independent readers; it reaches 418 of 499 union arms. Replay feeds every corpus ledger to wallet-backend main (618 of 635 handled, 0 halted) and to the builds before and after each fix. Conformance runs the corpus and test vectors through 6 JavaScript, WebAssembly, Rust, Go and Python SDK builds, and the fixed-bug regressions through 5 older releases. The linter, xplint, checks Go indexer source for the three ingestion mistakes: 4 findings on wallet-backend main, 0 with XDRProof's two patches. Planned: a GitHub Action and the hardening guide.</desc>
   <style>
     .xp-fig { --bg:#FAF7F2; --grid:rgba(21,19,15,.045); --grid2:rgba(21,19,15,.085); --cross:rgba(21,19,15,.32); --line:#15130F; --node:#FFFDF9; --nstroke:#15130F; --title:#15130F; --sub:#3B3731; --label:#8A6A00; --muted:#6E675E; --subj:#FDDA24; --subj-t:#15130F; --pass:#E2F0DA; --pass-t:#2F7A1F; --warn:#F8EAD3; --warn-t:#9A5600; --fail:#FBE1DA; --fail-t:#CC2E19; --neu:#F2EDE5; --neu-t:#15130F; --tile:#FFFFFF; --tilestroke:rgba(21,19,15,.18);
       font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; }
@@ -57,10 +57,10 @@
   <text class="t ts" x="316" y="329">Corpus</text>
   <path class="rule" d="M300 344.5H520"/>
   <text class="k" x="316" y="374" text-anchor="start">entries</text>
-  <text class="v" x="410" y="374" text-anchor="start">263</text>
+  <text class="v" x="410" y="374" text-anchor="start">264</text>
   <path class="rule" d="M300 392.5H520"/>
   <text class="k" x="316" y="422" text-anchor="start">variants</text>
-  <text class="v" x="410" y="422" text-anchor="start">634</text>
+  <text class="v" x="410" y="422" text-anchor="start">635</text>
   <path class="rule" d="M300 440.5H520"/>
   <text class="k" x="316" y="470" text-anchor="start">hazards</text>
   <text class="v" x="410" y="470" text-anchor="start">72 of 78</text>
@@ -72,7 +72,7 @@
   <text class="s" x="576" y="266">stellar-core · walker</text>
   <rect class="node" x="560" y="316" width="270" height="80"/>
   <text class="t" x="576" y="347">Coverage</text>
-  <text class="s" x="576" y="372">417 of 499 union arms</text>
+  <text class="s" x="576" y="372">418 of 499 union arms</text>
   <rect class="node" x="880" y="104" width="280" height="128"/>
   <text class="t" x="896" y="135">Replay</text>
   <text class="s" x="896" y="160">wallet-backend main + fixes</text>

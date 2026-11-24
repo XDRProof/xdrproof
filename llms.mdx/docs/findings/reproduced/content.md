@@ -27,7 +27,7 @@ Run by `make replay-sightings`: each fixed failure the corpus reproduces is repl
 
 ## wallet-backend main, still open
 
-The whole corpus replayed into `main` (<code>76194899</code>): 618 of 634 variants handled, 0 halted. The rest:
+The whole corpus replayed into `main` (<code>76194899</code>): 618 of 635 variants handled, 0 halted. The rest:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
@@ -38,6 +38,7 @@ The whole corpus replayed into `main` (<code>76194899</code>): 618 of 634 varian
 | [`revoke.cascade-offers-pool-shares`](https://xdrproof.dev/docs/corpus/entries/revoke-cascade-offers-pool-shares) | 2 | dropped | Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust. | [wallet-backend#817](https://github.com/stellar/wallet-backend/issues/817) |
 | [`sac.xlm-transfer-creates-account`](https://xdrproof.dev/docs/corpus/entries/sac-xlm-transfer-creates-account) | 4 | dropped | An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation. | [wallet-backend#804](https://github.com/stellar/wallet-backend/issues/804), [wallet-backend#816](https://github.com/stellar/wallet-backend/issues/816) |
 | [`signer.preauth-removed-by-core`](https://xdrproof.dev/docs/corpus/entries/signer-preauth-removed-by-core) | 2 | dropped | Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers. | [wallet-backend#818](https://github.com/stellar/wallet-backend/issues/818) |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | 1 | mishandled | F-3 again, on a second mainnet ledger. Pubnet ledger 58357467 is at protocol 22, so its Soroban fee refunds are credited in txChangesAfter, which wallet-backend's native balances do not read. The 2 refunded accounts end short by exactly their refunds: 10,942,591 stroops over 92 transactions, and 123,783 from one, the txINTERNAL_ERROR transaction this entry is for (it failed, yet its unused fee still comes back). | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 
 ## Found by XDRProof
 

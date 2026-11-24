@@ -21,7 +21,7 @@ The five keys are u32 1, i32 1, u64 1, the string "1" and the symbol 1. Each map
 
 ## What a correct reader returns
 
-This entry has an **SDK check** (1 of 263 entries do). It is a rule for the SDK's own helper, not a value: keep all five entries, or refuse the map. Never return fewer.
+This entry has an **SDK check** (1 of 264 entries do). It is a rule for the SDK's own helper, not a value: keep all five entries, or refuse the map. Never return fewer.
 
 <Callout title="Not run yet">The schema says SDK checks belong to the conformance runner, but no tool runs them yet. Today the runner uses its own vectors, below.</Callout>
 

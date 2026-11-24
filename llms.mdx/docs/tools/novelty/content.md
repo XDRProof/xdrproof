@@ -12,16 +12,16 @@ node tools/novelty.mjs --json out.json   # also write the per-entry report
 A real run of `make novelty`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   novelty  · 263 entries · 634 ledger variants
+ XDRPROOF   novelty  · 264 entries · 635 ledger variants
 
-  ╭─ No entry repeats another ────────────────────────── 263/263─╮
-  │ ✓ 182 hold an arm, value, hazard or bug of their own         │
-  │ ✓ 81 differ only in where it sits in the ledger              │
+  ╭─ No entry repeats another ────────────────────────── 264/264─╮
+  │ ✓ 181 hold an arm, value, hazard or bug of their own         │
+  │ ✓ 83 differ only in where it sits in the ledger              │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every entry adds something.   3.2s
+ PASSED   Every entry adds something.   1.9s
 
-  the 81 told apart by where they sit:  make novelty DETAILS=1
+  the 83 told apart by where they sit:  make novelty DETAILS=1
 ```
 
 
@@ -38,12 +38,12 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>ef33d938</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>2fbfbca4</code>: 0 redundant entries, over 1,231 atoms.
 
 | Entries | Count |
 |---|---:|
-| Hold an arm, enum member, hazard or sighting no other entry holds | 182 |
-| Told apart only by a placement | 81 |
+| Hold an arm, enum member, hazard or sighting no other entry holds | 181 |
+| Told apart only by a placement | 83 |
 | … of which every other atom sits inside one single other entry | 11 |
 
 <Callout title="Placement is a claim, not a measurement">A placement is text the author wrote. So `make novelty` lists every entry told apart only by placement, and flags the ones wholly contained in one other entry: for each such pair, the facts must check a different thing.</Callout>

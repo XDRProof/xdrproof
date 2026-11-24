@@ -6314,7 +6314,7 @@ Entry id `home-domain.max-32-flags-revocable-clawback` · compiled from [`catalo
 
 # All entries (/docs/corpus/entries)
 
-263 entries · 634 variants · 78 hazards in the registry · 72 hazards covered so far
+264 entries · 635 variants · 78 hazards in the registry · 72 hazards covered so far
 
 | Entry | Title | CAP | Hazards | Variants | Facts |
 |---|---|---|---|---|---|
@@ -6458,6 +6458,7 @@ Entry id `home-domain.max-32-flags-revocable-clawback` · compiled from [`catalo
 | [`tx.apply-time.inner-bad-min-seq-age-or-gap`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-bad-min-seq-age-or-gap) | A fee bump whose inner transaction fails at apply with txBAD_MIN_SEQ_AGE_OR_GAP | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
 | [`tx.apply-time.inner-bad-seq`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-bad-seq) | A fee bump whose inner transaction fails at apply with txBAD_SEQ | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
 | [`tx.apply-time.inner-no-account`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-no-account) | A fee bump whose inner transaction fails at apply with txNO_ACCOUNT | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | A mainnet transaction that ends txINTERNAL_ERROR | CAP-0046 | H-C1, H-C13 | p22-mainnet-mined-l58357467 | 6 |
 | [`tx.apply-time.no-account-fee-not-refunded`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-no-account-fee-not-refunded) | A Soroban transaction fails txNO_ACCOUNT at apply and its fee is never refunded | CAP-0046 | H-C16, H-C13 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 28 |
 | [`failure.account-merge.dest-full`](https://xdrproof.dev/docs/corpus/entries/failure-account-merge-dest-full) | ACCOUNT_MERGE fails with ACCOUNT_MERGE_DEST_FULL | pre-cap | H-C1, H-C11, H-C17, H-B3 | p30-mainnet-generated, p30-testnet-generated | 6 |
 | [`failure.account-merge.has-sub-entries`](https://xdrproof.dev/docs/corpus/entries/failure-account-merge-has-sub-entries) | ACCOUNT_MERGE fails with ACCOUNT_MERGE_HAS_SUB_ENTRIES | pre-cap | H-C1 | p30-mainnet-generated, p30-testnet-generated | 8 |
@@ -8520,7 +8521,7 @@ The five keys are u32 1, i32 1, u64 1, the string "1" and the symbol 1. Each map
 
 ## What a correct reader returns
 
-This entry has an **SDK check** (1 of 263 entries do). It is a rule for the SDK's own helper, not a value: keep all five entries, or refuse the map. Never return fewer.
+This entry has an **SDK check** (1 of 264 entries do). It is a rule for the SDK's own helper, not a value: keep all five entries, or refuse the map. Never return fewer.
 
 <Callout title="Not run yet">The schema says SDK checks belong to the conformance runner, but no tool runs them yet. Today the runner uses its own vectors, below.</Callout>
 
@@ -10021,6 +10022,44 @@ make oracle   # the facts' values, re-read by stellar-core and the schema walker
 Entry id `tx.apply-time.inner-no-account` · compiled from [`catalog/tx.apply-time.inner-no-account.json`](https://github.com/XDRProof/xdrproof/blob/main/catalog/tx.apply-time.inner-no-account.json) · [`entry.json`](https://github.com/XDRProof/xdrproof/blob/main/entries/tx.apply-time.inner-no-account/entry.json)
 
 
+# A mainnet transaction that ends txINTERNAL_ERROR (/docs/corpus/entries/tx-apply-time-internal-error-mainnet)
+
+Where it sits, inside `LedgerCloseMeta` (CAP-0046):
+
+- H-C1: txINTERNAL_ERROR at apply, a mainnet Soroban call
+- H-C13: the refund of a txINTERNAL_ERROR transaction, before protocol 23
+
+## The shape
+
+stellar-core threw while applying a Soroban call: the result is txINTERNAL_ERROR, the fee is charged and no operation has metadata. Before protocol 23 the unused fee still comes back, in txChangesAfter.
+
+## Variants
+
+| Variant | Protocol | Network | Source | Size | sha256 |
+|---|---|---|---|---|---|
+| [`p22-mainnet-mined-l58357467`](https://github.com/XDRProof/xdrproof/blob/main/entries/tx.apply-time.internal-error-mainnet/p22-mainnet-mined-l58357467.xdr.zst) | P22 | mainnet passphrase | mined from history | 1,373,968 B | `7351a2d209a02bac02053437ee1acb3e36c428d6cbbe044c71fc641fe9d230ed` |
+
+## What a correct reader returns
+
+| A correct reader finds | Value | Backed by |
+|---|---|---|
+| stellar-core threw while applying the transaction: the result is txINTERNAL_ERROR. | `tx_internal_error` | snapshot, core, walker |
+| The fee charged, after the refund below, is 555,036 stroops. | `555036` | snapshot, core, walker |
+| The metadata has no operation entries. | length `0` | snapshot |
+| The unused fee comes back in txChangesAfter (2 changes), not in an operation. | length `2` | snapshot |
+| Before the refund the source account holds 2,719,687,106 stroops. | `2719687106` | snapshot, core, walker |
+| After it, 2,719,810,889: a refund of 123,783. | `2719810889` | snapshot, core, walker |
+
+## Check it yourself
+
+```bash
+make verify   # schema, hashes, the byte-for-byte round trip and every fact above
+make oracle   # the facts' values, re-read by stellar-core and the schema walker
+```
+
+Entry id `tx.apply-time.internal-error-mainnet` · compiled from [`catalog/tx.apply-time.internal-error-mainnet.json`](https://github.com/XDRProof/xdrproof/blob/main/catalog/tx.apply-time.internal-error-mainnet.json) · [`entry.json`](https://github.com/XDRProof/xdrproof/blob/main/entries/tx.apply-time.internal-error-mainnet/entry.json)
+
+
 # A Soroban transaction fails txNO_ACCOUNT at apply and its fee is never refunded (/docs/corpus/entries/tx-apply-time-no-account-fee-not-refunded)
 
 Where it sits, inside `LedgerCloseMeta` (CAP-0046):
@@ -10401,7 +10440,7 @@ Entry id `upgrade.protocol-30-testnet` · compiled from [`catalog/upgrade.protoc
 
 **Why it matters.** Your code meets ordinary ledgers every day and these rarely, often for the first time in production. The corpus lets you meet them in a test.
 
-263 entries · 634 variants · 78 hazards in the registry · 72 hazards covered so far
+264 entries · 635 variants · 78 hazards in the registry · 72 hazards covered so far
 
 The corpus is a set of **entries**, plus [37 mined ledgers](/docs/corpus/mined) from the real networks. Each entry is one rare shape, such as a signed-payload signer or a trustline created by a contract call, kept as real `LedgerCloseMeta` bytes. Each entry also carries the facts a correct reader must find in those bytes.
 
@@ -10430,7 +10469,7 @@ The entry's intent and facts are written in its [catalog file](/docs/corpus/cata
 
 ### Facts, and what backs each one
 
-Every expected value says what backs it: `construction` (the recipe set that value), `snapshot` (the SEP-0051 rendering by the pinned stellar-xdr crate), `core` (stellar-core's own decoder), `walker` (XDRProof's schema walker) or `review`. 737 of the 1,296 facts are also confirmed by both stellar-core's decoder and the schema walker; the **Backed by** column on each entry page shows exactly which.
+Every expected value says what backs it: `construction` (the recipe set that value), `snapshot` (the SEP-0051 rendering by the pinned stellar-xdr crate), `core` (stellar-core's own decoder), `walker` (XDRProof's schema walker) or `review`. 741 of the 1,302 facts are also confirmed by both stellar-core's decoder and the schema walker; the **Backed by** column on each entry page shows exactly which.
 
 </Step>
 <Step>
@@ -10471,7 +10510,7 @@ Every expected value says what backs it: `construction` (the recipe set that val
 
 **Why it matters.** Some shapes only happen on a live network, such as eviction at the per-ledger cap or a validator vote. These are the real bytes, not a reconstruction.
 
-37 ledgers · 47 shape records · 34 mainnet, 3 testnet · protocols P12 P22 P28 P29 P30
+38 ledgers · 48 shape records · 35 mainnet, 3 testnet · protocols P12 P22 P28 P29 P30
 
 Some shapes only happen on a real network, and some are worth having as real network bytes. Examples:
 - eviction at the per-ledger cap;
@@ -10488,9 +10527,9 @@ Some shapes only happen on a real network, and some are worth having as real net
 | `mined/ledgers/<network>-<seq>.lcm.xdr.zst` | One ledger, zstd-compressed. Its sha256 and size describe the decompressed bytes: the lake object minus its 12-byte batch header |
 | `mined/index.json` | One record per shape found in a ledger: the lake URL, the stellar-core version that wrote it, how it was located, the findings with exact JSON paths, and why readers break on it |
 
-`make verify` also runs `tools/mined-verify.mjs`. Every file must match its hash, round-trip byte for byte through native rs-stellar-xdr, and carry the recorded sequence and protocol. Every finding's transaction and JSON path must be present. `make coverage` reports the union arms these ledgers reach: **289 of 499**.
+`make verify` also runs `tools/mined-verify.mjs`. Every file must match its hash, round-trip byte for byte through native rs-stellar-xdr, and carry the recorded sequence and protocol. Every finding's transaction and JSON path must be present. `make coverage` reports the union arms these ledgers reach: **291 of 499**.
 
-<Callout title="Network data, not entries">These ledgers were written by SDF's Galexie with its default flags, so their metadata differs from a default node's (see [Found while building](/docs/findings)). Most are not corpus entries: entries carry facts and hazards, and these carry findings. The [catalog](/docs/corpus/catalog) also compiles entries from them: 37 entries so far, built from 22 of these ledgers, the signed-payload signer among them.</Callout>
+<Callout title="Network data, not entries">These ledgers were written by SDF's Galexie with its default flags, so their metadata differs from a default node's (see [Found while building](/docs/findings)). Most are not corpus entries: entries carry facts and hazards, and these carry findings. The [catalog](/docs/corpus/catalog) also compiles entries from them: 38 entries so far, built from 23 of these ledgers, the signed-payload signer among them.</Callout>
 
 ## Every mined shape
 
@@ -10543,6 +10582,7 @@ Some shapes only happen on a real network, and some are worth having as real net
 | config upgrade frozen keys | [mainnet 65273932](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1CE1FF--65216000-65279999/FC1BFFB3--65273932.xdr.zst) (P29, 268 txs) | CAP-0077 on mainnet: a config upgrade grows the frozen-key list from 3 to 4 accounts. Transactions touching those accounts are refused from the next ledger; the change is visible only in upgradesProcessing (config setting frozen_ledger_keys), as encoded LedgerKey bytes. |
 | p22 refunds in tx changes after | [mainnet 56085459](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FCA887FF--56064000-56127999/FCA8342C--56085459.xdr.zst) (P22, 222 txs) | Protocol 22: the Soroban fee refund is a change in txChangesAfter of each transaction, not in postTxApplyFeeProcessing as from protocol 23. LedgerCloseMeta is v1. In the public lake the TransactionMeta is v4 even at protocol 22, because Galexie sets BACKFILL_STELLAR_ASSET_EVENTS (stellar-core TransactionMeta.cpp: v4 from protocol 23 or with that flag); a default node writes v3 for the same ledger. |
 | p12 v0 envelopes | [mainnet 26588352](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FE6AB9FF--26560000-26623999/FE6A4B3F--26588352.xdr.zst) (P12, 532 txs) | Protocol 12: every envelope is ENVELOPE_TYPE_TX_V0 (a raw ed25519 source, no MuxedAccount) and LedgerCloseMeta is v0 with a classic TransactionSet. Readers written for V1 envelopes fail on backfill. The lake carries TransactionMeta v4 here as well (BACKFILL_STELLAR_ASSET_EVENTS); a default node writes v2. |
+| tx internal error | [mainnet 58357467](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC8659FF--58304000-58367999/FC858924--58357467.xdr.zst) (P22, 269 txs) | txINTERNAL_ERROR is written only when stellar-core throws while applying a transaction, so it is in almost no test data. The fee is charged and the metadata has no operation entries; a reader that expects only the txSUCCESS and txFAILED result arms, or one meta entry per operation, breaks on it. |
 
 
 # Recipes (/docs/corpus/recipes)
@@ -10567,7 +10607,7 @@ Core's metadata stream is split into one `ledger-NNN.xdr` file per ledger, plus 
 | Classic | `recipes/classic/gen.mjs` | 3–105, at protocol 30 | Basics (the signed-payload signers at ledger 6), a catalogue of operations, two failure suites, blueprint placements, maximum-length vectors, a revocation cascade, surge pricing, and a final base-fee, set-size and ledger-flags upgrade |
 | Soroban | `recipes/soroban/gen/gen.mjs` | 3–94 at P30 | Blueprint placements, apply-time failures, fee-bump inner failures, forged and V2-rendered auth signatures, two test contracts, delegated custom accounts, external-ref executables, config upgrades, frozen keys, eviction and automatic restore |
 
-Entries are compiled from recipe steps (and mined ledgers) by the [catalog](/docs/corpus/catalog): 263 so far. The [hazard registry](/docs/hazards) references recipe ledgers by number.
+Entries are compiled from recipe steps (and mined ledgers) by the [catalog](/docs/corpus/catalog): 264 so far. The [hazard registry](/docs/hazards) references recipe ledgers by number.
 
 ## The test contracts
 
@@ -10674,7 +10714,7 @@ Every lake object inspected, at protocols 12, 22 and 29, has v4 meta. The protoc
 
 ## stellar-core's own golden ledgers reach 254 of 499 arms
 
-A `LedgerCloseMeta` reader can meet 499 XDR union arms at v30.0. stellar-core's own golden ledger files reach 254 of them. For comparison, the corpus entries reach 417 and the mined ledgers 289 ([Coverage](/docs/tools/coverage)). Many of the missing arms are result codes that never appear in a closed ledger. Measured by [`make coverage-goldens`](/docs/tools/coverage) against stellar-core commit `f2b91947`.
+A `LedgerCloseMeta` reader can meet 499 XDR union arms at v30.0. stellar-core's own golden ledger files reach 254 of them. For comparison, the corpus entries reach 418 and the mined ledgers 291 ([Coverage](/docs/tools/coverage)). Many of the missing arms are result codes that never appear in a closed ledger. Measured by [`make coverage-goldens`](/docs/tools/coverage) against stellar-core commit `f2b91947`.
 
 ## Soroban authorization trees apply up to 245 levels deep
 
@@ -10806,7 +10846,7 @@ Run by `make replay-sightings`: each fixed failure the corpus reproduces is repl
 
 ## wallet-backend main, still open
 
-The whole corpus replayed into `main` (<code>76194899</code>): 618 of 634 variants handled, 0 halted. The rest:
+The whole corpus replayed into `main` (<code>76194899</code>): 618 of 635 variants handled, 0 halted. The rest:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
@@ -10817,6 +10857,7 @@ The whole corpus replayed into `main` (<code>76194899</code>): 618 of 634 varian
 | [`revoke.cascade-offers-pool-shares`](https://xdrproof.dev/docs/corpus/entries/revoke-cascade-offers-pool-shares) | 2 | dropped | Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust. | [wallet-backend#817](https://github.com/stellar/wallet-backend/issues/817) |
 | [`sac.xlm-transfer-creates-account`](https://xdrproof.dev/docs/corpus/entries/sac-xlm-transfer-creates-account) | 4 | dropped | An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation. | [wallet-backend#804](https://github.com/stellar/wallet-backend/issues/804), [wallet-backend#816](https://github.com/stellar/wallet-backend/issues/816) |
 | [`signer.preauth-removed-by-core`](https://xdrproof.dev/docs/corpus/entries/signer-preauth-removed-by-core) | 2 | dropped | Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers. | [wallet-backend#818](https://github.com/stellar/wallet-backend/issues/818) |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | 1 | mishandled | F-3 again, on a second mainnet ledger. Pubnet ledger 58357467 is at protocol 22, so its Soroban fee refunds are credited in txChangesAfter, which wallet-backend's native balances do not read. The 2 refunded accounts end short by exactly their refunds: 10,942,591 stroops over 92 transactions, and 123,783 from one, the txINTERNAL_ERROR transaction this entry is for (it failed, yet its unused fee still comes back). | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 
 ## Found by XDRProof
 
@@ -11588,9 +11629,9 @@ The hazards come straight from [`caps/registry.json`](https://github.com/XDRProo
 |---|---|---|
 | Manifest schema (JSON Schema 2020-12) with every field the RFP names | built | `make verify` |
 | Hazard registry: 78 named ways readers of the ledger break, in 8 layers | built | [`caps/registry.json`](/docs/hazards) |
-| Corpus: 263 entries, 634 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
-| Independent readers: stellar-core's own decoder and a schema walker find 737 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
-| Coverage: 417 of 499 union arms reached; the other 82 each classified with a stellar-core source line | built | `make coverage-report` |
+| Corpus: 264 entries, 635 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
+| Independent readers: stellar-core's own decoder and a schema walker find 741 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
+| Coverage: 418 of 499 union arms reached; the other 81 each classified with a stellar-core source line | built | `make coverage-report` |
 | SDK conformance runner: 6 SDK builds on the corpus and test vectors, 5 older releases on fixed-bug regressions | built | `make conformance` |
 | Indexer replay harness, with a wallet-backend adapter | built | `make replay` |
 | `xplint`, a Go linter for the three ingestion mistakes the RFP names | built | `make lint-selftest`, `make lint` |
@@ -11623,7 +11664,7 @@ After v1.0, XDRProof is maintained for 18 months, outside the award budget.
 
 - **Made on a bare stellar-core.** [Recipes](/docs/corpus/recipes) drive a standalone stellar-core v30.0.0, pinned by image digest, with no peers, test-only keys committed in the recipes and no real funds. `make generate` rebuilds every run twice from scratch and checks that each pair agrees. 226 entries come from here.
 - **Order is measured, not assumed.** stellar-core writes some changes in an order that varies between runs. `make order-scan` runs each recipe lane 20 times and records which ledgers vary; the corpus ships the rarer orderings as bytes, so a reader that depends on order fails.
-- **Mined from the real networks.** [`mined/`](/docs/corpus/mined) keeps 37 mainnet and testnet ledgers from the public data lake, with their URLs and hashes, for shapes that are cheaper to find than to make. 36 entries come only from mined ledgers; 1 from both.
+- **Mined from the real networks.** [`mined/`](/docs/corpus/mined) keeps 38 mainnet and testnet ledgers from the public data lake, with their URLs and hashes, for shapes that are cheaper to find than to make. 37 entries come only from mined ledgers; 1 from both.
 
 ## Where "correct" comes from
 
@@ -11631,7 +11672,7 @@ Expected values never come from the SDK under test.
 
 - `make verify` round-trips every variant, byte for byte, through native rs-stellar-xdr 30.0.0 and checks every fact.
 - `make oracle` looks for each checkable value with two readers that share no code with any SDK, stellar-core's own C++ decoder and XDRProof's schema walker, and fails if either does not find it.
-- `make novelty` checks that no entry is redundant: over 1,226 atoms, 182 entries hold something no other entry does, and the other 81 differ by where the hazard sits.
+- `make novelty` checks that no entry is redundant: over 1,231 atoms, 181 entries hold something no other entry does, and the other 83 differ by where the hazard sits.
 
 ## Three tools that run it against real code
 
@@ -11639,7 +11680,7 @@ Expected values never come from the SDK under test.
 
 Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a real indexer build with its own database; what it did (its cursor, its process, the rows it stored) is compared with probes derived from the same ledger, which gives a verdict: handled, dropped, mishandled, stalled, crashed or halted.
 
-Each corpus ledger is served to a real indexer build through a mock stellar-rpc, in a fresh session with its own database. The verdict comes from what the indexer stored, never from its logs. An indexer joins with a small `adapter.toml` and a few shell commands; wallet-backend is the reference. On `main`, 618 of 634 variants are handled and 0 halt. [Replay](/docs/tools/replay)
+Each corpus ledger is served to a real indexer build through a mock stellar-rpc, in a fresh session with its own database. The verdict comes from what the indexer stored, never from its logs. An indexer joins with a small `adapter.toml` and a few shell commands; wallet-backend is the reference. On `main`, 618 of 635 variants are handled and 0 halt. [Replay](/docs/tools/replay)
 
 ### Conformance, for SDKs
 
@@ -11730,7 +11771,7 @@ The full map, with every tool and its numbers:
 
 A **[recipe](/docs/corpus/recipes)** is a deterministic script that drives one fresh standalone stellar-core v30.0.0 over its HTTP port. The core image is pinned by digest. There is no RPC and no network (no peers); the keys are test-only, from fixed seeds, there are no real funds, and close times are fixed. Core writes every closed ledger as `LedgerCloseMeta`.
 
-Some shapes only happen on a real network, or are worth having as real network bytes, so they are **mined** from public ledger history instead. [`mined/`](/docs/corpus/mined) holds 37 real mainnet and testnet ledgers; 37 entries are built from 22 of them, the testnet ledger where wallet-backend halted among them.
+Some shapes only happen on a real network, or are worth having as real network bytes, so they are **mined** from public ledger history instead. [`mined/`](/docs/corpus/mined) holds 38 real mainnet and testnet ledgers; 38 entries are built from 23 of them, the testnet ledger where wallet-backend halted among them.
 
 ## 2. Keep the bytes, write down the truth
 
@@ -11789,10 +11830,10 @@ Figure (animated): one ledger, start to finish. A recipe drives a private stella
 
 | Part | What it is | Where |
 |---|---|---|
-| **Corpus** | 263 entries of real `LedgerCloseMeta` bytes, each tagged with its CAP, with the facts a correct reader must return | [`entries/`](/docs/corpus) |
+| **Corpus** | 264 entries of real `LedgerCloseMeta` bytes, each tagged with its CAP, with the facts a correct reader must return | [`entries/`](/docs/corpus) |
 | **Hazard registry** | 78 named ways readers break, in 8 layers, each with its evidence | [`caps/registry.json`](/docs/hazards) |
 | **Schema and manifest** | JSON Schema 2020-12 for an entry; a generated index of every variant | [`schema/v1`](/docs/corpus/schema) |
-| **Mined ledgers** | 37 real mainnet and testnet ledgers from the public data lake, for shapes only a real network produces, or worth having as real network bytes | [`mined/`](/docs/corpus/mined) |
+| **Mined ledgers** | 38 real mainnet and testnet ledgers from the public data lake, for shapes only a real network produces, or worth having as real network bytes | [`mined/`](/docs/corpus/mined) |
 | **Recipes** | Transactions for a bare standalone stellar-core that regenerate every generated variant | [`recipes/`](/docs/corpus/recipes) |
 | **Tools** | Verify, oracle, coverage, generate, order scan, conformance and replay, each a `make` target | [`tools/`](/docs/tools) |
 | **Linter** | `xplint`, which points at the lines of Go indexer code that make the three ingestion mistakes: 4 real findings on wallet-backend `main`, 0 with XDRProof's two patches | [`linter/`](/docs/tools/linter) |
@@ -11858,29 +11899,29 @@ make verify
 A real run of `make verify`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   verify  · 263 entries · 634 ledger variants
+ XDRPROOF   verify  · 264 entries · 635 ledger variants
 
-  ╭─ Second reader · stellar-xdr-json ────────────────── 621/634─╮
+  ╭─ Second reader · stellar-xdr-json ────────────────── 622/635─╮
   │ ! refuses very deep auth trees                           #67 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Corpus ──────────────────────────────────────────── 634/634─╮
-  │ ✓ entries match the schema and the hazard list           263 │
-  │ ✓ files match their sha256 and size                      634 │
-  │ ✓ ledgers read back byte for byte                        634 │
-  │ ✓ every focus transaction is in its ledger               634 │
-  │ ✓ expected values hold                                 1,715 │
+  ╭─ Corpus ──────────────────────────────────────────── 635/635─╮
+  │ ✓ entries match the schema and the hazard list           264 │
+  │ ✓ files match their sha256 and size                      635 │
+  │ ✓ ledgers read back byte for byte                        635 │
+  │ ✓ every focus transaction is in its ledger               635 │
+  │ ✓ expected values hold                                 1,721 │
   │ ✓ ledgers with shuffled change order match                88 │
   │ ✓ manifest.json is up to date                                │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Mined pubnet ledgers ──────────────────────────────── 37/37─╮
-  │ ✓ 47 records and 223 values match the ledgers                │
+  ╭─ Mined pubnet ledgers ──────────────────────────────── 38/38─╮
+  │ ✓ 48 records and 227 values match the ledgers                │
   ╰──────────────────────────────────────────────────────────────╯
   ╭─ Keys and signatures ───────────────────────────────── 39/39─╮
   │ ✓ strkeys: 10 valid accepted, 19 invalid refused          29 │
   │ ✓ auth signatures hold (H-B16)                            10 │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   The corpus is intact.   12s
+ PASSED   The corpus is intact.   7.1s
 
   every refused ledger and the hazards:  make verify DETAILS=1
 ```
@@ -11970,7 +12011,7 @@ Nothing in XDRProof runs as a hosted service. It runs on your machine or in CI: 
 
 | ID | Threat | In place today | Planned |
 |---|---|---|---|
-| T1 | A wrong or tampered corpus entry or expected value | Every variant carries its sha256. `make verify` round-trips every variant through the native reader and checks every fact at its exact field; CI runs it on every push to `main` and every pull request. `make oracle` finds each value-checkable fact in stellar-core's own decoding and with an independent walker. In the last recorded run, all 49 expected 64-bit values, each changed in its last digit, were rejected by both readers. Generated entries are rebuilt from recipes. | Make the oracle's planted-value check require every value to be caught; run the oracle in CI; signed release tags and build attestations (T2) |
+| T1 | A wrong or tampered corpus entry or expected value | Every variant carries its sha256. `make verify` round-trips every variant through the native reader and checks every fact at its exact field; CI runs it on every push to `main` and every pull request. `make oracle` finds each value-checkable fact in stellar-core's own decoding and with an independent walker. In the last recorded run, all 51 expected 64-bit values, each changed in its last digit, were rejected by both readers. Generated entries are rebuilt from recipes. | Make the oracle's planted-value check require every value to be caught; run the oracle in CI; signed release tags and build attestations (T2) |
 | T2 | Tampered expectations hiding a regression | Expectations are written from a measured run and reviewed by hand. A full replay checks a hash of the judged set, so a silently dropped variant fails the run (partial runs skip this check). | Required review on changes to `expectations/` |
 | T3 | Supply chain: a compromised SDK package, toolchain image or action | Exact versions for every testee: JavaScript and Rust have committed lockfiles; Python pins exact versions (without artifact hashes); Go resolves pinned module versions at build time, with no committed lock. The stellar-core, Go toolchain and testee images are pinned by digest. Actions are pinned by commit SHA. The workflow token is read-only, and the repository has no CI secrets. GitHub's dependency graph and Dependabot alerts are on. Their first scan (19 Nov) flagged two old pins in the generator's test contract (`recipes/soroban/contract/Cargo.lock`, `soroban-sdk =25.3.0`): GHSA-x57h-xx53-v53w (medium, `stellar-xdr` ≤ 25.0.0) and GHSA-pm4j-7r4q-ccg8 (low, `soroban-env-host` < 26.0.0). That contract runs only inside the standalone generator and is never shipped; its compiled bytes are part of existing corpus ledgers, so it stays pinned. A new contract version would go out as a new recipe. Both alerts are dismissed as "not used", with this reason attached. | Hash-pinned Python installs; committed Go lock files; a review on every pin change |
 | T4 | Indexer code under test misbehaving during replay | Each session runs in its own container, with a memory and swap limit, read-only mounts for the source and binary, and no secrets passed in. A process that dies or stops advancing ends its session with a verdict (crashed, or halted after one retry). | An internal network per session; a separate database per session with authentication |
@@ -12016,30 +12057,30 @@ Figure: how conformance works. The same bytes (every corpus variant, strkeys, in
 A real run of `make conformance ARGS=--fresh`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   conformance  · 6 SDK builds · 634 real ledgers
+ XDRPROOF   conformance  · 6 SDK builds · 635 real ledgers
 
-  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 621/634─╮
+  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 622/635─╮
   │ ! refuses very deep auth trees                           #67 │
   │ ! accepts an invalid bool value                         #622 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 634/634─╮
+  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 635/635─╮
   │ ! accepts an invalid bool value                         #622 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 634/634─╮
+  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 635/635─╮
   │ ! accepts an invalid strkey                            #6042 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Python SDK 17.0.1 ───────────────────────────────── 632/634─╮
+  ╭─ Python SDK 17.0.1 ───────────────────────────────── 633/635─╮
   │ ! JSON fails on muxed contracts                          F-2 │
   │ ! drops colliding map keys                             #1250 │
   │ ! accepts an invalid bool value                        #1268 │
   │ ! accepts non-zero XDR padding                         #1262 │
   │ ! accepts a bad optional flag                          #1263 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ No bugs ─────────────────────────────────────────── 634/634─╮
+  ╭─ No bugs ─────────────────────────────────────────── 635/635─╮
   │ ✓ JavaScript SDK 17.4.0 · Python XDR 0.2.1                   │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   No new bugs.   2:11
+ PASSED   No new bugs.   52s
 
   bug status and older releases:  make conformance DETAILS=1
 ```
@@ -12077,7 +12118,7 @@ This is `conformance/recorded/matrix.md` from the last run. **known** means a fa
 
 | Family | `js@17.4.0` | `xdr-json@30.0.0` | `rust@30.0.0` | `go@v0.9.0` | `python@17.0.1` | `python-xdr@0.2.1` | `js@17.2.0` | `js@17.2.1` | `js@17.3.0` | `go@v0.7.1` | `go@v0.7.2` |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| `corpus` | 2536 pass | 2484 pass, 13 known | 2536 pass | 1268 pass, 1268 n/a | 2532 pass, 4 known | 2536 pass | not run | not run | not run | not run | not run |
+| `corpus` | 2540 pass | 2488 pass, 13 known | 2540 pass | 1270 pass, 1270 n/a | 2536 pass, 4 known | 2540 pass | not run | not run | not run | not run | not run |
 | `strkey` | 164 pass | not run | 164 pass | 163 pass, 1 known | 164 pass | 164 pass | not run | not run | not run | not run | not run |
 | `lane-s` | 14 pass | 13 pass, 1 known | 13 pass, 1 known | 12 pass, 2 n/a | 11 pass, 3 known | 14 pass | not run | not run | not run | not run | not run |
 | `depth` | 15 pass | 15 pass | 15 pass | 15 pass | 15 pass | 15 pass | not run | not run | not run | not run | not run |
@@ -12144,18 +12185,18 @@ A real run of `make coverage`, recorded 24 Nov 2026:
 ```text
  XDRPROOF   coverage  · stellar-xdr v30.0
 
-  ╭─ Union arms ──────────────────────────────────────── 417/499─╮
-  │ ✓ in the corpus entries                                  417 │
-  │ ✓ in the mined pubnet ledgers                            289 │
+  ╭─ Union arms ──────────────────────────────────────── 418/499─╮
+  │ ✓ in the corpus entries                                  418 │
+  │ ✓ in the mined pubnet ledgers                            291 │
   │ ✓ cannot appear at protocol 30, each with its reason      74 │
-  │ ! need a live network: to be mined                         8 │
+  │ ! need a live network: to be mined                         7 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Enum members ────────────────────────────────────── 333/411─╮
-  │ ✓ in the corpus entries                                  333 │
-  │ ✓ in the mined pubnet ledgers                            218 │
+  ╭─ Enum members ────────────────────────────────────── 335/411─╮
+  │ ✓ in the corpus entries                                  335 │
+  │ ✓ in the mined pubnet ledgers                            221 │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every arm is reached or explained.   6.6s
+ PASSED   Every arm is reached or explained.   2.1s
 
   the reasons, by kind:  make coverage DETAILS=1
 ```
@@ -12165,12 +12206,12 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Ledgers | Union arms |
 |---|---|
 | Reachable from `LedgerCloseMeta` | **499** (and 411 enum members) |
-| Entry files (698 variant files: raw `.xdr`, alternate change orderings, and `.xdr.zst` decompressed) | 417 of 499 |
-| The [mined ledgers](/docs/corpus/mined) (37 files) | 289 of 499 |
-| Entries and mined ledgers together | 417 of 499 |
+| Entry files (699 variant files: raw `.xdr`, alternate change orderings, and `.xdr.zst` decompressed) | 418 of 499 |
+| The [mined ledgers](/docs/corpus/mined) (38 files) | 291 of 499 |
+| Entries and mined ledgers together | 418 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>ef33d938</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>2fbfbca4</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
@@ -12178,9 +12219,9 @@ The corpus rows are computed from the corpus at commit <code>ef33d938</code>, th
 
 | Union arms reachable from LedgerCloseMeta | Arms |
 |---|---|
-| Reached by an entry: its own transaction, or its ledger's header and transaction-set shape | 417 |
+| Reached by an entry: its own transaction, or its ledger's header and transaction-set shape | 418 |
 | `todo`: core can write it at protocol 30 and a standalone recipe can produce it; not yet in an entry | 0 |
-| `network-only`: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 8 |
+| `network-only`: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 7 |
 | `historical`: only in ledgers of older protocols (range in the note) | 18 |
 | `validation-only`: set only where a transaction is validated for inclusion; a closed ledger never carries it at protocol 30 | 39 |
 | `not-emitted`: in the type graph, but stellar-core 30 never writes it into ledger-close meta | 17 |
@@ -12192,22 +12233,22 @@ A real run of `make coverage-report`, recorded 24 Nov 2026:
  XDRPROOF   coverage-report  · 499 arms · 78 hazards
 
   ╭─ Every union arm reached or explained ────────────── 499/499─╮
-  │ ✓ 417 reached by an entry                                    │
-  │ ✓ 82 not reached, each with core's reason                    │
+  │ ✓ 418 reached by an entry                                    │
+  │ ✓ 81 not reached, each with core's reason                    │
   ╰──────────────────────────────────────────────────────────────╯
   ╭─ Every hazard covered somewhere ────────────────────── 78/78─╮
   │ ✓ 72 in a corpus entry                                       │
   │ ✓ 6 left to other checks or the guide                        │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   COVERAGE.md written.   2.3s
+ PASSED   COVERAGE.md written.   2.0s
 
   why each arm is not reached:  make coverage-report DETAILS=1
 ```
 
-Enum members reached by an entry: 333 of 411. The report is written to [`COVERAGE.md`](https://github.com/XDRProof/xdrproof/blob/main/COVERAGE.md), with the entries that target each hazard.
+Enum members reached by an entry: 335 of 411. The report is written to [`COVERAGE.md`](https://github.com/XDRProof/xdrproof/blob/main/COVERAGE.md), with the entries that target each hazard.
 
-No `todo` arm is left: every arm stellar-core can still write at protocol 30 on a standalone network is in an entry. Only the 8 `network-only` arms, which need a live network, are out of reach. A closed protocol-30 ledger never carries a `validation-only` or `not-emitted` arm, and a `historical` one appears only in ledgers of older protocols.
+No `todo` arm is left: every arm stellar-core can still write at protocol 30 on a standalone network is in an entry. Only the 7 `network-only` arms, which need a live network, are out of reach. A closed protocol-30 ledger never carries a `validation-only` or `not-emitted` arm, and a `historical` one appears only in ledgers of older protocols.
 
 ### todo (0 arms)
 
@@ -12216,7 +12257,7 @@ core can write it at protocol 30 and a standalone recipe can produce it; not yet
 | Arm | Why | Source line |
 |---|---|---|
 
-### network-only (8 arms)
+### network-only (7 arms)
 
 reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined.
 
@@ -12227,7 +12268,6 @@ reachable in closed ledgers, but only under live-network conditions a standalone
 | `InnerTransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an inner transaction's lower bound after queue admission; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448 txResult.setInnermostError(txTOO_EARLY);` |
 | `InnerTransactionResultResult.txTOO_LATE` | The agreed close time can pass an inner transaction's upper bound after admission; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454 txResult.setInnermostError(txTOO_LATE);` |
 | `StellarValueExt.STELLAR_VALUE_EMPTY_TX_SET_MS` | SCP can substitute an empty transaction set for a signed millisecond value; exercising that consensus fallback on a fresh standalone network is difficult. | `src/herder/HerderSCPDriver.cpp:741 sv.ext.v(STELLAR_VALUE_EMPTY_TX_SET_MS);` |
-| `TransactionResultResult.txINTERNAL_ERROR` | Set when apply throws, which a correct core does not do; the forcing memo exists only in BUILD_TESTS builds, not in the pinned release image. Mine it if a closed ledger has one. | `src/transactions/TransactionFrame.cpp:2303 txResult.setInnermostError(txINTERNAL_ERROR);` |
 | `TransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an accepted transaction's lower bound; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448 txResult.setInnermostError(txTOO_EARLY);` |
 | `TransactionResultResult.txTOO_LATE` | The agreed close time can pass an accepted transaction's upper bound; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454 txResult.setInnermostError(txTOO_LATE);` |
 
@@ -12419,15 +12459,15 @@ A real run of `make generate`, recorded 24 Nov 2026:
 |---|---|---|---|
 | [`make verify`](/docs/tools/verify) | Strkey vectors hold. Every entry matches the schema, sizes and hashes match, and every variant round-trips byte for byte through native rs-stellar-xdr 30.0.0. The focus transaction is present, every fact holds, the WASM reader renders the same JSON wherever it can decode, and the manifest is current. Every mined ledger is verified | Node ≥ 22.15, Rust | seconds |
 | [`make oracle`](/docs/tools/oracle) | Each fact's values are also read by stellar-core's own decoder and by the schema walker | Docker, Node ≥ 22.15, npm | seconds |
-| [`make coverage`](/docs/tools/coverage) | 499 union arms are reachable from `LedgerCloseMeta` at v30.0; the entries reach 417, the mined ledgers 289 | Python 3, Node ≥ 22.15 | seconds |
-| [`make coverage-report`](/docs/tools/coverage#every-arm-accounted-for) | Every one of the 499 arms is reached by an entry's own transaction or ledger shape (417) or classified with the stellar-core source line that decides it (82). Writes `COVERAGE.md` | Node ≥ 22.15, Rust | seconds |
-| [`make novelty`](/docs/tools/novelty) | No entry is redundant: leave-one-out over 1,226 atoms (arms, enum members, hazards, sightings, placements) | Node ≥ 22.15, Rust | seconds |
+| [`make coverage`](/docs/tools/coverage) | 499 union arms are reachable from `LedgerCloseMeta` at v30.0; the entries reach 418, the mined ledgers 291 | Python 3, Node ≥ 22.15 | seconds |
+| [`make coverage-report`](/docs/tools/coverage#every-arm-accounted-for) | Every one of the 499 arms is reached by an entry's own transaction or ledger shape (418) or classified with the stellar-core source line that decides it (81). Writes `COVERAGE.md` | Node ≥ 22.15, Rust | seconds |
+| [`make novelty`](/docs/tools/novelty) | No entry is redundant: leave-one-out over 1,231 atoms (arms, enum members, hazards, sightings, placements) | Node ≥ 22.15, Rust | seconds |
 | `make coverage-goldens` | stellar-core's own 866 golden ledger files reach 254 of the 499 | Python 3, git, network | about 1 min |
 | [`make generate`](/docs/tools/generate) | 20 fresh standalone cores, in pairs, across both lanes, both passphrases, P30 and P28 and three flag profiles. Every pair agrees, and every shipped generated variant is reproduced | Docker, Node, npm, curl, jq, perl | about 10 min |
 | `make generate-quick` | The two mainnet base P30 pairs only | the same | about 3 min |
 | [`make order-scan`](/docs/tools/order-scan) | 20 fresh runs per lane: which ledgers vary in change order; content never does | Docker | about 15 min |
 | [`make conformance`](/docs/tools/conformance) | Every corpus variant, the strkeys, the invalid-input vectors and a depth ladder go through 6 SDK builds; 5 older releases run the fixed-bug regressions. js-stellar-sdk 17.4.0 and `stellar-xdr` 0.2.1 read every variant exactly as rs-stellar-xdr does; every other difference is pinned with its cause | Node, Rust, Docker | about 2 min warm |
-| [`make replay`](/docs/tools/replay) | The whole corpus into wallet-backend `main` (618 of 634 handled, 0 halted), and every fixed failure before and after its fix. Every verdict is pinned | Docker, Node ≥ 22.15, Rust, git | about 20 min cold |
+| [`make replay`](/docs/tools/replay) | The whole corpus into wallet-backend `main` (618 of 635 handled, 0 halted), and every fixed failure before and after its fix. Every verdict is pinned | Docker, Node ≥ 22.15, Rust, git | about 20 min cold |
 | [`make lint-selftest`](/docs/tools/linter#self-test) | The linter catches all 44 seeded violations and all 17 mutants, and flags none of 31 good cases | Docker | about 2 min warm |
 | [`make lint`](/docs/tools/linter) | The linter on real code: wallet-backend `main` (4 findings, all true; 0 with the two patches), stellar-etl (12), go-stellar-sdk ingest (0), the commits around upstream fixes and fixed bugs put back. Every finding is pinned and triaged | Docker, Node ≥ 22.15, git | about 3 min warm |
 
@@ -12663,16 +12703,16 @@ node tools/novelty.mjs --json out.json   # also write the per-entry report
 A real run of `make novelty`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   novelty  · 263 entries · 634 ledger variants
+ XDRPROOF   novelty  · 264 entries · 635 ledger variants
 
-  ╭─ No entry repeats another ────────────────────────── 263/263─╮
-  │ ✓ 182 hold an arm, value, hazard or bug of their own         │
-  │ ✓ 81 differ only in where it sits in the ledger              │
+  ╭─ No entry repeats another ────────────────────────── 264/264─╮
+  │ ✓ 181 hold an arm, value, hazard or bug of their own         │
+  │ ✓ 83 differ only in where it sits in the ledger              │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every entry adds something.   3.2s
+ PASSED   Every entry adds something.   1.9s
 
-  the 81 told apart by where they sit:  make novelty DETAILS=1
+  the 83 told apart by where they sit:  make novelty DETAILS=1
 ```
 
 
@@ -12689,12 +12729,12 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>ef33d938</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>2fbfbca4</code>: 0 redundant entries, over 1,231 atoms.
 
 | Entries | Count |
 |---|---:|
-| Hold an arm, enum member, hazard or sighting no other entry holds | 182 |
-| Told apart only by a placement | 81 |
+| Hold an arm, enum member, hazard or sighting no other entry holds | 181 |
+| Told apart only by a placement | 83 |
 | … of which every other atom sits inside one single other entry | 11 |
 
 <Callout title="Placement is a claim, not a measurement">A placement is text the author wrote. So `make novelty` lists every entry told apart only by placement, and flags the ones wholly contained in one other entry: for each such pair, the facts must check a different thing.</Callout>
@@ -12716,22 +12756,22 @@ node tools/oracle.mjs --write  # also writes the evidence into entries
 A real run of `make oracle`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   oracle  · 263 entries · 634 ledgers · 1,296 facts
+ XDRPROOF   oracle  · 264 entries · 635 ledgers · 1,302 facts
 
-  ╭─ stellar-core's own decoder ──────────────────────── 737/737─╮
+  ╭─ stellar-core's own decoder ──────────────────────── 741/741─╮
   │ ✓ found every fact in its printout                           │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Schema walker ───────────────────────────────────── 737/737─╮
+  ╭─ Schema walker ───────────────────────────────────── 741/741─╮
   │ ✓ found every fact in the ledger                             │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Planted errors (one digit changed) ────────────────── 49/49─╮
-  │ ✓ 49 rejected by both readers                                │
+  ╭─ Planted errors (one digit changed) ────────────────── 51/51─╮
+  │ ✓ 51 rejected by both readers                                │
   ╰──────────────────────────────────────────────────────────────╯
 
-  559 facts have no value to check (a length or a structure); make
+  561 facts have no value to check (a length or a structure); make
   verify checks those at their exact place.
 
- PASSED   Every fact is confirmed by two readers.   14s
+ PASSED   Every fact is confirmed by two readers.   11s
 
   each entry, fact by fact:  make oracle DETAILS=1
 ```
@@ -12826,9 +12866,9 @@ node replay/harness.mjs --adapter wallet-backend --target main \
 A real run of `make replay`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   replay  · wallet-backend · 634 ledgers · 4 upstream fixes
+ XDRPROOF   replay  · wallet-backend · 635 ledgers · 4 upstream fixes
 
-  ╭─ wallet-backend main · 76194899 ──────────────────── 618/634─╮
+  ╭─ wallet-backend main · 76194899 ──────────────────── 618/635─╮
   │ ! misses SAC contract deploys                           #815 │
   │ ! misses accounts created via SAC                       #804 │
   │ ! balances short of fee refunds                         #834 │
@@ -12843,7 +12883,7 @@ A real run of `make replay`, recorded 24 Nov 2026:
   │ ✓ #745 B and L address deployers            halted → handled │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every verdict matches its expectation.   16:49
+ PASSED   Every verdict matches its expectation.   9:49
 
   issue details, timings and logs:  make replay DETAILS=1
 ```
@@ -12878,7 +12918,7 @@ A real run of `node replay/harness.mjs --adapter wallet-backend --target main --
 
 ## wallet-backend main, the whole corpus
 
-The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>76194899</code>) it ingests 634 variants in 364 sessions: **618 handled, 0 halted**. The other 16 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
+The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>76194899</code>) it ingests 635 variants in 365 sessions: **618 handled, 0 halted**. The other 17 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
@@ -12889,6 +12929,7 @@ The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wal
 | [`revoke.cascade-offers-pool-shares`](https://xdrproof.dev/docs/corpus/entries/revoke-cascade-offers-pool-shares) | 2 | dropped | Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust. | [wallet-backend#817](https://github.com/stellar/wallet-backend/issues/817) |
 | [`sac.xlm-transfer-creates-account`](https://xdrproof.dev/docs/corpus/entries/sac-xlm-transfer-creates-account) | 4 | dropped | An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation. | [wallet-backend#804](https://github.com/stellar/wallet-backend/issues/804), [wallet-backend#816](https://github.com/stellar/wallet-backend/issues/816) |
 | [`signer.preauth-removed-by-core`](https://xdrproof.dev/docs/corpus/entries/signer-preauth-removed-by-core) | 2 | dropped | Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers. | [wallet-backend#818](https://github.com/stellar/wallet-backend/issues/818) |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | 1 | mishandled | F-3 again, on a second mainnet ledger. Pubnet ledger 58357467 is at protocol 22, so its Soroban fee refunds are credited in txChangesAfter, which wallet-backend's native balances do not read. The 2 refunded accounts end short by exactly their refunds: 10,942,591 stroops over 92 transactions, and 123,783 from one, the txINTERNAL_ERROR transaction this entry is for (it failed, yet its unused fee still comes back). | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 
 ## Every fix, before and after
 
@@ -13001,29 +13042,29 @@ node tools/verify.mjs --write   # also rewrite manifest.json
 A real run of `make verify`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   verify  · 263 entries · 634 ledger variants
+ XDRPROOF   verify  · 264 entries · 635 ledger variants
 
-  ╭─ Second reader · stellar-xdr-json ────────────────── 621/634─╮
+  ╭─ Second reader · stellar-xdr-json ────────────────── 622/635─╮
   │ ! refuses very deep auth trees                           #67 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Corpus ──────────────────────────────────────────── 634/634─╮
-  │ ✓ entries match the schema and the hazard list           263 │
-  │ ✓ files match their sha256 and size                      634 │
-  │ ✓ ledgers read back byte for byte                        634 │
-  │ ✓ every focus transaction is in its ledger               634 │
-  │ ✓ expected values hold                                 1,715 │
+  ╭─ Corpus ──────────────────────────────────────────── 635/635─╮
+  │ ✓ entries match the schema and the hazard list           264 │
+  │ ✓ files match their sha256 and size                      635 │
+  │ ✓ ledgers read back byte for byte                        635 │
+  │ ✓ every focus transaction is in its ledger               635 │
+  │ ✓ expected values hold                                 1,721 │
   │ ✓ ledgers with shuffled change order match                88 │
   │ ✓ manifest.json is up to date                                │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Mined pubnet ledgers ──────────────────────────────── 37/37─╮
-  │ ✓ 47 records and 223 values match the ledgers                │
+  ╭─ Mined pubnet ledgers ──────────────────────────────── 38/38─╮
+  │ ✓ 48 records and 227 values match the ledgers                │
   ╰──────────────────────────────────────────────────────────────╯
   ╭─ Keys and signatures ───────────────────────────────── 39/39─╮
   │ ✓ strkeys: 10 valid accepted, 19 invalid refused          29 │
   │ ✓ auth signatures hold (H-B16)                            10 │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   The corpus is intact.   12s
+ PASSED   The corpus is intact.   7.1s
 
   every refused ledger and the hazards:  make verify DETAILS=1
 ```
@@ -13063,7 +13104,7 @@ The focus transaction hash must be in the ledger, as an outer or fee-bump inner 
 
 ### A second reader
 
-The WASM build `@stellar/stellar-xdr-json` 30.0.0 decodes each variant again, with no fallback. If it renders different JSON, the run fails. If it cannot decode a variant at all (for example at its depth limit), verify lists it and records `fails` in the manifest, and the run still passes. Today 621 of 634 variants agree.
+The WASM build `@stellar/stellar-xdr-json` 30.0.0 decodes each variant again, with no fallback. If it renders different JSON, the run fails. If it cannot decode a variant at all (for example at its depth limit), verify lists it and records `fails` in the manifest, and the run still passes. Today 622 of 635 variants agree.
 
 </Step>
 <Step>
@@ -13285,7 +13326,7 @@ See [Replay](/docs/tools/replay) for how sessions, probes and expectations work,
 
 The test reads `manifest.json` from GitHub at a pinned commit, then each ledger it lists from `raw.githubusercontent.com/XDRProof/xdrproof/<commit>/entries/<id>/<file>`, and checks every file against the sha256 the manifest records. It keeps what it fetched in `.xdrproof/`, so later runs read from disk: cache that folder in CI, and add it to `.gitignore`. To move to a newer corpus, change the commit.
 
-The manifest lists 634 ledgers. The 37 mined from the public data lake ship zstd-compressed (`.xdr.zst`); the test decompresses them, and the recorded sha256 is of the ledger itself.
+The manifest lists 635 ledgers. The 38 mined from the public data lake ship zstd-compressed (`.xdr.zst`); the test decompresses them, and the recorded sha256 is of the ledger itself.
 
 **Prefer a pinned copy in your repository?** Add it as a git submodule and point the test's cache folder at it (`CACHE = "xdrproof"`); it then reads the files in place and fetches nothing.
 

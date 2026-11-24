@@ -1,6 +1,6 @@
 # All entries (/docs/corpus/entries)
 
-263 entries · 634 variants · 78 hazards in the registry · 72 hazards covered so far
+264 entries · 635 variants · 78 hazards in the registry · 72 hazards covered so far
 
 | Entry | Title | CAP | Hazards | Variants | Facts |
 |---|---|---|---|---|---|
@@ -144,6 +144,7 @@
 | [`tx.apply-time.inner-bad-min-seq-age-or-gap`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-bad-min-seq-age-or-gap) | A fee bump whose inner transaction fails at apply with txBAD_MIN_SEQ_AGE_OR_GAP | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
 | [`tx.apply-time.inner-bad-seq`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-bad-seq) | A fee bump whose inner transaction fails at apply with txBAD_SEQ | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
 | [`tx.apply-time.inner-no-account`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-inner-no-account) | A fee bump whose inner transaction fails at apply with txNO_ACCOUNT | CAP-0015, CAP-0046 | H-C16, H-C2 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 16 |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | A mainnet transaction that ends txINTERNAL_ERROR | CAP-0046 | H-C1, H-C13 | p22-mainnet-mined-l58357467 | 6 |
 | [`tx.apply-time.no-account-fee-not-refunded`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-no-account-fee-not-refunded) | A Soroban transaction fails txNO_ACCOUNT at apply and its fee is never refunded | CAP-0046 | H-C16, H-C13 | p30-mainnet-generated, p28-mainnet-generated, p30-testnet-generated, p28-testnet-generated | 28 |
 | [`failure.account-merge.dest-full`](https://xdrproof.dev/docs/corpus/entries/failure-account-merge-dest-full) | ACCOUNT_MERGE fails with ACCOUNT_MERGE_DEST_FULL | pre-cap | H-C1, H-C11, H-C17, H-B3 | p30-mainnet-generated, p30-testnet-generated | 6 |
 | [`failure.account-merge.has-sub-entries`](https://xdrproof.dev/docs/corpus/entries/failure-account-merge-has-sub-entries) | ACCOUNT_MERGE fails with ACCOUNT_MERGE_HAS_SUB_ENTRIES | pre-cap | H-C1 | p30-mainnet-generated, p30-testnet-generated | 8 |

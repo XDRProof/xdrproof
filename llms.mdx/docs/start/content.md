@@ -24,10 +24,10 @@ Figure (animated): one ledger, start to finish. A recipe drives a private stella
 
 | Part | What it is | Where |
 |---|---|---|
-| **Corpus** | 263 entries of real `LedgerCloseMeta` bytes, each tagged with its CAP, with the facts a correct reader must return | [`entries/`](/docs/corpus) |
+| **Corpus** | 264 entries of real `LedgerCloseMeta` bytes, each tagged with its CAP, with the facts a correct reader must return | [`entries/`](/docs/corpus) |
 | **Hazard registry** | 78 named ways readers break, in 8 layers, each with its evidence | [`caps/registry.json`](/docs/hazards) |
 | **Schema and manifest** | JSON Schema 2020-12 for an entry; a generated index of every variant | [`schema/v1`](/docs/corpus/schema) |
-| **Mined ledgers** | 37 real mainnet and testnet ledgers from the public data lake, for shapes only a real network produces, or worth having as real network bytes | [`mined/`](/docs/corpus/mined) |
+| **Mined ledgers** | 38 real mainnet and testnet ledgers from the public data lake, for shapes only a real network produces, or worth having as real network bytes | [`mined/`](/docs/corpus/mined) |
 | **Recipes** | Transactions for a bare standalone stellar-core that regenerate every generated variant | [`recipes/`](/docs/corpus/recipes) |
 | **Tools** | Verify, oracle, coverage, generate, order scan, conformance and replay, each a `make` target | [`tools/`](/docs/tools) |
 | **Linter** | `xplint`, which points at the lines of Go indexer code that make the three ingestion mistakes: 4 real findings on wallet-backend `main`, 0 with XDRProof's two patches | [`linter/`](/docs/tools/linter) |

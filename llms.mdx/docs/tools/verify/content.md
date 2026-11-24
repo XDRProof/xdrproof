@@ -14,29 +14,29 @@ node tools/verify.mjs --write   # also rewrite manifest.json
 A real run of `make verify`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   verify  · 263 entries · 634 ledger variants
+ XDRPROOF   verify  · 264 entries · 635 ledger variants
 
-  ╭─ Second reader · stellar-xdr-json ────────────────── 621/634─╮
+  ╭─ Second reader · stellar-xdr-json ────────────────── 622/635─╮
   │ ! refuses very deep auth trees                           #67 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Corpus ──────────────────────────────────────────── 634/634─╮
-  │ ✓ entries match the schema and the hazard list           263 │
-  │ ✓ files match their sha256 and size                      634 │
-  │ ✓ ledgers read back byte for byte                        634 │
-  │ ✓ every focus transaction is in its ledger               634 │
-  │ ✓ expected values hold                                 1,715 │
+  ╭─ Corpus ──────────────────────────────────────────── 635/635─╮
+  │ ✓ entries match the schema and the hazard list           264 │
+  │ ✓ files match their sha256 and size                      635 │
+  │ ✓ ledgers read back byte for byte                        635 │
+  │ ✓ every focus transaction is in its ledger               635 │
+  │ ✓ expected values hold                                 1,721 │
   │ ✓ ledgers with shuffled change order match                88 │
   │ ✓ manifest.json is up to date                                │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Mined pubnet ledgers ──────────────────────────────── 37/37─╮
-  │ ✓ 47 records and 223 values match the ledgers                │
+  ╭─ Mined pubnet ledgers ──────────────────────────────── 38/38─╮
+  │ ✓ 48 records and 227 values match the ledgers                │
   ╰──────────────────────────────────────────────────────────────╯
   ╭─ Keys and signatures ───────────────────────────────── 39/39─╮
   │ ✓ strkeys: 10 valid accepted, 19 invalid refused          29 │
   │ ✓ auth signatures hold (H-B16)                            10 │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   The corpus is intact.   12s
+ PASSED   The corpus is intact.   7.1s
 
   every refused ledger and the hazards:  make verify DETAILS=1
 ```
@@ -76,7 +76,7 @@ The focus transaction hash must be in the ledger, as an outer or fee-bump inner 
 
 ### A second reader
 
-The WASM build `@stellar/stellar-xdr-json` 30.0.0 decodes each variant again, with no fallback. If it renders different JSON, the run fails. If it cannot decode a variant at all (for example at its depth limit), verify lists it and records `fails` in the manifest, and the run still passes. Today 621 of 634 variants agree.
+The WASM build `@stellar/stellar-xdr-json` 30.0.0 decodes each variant again, with no fallback. If it renders different JSON, the run fails. If it cannot decode a variant at all (for example at its depth limit), verify lists it and records `fails` in the manifest, and the run still passes. Today 622 of 635 variants agree.
 
 </Step>
 <Step>

@@ -35,7 +35,7 @@ Every lake object inspected, at protocols 12, 22 and 29, has v4 meta. The protoc
 
 ## stellar-core's own golden ledgers reach 254 of 499 arms
 
-A `LedgerCloseMeta` reader can meet 499 XDR union arms at v30.0. stellar-core's own golden ledger files reach 254 of them. For comparison, the corpus entries reach 417 and the mined ledgers 289 ([Coverage](/docs/tools/coverage)). Many of the missing arms are result codes that never appear in a closed ledger. Measured by [`make coverage-goldens`](/docs/tools/coverage) against stellar-core commit `f2b91947`.
+A `LedgerCloseMeta` reader can meet 499 XDR union arms at v30.0. stellar-core's own golden ledger files reach 254 of them. For comparison, the corpus entries reach 418 and the mined ledgers 291 ([Coverage](/docs/tools/coverage)). Many of the missing arms are result codes that never appear in a closed ledger. Measured by [`make coverage-goldens`](/docs/tools/coverage) against stellar-core commit `f2b91947`.
 
 ## Soroban authorization trees apply up to 245 levels deep
 

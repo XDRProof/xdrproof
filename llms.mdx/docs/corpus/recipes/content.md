@@ -20,7 +20,7 @@ Core's metadata stream is split into one `ledger-NNN.xdr` file per ledger, plus 
 | Classic | `recipes/classic/gen.mjs` | 3–105, at protocol 30 | Basics (the signed-payload signers at ledger 6), a catalogue of operations, two failure suites, blueprint placements, maximum-length vectors, a revocation cascade, surge pricing, and a final base-fee, set-size and ledger-flags upgrade |
 | Soroban | `recipes/soroban/gen/gen.mjs` | 3–94 at P30 | Blueprint placements, apply-time failures, fee-bump inner failures, forged and V2-rendered auth signatures, two test contracts, delegated custom accounts, external-ref executables, config upgrades, frozen keys, eviction and automatic restore |
 
-Entries are compiled from recipe steps (and mined ledgers) by the [catalog](/docs/corpus/catalog): 263 so far. The [hazard registry](/docs/hazards) references recipe ledgers by number.
+Entries are compiled from recipe steps (and mined ledgers) by the [catalog](/docs/corpus/catalog): 264 so far. The [hazard registry](/docs/hazards) references recipe ledgers by number.
 
 ## The test contracts
 

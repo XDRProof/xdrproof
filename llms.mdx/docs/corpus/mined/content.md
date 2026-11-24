@@ -4,7 +4,7 @@
 
 **Why it matters.** Some shapes only happen on a live network, such as eviction at the per-ledger cap or a validator vote. These are the real bytes, not a reconstruction.
 
-37 ledgers · 47 shape records · 34 mainnet, 3 testnet · protocols P12 P22 P28 P29 P30
+38 ledgers · 48 shape records · 35 mainnet, 3 testnet · protocols P12 P22 P28 P29 P30
 
 Some shapes only happen on a real network, and some are worth having as real network bytes. Examples:
 - eviction at the per-ledger cap;
@@ -21,9 +21,9 @@ Some shapes only happen on a real network, and some are worth having as real net
 | `mined/ledgers/<network>-<seq>.lcm.xdr.zst` | One ledger, zstd-compressed. Its sha256 and size describe the decompressed bytes: the lake object minus its 12-byte batch header |
 | `mined/index.json` | One record per shape found in a ledger: the lake URL, the stellar-core version that wrote it, how it was located, the findings with exact JSON paths, and why readers break on it |
 
-`make verify` also runs `tools/mined-verify.mjs`. Every file must match its hash, round-trip byte for byte through native rs-stellar-xdr, and carry the recorded sequence and protocol. Every finding's transaction and JSON path must be present. `make coverage` reports the union arms these ledgers reach: **289 of 499**.
+`make verify` also runs `tools/mined-verify.mjs`. Every file must match its hash, round-trip byte for byte through native rs-stellar-xdr, and carry the recorded sequence and protocol. Every finding's transaction and JSON path must be present. `make coverage` reports the union arms these ledgers reach: **291 of 499**.
 
-<Callout title="Network data, not entries">These ledgers were written by SDF's Galexie with its default flags, so their metadata differs from a default node's (see [Found while building](/docs/findings)). Most are not corpus entries: entries carry facts and hazards, and these carry findings. The [catalog](/docs/corpus/catalog) also compiles entries from them: 37 entries so far, built from 22 of these ledgers, the signed-payload signer among them.</Callout>
+<Callout title="Network data, not entries">These ledgers were written by SDF's Galexie with its default flags, so their metadata differs from a default node's (see [Found while building](/docs/findings)). Most are not corpus entries: entries carry facts and hazards, and these carry findings. The [catalog](/docs/corpus/catalog) also compiles entries from them: 38 entries so far, built from 23 of these ledgers, the signed-payload signer among them.</Callout>
 
 ## Every mined shape
 
@@ -76,3 +76,4 @@ Some shapes only happen on a real network, and some are worth having as real net
 | config upgrade frozen keys | [mainnet 65273932](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC1CE1FF--65216000-65279999/FC1BFFB3--65273932.xdr.zst) (P29, 268 txs) | CAP-0077 on mainnet: a config upgrade grows the frozen-key list from 3 to 4 accounts. Transactions touching those accounts are refused from the next ledger; the change is visible only in upgradesProcessing (config setting frozen_ledger_keys), as encoded LedgerKey bytes. |
 | p22 refunds in tx changes after | [mainnet 56085459](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FCA887FF--56064000-56127999/FCA8342C--56085459.xdr.zst) (P22, 222 txs) | Protocol 22: the Soroban fee refund is a change in txChangesAfter of each transaction, not in postTxApplyFeeProcessing as from protocol 23. LedgerCloseMeta is v1. In the public lake the TransactionMeta is v4 even at protocol 22, because Galexie sets BACKFILL_STELLAR_ASSET_EVENTS (stellar-core TransactionMeta.cpp: v4 from protocol 23 or with that flag); a default node writes v3 for the same ledger. |
 | p12 v0 envelopes | [mainnet 26588352](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FE6AB9FF--26560000-26623999/FE6A4B3F--26588352.xdr.zst) (P12, 532 txs) | Protocol 12: every envelope is ENVELOPE_TYPE_TX_V0 (a raw ed25519 source, no MuxedAccount) and LedgerCloseMeta is v0 with a classic TransactionSet. Readers written for V1 envelopes fail on backfill. The lake carries TransactionMeta v4 here as well (BACKFILL_STELLAR_ASSET_EVENTS); a default node writes v2. |
+| tx internal error | [mainnet 58357467](https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC8659FF--58304000-58367999/FC858924--58357467.xdr.zst) (P22, 269 txs) | txINTERNAL_ERROR is written only when stellar-core throws while applying a transaction, so it is in almost no test data. The fee is charged and the metadata has no operation entries; a reader that expects only the txSUCCESS and txFAILED result arms, or one meta entry per operation, breaks on it. |

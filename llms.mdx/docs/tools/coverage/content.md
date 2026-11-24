@@ -16,18 +16,18 @@ A real run of `make coverage`, recorded 24 Nov 2026:
 ```text
  XDRPROOF   coverage  · stellar-xdr v30.0
 
-  ╭─ Union arms ──────────────────────────────────────── 417/499─╮
-  │ ✓ in the corpus entries                                  417 │
-  │ ✓ in the mined pubnet ledgers                            289 │
+  ╭─ Union arms ──────────────────────────────────────── 418/499─╮
+  │ ✓ in the corpus entries                                  418 │
+  │ ✓ in the mined pubnet ledgers                            291 │
   │ ✓ cannot appear at protocol 30, each with its reason      74 │
-  │ ! need a live network: to be mined                         8 │
+  │ ! need a live network: to be mined                         7 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Enum members ────────────────────────────────────── 333/411─╮
-  │ ✓ in the corpus entries                                  333 │
-  │ ✓ in the mined pubnet ledgers                            218 │
+  ╭─ Enum members ────────────────────────────────────── 335/411─╮
+  │ ✓ in the corpus entries                                  335 │
+  │ ✓ in the mined pubnet ledgers                            221 │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every arm is reached or explained.   6.6s
+ PASSED   Every arm is reached or explained.   2.1s
 
   the reasons, by kind:  make coverage DETAILS=1
 ```
@@ -37,12 +37,12 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Ledgers | Union arms |
 |---|---|
 | Reachable from `LedgerCloseMeta` | **499** (and 411 enum members) |
-| Entry files (698 variant files: raw `.xdr`, alternate change orderings, and `.xdr.zst` decompressed) | 417 of 499 |
-| The [mined ledgers](/docs/corpus/mined) (37 files) | 289 of 499 |
-| Entries and mined ledgers together | 417 of 499 |
+| Entry files (699 variant files: raw `.xdr`, alternate change orderings, and `.xdr.zst` decompressed) | 418 of 499 |
+| The [mined ledgers](/docs/corpus/mined) (38 files) | 291 of 499 |
+| Entries and mined ledgers together | 418 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>ef33d938</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>2fbfbca4</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
@@ -50,9 +50,9 @@ The corpus rows are computed from the corpus at commit <code>ef33d938</code>, th
 
 | Union arms reachable from LedgerCloseMeta | Arms |
 |---|---|
-| Reached by an entry: its own transaction, or its ledger's header and transaction-set shape | 417 |
+| Reached by an entry: its own transaction, or its ledger's header and transaction-set shape | 418 |
 | `todo`: core can write it at protocol 30 and a standalone recipe can produce it; not yet in an entry | 0 |
-| `network-only`: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 8 |
+| `network-only`: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 7 |
 | `historical`: only in ledgers of older protocols (range in the note) | 18 |
 | `validation-only`: set only where a transaction is validated for inclusion; a closed ledger never carries it at protocol 30 | 39 |
 | `not-emitted`: in the type graph, but stellar-core 30 never writes it into ledger-close meta | 17 |
@@ -64,22 +64,22 @@ A real run of `make coverage-report`, recorded 24 Nov 2026:
  XDRPROOF   coverage-report  · 499 arms · 78 hazards
 
   ╭─ Every union arm reached or explained ────────────── 499/499─╮
-  │ ✓ 417 reached by an entry                                    │
-  │ ✓ 82 not reached, each with core's reason                    │
+  │ ✓ 418 reached by an entry                                    │
+  │ ✓ 81 not reached, each with core's reason                    │
   ╰──────────────────────────────────────────────────────────────╯
   ╭─ Every hazard covered somewhere ────────────────────── 78/78─╮
   │ ✓ 72 in a corpus entry                                       │
   │ ✓ 6 left to other checks or the guide                        │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   COVERAGE.md written.   2.3s
+ PASSED   COVERAGE.md written.   2.0s
 
   why each arm is not reached:  make coverage-report DETAILS=1
 ```
 
-Enum members reached by an entry: 333 of 411. The report is written to [`COVERAGE.md`](https://github.com/XDRProof/xdrproof/blob/main/COVERAGE.md), with the entries that target each hazard.
+Enum members reached by an entry: 335 of 411. The report is written to [`COVERAGE.md`](https://github.com/XDRProof/xdrproof/blob/main/COVERAGE.md), with the entries that target each hazard.
 
-No `todo` arm is left: every arm stellar-core can still write at protocol 30 on a standalone network is in an entry. Only the 8 `network-only` arms, which need a live network, are out of reach. A closed protocol-30 ledger never carries a `validation-only` or `not-emitted` arm, and a `historical` one appears only in ledgers of older protocols.
+No `todo` arm is left: every arm stellar-core can still write at protocol 30 on a standalone network is in an entry. Only the 7 `network-only` arms, which need a live network, are out of reach. A closed protocol-30 ledger never carries a `validation-only` or `not-emitted` arm, and a `historical` one appears only in ledgers of older protocols.
 
 ### todo (0 arms)
 
@@ -88,7 +88,7 @@ core can write it at protocol 30 and a standalone recipe can produce it; not yet
 | Arm | Why | Source line |
 |---|---|---|
 
-### network-only (8 arms)
+### network-only (7 arms)
 
 reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined.
 
@@ -99,7 +99,6 @@ reachable in closed ledgers, but only under live-network conditions a standalone
 | `InnerTransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an inner transaction's lower bound after queue admission; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448 txResult.setInnermostError(txTOO_EARLY);` |
 | `InnerTransactionResultResult.txTOO_LATE` | The agreed close time can pass an inner transaction's upper bound after admission; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454 txResult.setInnermostError(txTOO_LATE);` |
 | `StellarValueExt.STELLAR_VALUE_EMPTY_TX_SET_MS` | SCP can substitute an empty transaction set for a signed millisecond value; exercising that consensus fallback on a fresh standalone network is difficult. | `src/herder/HerderSCPDriver.cpp:741 sv.ext.v(STELLAR_VALUE_EMPTY_TX_SET_MS);` |
-| `TransactionResultResult.txINTERNAL_ERROR` | Set when apply throws, which a correct core does not do; the forcing memo exists only in BUILD_TESTS builds, not in the pinned release image. Mine it if a closed ledger has one. | `src/transactions/TransactionFrame.cpp:2303 txResult.setInnermostError(txINTERNAL_ERROR);` |
 | `TransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an accepted transaction's lower bound; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448 txResult.setInnermostError(txTOO_EARLY);` |
 | `TransactionResultResult.txTOO_LATE` | The agreed close time can pass an accepted transaction's upper bound; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454 txResult.setInnermostError(txTOO_LATE);` |
 

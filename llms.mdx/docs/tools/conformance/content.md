@@ -17,30 +17,30 @@ Figure: how conformance works. The same bytes (every corpus variant, strkeys, in
 A real run of `make conformance ARGS=--fresh`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   conformance  · 6 SDK builds · 634 real ledgers
+ XDRPROOF   conformance  · 6 SDK builds · 635 real ledgers
 
-  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 621/634─╮
+  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 622/635─╮
   │ ! refuses very deep auth trees                           #67 │
   │ ! accepts an invalid bool value                         #622 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 634/634─╮
+  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 635/635─╮
   │ ! accepts an invalid bool value                         #622 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 634/634─╮
+  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 635/635─╮
   │ ! accepts an invalid strkey                            #6042 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ Python SDK 17.0.1 ───────────────────────────────── 632/634─╮
+  ╭─ Python SDK 17.0.1 ───────────────────────────────── 633/635─╮
   │ ! JSON fails on muxed contracts                          F-2 │
   │ ! drops colliding map keys                             #1250 │
   │ ! accepts an invalid bool value                        #1268 │
   │ ! accepts non-zero XDR padding                         #1262 │
   │ ! accepts a bad optional flag                          #1263 │
   ╰──────────────────────────────────────────────────────────────╯
-  ╭─ No bugs ─────────────────────────────────────────── 634/634─╮
+  ╭─ No bugs ─────────────────────────────────────────── 635/635─╮
   │ ✓ JavaScript SDK 17.4.0 · Python XDR 0.2.1                   │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   No new bugs.   2:11
+ PASSED   No new bugs.   52s
 
   bug status and older releases:  make conformance DETAILS=1
 ```
@@ -78,7 +78,7 @@ This is `conformance/recorded/matrix.md` from the last run. **known** means a fa
 
 | Family | `js@17.4.0` | `xdr-json@30.0.0` | `rust@30.0.0` | `go@v0.9.0` | `python@17.0.1` | `python-xdr@0.2.1` | `js@17.2.0` | `js@17.2.1` | `js@17.3.0` | `go@v0.7.1` | `go@v0.7.2` |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| `corpus` | 2536 pass | 2484 pass, 13 known | 2536 pass | 1268 pass, 1268 n/a | 2532 pass, 4 known | 2536 pass | not run | not run | not run | not run | not run |
+| `corpus` | 2540 pass | 2488 pass, 13 known | 2540 pass | 1270 pass, 1270 n/a | 2536 pass, 4 known | 2540 pass | not run | not run | not run | not run | not run |
 | `strkey` | 164 pass | not run | 164 pass | 163 pass, 1 known | 164 pass | 164 pass | not run | not run | not run | not run | not run |
 | `lane-s` | 14 pass | 13 pass, 1 known | 13 pass, 1 known | 12 pass, 2 n/a | 11 pass, 3 known | 14 pass | not run | not run | not run | not run | not run |
 | `depth` | 15 pass | 15 pass | 15 pass | 15 pass | 15 pass | 15 pass | not run | not run | not run | not run | not run |

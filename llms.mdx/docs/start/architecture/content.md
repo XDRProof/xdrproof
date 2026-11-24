@@ -12,9 +12,9 @@
 |---|---|---|
 | Manifest schema (JSON Schema 2020-12) with every field the RFP names | built | `make verify` |
 | Hazard registry: 78 named ways readers of the ledger break, in 8 layers | built | [`caps/registry.json`](/docs/hazards) |
-| Corpus: 263 entries, 634 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
-| Independent readers: stellar-core's own decoder and a schema walker find 737 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
-| Coverage: 417 of 499 union arms reached; the other 82 each classified with a stellar-core source line | built | `make coverage-report` |
+| Corpus: 264 entries, 635 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
+| Independent readers: stellar-core's own decoder and a schema walker find 741 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
+| Coverage: 418 of 499 union arms reached; the other 81 each classified with a stellar-core source line | built | `make coverage-report` |
 | SDK conformance runner: 6 SDK builds on the corpus and test vectors, 5 older releases on fixed-bug regressions | built | `make conformance` |
 | Indexer replay harness, with a wallet-backend adapter | built | `make replay` |
 | `xplint`, a Go linter for the three ingestion mistakes the RFP names | built | `make lint-selftest`, `make lint` |
@@ -47,7 +47,7 @@ After v1.0, XDRProof is maintained for 18 months, outside the award budget.
 
 - **Made on a bare stellar-core.** [Recipes](/docs/corpus/recipes) drive a standalone stellar-core v30.0.0, pinned by image digest, with no peers, test-only keys committed in the recipes and no real funds. `make generate` rebuilds every run twice from scratch and checks that each pair agrees. 226 entries come from here.
 - **Order is measured, not assumed.** stellar-core writes some changes in an order that varies between runs. `make order-scan` runs each recipe lane 20 times and records which ledgers vary; the corpus ships the rarer orderings as bytes, so a reader that depends on order fails.
-- **Mined from the real networks.** [`mined/`](/docs/corpus/mined) keeps 37 mainnet and testnet ledgers from the public data lake, with their URLs and hashes, for shapes that are cheaper to find than to make. 36 entries come only from mined ledgers; 1 from both.
+- **Mined from the real networks.** [`mined/`](/docs/corpus/mined) keeps 38 mainnet and testnet ledgers from the public data lake, with their URLs and hashes, for shapes that are cheaper to find than to make. 37 entries come only from mined ledgers; 1 from both.
 
 ## Where "correct" comes from
 
@@ -55,7 +55,7 @@ Expected values never come from the SDK under test.
 
 - `make verify` round-trips every variant, byte for byte, through native rs-stellar-xdr 30.0.0 and checks every fact.
 - `make oracle` looks for each checkable value with two readers that share no code with any SDK, stellar-core's own C++ decoder and XDRProof's schema walker, and fails if either does not find it.
-- `make novelty` checks that no entry is redundant: over 1,226 atoms, 182 entries hold something no other entry does, and the other 81 differ by where the hazard sits.
+- `make novelty` checks that no entry is redundant: over 1,231 atoms, 181 entries hold something no other entry does, and the other 83 differ by where the hazard sits.
 
 ## Three tools that run it against real code
 
@@ -63,7 +63,7 @@ Expected values never come from the SDK under test.
 
 Figure: how a replay works. A corpus ledger is served by a mock stellar-rpc to a real indexer build with its own database; what it did (its cursor, its process, the rows it stored) is compared with probes derived from the same ledger, which gives a verdict: handled, dropped, mishandled, stalled, crashed or halted.
 
-Each corpus ledger is served to a real indexer build through a mock stellar-rpc, in a fresh session with its own database. The verdict comes from what the indexer stored, never from its logs. An indexer joins with a small `adapter.toml` and a few shell commands; wallet-backend is the reference. On `main`, 618 of 634 variants are handled and 0 halt. [Replay](/docs/tools/replay)
+Each corpus ledger is served to a real indexer build through a mock stellar-rpc, in a fresh session with its own database. The verdict comes from what the indexer stored, never from its logs. An indexer joins with a small `adapter.toml` and a few shell commands; wallet-backend is the reference. On `main`, 618 of 635 variants are handled and 0 halt. [Replay](/docs/tools/replay)
 
 ### Conformance, for SDKs
 

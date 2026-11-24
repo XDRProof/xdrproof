@@ -11,7 +11,7 @@
 
 The test reads `manifest.json` from GitHub at a pinned commit, then each ledger it lists from `raw.githubusercontent.com/XDRProof/xdrproof/<commit>/entries/<id>/<file>`, and checks every file against the sha256 the manifest records. It keeps what it fetched in `.xdrproof/`, so later runs read from disk: cache that folder in CI, and add it to `.gitignore`. To move to a newer corpus, change the commit.
 
-The manifest lists 634 ledgers. The 37 mined from the public data lake ship zstd-compressed (`.xdr.zst`); the test decompresses them, and the recorded sha256 is of the ledger itself.
+The manifest lists 635 ledgers. The 38 mined from the public data lake ship zstd-compressed (`.xdr.zst`); the test decompresses them, and the recorded sha256 is of the ledger itself.
 
 **Prefer a pinned copy in your repository?** Add it as a git submodule and point the test's cache folder at it (`CACHE = "xdrproof"`); it then reads the files in place and fetches nothing.
 

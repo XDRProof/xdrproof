@@ -4,7 +4,7 @@
 
 **Why it matters.** Your code meets ordinary ledgers every day and these rarely, often for the first time in production. The corpus lets you meet them in a test.
 
-263 entries · 634 variants · 78 hazards in the registry · 72 hazards covered so far
+264 entries · 635 variants · 78 hazards in the registry · 72 hazards covered so far
 
 The corpus is a set of **entries**, plus [37 mined ledgers](/docs/corpus/mined) from the real networks. Each entry is one rare shape, such as a signed-payload signer or a trustline created by a contract call, kept as real `LedgerCloseMeta` bytes. Each entry also carries the facts a correct reader must find in those bytes.
 
@@ -33,7 +33,7 @@ The entry's intent and facts are written in its [catalog file](/docs/corpus/cata
 
 ### Facts, and what backs each one
 
-Every expected value says what backs it: `construction` (the recipe set that value), `snapshot` (the SEP-0051 rendering by the pinned stellar-xdr crate), `core` (stellar-core's own decoder), `walker` (XDRProof's schema walker) or `review`. 737 of the 1,296 facts are also confirmed by both stellar-core's decoder and the schema walker; the **Backed by** column on each entry page shows exactly which.
+Every expected value says what backs it: `construction` (the recipe set that value), `snapshot` (the SEP-0051 rendering by the pinned stellar-xdr crate), `core` (stellar-core's own decoder), `walker` (XDRProof's schema walker) or `review`. 741 of the 1,302 facts are also confirmed by both stellar-core's decoder and the schema walker; the **Backed by** column on each entry page shows exactly which.
 
 </Step>
 <Step>

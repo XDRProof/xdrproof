@@ -15,9 +15,9 @@ node replay/harness.mjs --adapter wallet-backend --target main \
 A real run of `make replay`, recorded 24 Nov 2026:
 
 ```text
- XDRPROOF   replay  · wallet-backend · 634 ledgers · 4 upstream fixes
+ XDRPROOF   replay  · wallet-backend · 635 ledgers · 4 upstream fixes
 
-  ╭─ wallet-backend main · 76194899 ──────────────────── 618/634─╮
+  ╭─ wallet-backend main · 76194899 ──────────────────── 618/635─╮
   │ ! misses SAC contract deploys                           #815 │
   │ ! misses accounts created via SAC                       #804 │
   │ ! balances short of fee refunds                         #834 │
@@ -32,7 +32,7 @@ A real run of `make replay`, recorded 24 Nov 2026:
   │ ✓ #745 B and L address deployers            halted → handled │
   ╰──────────────────────────────────────────────────────────────╯
 
- PASSED   Every verdict matches its expectation.   16:49
+ PASSED   Every verdict matches its expectation.   9:49
 
   issue details, timings and logs:  make replay DETAILS=1
 ```
@@ -67,7 +67,7 @@ A real run of `node replay/harness.mjs --adapter wallet-backend --target main --
 
 ## wallet-backend main, the whole corpus
 
-The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>76194899</code>) it ingests 634 variants in 364 sessions: **618 handled, 0 halted**. The other 16 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
+The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wallet-backend). At `main` (<code>76194899</code>) it ingests 635 variants in 365 sessions: **618 handled, 0 halted**. The other 17 are each pinned with their cause in `replay/expectations/wallet-backend@main.json`:
 
 | Entry | Variants | Verdict | Why | Upstream |
 |---|---|---|---|---|
@@ -78,6 +78,7 @@ The reference indexer is [stellar/wallet-backend](https://github.com/stellar/wal
 | [`revoke.cascade-offers-pool-shares`](https://xdrproof.dev/docs/corpus/entries/revoke-cascade-offers-pool-shares) | 2 | dropped | Revoking authorization redeems the holder's pool shares and deletes the pool-share trustline (CAP-0038); wallet-backend writes TRUSTLINE REMOVE only from ChangeTrust. | [wallet-backend#817](https://github.com/stellar/wallet-backend/issues/817) |
 | [`sac.xlm-transfer-creates-account`](https://xdrproof.dev/docs/corpus/entries/sac-xlm-transfer-creates-account) | 4 | dropped | An account created by an XLM transfer through the native asset contract (CAP-0073) gets no ACCOUNT CREATE: wallet-backend writes one only for a CreateAccount operation. | [wallet-backend#804](https://github.com/stellar/wallet-backend/issues/804), [wallet-backend#816](https://github.com/stellar/wallet-backend/issues/816) |
 | [`signer.preauth-removed-by-core`](https://xdrproof.dev/docs/corpus/entries/signer-preauth-removed-by-core) | 2 | dropped | Core removes the used pre-auth signer in txChangesBefore, outside any operation; wallet-backend never reads that change group for signers. | [wallet-backend#818](https://github.com/stellar/wallet-backend/issues/818) |
+| [`tx.apply-time.internal-error-mainnet`](https://xdrproof.dev/docs/corpus/entries/tx-apply-time-internal-error-mainnet) | 1 | mishandled | F-3 again, on a second mainnet ledger. Pubnet ledger 58357467 is at protocol 22, so its Soroban fee refunds are credited in txChangesAfter, which wallet-backend's native balances do not read. The 2 refunded accounts end short by exactly their refunds: 10,942,591 stroops over 92 transactions, and 123,783 from one, the txINTERNAL_ERROR transaction this entry is for (it failed, yet its unused fee still comes back). | [wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834) |
 
 ## Every fix, before and after
 
