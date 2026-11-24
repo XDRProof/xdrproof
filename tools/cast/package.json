@@ -1,0 +1,11 @@
+{
+  "name": "@xdrproof/cast",
+  "private": true,
+  "type": "module",
+  "description": "Recordings of real XDRProof runs (asciicast v2) and their renderings: the animated SVG banner, and later the docs player and video.",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "opentype.js": "1.3.4"
+  }
+}

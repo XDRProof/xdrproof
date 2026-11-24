@@ -1,7 +1,7 @@
 # XDRProof. Each target re-runs a claim and prints its result.
 # Fast and offline:   make verify   make novelty   make coverage   make coverage-report
 # Need Docker:        make generate   make conformance   make replay   make lint-selftest   make lint
-.PHONY: verify oracle novelty coverage coverage-report coverage-goldens build generate generate-quick order-scan conformance replay replay-main replay-sightings lint-selftest lint native all
+.PHONY: banner verify oracle novelty coverage coverage-report coverage-goldens build generate generate-quick order-scan conformance replay replay-main replay-sightings lint-selftest lint native all
 
 NATIVE := tools/native/target/release/xdrproof-native
 # Targets not yet drawn as proof cards run under a live row (tools/live-run.mjs): their output prints above it, so
@@ -59,10 +59,16 @@ lint: tools/node_modules              ## xplint on wallet-backend, stellar-etl a
 
 native: $(NATIVE)                     ## build the native rs-stellar-xdr reader (~1 min once)
 
+banner: tools/cast/node_modules        ## the README banner, .github/assets/banner.svg (the org profile uses the same file), from the recorded run in tools/cast/recordings (RECORD=1 records make verify again first)
+	@$(if $(RECORD),python3 -I tools/cast/record.py tools/cast/recordings/verify-60.cast --cols 60 --rows 40 --title "make verify" -- make verify &&) node tools/cast/banner.mjs
+
 all: verify oracle coverage generate conformance replay lint-selftest lint
 
 $(NATIVE): tools/native/Cargo.toml tools/native/src/main.rs
 	@$(LIVE) "Building the native reader (once)" -- cargo build --quiet --release --manifest-path tools/native/Cargo.toml
+
+tools/cast/node_modules: tools/cast/package-lock.json
+	@$(LIVE) "Installing the recording tools (once)" -- sh -c 'cd tools/cast && npm ci --silent --no-audit --no-fund --ignore-scripts'
 
 tools/node_modules:
 	@$(LIVE) "Installing the tools' dependencies (once)" -- sh -c 'cd tools && npm ci --silent --no-audit --no-fund'
