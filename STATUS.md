@@ -22,6 +22,9 @@ Stellar developer Discord.
 - **The SDKs' main branches, checked** ([record](conformance/recorded/main-branches-2026-11-24.md)): rs-stellar-xdr main reads
   the corpus exactly as 30.0.0 and fixes rs-stellar-xdr#622 (a bool of 2), which our expectations pinned; recorded as
   fixed on main, not yet released. `make conformance` now installs what it needs on a fresh clone.
+- **The roadmap is public:** three milestones (the tranches, with their dates) and one issue per deliverable,
+  [#1 to #13](https://github.com/XDRProof/xdrproof/milestones), each marked *planned · starts on award*. A new issue
+  form, **Suggest a ledger shape**, asks SDK and indexer maintainers which shapes have bitten them.
 - **The "Reported upstream" table is now written from one list** (`findings/upstream.json`) into the README, the
   findings report, the docs and the org profile, with each report's status checked on GitHub (`make upstream-table`);
   CI fails when a copy differs. Every report has a figure now, java-stellar-sdk#835 included.
