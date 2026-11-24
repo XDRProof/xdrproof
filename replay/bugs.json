@@ -1,0 +1,17 @@
+{
+  "$comment": "Short plain titles for what `make replay` prints: the known wallet-backend issues behind the verdicts pinned in replay/expectations (keyed by the first upstream link), and the upstream fixes replayed before and after (keyed by sightings.json issue).",
+  "issues": {
+    "https://github.com/stellar/wallet-backend/issues/834": { "title": "balances short of fee refunds" },
+    "https://github.com/stellar/wallet-backend/issues/815": { "title": "misses SAC contract deploys" },
+    "https://github.com/stellar/wallet-backend/issues/804": { "title": "misses accounts created via SAC" },
+    "https://github.com/stellar/wallet-backend/issues/805": { "title": "misses failed-tx signer removal" },
+    "https://github.com/stellar/wallet-backend/issues/818": { "title": "misses pre-auth signer removal" },
+    "https://github.com/stellar/wallet-backend/issues/817": { "title": "misses revoked pool shares" }
+  },
+  "sightings": {
+    "https://github.com/stellar/wallet-backend/pull/729": { "title": "signed-payload signers" },
+    "https://github.com/stellar/wallet-backend/issues/731": { "title": "SAC trust() trustlines" },
+    "https://github.com/stellar/wallet-backend/pull/753": { "title": "muxed source on TTL ops" },
+    "https://github.com/stellar/wallet-backend/issues/745": { "title": "B and L address deployers" }
+  }
+}

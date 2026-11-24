@@ -21,6 +21,16 @@
 //     verdict, since those terminals and log viewers open full URLs written out.
 //   - Colour and live progress only in an interactive terminal. A pipe, CI, TERM=dumb or NO_COLOR gives plain text
 //     with [STAMP] brackets. FORCE_COLOR=1 forces colour; FORCE_HYPERLINK=1 or 0 forces links on or off.
+//   - Something shows at once. The header prints as soon as the command knows what it is checking, and while the
+//     work runs a live block on stderr names each part of it, one row each, the way the cards will:
+//
+//       ⠹ Corpus                 ━━━━━━━━━━━━━━━──────────  412/634  3.1s
+//       ✓ Mined pubnet ledgers                                        1.2s
+//       ◦ Keys and signatures                                      waiting
+//
+//     A spinner while a part runs, a bar when it can be counted, the step it is on when it cannot ("starting the
+//     database"), and how long is left once that is worth saying. When the work is done the block is erased and
+//     the cards print in its place.
 //   - No dependencies: this file loads in a few milliseconds.
 
 const env = process.env;
@@ -92,7 +102,8 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
       return s < 60 ? `${s.toFixed(s < 10 ? 1 : 0)}s` : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
     },
     out(line = '') { stream.write(line + '\n'); },
-    header(command, meta) { ui.clear(); ui.out(); ui.out(`${ui.stamp('neutral', 'XDRPROOF')}  ${ui.bold(command)}${meta ? ui.dim('  · ' + meta) : ''}`); ui.out(); },
+    // meta may be a list, longest first: the first that fits the width is used (the last may be '')
+    header(command, meta) { if (Array.isArray(meta)) meta = meta.find((m) => 10 + 2 + command.length + (m ? 4 + m.length : 0) < ui.width) ?? ''; ui.out(); ui.out(`${ui.stamp('neutral', 'XDRPROOF')}  ${ui.bold(command)}${meta ? ui.dim('  · ' + meta) : ''}`); ui.out(); },
     section(title) { ui.out(); ui.out('  ' + ui.dim(title)); },
     // name ......... value  STAMP  [after]; name and label may carry links, so pass their visible widths.
     row({ name, nameWidth = name.length, value = '', stamp, after = '', cols = 34 }) {
@@ -106,14 +117,97 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
       ui.out(`${ui.stamp(kind, word)}  ${ui.bold(text)}${time ? '   ' + ui.dim(time) : ''}`);
       ui.out();
     },
-    // One live line on stderr while work runs (interactive terminals only).
-    progress(label, done, total) {
-      if (!live) return;
-      const w = 24, k = total ? Math.round((w * done) / total) : 0;
-      errStream.write(`\r\x1b[2K  ${ui.dim(label)} ${ui.known('━'.repeat(k))}${ui.dim('━'.repeat(w - k))} ${ui.dim(`${done}/${total}`)}`);
-      ui._live = true;
+    // ---- the live block (interactive terminals only; every call is a no-op elsewhere) ----
+    // ui.task(label, { waiting, since }) adds a row and returns { count(done, total), note(text), start(), done(),
+    // fail() }. since: when the work really began (a check started before its row existed), for its time.
+    task(label, { waiting = false, since = Date.now() } = {}) {
+      const row = { label, state: waiting ? 'wait' : 'run', t0: since, t1: 0, done: 0, total: 0, note: '' };
+      const t = {
+        start() { if (row.state === 'wait') { row.state = 'run'; row.t0 = Date.now(); } return t; },
+        count(done, total) { t.start(); row.done = done; row.total = total; row.note = ''; return t; },
+        note(text) { t.start(); row.note = text; return t; },
+        done() { row.state = 'ok'; row.t1 = Date.now(); paint_(); return t; },
+        fail() { row.state = 'fail'; row.t1 = Date.now(); paint_(); return t; },
+        // a synchronous redraw, for loops that hold the event loop (the spinner cannot turn on its own there)
+        tick() { paint_(); return t; },
+      };
+      if (!live) return t;
+      rows.push(row);
+      if (!timer) { timer = setInterval(paint_, 100); timer.unref(); }
+      paint_();
+      return t;
     },
-    clear() { if (ui._live) { errStream.write('\r\x1b[2K'); ui._live = false; } },
+    // a line on stderr (a debug heartbeat) printed above the live block instead of through it
+    err(l) { if (drawn) { erase_(); errStream.write(l + '\n'); paint_(); } else errStream.write(l + '\n'); },
+    // the old one-line form: a single counted row
+    progress(label, done, total) { if (!live) return; (bars.get(label) ?? bars.set(label, ui.task(label)).get(label)).count(done, total); },
+    // erase the live block (before the result prints, and on every exit path)
+    clear() {
+      if (timer) { clearInterval(timer); timer = null; }
+      erase_(); rows.length = 0; bars.clear();
+      if (hidden) { errStream.write('\x1b[?25h'); hidden = false; }
+    },
   };
+  // ---- the live block's drawing ----
+  const rows = [], bars = new Map(), SPIN = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+  let timer = null, drawn = 0, frame = 0, hidden = false;
+  const vis = (s) => s.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '').replace(/\x1b\]8;;[^\x1b]*\x1b\\/g, '').length;
+  const clock = (ms) => ui.elapsed(ms);
+  const left = (ms) => (ms < 90e3 ? `${Math.round(ms / 1000)}s left` : `${Math.round(ms / 60e3)} min left`);
+  function line(r, LW, BW) {
+    const now = Date.now(), took = (r.t1 || now) - r.t0;
+    const mark = r.state === 'ok' ? ui.pass('✓') : r.state === 'fail' ? ui.bad('✗') : r.state === 'wait' ? ui.dim('◦') : ui.known(SPIN[frame % SPIN.length]);
+    const label = ui.trunc(r.label, LW).padEnd(LW);
+    const room = BW - 4 - LW - 1;                                     // what is left right of the label
+    let right;
+    if (r.state === 'wait') right = ui.dim('waiting');
+    else if (r.state === 'fail') right = ui.bad('failed');
+    else if (r.state === 'ok') right = ui.dim(clock(took).padStart(5));
+    else if (r.total) {
+      const tot = ui.num(r.total), count = `${ui.num(r.done).padStart(tot.length)}/${tot}`; // fixed width: the bar must not jump
+      // how long is left, once there is enough to go on and it is worth saying; otherwise how long so far
+      const eta = r.done >= 3 && took > 5000 ? (took / r.done) * (r.total - r.done) : 0;
+      const tail = (eta > 20000 ? left(eta) : clock(took)).padStart(5);
+      const short = eta > 20000 ? (eta < 90e3 ? `${Math.round(eta / 1000)}s` : `${Math.round(eta / 60e3)}m`) : clock(took);
+      const bw = room - count.length - tail.length - 2;
+      // the right side always fits in its room (a wrapped row breaks the erase): bar, then count and time, then
+      // count and a short time, then the count alone
+      if (bw >= 6) { const k = Math.round((bw * r.done) / r.total); right = `${ui.known('━'.repeat(k))}${ui.dim('─'.repeat(bw - k))} ${count} ${ui.dim(tail)}`; }
+      else right = [`${count} ${ui.dim(tail.trim())}`, `${count} ${ui.dim(short)}`, count, ui.trunc(count, room)].find((c) => vis(c) <= room);
+    } else {
+      const tail = clock(took).padStart(5), note = r.note && room - tail.length - 1 >= 4 ? ui.trunc(r.note, room - tail.length - 1) : '';
+      right = `${ui.dim(note)}${note ? ' ' : ''}${ui.dim(tail)}`;
+    }
+    const pad = Math.max(1, room - vis(right));
+    return `  ${mark} ${r.state === 'run' ? label : ui.dim(label)}${' '.repeat(pad)}${right}`;
+  }
+  function erase_() {
+    if (!drawn) return;
+    let s = '\r\x1b[2K';
+    for (let i = 1; i < drawn; i++) s += '\x1b[1A\x1b[2K';
+    errStream.write(s); drawn = 0;
+  }
+  function paint_() {
+    if (!live || !rows.length) return;
+    frame++;
+    // the width is read every frame: the panel may be resized while it runs. Rows end one column short of it,
+    // so a terminal never wraps them (a wrapped row would break the erase).
+    const W = Math.max(40, Math.min(errStream.columns || ui.width, 120)), BW = Math.min(W - 2, 66);
+    // the label keeps its room (down to 40 columns); the bar gives way first, then the count stays
+    const LW = Math.min(Math.max(...rows.map((r) => r.label.length)), BW - 4 - 1 - 13);
+    const text = rows.map((r) => line(r, LW, BW)).join('\n');
+    erase_(); errStream.write(text); drawn = rows.length;
+    if (!hidden) { errStream.write('\x1b[?25l'); hidden = true; }
+  }
+  // Output printed while the block is up goes above it: erase, print, redraw.
+  const out0 = ui.out;
+  ui.out = (l = '') => { if (drawn) { erase_(); out0(l); paint_(); } else out0(l); };
+  // never leave a hidden cursor or a half-drawn block behind, whatever ends the process
+  if (live) {
+    process.once('exit', () => ui.clear());
+    // a signal ends the process without 'exit': erase here, then let the signal do what it would have done
+    // (a tool's own handler, such as conformance stopping its workers, still runs after this one)
+    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(sig, () => { ui.clear(); if (!process.listenerCount(sig)) process.kill(process.pid, sig); });
+  }
   return ui;
 }

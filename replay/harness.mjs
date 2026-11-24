@@ -19,6 +19,12 @@ import { parse as parseToml } from '../tools/node_modules/smol-toml/dist/index.j
 import { variantBytes, decodeXdr } from './lib/derive.mjs';
 import { startMockRpc } from './lib/mock-rpc.mjs';
 import { decode as strkeyDecode } from '../tools/strkey.mjs';
+import { format } from 'node:util';
+import { makeUI } from '../tools/ui.mjs';
+// Progress: under replay/run.mjs it goes to the parent over IPC (the parent draws the live block); run on its own
+// in a terminal, the harness draws one live row itself and prints its lines above it.
+const ui = makeUI();
+if (!process.send) console.log = (...a) => ui.out(format(...a));
 const strkeyPayload = (s) => strkeyDecode(s).payload;
 
 const HERE = dirname(fileURLToPath(import.meta.url)), ROOT = join(HERE, '..');
@@ -33,7 +39,13 @@ const { values: opt } = parseArgs({ options: {
   record: { type: 'boolean', default: false }, keep: { type: 'boolean', default: false },
   sightings: { type: 'boolean', default: false },
 } });
-const die = (m, code = 2) => { console.error(`replay: ${m}`); process.exit(code); };
+// a fatal error goes to stdout, the run's log under replay/run.sh, whose summary quotes it; on its own it also shows
+// in the terminal when stdout is redirected
+const die = (m, code = 2) => {
+  console.log(`replay: ${m}`);
+  if (!process.env.XDRPROOF_START && !process.stdout.isTTY) console.error(`replay: ${m}`);
+  process.exit(code);
+};
 if (!opt.adapter) die('--adapter is required');
 
 // ---- adapter and target ---------------------------------------------------------------------------------
@@ -46,13 +58,15 @@ const supported = new Set(A.supports.probes);
 const baseEnv = { ...process.env, XDRPROOF_ADAPTER_WORK: WORK, XDRPROOF_TARGET: opt.target, XDRPROOF_TARGET_REF: T.ref, XDRPROOF_MEMORY_MB: String(A.limits?.memory_mb ?? 1024) };
 
 // Run one adapter command to completion; resolves { code, stdout, stderr }.
-function run(name, env = {}, { input, timeoutS = 120 } = {}) {
+// onStatus: the adapter's "status: <step>" lines on stderr (setup: building, starting the database), as they come
+function run(name, env = {}, { input, timeoutS = 120, onStatus } = {}) {
   const cmd = A.commands[name];
   if (!cmd) return Promise.resolve({ code: 0, stdout: '', stderr: '', missing: true });
   return new Promise((resolve) => {
     const p = spawn('sh', ['-c', cmd], { cwd: ADIR, env: { ...baseEnv, ...env } });
     let stdout = '', stderr = '';
-    p.stdout.on('data', (c) => (stdout += c)); p.stderr.on('data', (c) => (stderr += c));
+    p.stdout.on('data', (c) => (stdout += c));
+    p.stderr.on('data', (c) => { stderr += c; if (onStatus) for (const m of String(c).matchAll(/^status: (.+)$/gm)) onStatus(m[1]); });
     const t = setTimeout(() => p.kill('SIGKILL'), timeoutS * 1000);
     p.on('close', (code) => { clearTimeout(t); resolve({ code, stdout, stderr }); });
     if (input !== undefined) p.stdin.end(input); else p.stdin.end();
@@ -60,7 +74,8 @@ function run(name, env = {}, { input, timeoutS = 120 } = {}) {
 }
 const must = async (name, env, o) => {
   const r = await run(name, env, o);
-  if (r.code !== 0) throw Object.assign(new Error(`adapter ${name} exited ${r.code}: ${(r.stderr || r.stdout).trim().split('\n').slice(-5).join(' | ')}`), { adapterError: true });
+  const said = (r.stderr.split('\n').filter((l) => !l.startsWith('status: ')).join('\n').trim() || r.stdout.trim()).split('\n').slice(-5).join(' | ');
+  if (r.code !== 0) throw Object.assign(new Error(`adapter ${name} exited ${r.code}: ${said}`), { adapterError: true });
   return r;
 };
 
@@ -284,25 +299,34 @@ async function pool(items, jobs, fn) {
   await Promise.all(Array.from({ length: Math.min(jobs, items.length) }, async () => {
     while (i < items.length) {
       const k = i++; out[k] = await fn(items[k], k);
-      done++; if (process.stderr.isTTY || done % 10 === 0 || done === items.length) process.stderr.write(`\r  ${done}/${items.length} sessions`);
+      done++; row.count(done, items.length);
     }
   }));
-  if (items.length) process.stderr.write('\n');
   return out;
 }
 
 // ---- run --------------------------------------------------------------------------------------------------
 const list = [...sessions.values()];
 console.log(`${A.name}@${opt.target} (${T.ref.slice(0, 12)}, protocol_max ${T.protocol_max}): ${variants.length} variants, ${list.length} sessions, ${[...verdicts.values()].length} unsupported`);
-try { await must('setup', {}, { timeoutS: A.timeouts?.setup_s ?? 1200 }); } catch (e) { die(e.message); }
+const row = process.send
+  ? { note: (t) => process.send({ note: t }), count: (done, total) => process.send({ done, total }), tick() {} }
+  : ui.task(`${A.name} ${opt.target}`);
+row.note('setting up');
+try { await must('setup', {}, { timeoutS: A.timeouts?.setup_s ?? 1200, onStatus: (t) => row.note(t) }); } catch (e) { ui.clear(); die(e.message); }
 
 // read every ledger first (synchronous native calls; cached across runs)
-for (const s of [...controlSessions, ...sessions.values()]) { try { prepareDerived(s); } catch { /* reported by its session */ } }
+const toRead = [...controlSessions, ...sessions.values()];
+for (const [k, s] of toRead.entries()) {
+  row.note(`reading ledgers ${k + 1}/${toRead.length}`); row.tick(); // a synchronous loop: redraw by hand
+  try { prepareDerived(s); } catch { /* reported by its session */ }
+}
+row.note(`checking the setup on ${controlSessions.length} control ledgers`);
 const ctl = await pool(controlSessions, Number(opt.jobs), session);
 for (const c of ctl) {
   console.log(`  control ${c.control}: ${c.verdict}${c.error ? ` (${c.error})` : ''}`);
   if (!['handled', 'dropped', 'mishandled'].includes(c.verdict)) die(`control ${c.control} did not get past its ledger (${c.verdict}): the setup, not a finding; see ${OUT}/sessions/${c.session}.log`);
 }
+row.note(`starting ${list.length} sessions`);
 const recs = await pool(list, Number(opt.jobs), session);
 for (const r of recs) for (const vid of r.variants) verdicts.set(vid, r);
 const keyJson = new Map();
@@ -310,7 +334,9 @@ for (const r of [...ctl, ...recs]) r.unknown_keys = (r.unknown_keys ?? []).map((
   if (!keyJson.has(k)) { try { keyJson.set(k, decodeXdr('LedgerKey', k)); } catch { keyJson.set(k, k); } }
   return keyJson.get(k);
 });
+row.note('stopping the database');
 if (!opt.keep) await run('teardown', {}, { timeoutS: 60 });
+ui.clear();
 
 // ---- expectations -----------------------------------------------------------------------------------------
 const EXP = join(HERE, 'expectations', `${A.name}@${opt.target}.json`);
@@ -339,7 +365,9 @@ if (!partial && JSON.stringify(exp.unsupported ?? []) !== JSON.stringify(unsuppo
 // ---- report -----------------------------------------------------------------------------------------------
 const count = {};
 for (const r of verdicts.values()) count[r.verdict] = (count[r.verdict] ?? 0) + 1;
+const runErrors = [...ctl, ...recs].filter((r) => r.verdict === 'error');
 const report = { schema: 'xdrproof.replay-report/v1', adapter: A.name, target: opt.target, ref: T.ref, protocol_max: T.protocol_max, at: new Date().toISOString(),
+  partial, judged: judged.count, mismatches: diffs.map((x) => ({ vid: x.vid, want: x.want.verdict, got: x.got.verdict })), errors: runErrors.map((r) => r.session),
   counts: count, harness_peak_rss_bytes: process.resourceUsage().maxRSS * 1024, derive_child_peak_rss_bytes: deriveChildPeak || null, controls: ctl, sessions: recs, unsupported: Object.fromEntries([...verdicts].filter(([, r]) => r.verdict === 'unsupported').map(([k, r]) => [k, r.why])) };
 writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 1));
 const bad = [...verdicts].filter(([, r]) => !['handled', 'unsupported'].includes(r.verdict)).sort(([a, x], [b, y]) => SEVERITY.indexOf(y.verdict) - SEVERITY.indexOf(x.verdict) || (a < b ? -1 : 1));

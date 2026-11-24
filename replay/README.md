@@ -18,6 +18,13 @@ node replay/harness.mjs --adapter wallet-backend --target main --entries muxed.p
 Needs Docker, Node 22.15 or later, and the native reader (`make native`). Nothing reaches the network once the
 images and Go modules are cached: the ledgers come from the corpus through a mock stellar-rpc.
 
+While it runs, `make replay` shows one live row per part: the corpus into `main` (its sessions and the time left,
+or the step it is on, such as starting the database) and the fixes (which commit, and its step). Each harness
+run's full output goes to `replay/.work/logs/<target>.log`. At the end it prints two cards: `main`'s score with
+one row per known issue and its link, and each fix as its verdict before and after. `make replay DETAILS=1` adds
+the verdict and ledger count behind each row, timings and memory. `recorded/wallet-backend.md` is rewritten only
+by a full `make replay` that passed.
+
 Measured on a laptop under Docker, 6 sessions at a time: the full `make replay` (634 variants in 364 sessions
 against `main`, plus 30 sighting sessions at ten older commits) takes 9.5 minutes once the eleven builds are
 cached; a session takes 5.8 s on average and 8.9 s at most. wallet-backend's peak memory in any session is

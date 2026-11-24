@@ -49,7 +49,7 @@ const sideCheck = (script) => new Promise((res) => execFile(process.execPath, [j
   try { res(JSON.parse(String(out).trim().split('\n').pop())); }
   catch { res({ check: script, problems: [`${script} did not report: ${String(err?.message ?? 'no output').split('\n')[0]}`] }); }
 }));
-const sides = Promise.all(['mined-verify.mjs', 'strkey.test.mjs', 'auth-payload-check.mjs'].map(sideCheck));
+const sideRuns = ['mined-verify.mjs', 'strkey.test.mjs', 'auth-payload-check.mjs'].map(sideCheck), sides = Promise.all(sideRuns);
 
 // Native readers: long-lived processes, requests and responses as line-delimited JSON. Three of them, so the
 // ledgers are read in parallel; each request goes to the reader with the fewest waiting.
@@ -106,9 +106,19 @@ for (const id of ids) {
   }
 }
 
+// Something shows at once: the header as soon as the corpus is counted, then a live block, one row per card,
+// while the ledgers are read (erased before the cards print).
+ui.header('verify', ui.width < 64 ? '' : `${ui.num(ids.length)} entries · ${ui.num(work.length)} ledger variants`);
+const live = { corpus: ui.task('Corpus', { since: T0 }), mined: ui.task('Mined pubnet ledgers', { since: T0 }), keys: ui.task('Keys and signatures', { since: T0 }) };
+const settle = (t, results) => (results.some((r) => r.problems?.length) ? t.fail() : t.done());
+sideRuns[0].then((r) => settle(live.mined, [r]));
+Promise.all(sideRuns.slice(1)).then((rs) => settle(live.keys, rs));
+
 // Each variant's checks; results land in its own slot, so rows and failures keep corpus order.
 const slots = new Array(work.length);
-await mapLimit(work, 12, async ({ id, dir, entry, v }, k) => {
+let checked = 0;
+await mapLimit(work, 12, async (w, k) => { await checkVariant(w, k); live.corpus.count(++checked, work.length); });
+async function checkVariant({ id, dir, entry, v }, k) {
   const where = `${id}@${v.key}`, f = [], out = { f };
   slots[k] = out;
   const fail = (check, msg) => f.push([check, `${where}: ${msg}`]);
@@ -154,7 +164,7 @@ await mapLimit(work, 12, async ({ id, dir, entry, v }, k) => {
     sightings: entry.sightings ?? [], channel: entry.channel, status: entry.status,
     wasm_reader: wasm === 'agrees' ? 'agrees' : 'fails',
   };
-});
+}
 for (const r of readers) r.p.stdin.end();
 const rows = slots.map((s) => s.row).filter(Boolean);
 const refusals = slots.map((s) => s.refusal).filter(Boolean);
@@ -172,7 +182,9 @@ const manifestText = JSON.stringify(manifest, null, 2) + '\n';
 const manifestPath = join(ROOT, 'manifest.json');
 if (WRITE) writeFileSync(manifestPath, manifestText);
 else if (!existsSync(manifestPath) || readFileSync(manifestPath, 'utf8') !== manifestText) failuresBy.manifest.push('manifest.json: out of date; run: node tools/verify.mjs --write');
+settle(live.corpus, [{ problems: Object.values(failuresBy).flat() }]);
 const [mined, strkey, auth] = await sides;
+ui.clear();
 
 // ---- the proof cards -------------------------------------------------------------------------------------------
 const WIDTH = ui.width, C = Math.min(WIDTH - 4, 64), INNER = C - 4, narrow = WIDTH < 64;
@@ -224,7 +236,6 @@ const row = (l) => {
 };
 const sub = (text) => ui.out(`  ${ui.dim('│')}   ${ui.dim(ui.trunc(text, INNER - 2).padEnd(INNER - 2))} ${ui.dim('│')}`);
 
-ui.header('verify', narrow ? '' : `${num(ids.length)} entries · ${num(variants)} ledger variants`);
 for (const c of ordered) {
   top(c.title, c.score);
   for (const l of c.lines) row(l);

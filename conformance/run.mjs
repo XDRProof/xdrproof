@@ -211,11 +211,29 @@ const PHASE = {}; let PT = performance.now(); const phase = (k) => { const n = p
 
 // --profile: a heartbeat every 5 s, so a slow or stuck run shows where it is
 let corpusDone = 0;
-const beat = PROFILE ? setInterval(() => process.stderr.write(`[${((Date.now() - T0) / 1000).toFixed(0)}s] ledgers ${corpusDone} · ${[...testees, { name: 'reference', pool: ref }].map((t) => `${t.name.split('@')[0]} q${t.pool.queue.length}/idle${t.pool.idle.length}`).join(' ')}\n`), 5000) : null;
+const beat = PROFILE ? setInterval(() => ui.err(`[${((Date.now() - T0) / 1000).toFixed(0)}s] ledgers ${corpusDone} · ${[...testees, { name: 'reference', pool: ref }].map((t) => `${t.name.split('@')[0]} q${t.pool.queue.length}/idle${t.pool.idle.length}`).join(' ')}`), 5000) : null;
 beat?.unref();
+// ---- what this run checks, said at once: the header, then a live block (one row per kind of work) ------------
+const corpusCount = families.includes('corpus') || families.includes('sdk-check')
+  ? readdirSync(join(ROOT, 'entries')).filter((d) => existsSync(join(ROOT, 'entries', d, 'entry.json'))).reduce((n, d) => n + JSON.parse(readFileSync(join(ROOT, 'entries', d, 'entry.json'), 'utf8')).variants.length, 0) : 0;
+const builds0 = testees.filter((t) => !(t.families.length === 1 && t.families[0] === 'sightings')).length || testees.length; // as isOlder, below
+// (--format md prints only the matrix, as before: no header, no live rows)
+if (FORMAT !== 'md') ui.header('conformance', ui.width >= 64 ? `${builds0} SDK build${builds0 === 1 ? '' : 's'}${families.includes('corpus') && corpusCount ? ` · ${corpusCount} real ledgers` : ''}${FAMILIES ? ` · ${families.join(', ')} only` : ''}` : '');
+const VECTOR_FILES = { strkey: 'strkey.json', 'lane-s': 'lane-s.json', depth: 'depth.json', sightings: 'sightings.json' };
+const vectorCount = Object.entries(VECTOR_FILES).filter(([f]) => families.includes(f)).reduce((n, [, file]) => n + JSON.parse(readFileSync(join(HERE, 'vectors', file), 'utf8')).length, 0);
+const quiet = FORMAT === 'md', none = { count() {}, done() {} };
+const rowsLive = {
+  builds: quiet ? none : ui.task('Starting the SDK builds', { since: T0 }),
+  ledgers: corpusCount && !quiet ? ui.task('Real ledgers', { waiting: true }) : null,
+  vectors: vectorCount && !quiet ? ui.task('Test vectors', { waiting: true }) : null,
+};
+let vectorsDone = 0;
+
 // ---- hello: every testee names its implementation (cached with its answers) --------------------------------
 const hello = {};
-await Promise.all(testees.map(async (t) => { hello[t.name] = t.cache.hello ?? (await ask(t, 'hello', {})).implementation ?? null; }));
+let helloDone = 0;
+await Promise.all(testees.map(async (t) => { hello[t.name] = t.cache.hello ?? (await ask(t, 'hello', {})).implementation ?? null; rowsLive.builds.count(++helloDone, testees.length); }));
+rowsLive.builds.done();
 phase('hello');
 
 // ---- family: corpus (and sdk-check, which reads the same ledgers) --------------------------------------------
@@ -272,9 +290,10 @@ if (families.includes('corpus') || families.includes('sdk-check')) {
         put(c, got === n ? 'pass' : 'fail', got === n ? 'lossless' : `kept ${got} of ${n} entries`);
       }
     })));
-    corpusVariants++; corpusDone = corpusVariants; ui.progress('corpus', corpusVariants, total);
+    corpusVariants++; corpusDone = corpusVariants; rowsLive.ledgers?.count(corpusVariants, total);
   });
 }
+rowsLive.ledgers?.done();
 phase('corpus');
 
 // ---- families: strkey, lane-s, depth, sightings ----------------------------------------------------------------
@@ -283,7 +302,7 @@ const vkey = (fam, vec) => `${fam}:${vec.id}:${sha(JSON.stringify(vec))}`;
 const vectors = async (fam, file, fn) => {
   if (!families.includes(fam)) return;
   const list = load(file);
-  await mapLimit(list, 16, (vec) => Promise.all(inFamily(fam).map((t) => unit(t, vkey(fam, vec), (put) => fn(t, vec, put)))));
+  await mapLimit(list, 16, async (vec) => { await Promise.all(inFamily(fam).map((t) => unit(t, vkey(fam, vec), (put) => fn(t, vec, put)))); rowsLive.vectors?.count(++vectorsDone, vectorCount); });
 };
 await vectors('strkey', 'strkey.json', async (t, vec, put) => {
   const r = await ask(t, 'strkey_decode', { strkey: vec.strkey }), c = `strkey/${vec.id}`;
@@ -326,6 +345,7 @@ const judge = (v, r) => {
   return ['fail', 'no check'];
 };
 await vectors('sightings', 'sightings.json', async (t, v, put) => { const [verdict, detail] = judge(v, await ask(t, v.op, v.input)); put(`sightings/${v.id}`, verdict, detail); });
+rowsLive.vectors?.done();
 phase('vectors');
 await shutdown([...testees.map((t) => t.pool), ref]);
 ui.clear();
@@ -456,7 +476,6 @@ const card = (r, detailed) => {
 };
 const SHORT = { js: 'JS', 'xdr-json': 'XDR-JSON', rust: 'Rust', go: 'Go', python: 'Python', 'python-xdr': 'Py-XDR' };
 
-ui.header('conformance', WIDTH >= 64 ? `${current.length || older.length} SDK build${(current.length || older.length) === 1 ? '' : 's'}${total ? ` · ${total} real ledgers` : ''}${FAMILIES ? ` · ${families.join(', ')} only` : ''}` : '');
 for (const r of current.filter((x) => x.bugs.length || x.bad)) card(r, DETAILS);
 // the builds with no bugs share one card, as many per line as fit
 const cleanCard = (list, right) => {
