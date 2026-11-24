@@ -1,0 +1,89 @@
+name: Something in XDRProof is wrong
+description: A check that fails when it should pass, a wrong expected value, a crash, or a command that does not do what its docs say.
+title: "Bug: "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks. This form is for problems with XDRProof itself. A bug that XDRProof found in an SDK or indexer belongs
+        to that project; the docs say how we report those.
+
+        If the problem lets anyone halt or crash an indexer, please don't post it here: report it privately as
+        described in [SECURITY.md](https://github.com/XDRProof/xdrproof/blob/main/SECURITY.md).
+  - type: dropdown
+    id: command
+    attributes:
+      label: Which command?
+      options:
+        - make verify
+        - make oracle
+        - make coverage
+        - make coverage-report
+        - make novelty
+        - make conformance
+        - make replay
+        - make lint
+        - make generate
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: The exact command you ran, with any ARGS, and the steps to see it again.
+      placeholder: "make oracle says a value in auth.tree-depth-245-max does not hold, but the ledger shows…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Full output
+      description: Run the command again with DETAILS=1 and paste everything. Text, not a screenshot; it is formatted as code for you.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: entry
+    attributes:
+      label: Which corpus entry, if any
+      description: The id from the output.
+      placeholder: "auth.tree-depth-245-max@p30-mainnet-generated"
+  - type: input
+    id: commit
+    attributes:
+      label: XDRProof commit
+      description: "The output of `git rev-parse --short HEAD`"
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Your setup
+      description: "The output of `uname -orsm; docker --version; node --version`"
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: found
+    attributes:
+      label: How did you find it?
+      options:
+        - Running a make target
+        - In CI
+        - Reading the corpus
+        - Testing an SDK or indexer against it
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Before you send
+      options:
+        - label: I searched the open and closed issues
+          required: true

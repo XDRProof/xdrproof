@@ -1,5 +1,8 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
   - name: A security problem (halt, crash or wrong funds)
     url: https://github.com/XDRProof/xdrproof/blob/main/SECURITY.md
     about: Please report these privately, as SECURITY.md describes.
+  - name: How to use XDRProof
+    url: https://xdrproof.dev
+    about: The docs, with a recorded run of every command.
