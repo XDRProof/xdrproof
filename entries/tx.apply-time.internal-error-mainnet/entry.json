@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schema/v1/entry.schema.json",
+  "id": "tx.apply-time.internal-error-mainnet",
+  "title": "A mainnet transaction that ends txINTERNAL_ERROR",
+  "pattern": "stellar-core threw while applying a Soroban call: the result is txINTERNAL_ERROR, the fee is charged and no operation has metadata. Before protocol 23 the unused fee still comes back, in txChangesAfter.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "txINTERNAL_ERROR at apply, a mainnet Soroban call"
+    },
+    {
+      "id": "H-C13",
+      "placement": "the refund of a txINTERNAL_ERROR transaction, before protocol 23"
+    }
+  ],
+  "xdr_type": "LedgerCloseMeta",
+  "sightings": [],
+  "channel": "stable",
+  "status": "active",
+  "variants": [
+    {
+      "key": "p22-mainnet-mined-l58357467",
+      "protocol": 22,
+      "network_passphrase": "Public Global Stellar Network ; September 2015",
+      "file": "p22-mainnet-mined-l58357467.xdr.zst",
+      "sha256": "7351a2d209a02bac02053437ee1acb3e36c428d6cbbe044c71fc641fe9d230ed",
+      "size": 1373968,
+      "synthetic": false,
+      "source": {
+        "lane": "mined",
+        "ledger_seq": 58357467,
+        "url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC8659FF--58304000-58367999/FC858924--58357467.xdr.zst",
+        "container_sha256": "b79dc0e3ef0e0af423b787a082b3e505afbc922d4b074c13fa982e0cbaf205cb"
+      },
+      "focus": {
+        "tx_hash": "d5273c1e2de2091ff8afd0cac108f683483bfacf814f7cd0683fa2efde8abb5e",
+        "op_index": 0
+      }
+    }
+  ],
+  "expected": {
+    "decoded_as": "SEP-0051 JSON rendered by stellar-xdr 30.0.0",
+    "facts": [
+      {
+        "says": "stellar-core threw while applying the transaction: the result is txINTERNAL_ERROR.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v1/tx_processing/205/result/result/result",
+        "equals": "tx_internal_error"
+      },
+      {
+        "says": "The fee charged, after the refund below, is 555,036 stroops.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v1/tx_processing/205/result/result/fee_charged",
+        "equals": "555036"
+      },
+      {
+        "says": "The metadata has no operation entries.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v1/tx_processing/205/tx_apply_processing/v4/operations",
+        "length": 0
+      },
+      {
+        "says": "The unused fee comes back in txChangesAfter (2 changes), not in an operation.",
+        "evidence": [
+          "snapshot"
+        ],
+        "path": "/v1/tx_processing/205/tx_apply_processing/v4/tx_changes_after",
+        "length": 2
+      },
+      {
+        "says": "Before the refund the source account holds 2,719,687,106 stroops.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v1/tx_processing/205/tx_apply_processing/v4/tx_changes_after/0/state/data/account/balance",
+        "equals": "2719687106"
+      },
+      {
+        "says": "After it, 2,719,810,889: a refund of 123,783.",
+        "evidence": [
+          "snapshot",
+          "core",
+          "walker"
+        ],
+        "path": "/v1/tx_processing/205/tx_apply_processing/v4/tx_changes_after/1/updated/data/account/balance",
+        "equals": "2719810889"
+      }
+    ]
+  }
+}

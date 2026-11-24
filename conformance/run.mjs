@@ -229,7 +229,7 @@ const corpusCount = families.includes('corpus') || families.includes('sdk-check'
   ? ENTRY_IDS.filter(pickedEntry).reduce((n, d) => n + JSON.parse(readFileSync(join(ROOT, 'entries', d, 'entry.json'), 'utf8')).variants.length, 0) : 0;
 const builds0 = testees.filter((t) => !(t.families.length === 1 && t.families[0] === 'sightings')).length || testees.length; // as isOlder, below
 // (--format md prints only the matrix, as before: no header, no live rows)
-if (FORMAT !== 'md') ui.header('conformance', ui.width >= 64 ? `${builds0} SDK build${builds0 === 1 ? '' : 's'}${families.includes('corpus') && corpusCount ? ` · ${corpusCount} real ledgers` : ''}${FAMILIES ? ` · ${families.join(', ')} only` : ''}` : '');
+if (FORMAT !== 'md') ui.header('conformance', ui.width >= 64 ? `${builds0} SDK build${builds0 === 1 ? '' : 's'}${families.includes('corpus') && corpusCount ? ` · ${ui.num(corpusCount)} real ledger${corpusCount === 1 ? '' : 's'}` : ''}${FAMILIES ? ` · ${families.join(', ')} only` : ''}` : '');
 const VECTOR_FILES = { strkey: 'strkey.json', 'lane-s': 'lane-s.json', depth: 'depth.json', sightings: 'sightings.json' };
 const vectorCount = Object.entries(VECTOR_FILES).filter(([f]) => families.includes(f)).reduce((n, [, file]) => n + JSON.parse(readFileSync(join(HERE, 'vectors', file), 'utf8')).length, 0);
 const quiet = FORMAT === 'md', none = { count() {}, done() {} };

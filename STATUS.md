@@ -5,6 +5,15 @@ Stellar developer Discord.
 
 ## 2026-11-24
 
+- **A 264th entry, mined from mainnet: a transaction that ends `txINTERNAL_ERROR`.** stellar-core threw while applying
+  a Soroban call in pubnet ledger 58357467 (protocol 22, 7 August 2025): the fee is charged and no operation has
+  metadata. Searching Hubble's mainnet transactions from January 2025 (BigQuery) found only this one; the search reads
+  each transaction's outer result, so one inside a fee bump would not show. It was one of the 8 shapes a standalone
+  stellar-core cannot make; 7 remain. The corpus is now 264 entries and 635 variants, reaching 418 of 499 arms, and
+  all six SDK builds read the new ledger.
+- **wallet-backend#834 on a second mainnet ledger.** Replayed into wallet-backend `main`, ledger 58357467 ends with
+  2 balances short by exactly their refunds: 10,942,591 stroops over 92 transactions, and 123,783, the failed
+  transaction's own unused fee. The fix branch handles it.
 - **Every command now shows what it is doing from the first second**, then ends with short result cards and one
   verdict line. This covers `make oracle`, `novelty`, `coverage-report`, `build`, `generate`, `order-scan` and the
   replay harness run on its own, joining `verify`, `conformance`, `replay`, `lint`, `lint-selftest` and `coverage`.

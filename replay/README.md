@@ -25,12 +25,12 @@ one row per known issue and its link, and each fix as its verdict before and aft
 the verdict and ledger count behind each row, timings and memory. `recorded/wallet-backend.md` is rewritten only
 by a full `make replay` that passed.
 
-Measured on a laptop under Docker, 6 sessions at a time: the full `make replay` (634 variants in 364 sessions
-against `main`, plus 30 sighting sessions at ten older commits) takes 9.5 minutes once the eleven builds are
-cached; a session takes 5.8 s on average and 8.9 s at most. wallet-backend's peak memory in any session is
-99 MiB. The harness's own peak is 134 MiB for the whole corpus: each ledger is read as JSON in a short-lived
-child process (310 MiB at most, for a 1.4 MB pubnet ledger), and sessions read their facts back from disk one
-at a time, so the harness does not grow with the corpus.
+Measured on a laptop under Docker, 6 sessions at a time, on 24 Nov 2026: the full `make replay` (635 variants in 365
+sessions against `main`, plus 28 sighting sessions at ten older commits) takes 9.8 minutes once the eleven builds
+are cached; a session against `main` takes 4.0 s on average and 10.4 s at most. wallet-backend's peak memory in any
+session is 101 MiB. The harness's own peak is 124 MiB for the whole corpus: each ledger is read as JSON in a
+short-lived child process (310 MiB at most, for a 1.4 MB pubnet ledger), and sessions read their facts back from
+disk one at a time, so the harness does not grow with the corpus.
 
 ## A session
 

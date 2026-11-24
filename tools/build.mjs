@@ -210,7 +210,7 @@ failed ? row.fail() : row.done();
 ui.clear();
 ui.card({ title: 'Catalog compiled into entries', score: `${cats.length - failed}/${cats.length}`, details: DETAILS, lines: [
   ...(failed ? [{ mark: '✗', text: `${failed} failed: a fact does not hold`, detail: problems.map((p) => p.split(':')[0]) }] : []),
-  { mark: '✓', text: ui.width < 60 ? `${cats.length - failed} built, facts hold` : `${cats.length - failed} built, every fact holds at its place`, right: `${ui.num(variants)} ledgers`, detail: built },
+  { mark: '✓', text: ui.width < 60 ? `${cats.length - failed} built, facts hold` : `${cats.length - failed} built, every fact holds at its place`, right: `${ui.num(variants)} ledger${variants === 1 ? "" : "s"}`, detail: built },
 ] });
 if (failed) {
   ui.out();

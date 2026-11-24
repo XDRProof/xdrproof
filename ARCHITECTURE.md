@@ -17,9 +17,9 @@ Built before any funding, public, and re-runnable with one command each:
 |---|---|---|
 | Manifest schema (JSON Schema 2020-12) with every field the RFP names | built | `make verify` |
 | Hazard registry: 78 named ways readers of the ledger break, in eight layers | built | `caps/registry.json`, [`COVERAGE.md`](COVERAGE.md) |
-| Corpus: 263 entries, 634 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
-| Independent readers: stellar-core's own decoder and a schema walker find 737 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
-| Coverage: 417 of 499 `LedgerCloseMeta` union arms reached; the other 82 classified with a stellar-core source line | built | `make coverage-report` |
+| Corpus: 264 entries, 635 variants, from a pinned stellar-core v30.0.0 and SDF's public data lake | built | `make verify`, `make generate` |
+| Independent readers: stellar-core's own decoder and a schema walker find 741 expected values in their ledgers; `make verify` checks each at its exact field | built | `make oracle` |
+| Coverage: 418 of 499 `LedgerCloseMeta` union arms reached; the other 81 classified with a stellar-core source line | built | `make coverage-report` |
 | SDK conformance runner: 6 SDK builds on the whole corpus, 5 older releases on fixed-bug regressions | built | `make conformance` |
 | Indexer replay harness with a wallet-backend adapter | built | `make replay` |
 | `xplint`, a Go linter for the three ingestion mistakes the RFP names | built | `make lint-selftest`, `make lint` |
@@ -46,9 +46,9 @@ flowchart LR
     xdr["stellar-xdr v30.0<br/>definitions"]
   end
   subgraph XP["XDRProof"]
-    corpus["Corpus<br/>263 entries, 634 variants"]
+    corpus["Corpus<br/>264 entries, 635 variants"]
     truth["Expected values<br/>core dump-xdr + walker<br/>checked by rs-stellar-xdr"]
-    cov["Coverage<br/>417 of 499 arms"]
+    cov["Coverage<br/>418 of 499 arms"]
   end
   subgraph UT["Stellar code under test"]
     sdks["SDKs, 6 builds today<br/>T3: Java, Swift, Dart,<br/>PHP, .NET"]
@@ -69,12 +69,12 @@ flowchart LR
 
 | Stellar component | How XDRProof uses it today | What the grant adds |
 |---|---|---|
-| **stellar-core** v30.0.0 | Writes the ledgers of 227 entries from the recipes in `recipes/`, on a standalone node pinned by Docker digest, under three emitter-flag profiles (base, Galexie's, bare). Its `dump-xdr` decoder is one of the two readers that find expected values. Its 866 golden ledger files are measured for arm coverage (254 of 499), and each of the 82 arms the corpus does not reach cites the core source line that decides it. | T1: `--check-lcm` on core's golden files at a pinned revision, comparing decoded field paths and values; the guide's validated-versus-unvalidated field table generated from core's validation code, with source lines. T2: the upstream watch opens a pull request for each core release. T3: an upgrade drill against a pinned newer core. |
+| **stellar-core** v30.0.0 | Writes the ledgers of 227 entries from the recipes in `recipes/`, on a standalone node pinned by Docker digest, under three emitter-flag profiles (base, Galexie's, bare). Its `dump-xdr` decoder is one of the two readers that find expected values. Its 866 golden ledger files are measured for arm coverage (254 of 499), and each of the 81 arms the corpus does not reach cites the core source line that decides it. | T1: `--check-lcm` on core's golden files at a pinned revision, comparing decoded field paths and values; the guide's validated-versus-unvalidated field table generated from core's validation code, with source lines. T2: the upstream watch opens a pull request for each core release. T3: an upgrade drill against a pinned newer core. |
 | **stellar-xdr** definitions and **rs-stellar-xdr** 30.0.0 | The definitions give the 499 `LedgerCloseMeta` union arms coverage is counted against. Native rs-stellar-xdr round-trips every variant and checks each expected value at its exact field path (`make verify`, in CI). | T2: the coverage gate in CI, so a new arm fails the build until an entry or a classified exclusion covers it; the upstream watch on stellar-xdr tags. T3: the upgrade drill against pinned newer stellar-xdr, with an upgrade-readiness report. |
-| **SDF's public data lake** and **Hubble** (BigQuery) | 37 ledgers mined from the lake (mainnet and testnet, protocols 12 to 30), for shapes cheaper to find than to make: eviction, settings votes, protocol 20 to 22 refunds, V0 envelopes. Each keeps its lake URL, sha256 and the SQL, run on the public `crypto-stellar.crypto_stellar` dataset, that found it (`mined/`). | Maintenance: shapes each new protocol brings to the network are mined or generated into the corpus (§14). |
+| **SDF's public data lake** and **Hubble** (BigQuery) | 38 ledgers mined from the lake (mainnet and testnet, protocols 12 to 30), for shapes cheaper to find than to make: eviction, settings votes, protocol 20 to 22 refunds, V0 envelopes, a `txINTERNAL_ERROR`. Each keeps its lake URL, sha256 and the SQL, run on the public `crypto-stellar.crypto_stellar` dataset, that found it (`mined/`). | Maintenance: shapes each new protocol brings to the network are mined or generated into the corpus (§14). |
 | **Stellar RPC** API | The replay harness feeds each indexer through a mock stellar-rpc that answers `getLedgers`, `getLatestLedger`, `getHealth`, `getNetwork`, `getVersionInfo` and `getLedgerEntries` from the ledger file, so the indexer runs its own ingestion code unchanged. | T1: a memory gate for the replay. T2: replay sharded in CI. |
 | **Stellar SDKs** | Six builds run the whole corpus: js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and `stellar-xdr` 0.2.1 (Python). Five older releases run fixed-bug regressions, and 164 SEP-0023 strkey vectors cover all ten types. | T1: `@xdrproof/corpus` on npm, with Vitest and Jest helpers. T2: a Go module and a Rust crate; the SDK-pin check (`sdk-support.json`: which SDK releases read every variant). T3: runners for the Java, Swift (iOS and macOS), Flutter/Dart, PHP and .NET SDKs. |
-| **Indexers** | wallet-backend `76194899` (`main` on 20 Nov 2026) replays all 634 variants and is judged on what it stores (§9). `xplint` runs on wallet-backend, stellar-etl and go-stellar-sdk's ingest packages (§10). | T2: the stellar-etl replay adapter. T3: the Horizon replay adapter. Both are judged with the same probes and verdicts. |
+| **Indexers** | wallet-backend `76194899` (`main` on 20 Nov 2026) replays all 635 variants and is judged on what it stores (§9). `xplint` runs on wallet-backend, stellar-etl and go-stellar-sdk's ingest packages (§10). | T2: the stellar-etl replay adapter. T3: the Horizon replay adapter. Both are judged with the same probes and verdicts. |
 | **CAPs and protocol versions** | Every variant records its protocol (12 to 30); entries are tagged with 26 CAPs, from CAP-0001 to CAP-0088, and pre-CAP behaviour. | T1: a per-CAP coverage report (entries, protocols, covered shapes and gaps for every CAP). |
 | **Stellar developers** | Findings go to Stellar's own repositories ([wallet-backend#834](https://github.com/stellar/wallet-backend/issues/834), [js-stellar-xdr-json#67](https://github.com/stellar/js-stellar-xdr-json/issues/67), a bound on [wallet-backend#820](https://github.com/stellar/wallet-backend/issues/820)); halts go privately to SDF's security channel first (§12). Status is posted weekly in the Stellar developer Discord's #scf-general. | T2: the GitHub Action, pre-commit hook and golangci-lint plugin for teams' own CI. T3: the hardening guide, reviewed by a core or platform engineer, with an export ready to offer to developers.stellar.org. |
 
@@ -86,7 +86,7 @@ flowchart LR
 | Expected decoded values for each entry | `expected.facts`, each backed by `construction`, `snapshot`, `core`, `walker` or `review`; none rests on one decoder alone |
 | A coverage report per CAP and per arm | `COVERAGE.md` per arm and per hazard today; per CAP is funded (Tranche 1) |
 | Agreement with stellar-core's golden files | `make coverage-goldens` compares arm coverage today (core's 866 goldens reach 254 arms); a `--check-lcm` comparison of decoded field paths and values at a pinned core revision is funded (Tranche 1) |
-| A replay harness for indexers, with bounded memory | `replay/` with a documented adapter contract; wallet-backend peaks at 99 MiB per session, the harness at 134 MiB for the whole corpus; a CI gate is funded |
+| A replay harness for indexers, with bounded memory | `replay/` with a documented adapter contract; wallet-backend peaks at 101 MiB per session, the harness at 124 MiB for the whole corpus; a CI gate is funded |
 | A linter for the three ingestion mistakes, clean on current wallet-backend | `linter/` catches all three. On unmodified wallet-backend `18db88f4` it reports 4 findings, all true (§10), and 0 with XDRProof's two tested patches, which are offered upstream. Until an unmodified current revision runs clean, this check stays open; each tranche reports the then-current revision's run |
 | An indexer-hardening guide, reviewed by a core or platform engineer | funded (Tranches 1 and 3), published only after that review |
 | Findings filed upstream | §12 |
@@ -95,7 +95,7 @@ flowchart LR
 
 **Entries and variants.** An entry is one hazard in one placement, for example "a Soroban authorization tree 245
 levels deep". A variant is one ledger that carries it: a protocol (28, 29, 30 and older mined ones), a network
-passphrase, and a source. The 263 entries are 226 generated on a bare stellar-core, 36 mined from SDF's public data
+passphrase, and a source. The 264 entries are 226 generated on a bare stellar-core, 37 mined from SDF's public data
 lake (mainnet and testnet, protocols 12 to 30) and one both. Families include failed transactions (112 entries, one
 per result code and position), muxed accounts, Stellar Asset Contract calls, protocol and config upgrades, Soroban
 authorization (CAP-0071 delegates included), maximum lengths, archival and eviction.
@@ -105,8 +105,8 @@ each entry names its `hazards` and their `placement` in the XDR, and each varian
 can find the one transaction the entry is about in a ledger of many. Large mainnet ledgers ship zstd-compressed; size
 and sha256 describe the decompressed bytes. `manifest.json` is generated from the entries, one row per variant.
 
-**No redundancy.** `make novelty` runs a leave-one-out check over 1,226 atoms (the arms and enum members an entry
-reaches, its hazards, sightings and placements): 182 entries hold an atom no other entry holds, and the other 81 differ
+**No redundancy.** `make novelty` runs a leave-one-out check over 1,231 atoms (the arms and enum members an entry
+reaches, its hazards, sightings and placements): 181 entries hold an atom no other entry holds, and the other 83 differ
 by placement.
 
 ## 5. Where the ledgers come from
@@ -120,23 +120,23 @@ Every pair agrees byte for byte or after normalisation.
 `make order-scan` runs each lane 20 times and records which ledgers come out in more than one byte order; their
 content never varies. The corpus ships the minority orderings as bytes, so a reader that depends on order fails.
 
-**Mined.** `mined/` vendors 37 ledgers from the public lake with their URLs, sha256 and the query that found them,
+**Mined.** `mined/` vendors 38 ledgers from the public lake with their URLs, sha256 and the query that found them,
 for shapes that are cheaper to find than to make (eviction, settings votes, protocol 20 to 22 refunds, V0
-envelopes).
+envelopes, a transaction that ends `txINTERNAL_ERROR`).
 
 ## 6. Where "correct" comes from
 
 Expected values are never taken from the SDK under test. `make verify` round-trips every variant through native
 rs-stellar-xdr 30.0.0 (depth limit 1,500) and checks every fact. `make oracle` confirms each checkable value with
 two readers that share no code with any SDK: stellar-core's own C++ decoder (`dump-xdr`) and XDRProof's schema
-walker. Each of the 49 expected 64-bit values, changed in its last digit, is rejected by both.
+walker. Each of the 51 expected 64-bit values, changed in its last digit, is rejected by both.
 
 ## 7. Coverage
 
-499 union arms are reachable from `LedgerCloseMeta` in stellar-xdr v30.0. The corpus reaches 417, each by an entry's
-own transaction or by its ledger's header and transaction-set shape. The other 82 are classified in
+499 union arms are reachable from `LedgerCloseMeta` in stellar-xdr v30.0. The corpus reaches 418, each by an entry's
+own transaction or by its ledger's header and transaction-set shape. The other 81 are classified in
 [`coverage/exclusions.json`](coverage/exclusions.json), each with the stellar-core source line that decides it: 39 set
-only while a transaction is validated for inclusion, 17 never written by core 30, 18 historical and 8 that need a live
+only while a transaction is validated for inclusion, 17 never written by core 30, 18 historical and 7 that need a live
 network. None is unclassified. stellar-core's own 866 golden ledger files reach 254 of the 499.
 
 ## 8. SDK conformance runner
@@ -169,9 +169,9 @@ signers, trustlines, native and trustline balances, contract creations, address 
 gets `handled`, `dropped`, `mishandled`, `stalled`, `crashed` or `halted`, judged from the indexer's cursor, its
 process and its stored rows. Every verdict is pinned in `replay/expectations/`, together with a hash of the judged set.
 
-**Results on wallet-backend `main`** (`76194899`, replayed 24 Nov 2026; the same as `18db88f4` on 18 Nov): 618 of 634 variants handled, none halted. 14 are dropped by causes
-already reported upstream (#804, #816, #815, #805, #818, #817) and 2 are mishandled by a bug XDRProof found and
-reported (#834). Five fixed bugs (#716, #729, #731, #745, #753) reproduce at the commit before their fix and are gone
+**Results on wallet-backend `main`** (`76194899`, replayed 24 Nov 2026; the 634 variants also replayed into `18db88f4` on 18 Nov got the same verdicts there): 618 of 635 variants handled, none halted. 14 are dropped by causes
+already reported upstream (#804, #816, #815, #805, #818, #817) and 3, on two mainnet ledgers, are mishandled by a bug
+XDRProof found and reported (#834). Five fixed bugs (#716, #729, #731, #745, #753) reproduce at the commit before their fix and are gone
 once fixed; #716's fix exposed #729 on the same ledger, which is handled only after #729's fix.
 
 ## 10. Linter

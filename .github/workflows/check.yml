@@ -1,5 +1,5 @@
 # check: the fast claims on every push and pull request.
-#   verify         schema, hashes, the native rs-stellar-xdr round trip of all 634 variants, every expected fact,
+#   verify         schema, hashes, the native rs-stellar-xdr round trip of all 635 variants, every expected fact,
 #                  the mined ledgers and the SEP-0023 vectors (make verify)
 #   novelty        no entry is redundant (make novelty)
 #   upstream table README.md and findings/REPORT.md match findings/upstream.json (node tools/upstream-table.mjs --check)

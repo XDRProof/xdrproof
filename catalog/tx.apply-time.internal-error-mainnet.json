@@ -1,0 +1,81 @@
+{
+  "id": "tx.apply-time.internal-error-mainnet",
+  "title": "A mainnet transaction that ends txINTERNAL_ERROR",
+  "pattern": "stellar-core threw while applying a Soroban call: the result is txINTERNAL_ERROR, the fee is charged and no operation has metadata. Before protocol 23 the unused fee still comes back, in txChangesAfter.",
+  "caps": [
+    "CAP-0046"
+  ],
+  "hazards": [
+    {
+      "id": "H-C1",
+      "placement": "txINTERNAL_ERROR at apply, a mainnet Soroban call"
+    },
+    {
+      "id": "H-C13",
+      "placement": "the refund of a txINTERNAL_ERROR transaction, before protocol 23"
+    }
+  ],
+  "sightings": [],
+  "source": {
+    "lane": "mined",
+    "step": "tx-internal-error@pubnet-58357467"
+  },
+  "focus": {
+    "tx_hash": "d5273c1e2de2091ff8afd0cac108f683483bfacf814f7cd0683fa2efde8abb5e",
+    "op_index": 0
+  },
+  "facts": [
+    {
+      "says": "stellar-core threw while applying the transaction: the result is txINTERNAL_ERROR.",
+      "at": "tx.result",
+      "equals": "tx_internal_error",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The fee charged, after the refund below, is 555,036 stroops.",
+      "at": "tx.fee_charged",
+      "equals": "555036",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The metadata has no operation entries.",
+      "at": "tx.meta",
+      "path": "/operations",
+      "length": 0,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "The unused fee comes back in txChangesAfter (2 changes), not in an operation.",
+      "at": "tx.meta",
+      "path": "/tx_changes_after",
+      "length": 2,
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "Before the refund the source account holds 2,719,687,106 stroops.",
+      "at": "tx.meta",
+      "path": "/tx_changes_after/0/state/data/account/balance",
+      "equals": "2719687106",
+      "evidence": [
+        "snapshot"
+      ]
+    },
+    {
+      "says": "After it, 2,719,810,889: a refund of 123,783.",
+      "at": "tx.meta",
+      "path": "/tx_changes_after/1/updated/data/account/balance",
+      "equals": "2719810889",
+      "evidence": [
+        "snapshot"
+      ]
+    }
+  ]
+}

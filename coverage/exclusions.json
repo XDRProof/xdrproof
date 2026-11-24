@@ -717,16 +717,6 @@
       "review": "corrected after source check (Codex said reachable-network-only)"
     },
     {
-      "arm": "TransactionResultResult.txINTERNAL_ERROR",
-      "class": "network-only",
-      "evidence": [
-        "src/transactions/TransactionFrame.cpp:2303 txResult.setInnermostError(txINTERNAL_ERROR);",
-        "src/transactions/TransactionFrame.cpp:2015 if (memo.type() == MEMO_TEXT && memo.text() == \"txINTERNAL_ERROR\")"
-      ],
-      "note": "Set when apply throws, which a correct core does not do; the forcing memo exists only in BUILD_TESTS builds, not in the pinned release image. Mine it if a closed ledger has one.",
-      "review": "corrected after source check (Codex said reachable-generatable)"
-    },
-    {
       "arm": "TransactionResultResult.txMALFORMED",
       "class": "validation-only",
       "evidence": [

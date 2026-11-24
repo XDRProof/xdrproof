@@ -4,7 +4,8 @@ Real mainnet and testnet `LedgerCloseMeta`, fetched from SDF's public data lake
 (`https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/`), for shapes that a standalone
 generator cannot produce or that are worth having as real network bytes: eviction at the per-ledger cap,
 validator settings votes, a mainnet freeze of ledger keys (CAP-0077), protocol-12 V0 envelopes, protocol-22
-refunds, multi-stage parallel Soroban phases, and the ledgers behind the upstream sightings.
+refunds, multi-stage parallel Soroban phases, a mainnet transaction that ends `txINTERNAL_ERROR`, and the ledgers
+behind the upstream sightings.
 
 - `ledgers/<network>-<seq>.lcm.xdr.zst`: one file per distinct ledger, zstd-compressed. The `sha256` and
   `size_bytes` in the index describe the decompressed `LedgerCloseMeta` (the lake object minus its 12-byte

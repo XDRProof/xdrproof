@@ -14,15 +14,15 @@ decides it.
 
 | | Arms |
 |---|---:|
-| Reached by an entry | 417 |
+| Reached by an entry | 418 |
 | todo: core can write it at protocol 30 and a standalone recipe can produce it; not yet in an entry | 0 |
-| network-only: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 8 |
+| network-only: reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined | 7 |
 | historical: only in ledgers of older protocols (range in the note) | 18 |
 | validation-only: set only where a transaction is validated for inclusion; a closed ledger never carries it at protocol 30 | 39 |
 | not-emitted: in the type graph, but stellar-core 30 never writes it into ledger-close meta | 17 |
 | **Total** | **499** |
 
-Unclassified: 0. Enum members reached: 333 of 411.
+Unclassified: 0. Enum members reached: 335 of 411.
 
 Classification method: First pass by an independent reviewer (Codex) over stellar-core source; every evidence line re-opened and its quote matched; each class checked against every place core sets the code (apply vs check-valid paths); 18 classes corrected (review field).
 
@@ -58,7 +58,7 @@ Classification method: First pass by an independent reviewer (Codex) over stella
 | H-B14 Recursive delegate signatures (CAP-0071 `nestedDelegates`) | 1: `auth.nested-delegates` |
 | H-B15 SorobanCredentials arms beyond ADDRESS (CAP-0071): ADDRESS_V2 binds the signature payload to the address | 1: `auth.address-v2-credentials` |
 | H-B16 An auth entry's signature does not cover its own bytes: a CREATE_CONTRACT_HOST_FN authorization is signed over its V2 rendering (by design since protocol 22) | 2: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` |
-| H-C1 Failed transactions in ledgers (fees charged, no effects, result codes) | 113: `failure.account-merge.dest-full`, `failure.account-merge.has-sub-entries` (+111) |
+| H-C1 Failed transactions in ledgers (fees charged, no effects, result codes) | 114: `failure.account-merge.dest-full`, `failure.account-merge.has-sub-entries` (+112) |
 | H-C2 Fee-bump inner success and failure | 10: `failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet`, `failure.set-options.low-reserve-in-fee-bump-mainnet` (+8) |
 | H-C3 Sponsorship sandwiches, revocation, `txBAD_SPONSORSHIP` | 11: `failure.allow-trust.low-reserve`, `failure.begin-sponsoring-future-reserves.recursive` (+9) |
 | H-C4 Preconditions v2 (ledger bounds, min seq, extra signers) and no preconditions | 3: `max-length.extra-signers-2`, `preconditions.none` (+1) |
@@ -70,7 +70,7 @@ Classification method: First pass by an independent reviewer (Codex) over stella
 | H-C10 Clawback and trustline authorization states (authorized, maintain-liabilities, deauthorized) | 22: `claimable-balance.clawback`, `failure.allow-trust.cant-revoke` (+20) |
 | H-C11 Sequence bumps and account merges (entry removed) | 5: `failure.account-merge.dest-full`, `failure.account-merge.immutable-set` (+3) |
 | H-C12 Transaction apply order differs from transaction-set order | 1: `ledger.apply-order-differs-from-set-order` |
-| H-C13 Soroban fee charged at the maximum, refunded in `post_tx_apply_fee_processing`; `fee_charged` is net | 3: `backfill.p22-refunds-in-tx-changes-after`, `fee-bump.soroban-muxed-fee-source` (+1) |
+| H-C13 Soroban fee charged at the maximum, refunded in `post_tx_apply_fee_processing`; `fee_charged` is net | 4: `backfill.p22-refunds-in-tx-changes-after`, `fee-bump.soroban-muxed-fee-source` (+2) |
 | H-C14 Fee-bump identity: outer hash in `TransactionResultPair`, inner hash in `InnerTransactionResultPair`; inner source seq consumed even on failure, fee source seq not | 1: `fee-bump.inner-success` |
 | H-C15 Failed transactions still change state: sequence bump in `tx_changes_before`; pre-auth signer removed even when the transaction fails (CAP-0028) | 1: `preauth.failing-tx-still-removes-signer` |
 | H-C16 Transaction-level failures at apply time: `txBAD_SEQ`, `txNO_ACCOUNT`, `txBAD_AUTH`, `opBAD_AUTH` (state changed earlier in the same ledger or tx) | 12: `op.apply-time.bad-auth`, `op.apply-time.no-account` (+10) |
@@ -116,9 +116,9 @@ Not corpus hazards: these are about invalid input, prose or release policy, so n
 | H-H2 Over-length vectors, truncated input, trailing bytes | conformance (lane S vectors, B5) |
 | H-H3 Non-canonical bool/discriminants | conformance (lane S vectors, B5) |
 
-## Arms no entry reaches (82)
+## Arms no entry reaches (81)
 
-### network-only (8)
+### network-only (7)
 
 reachable in closed ledgers, but only under live-network conditions a standalone core cannot set up; to be mined.
 
@@ -129,7 +129,6 @@ reachable in closed ledgers, but only under live-network conditions a standalone
 | `InnerTransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an inner transaction's lower bound after queue admission; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448` `txResult.setInnermostError(txTOO_EARLY);` |
 | `InnerTransactionResultResult.txTOO_LATE` | The agreed close time can pass an inner transaction's upper bound after admission; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454` `txResult.setInnermostError(txTOO_LATE);` |
 | `StellarValueExt.STELLAR_VALUE_EMPTY_TX_SET_MS` | SCP can substitute an empty transaction set for a signed millisecond value; exercising that consensus fallback on a fresh standalone network is difficult. | `src/herder/HerderSCPDriver.cpp:741` `sv.ext.v(STELLAR_VALUE_EMPTY_TX_SET_MS);` |
-| `TransactionResultResult.txINTERNAL_ERROR` | Set when apply throws, which a correct core does not do; the forcing memo exists only in BUILD_TESTS builds, not in the pinned release image. Mine it if a closed ledger has one. *(class corrected after source check)* | `src/transactions/TransactionFrame.cpp:2303` `txResult.setInnermostError(txINTERNAL_ERROR);`<br>`src/transactions/TransactionFrame.cpp:2015` `if (memo.type() == MEMO_TEXT && memo.text() == "txINTERNAL_ERROR")` |
 | `TransactionResultResult.txTOO_EARLY` | The agreed close time can fall before an accepted transaction's lower bound; reproducing that consensus timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1448` `txResult.setInnermostError(txTOO_EARLY);` |
 | `TransactionResultResult.txTOO_LATE` | The agreed close time can pass an accepted transaction's upper bound; reproducing that timing on a fresh network is difficult. | `src/transactions/TransactionFrame.cpp:1454` `txResult.setInnermostError(txTOO_LATE);` |
 
@@ -228,16 +227,16 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `TransactionMeta.1` | This core never constructs transaction metadata version 1, including when re-emitting older ledgers. | `src/transactions/TransactionMeta.cpp:529` `// not support 0 or 1 at all -- core does not produce it anymore and we have` |
 | `TrustLineAsset.ASSET_TYPE_NATIVE` | Core rejects native trustlines and native trustline footprint keys, so it does not write this TrustLineAsset arm into ledger-close metadata. | `src/ledger/TrustLineWrapper.cpp:84` `if (asset.type() == ASSET_TYPE_NATIVE)`<br>`src/transactions/TransactionFrame.cpp:858` `(tl.asset.type() == ASSET_TYPE_NATIVE) \|\|` |
 
-## Arms the entries reach (417)
+## Arms the entries reach (418)
 
 | Arm | Entries |
 |---|---|
 | `AccountEntryExt.0` | 69: `amount.payment-above-2-pow-53`, `contract.sac-deploy-from-asset`, `event.classic.create-account-transfer` (+66) |
-| `AccountEntryExt.1` | 242: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+239) |
+| `AccountEntryExt.1` | 243: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+240) |
 | `AccountEntryExtensionV1Ext.0` | 2: `backfill.claim-atom-v0-p12`, `failure.manage-offer.fourteen-ops-two-codes-p12` |
-| `AccountEntryExtensionV1Ext.2` | 240: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+237) |
+| `AccountEntryExtensionV1Ext.2` | 241: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+238) |
 | `AccountEntryExtensionV2Ext.0` | 3: `failure.manage-sell-offer.not-found`, `sponsorship.revoke`, `sponsorship.sandwich` |
-| `AccountEntryExtensionV2Ext.3` | 240: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+237) |
+| `AccountEntryExtensionV2Ext.3` | 241: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+238) |
 | `AccountMergeResult.ACCOUNT_MERGE_DEST_FULL` | 1: `failure.account-merge.dest-full` |
 | `AccountMergeResult.ACCOUNT_MERGE_HAS_SUB_ENTRIES` | 1: `failure.account-merge.has-sub-entries` |
 | `AccountMergeResult.ACCOUNT_MERGE_IMMUTABLE_SET` | 1: `failure.account-merge.immutable-set` |
@@ -317,7 +316,7 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `ConfigSettingEntry.CONFIG_SETTING_SCP_TIMING` | 1: `upgrade.generated-protocol-30` |
 | `ConfigSettingEntry.CONFIG_SETTING_STATE_ARCHIVAL` | 2: `upgrade.config-short-lifetimes`, `upgrade.generated-protocol-30` |
 | `ContractCodeEntryExt.1` | 1: `contract.upload-wasm` |
-| `ContractEventBody.0` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
+| `ContractEventBody.0` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
 | `ContractExecutable.CONTRACT_EXECUTABLE_EXTERNAL_REF` | 1: `executable-ref.deploy` |
 | `ContractExecutable.CONTRACT_EXECUTABLE_STELLAR_ASSET` | 1: `contract.sac-deploy-from-asset` |
 | `ContractExecutable.CONTRACT_EXECUTABLE_WASM` | 12: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes`, `auth.deploy-with-tree-depth-245` (+9) |
@@ -338,13 +337,13 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_INSUFFICIENT_REFUNDABLE_FEE` | 1: `failure.extend-footprint-ttl.insufficient-refundable-fee` |
 | `ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_RESOURCE_LIMIT_EXCEEDED` | 1: `failure.extend-footprint-ttl.resource-limit-exceeded` |
 | `ExtendFootprintTTLResult.EXTEND_FOOTPRINT_TTL_SUCCESS` | 2: `muxed.soroban-ttl-tx-source-text-memo`, `ttl.extend` |
-| `ExtensionPoint.0` | 262: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+259) |
+| `ExtensionPoint.0` | 263: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+260) |
 | `FeeBumpTransactionExt.0` | 20: `auth.many-entries-mainnet`, `backfill.p22-refunds-in-tx-changes-after`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+17) |
 | `FeeBumpTransactionInnerTx.ENVELOPE_TYPE_TX` | 20: `auth.many-entries-mainnet`, `backfill.p22-refunds-in-tx-changes-after`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+17) |
-| `GeneralizedTransactionSet.1` | 259: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+256) |
+| `GeneralizedTransactionSet.1` | 260: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+257) |
 | `HostFunction.HOST_FUNCTION_TYPE_CREATE_CONTRACT` | 3: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes`, `contract.sac-deploy-from-asset` |
 | `HostFunction.HOST_FUNCTION_TYPE_CREATE_CONTRACT_V2` | 6: `auth.deploy-with-tree-depth-245`, `contract.constructor-args`, `contract.deploy-from-address-salt` (+3) |
-| `HostFunction.HOST_FUNCTION_TYPE_INVOKE_CONTRACT` | 39: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.forged-signature-crypto-error` (+36) |
+| `HostFunction.HOST_FUNCTION_TYPE_INVOKE_CONTRACT` | 40: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.forged-signature-crypto-error` (+37) |
 | `HostFunction.HOST_FUNCTION_TYPE_UPLOAD_CONTRACT_WASM` | 1: `contract.upload-wasm` |
 | `InnerTransactionResultExt.0` | 20: `auth.many-entries-mainnet`, `backfill.p22-refunds-in-tx-changes-after`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+17) |
 | `InnerTransactionResultResult.txBAD_AUTH` | 1: `tx.apply-time.inner-bad-auth` |
@@ -361,16 +360,16 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `InvokeHostFunctionResult.INVOKE_HOST_FUNCTION_SUCCESS` | 37: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+34) |
 | `InvokeHostFunctionResult.INVOKE_HOST_FUNCTION_TRAPPED` | 9: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `auth.tree-depth-246-trapped` (+6) |
 | `LedgerCloseMeta.0` | 4: `backfill.claim-atom-v0-p12`, `backfill.p12-v0-envelopes`, `failure.manage-offer.fourteen-ops-two-codes-p12` (+1) |
-| `LedgerCloseMeta.1` | 2: `backfill.p22-refunds-in-tx-changes-after`, `failure.manage-buy-offer.buy-not-authorized-p22` |
+| `LedgerCloseMeta.1` | 3: `backfill.p22-refunds-in-tx-changes-after`, `failure.manage-buy-offer.buy-not-authorized-p22`, `tx.apply-time.internal-error-mainnet` |
 | `LedgerCloseMeta.2` | 257: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+254) |
 | `LedgerCloseMetaExt.0` | 2: `auth.create-contract-v1-signature-covers-v2-rendering`, `profiles.classic-payment-meta-by-flags` |
-| `LedgerCloseMetaExt.1` | 259: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+256) |
+| `LedgerCloseMetaExt.1` | 260: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+257) |
 | `LedgerEntryChange.LEDGER_ENTRY_CREATED` | 45: `asset-order.pool-issuers-text-vs-bytes`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+42) |
 | `LedgerEntryChange.LEDGER_ENTRY_REMOVED` | 7: `claimable-balance.claim`, `claimable-balance.clawback`, `frozen.offer-removed-by-dex` (+4) |
 | `LedgerEntryChange.LEDGER_ENTRY_RESTORED` | 2: `archival.automatic-restore`, `archival.restore-footprint` |
-| `LedgerEntryChange.LEDGER_ENTRY_STATE` | 253: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+250) |
-| `LedgerEntryChange.LEDGER_ENTRY_UPDATED` | 253: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+250) |
-| `LedgerEntryData.ACCOUNT` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
+| `LedgerEntryChange.LEDGER_ENTRY_STATE` | 254: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+251) |
+| `LedgerEntryChange.LEDGER_ENTRY_UPDATED` | 254: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+251) |
+| `LedgerEntryData.ACCOUNT` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
 | `LedgerEntryData.CLAIMABLE_BALANCE` | 6: `claimable-balance.claim`, `claimable-balance.clawback`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+3) |
 | `LedgerEntryData.CONFIG_SETTING` | 10: `failure.manage-sell-offer.line-full-testnet`, `upgrade.config-lanes-and-freeze`, `upgrade.config-restore-and-unfreeze` (+7) |
 | `LedgerEntryData.CONTRACT_CODE` | 1: `contract.upload-wasm` |
@@ -380,21 +379,21 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `LedgerEntryData.OFFER` | 11: `backfill.claim-atom-v0-p12`, `frozen.offer-removed-by-dex`, `max-length.path-5` (+8) |
 | `LedgerEntryData.TRUSTLINE` | 32: `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code`, `auth.many-entries-mainnet` (+29) |
 | `LedgerEntryData.TTL` | 34: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+31) |
-| `LedgerEntryExt.0` | 254: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+251) |
+| `LedgerEntryExt.0` | 255: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+252) |
 | `LedgerEntryExt.1` | 10: `claimable-balance.claim`, `claimable-balance.clawback`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+7) |
 | `LedgerEntryExtensionV1Ext.0` | 10: `claimable-balance.claim`, `claimable-balance.clawback`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+7) |
-| `LedgerHeaderExt.0` | 262: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+259) |
+| `LedgerHeaderExt.0` | 263: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+260) |
 | `LedgerHeaderExt.1` | 1: `upgrade.generated-header-fee-sizes-flags` |
 | `LedgerHeaderExtensionV1Ext.0` | 1: `upgrade.generated-header-fee-sizes-flags` |
-| `LedgerHeaderHistoryEntryExt.0` | 263: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+260) |
-| `LedgerKey.ACCOUNT` | 20: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+17) |
+| `LedgerHeaderHistoryEntryExt.0` | 264: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+261) |
+| `LedgerKey.ACCOUNT` | 21: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+18) |
 | `LedgerKey.CLAIMABLE_BALANCE` | 3: `claimable-balance.claim`, `claimable-balance.clawback`, `failure.revoke-sponsorship.only-transferable` |
-| `LedgerKey.CONTRACT_CODE` | 41: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+38) |
-| `LedgerKey.CONTRACT_DATA` | 73: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+70) |
+| `LedgerKey.CONTRACT_CODE` | 42: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+39) |
+| `LedgerKey.CONTRACT_DATA` | 74: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+71) |
 | `LedgerKey.DATA` | 3: `failure.revoke-sponsorship.does-not-exist`, `failure.revoke-sponsorship.low-reserve`, `sponsorship.revoke` |
 | `LedgerKey.LIQUIDITY_POOL` | 1: `revoke.cascade-offers-pool-shares` |
 | `LedgerKey.OFFER` | 4: `frozen.offer-removed-by-dex`, `offers.buy-offer-crosses-three`, `offers.crosses-638-mainnet` (+1) |
-| `LedgerKey.TRUSTLINE` | 11: `auth.many-entries-mainnet`, `event.deep-scval-mainnet`, `failure.revoke-sponsorship.not-sponsor` (+8) |
+| `LedgerKey.TRUSTLINE` | 12: `auth.many-entries-mainnet`, `event.deep-scval-mainnet`, `failure.revoke-sponsorship.not-sponsor` (+9) |
 | `LedgerKey.TTL` | 5: `archival.eviction-persistent`, `archival.eviction-temporary`, `eviction.mainnet-at-cap` (+2) |
 | `LedgerUpgrade.LEDGER_UPGRADE_BASE_FEE` | 1: `upgrade.generated-header-fee-sizes-flags` |
 | `LedgerUpgrade.LEDGER_UPGRADE_BASE_RESERVE` | 1: `upgrade.generated-protocol-30` |
@@ -447,10 +446,10 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `ManageSellOfferResult.MANAGE_SELL_OFFER_UNDERFUNDED` | 1: `failure.manage-sell-offer.underfunded` |
 | `Memo.MEMO_HASH` | 1: `memo.hash-as-bytes` |
 | `Memo.MEMO_ID` | 1: `memo.id-u64-max` |
-| `Memo.MEMO_NONE` | 238: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+235) |
+| `Memo.MEMO_NONE` | 239: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+236) |
 | `Memo.MEMO_RETURN` | 1: `memo.return-as-bytes` |
 | `Memo.MEMO_TEXT` | 4: `failure.manage-buy-offer.cross-self-mainnet`, `memo.text-not-utf8`, `muxed.soroban-restore-op-source-text-memo` (+1) |
-| `MuxedAccount.KEY_TYPE_ED25519` | 241: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+238) |
+| `MuxedAccount.KEY_TYPE_ED25519` | 242: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+239) |
 | `MuxedAccount.KEY_TYPE_MUXED_ED25519` | 12: `claimable-balance.id-op-index-1-muxed-source-in-fee-bump`, `fee-bump.muxed-fee-source`, `fee-bump.soroban-muxed-fee-source` (+9) |
 | `OfferEntryExt.0` | 12: `backfill.claim-atom-v0-p12`, `failure.manage-offer.fourteen-ops-two-codes-p12`, `frozen.offer-removed-by-dex` (+9) |
 | `OperationBody.ACCOUNT_MERGE` | 7: `failure.account-merge.dest-full`, `failure.account-merge.has-sub-entries`, `failure.account-merge.immutable-set` (+4) |
@@ -466,7 +465,7 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `OperationBody.CREATE_PASSIVE_SELL_OFFER` | 1: `result.passive-offer-returns-manage-sell-offer` |
 | `OperationBody.END_SPONSORING_FUTURE_RESERVES` | 6: `failure.allow-trust.low-reserve`, `failure.begin-sponsoring-future-reserves.already-sponsored`, `failure.end-sponsoring-future-reserves.not-sponsored` (+3) |
 | `OperationBody.EXTEND_FOOTPRINT_TTL` | 16: `failure.extend-footprint-ttl.insufficient-refundable-fee`, `failure.extend-footprint-ttl.resource-limit-exceeded`, `muxed.soroban-ttl-tx-source-text-memo` (+13) |
-| `OperationBody.INVOKE_HOST_FUNCTION` | 49: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+46) |
+| `OperationBody.INVOKE_HOST_FUNCTION` | 50: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+47) |
 | `OperationBody.LIQUIDITY_POOL_DEPOSIT` | 9: `asset-order.pool-issuers-text-vs-bytes`, `failure.liquidity-pool-deposit.bad-price`, `failure.liquidity-pool-deposit.line-full` (+6) |
 | `OperationBody.LIQUIDITY_POOL_WITHDRAW` | 6: `failure.liquidity-pool-withdraw.line-full`, `failure.liquidity-pool-withdraw.no-trust`, `failure.liquidity-pool-withdraw.under-minimum` (+3) |
 | `OperationBody.MANAGE_BUY_OFFER` | 10: `failure.manage-buy-offer.buy-no-trust`, `failure.manage-buy-offer.buy-not-authorized-p22`, `failure.manage-buy-offer.cross-self-mainnet` (+7) |
@@ -540,9 +539,9 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `PaymentResult.PAYMENT_SUCCESS` | 24: `amount.payment-above-2-pow-53`, `asset.issued-xlm-code`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+21) |
 | `PaymentResult.PAYMENT_UNDERFUNDED` | 2: `failure.payment.underfunded-by-selling-liabilities`, `fee-bump.inner-failed` |
 | `Preconditions.PRECOND_NONE` | 2: `failure.manage-sell-offer.line-full-testnet`, `preconditions.none` |
-| `Preconditions.PRECOND_TIME` | 233: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+230) |
+| `Preconditions.PRECOND_TIME` | 234: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+231) |
 | `Preconditions.PRECOND_V2` | 8: `failure.path-payment-strict-send.too-few-offers-mainnet`, `max-length.extra-signers-2`, `path.long-path-mainnet` (+5) |
-| `PublicKey.PUBLIC_KEY_TYPE_ED25519` | 262: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+259) |
+| `PublicKey.PUBLIC_KEY_TYPE_ED25519` | 263: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+260) |
 | `RestoreFootprintResult.RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE` | 1: `failure.restore-footprint.insufficient-refundable-fee` |
 | `RestoreFootprintResult.RESTORE_FOOTPRINT_RESOURCE_LIMIT_EXCEEDED` | 1: `failure.restore-footprint.resource-limit-exceeded` |
 | `RestoreFootprintResult.RESTORE_FOOTPRINT_SUCCESS` | 3: `archival.restore-footprint`, `muxed.soroban-restore-op-source-text-memo`, `ttl.restore-live-entry` |
@@ -553,44 +552,44 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `RevokeSponsorshipResult.REVOKE_SPONSORSHIP_NOT_SPONSOR` | 1: `failure.revoke-sponsorship.not-sponsor` |
 | `RevokeSponsorshipResult.REVOKE_SPONSORSHIP_ONLY_TRANSFERABLE` | 1: `failure.revoke-sponsorship.only-transferable` |
 | `RevokeSponsorshipResult.REVOKE_SPONSORSHIP_SUCCESS` | 2: `sponsorship.revoke`, `sponsorship.revoke-signer` |
-| `SCAddress.SC_ADDRESS_TYPE_ACCOUNT` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
+| `SCAddress.SC_ADDRESS_TYPE_ACCOUNT` | 247: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+244) |
 | `SCAddress.SC_ADDRESS_TYPE_CLAIMABLE_BALANCE` | 7: `claimable-balance.claim`, `claimable-balance.clawback`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+4) |
-| `SCAddress.SC_ADDRESS_TYPE_CONTRACT` | 71: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+68) |
+| `SCAddress.SC_ADDRESS_TYPE_CONTRACT` | 72: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+69) |
 | `SCAddress.SC_ADDRESS_TYPE_LIQUIDITY_POOL` | 7: `asset-order.pool-issuers-text-vs-bytes`, `deploy.from-liquidity-pool-address`, `path.long-path-mainnet` (+4) |
 | `SCAddress.SC_ADDRESS_TYPE_MUXED_ACCOUNT` | 2: `sac.xlm-transfer-muxed-destination`, `scval.muxed-address-key-trapped` |
 | `SCAddress.SC_ADDRESS_TYPE_MUXED_CONTRACT` | 1: `sac.xlm-transfer-muxed-contract` |
-| `SCError.SCE_AUTH` | 3: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `soroban.diagnostic-auth-error-mainnet` |
+| `SCError.SCE_AUTH` | 4: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `soroban.diagnostic-auth-error-mainnet` (+1) |
 | `SCError.SCE_BUDGET` | 2: `soroban.failed-insufficient-refundable-fee-mainnet`, `soroban.failed-resource-limit-exceeded-mainnet` |
 | `SCError.SCE_CONTEXT` | 1: `auth.tree-depth-246-trapped` |
 | `SCError.SCE_CONTRACT` | 1: `soroban.contract-error-code-mainnet` |
 | `SCError.SCE_CRYPTO` | 2: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error` |
 | `SCError.SCE_OBJECT` | 1: `deploy.from-liquidity-pool-address` |
-| `SCError.SCE_STORAGE` | 1: `scval.muxed-address-key-trapped` |
+| `SCError.SCE_STORAGE` | 2: `scval.muxed-address-key-trapped`, `tx.apply-time.internal-error-mainnet` |
 | `SCError.SCE_VALUE` | 1: `soroban.failed-entry-archived-mainnet` |
 | `SCError.SCE_WASM_VM` | 1: `soroban.diagnostic-wasm-vm-error-mainnet` |
-| `SCVal.SCV_ADDRESS` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
+| `SCVal.SCV_ADDRESS` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
 | `SCVal.SCV_BOOL` | 9: `event.deep-scval-mainnet`, `max-length.allow-trust-alphanum12`, `revoke.cascade-offers-pool-shares` (+6) |
-| `SCVal.SCV_BYTES` | 23: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+20) |
+| `SCVal.SCV_BYTES` | 24: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+21) |
 | `SCVal.SCV_CONTRACT_INSTANCE` | 11: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.deploy-with-tree-depth-245`, `auth.many-entries-mainnet` (+8) |
 | `SCVal.SCV_DURATION` | 2: `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` |
-| `SCVal.SCV_ERROR` | 11: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `auth.tree-depth-246-trapped` (+8) |
+| `SCVal.SCV_ERROR` | 12: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `auth.tree-depth-246-trapped` (+9) |
 | `SCVal.SCV_EXECUTABLE_TAG` | 3: `executable-ref.deploy`, `executable-ref.invoke`, `executable-ref.tag-entry` |
-| `SCVal.SCV_I128` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
+| `SCVal.SCV_I128` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
 | `SCVal.SCV_I256` | 2: `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` |
 | `SCVal.SCV_I32` | 7: `profiles.galexie-diagnostic-double-emission`, `scval.map.colliding-keys-as-key`, `scval.map.keys-collide-on-native-conversion` (+4) |
 | `SCVal.SCV_I64` | 2: `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` |
-| `SCVal.SCV_LEDGER_KEY_CONTRACT_INSTANCE` | 48: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+45) |
+| `SCVal.SCV_LEDGER_KEY_CONTRACT_INSTANCE` | 49: `archival.automatic-restore`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+46) |
 | `SCVal.SCV_LEDGER_KEY_NONCE` | 12: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+9) |
 | `SCVal.SCV_MAP` | 30: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+27) |
-| `SCVal.SCV_STRING` | 69: `amount.payment-above-2-pow-53`, `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code` (+66) |
-| `SCVal.SCV_SYMBOL` | 248: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+245) |
+| `SCVal.SCV_STRING` | 70: `amount.payment-above-2-pow-53`, `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code` (+67) |
+| `SCVal.SCV_SYMBOL` | 249: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+246) |
 | `SCVal.SCV_TIMEPOINT` | 2: `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` |
-| `SCVal.SCV_U128` | 6: `contract.wasm-upgrade-mainnet`, `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` (+3) |
+| `SCVal.SCV_U128` | 7: `contract.wasm-upgrade-mainnet`, `scval.every-number-and-time-type`, `scval.wide-integer-boundaries` (+4) |
 | `SCVal.SCV_U256` | 4: `scval.every-number-and-time-type`, `scval.wide-integer-boundaries`, `soroban.contract-error-code-mainnet` (+1) |
-| `SCVal.SCV_U32` | 25: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+22) |
+| `SCVal.SCV_U32` | 26: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+23) |
 | `SCVal.SCV_U64` | 28: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `auth.many-entries-mainnet` (+25) |
-| `SCVal.SCV_VEC` | 31: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+28) |
-| `SCVal.SCV_VOID` | 29: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+26) |
+| `SCVal.SCV_VEC` | 32: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+29) |
+| `SCVal.SCV_VOID` | 30: `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` (+27) |
 | `SetOptionsResult.SET_OPTIONS_AUTH_REVOCABLE_REQUIRED` | 1: `failure.set-options.auth-revocable-required` |
 | `SetOptionsResult.SET_OPTIONS_CANT_CHANGE` | 1: `failure.set-options.cant-change` |
 | `SetOptionsResult.SET_OPTIONS_INVALID_INFLATION` | 1: `failure.set-options.invalid-inflation` |
@@ -602,33 +601,33 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_LOW_RESERVE` | 1: `failure.set-trust-line-flags.low-reserve` |
 | `SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_NO_TRUST_LINE` | 1: `failure.set-trust-line-flags.no-trust-line` |
 | `SetTrustLineFlagsResult.SET_TRUST_LINE_FLAGS_SUCCESS` | 2: `revoke.cascade-offers-pool-shares`, `trustline.maintain-liabilities` |
-| `SignerKey.SIGNER_KEY_TYPE_ED25519` | 14: `event.deep-scval-mainnet`, `failure.manage-sell-offer.not-found`, `failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet` (+11) |
+| `SignerKey.SIGNER_KEY_TYPE_ED25519` | 15: `event.deep-scval-mainnet`, `failure.manage-sell-offer.not-found`, `failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet` (+12) |
 | `SignerKey.SIGNER_KEY_TYPE_ED25519_SIGNED_PAYLOAD` | 34: `amount.payment-above-2-pow-53`, `claimable-balance.claim`, `claimable-balance.clawback` (+31) |
 | `SignerKey.SIGNER_KEY_TYPE_HASH_X` | 12: `claimable-balance.id-op-index-1-muxed-source-in-fee-bump`, `failure.manage-buy-offer.sell-no-trust`, `fee-bump.muxed-fee-source` (+9) |
 | `SignerKey.SIGNER_KEY_TYPE_PRE_AUTH_TX` | 3: `preauth.failing-tx-still-removes-signer`, `signer.preauth-and-hashx-added`, `signer.preauth-removed-by-core` |
-| `SorobanAuthorizedFunction.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN` | 23: `auth.address-v2-credentials`, `auth.deploy-with-tree-depth-245`, `auth.forged-signature-crypto-error` (+20) |
+| `SorobanAuthorizedFunction.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN` | 24: `auth.address-v2-credentials`, `auth.deploy-with-tree-depth-245`, `auth.forged-signature-crypto-error` (+21) |
 | `SorobanAuthorizedFunction.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN` | 2: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes` |
 | `SorobanAuthorizedFunction.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN` | 4: `auth.deploy-with-tree-depth-245`, `contract.constructor-args`, `contract.deploy-from-address-salt` (+1) |
 | `SorobanCredentials.SOROBAN_CREDENTIALS_ADDRESS` | 7: `auth.create-contract-v1-signature-covers-v2-rendering`, `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error` (+4) |
 | `SorobanCredentials.SOROBAN_CREDENTIALS_ADDRESS_V2` | 2: `auth.address-v2-credentials`, `soroban.diagnostic-wasm-vm-error-mainnet` |
 | `SorobanCredentials.SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` | 1: `auth.nested-delegates` |
-| `SorobanCredentials.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` | 18: `auth.deploy-with-tree-depth-245`, `auth.tree-depth-245-max`, `auth.tree-depth-246-trapped` (+15) |
-| `SorobanTransactionDataExt.0` | 69: `archival.restore-footprint`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+66) |
+| `SorobanCredentials.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` | 19: `auth.deploy-with-tree-depth-245`, `auth.tree-depth-245-max`, `auth.tree-depth-246-trapped` (+16) |
+| `SorobanTransactionDataExt.0` | 70: `archival.restore-footprint`, `auth.address-v2-credentials`, `auth.create-contract-v1-signature-covers-v2-rendering` (+67) |
 | `SorobanTransactionDataExt.1` | 1: `archival.automatic-restore` |
 | `SorobanTransactionMetaExt.0` | 1: `auth.create-contract-v1-signature-covers-v2-rendering` |
-| `SorobanTransactionMetaExt.1` | 70: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+67) |
+| `SorobanTransactionMetaExt.1` | 71: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+68) |
 | `StellarValueExt.STELLAR_VALUE_BASIC` | 3: `backfill.claim-atom-v0-p12`, `backfill.p12-v0-envelopes`, `failure.manage-offer.fourteen-ops-two-codes-p12` |
-| `StellarValueExt.STELLAR_VALUE_SIGNED` | 102: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+99) |
+| `StellarValueExt.STELLAR_VALUE_SIGNED` | 103: `archival.automatic-restore`, `archival.eviction-persistent`, `archival.eviction-temporary` (+100) |
 | `StellarValueExt.STELLAR_VALUE_SIGNED_MS` | 227: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+224) |
-| `TransactionEnvelope.ENVELOPE_TYPE_TX` | 223: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+220) |
+| `TransactionEnvelope.ENVELOPE_TYPE_TX` | 224: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+221) |
 | `TransactionEnvelope.ENVELOPE_TYPE_TX_FEE_BUMP` | 20: `auth.many-entries-mainnet`, `backfill.p22-refunds-in-tx-changes-after`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+17) |
 | `TransactionEnvelope.ENVELOPE_TYPE_TX_V0` | 2: `backfill.claim-atom-v0-p12`, `failure.manage-offer.fourteen-ops-two-codes-p12` |
 | `TransactionExt.0` | 173: `amount.payment-above-2-pow-53`, `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code` (+170) |
-| `TransactionExt.1` | 70: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+67) |
-| `TransactionMeta.4` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
-| `TransactionPhase.0` | 259: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+256) |
+| `TransactionExt.1` | 71: `archival.automatic-restore`, `archival.restore-footprint`, `auth.address-v2-credentials` (+68) |
+| `TransactionMeta.4` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
+| `TransactionPhase.0` | 260: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+257) |
 | `TransactionPhase.1` | 257: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.eviction-persistent` (+254) |
-| `TransactionResultExt.0` | 245: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+242) |
+| `TransactionResultExt.0` | 246: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+243) |
 | `TransactionResultResult.txBAD_AUTH` | 1: `tx.apply-time.bad-auth` |
 | `TransactionResultResult.txBAD_AUTH_EXTRA` | 1: `tx.apply-time.bad-auth-extra` |
 | `TransactionResultResult.txBAD_MIN_SEQ_AGE_OR_GAP` | 1: `tx.apply-time.bad-min-seq-age-or-gap` |
@@ -637,15 +636,16 @@ in the type graph, but stellar-core 30 never writes it into ledger-close meta.
 | `TransactionResultResult.txFAILED` | 124: `auth.create-contract-v1-signed-over-own-bytes`, `auth.forged-signature-crypto-error`, `auth.tree-depth-246-trapped` (+121) |
 | `TransactionResultResult.txFEE_BUMP_INNER_FAILED` | 12: `failure.path-payment-strict-send.src-no-trust-in-fee-bump-mainnet`, `failure.path-payment-strict-send.too-few-offers-mainnet`, `failure.set-options.low-reserve-in-fee-bump-mainnet` (+9) |
 | `TransactionResultResult.txFEE_BUMP_INNER_SUCCESS` | 8: `auth.many-entries-mainnet`, `backfill.p22-refunds-in-tx-changes-after`, `claimable-balance.id-op-index-1-muxed-source-in-fee-bump` (+5) |
+| `TransactionResultResult.txINTERNAL_ERROR` | 1: `tx.apply-time.internal-error-mainnet` |
 | `TransactionResultResult.txNO_ACCOUNT` | 1: `tx.apply-time.no-account-fee-not-refunded` |
 | `TransactionResultResult.txSUCCESS` | 95: `amount.payment-above-2-pow-53`, `archival.automatic-restore`, `archival.restore-footprint` (+92) |
 | `TransactionV0Ext.0` | 2: `backfill.claim-atom-v0-p12`, `failure.manage-offer.fourteen-ops-two-codes-p12` |
 | `TrustLineAsset.ASSET_TYPE_CREDIT_ALPHANUM12` | 8: `event.classic.issuer-payment-is-mint`, `max-length.allow-trust-alphanum12`, `muxed.path-payment-destination` (+5) |
-| `TrustLineAsset.ASSET_TYPE_CREDIT_ALPHANUM4` | 33: `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code`, `auth.many-entries-mainnet` (+30) |
+| `TrustLineAsset.ASSET_TYPE_CREDIT_ALPHANUM4` | 34: `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code`, `auth.many-entries-mainnet` (+31) |
 | `TrustLineAsset.ASSET_TYPE_POOL_SHARE` | 5: `asset-order.pool-issuers-text-vs-bytes`, `pool.deposit-l-address-event`, `pool.share-limit-only-change-trust` (+2) |
 | `TrustLineEntryExt.0` | 25: `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code`, `auth.many-entries-mainnet` (+22) |
 | `TrustLineEntryExt.1` | 18: `asset-order.pool-issuers-text-vs-bytes`, `auth.many-entries-mainnet`, `backfill.claim-atom-v0-p12` (+15) |
 | `TrustLineEntryExtensionV2Ext.0` | 9: `asset-order.pool-issuers-text-vs-bytes`, `muxed.clawback-from`, `muxed.path-payment-destination` (+6) |
 | `TrustLineEntryV1Ext.0` | 13: `auth.many-entries-mainnet`, `backfill.claim-atom-v0-p12`, `frozen.offer-removed-by-dex` (+10) |
 | `TrustLineEntryV1Ext.2` | 9: `asset-order.pool-issuers-text-vs-bytes`, `muxed.clawback-from`, `muxed.path-payment-destination` (+6) |
-| `TxSetComponent.TXSET_COMP_TXS_MAYBE_DISCOUNTED_FEE` | 204: `amount.payment-above-2-pow-53`, `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code` (+201) |
+| `TxSetComponent.TXSET_COMP_TXS_MAYBE_DISCOUNTED_FEE` | 205: `amount.payment-above-2-pow-53`, `asset-order.pool-issuers-text-vs-bytes`, `asset.issued-xlm-code` (+202) |

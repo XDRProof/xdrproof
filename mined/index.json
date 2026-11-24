@@ -3321,5 +3321,64 @@
    }
   ],
   "why_readers_break": "Protocol 12: every envelope is ENVELOPE_TYPE_TX_V0 (a raw ed25519 source, no MuxedAccount) and LedgerCloseMeta is v0 with a classic TransactionSet. Readers written for V1 envelopes fail on backfill. The lake carries TransactionMeta v4 here as well (BACKFILL_STELLAR_ASSET_EVENTS); a default node writes v2."
+ },
+ {
+  "id": "tx-internal-error@pubnet-58357467",
+  "shape_slug": "tx-internal-error",
+  "network": "pubnet",
+  "ledger_seq": 58357467,
+  "protocol_version": 22,
+  "close_time": "1754558891",
+  "lcm_arm": "v1",
+  "tx_count": 269,
+  "op_count": 616,
+  "file": "mined/ledgers/pubnet-58357467.lcm.xdr.zst",
+  "sha256": "7351a2d209a02bac02053437ee1acb3e36c428d6cbbe044c71fc641fe9d230ed",
+  "size_bytes": 1373968,
+  "zst_sha256": "2541d6504e002bb1c2dc74e337003c47420ce79ca9dcb29a8734b332fead7cbe",
+  "zst_bytes": 127816,
+  "source": {
+   "lake_url": "https://aws-public-blockchain.s3.amazonaws.com/v1.1/stellar/ledgers/pubnet/FC8659FF--58304000-58367999/FC858924--58357467.xdr.zst",
+   "compressed_bytes": 148611,
+   "batch_sha256": "b79dc0e3ef0e0af423b787a082b3e505afbc922d4b074c13fa982e0cbaf205cb",
+   "core_version": "stellar-core 23.0.1 (050eacf11a15afb2e95560dfb5723dfdcf78070f)",
+   "object_last_modified": "Thu, 18 Sep 2025 16:12:32 GMT",
+   "extraction": "zstd -d; drop the first 12 bytes of the LedgerCloseMetaBatch (start_sequence, end_sequence, count=1)"
+  },
+  "located_by": "mined/queries/q18_tx_internal_error.sql",
+  "decode": "zstd -dc <file> | stellar xdr decode --type LedgerCloseMeta --input single --output json",
+  "findings": [
+   {
+    "shape": "tx_internal_error",
+    "occurrences_in_ledger": 1,
+    "tx_hash": "d5273c1e2de2091ff8afd0cac108f683483bfacf814f7cd0683fa2efde8abb5e",
+    "tx_apply_index": 205,
+    "op_index": 0,
+    "tx_result": "tx_internal_error",
+    "json_paths": {
+     "envelope": ".v1.tx_set.v1.phases[1].v0[0].txset_comp_txs_maybe_discounted_fee.txs[28]",
+     "result": ".v1.tx_processing[205].result",
+     "shape": ".v1.tx_processing[205].result.result.result",
+     "meta": ".v1.tx_processing[205].tx_apply_processing.v4"
+    },
+    "expect": {
+     "host_function": "invoke_contract",
+     "contract": "CBAIKNAMECNS6WCWNZVVNJ5NZ6OVHLKT27FKNG7IZNWIIQARLIF7XJKS",
+     "function": "swap_chained",
+     "tx_result": "tx_internal_error",
+     "fee_charged": "555036",
+     "operations_in_meta": 0,
+     "soroban_meta_ext": {
+      "v1": {
+       "ext": "v0",
+       "total_non_refundable_resource_fee_charged": "554936",
+       "total_refundable_resource_fee_charged": "0",
+       "rent_fee_charged": "0"
+      }
+     }
+    }
+   }
+  ],
+  "why_readers_break": "txINTERNAL_ERROR is written only when stellar-core throws while applying a transaction, so it is in almost no test data. The fee is charged and the metadata has no operation entries; a reader that expects only the txSUCCESS and txFAILED result arms, or one meta entry per operation, breaks on it."
  }
 ]
