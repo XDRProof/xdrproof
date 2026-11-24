@@ -100,17 +100,19 @@ function diagram(d) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}"><title>${esc(label)}</title>${svg}</svg>\n`;
 }
 
+// a week range never breaks in a narrow table column (a no-break space, and word joiners around the dash)
+const keep = (w) => w.replace(/ /g, '\u00a0').replace(/–/g, '\u2060–\u2060');
 const md = (d) => {
   const t = TRANCHES[d.tranche], nn = String(d.n).padStart(2, '0');
   const img = `https://raw.githubusercontent.com/XDRProof/xdrproof/${SHA}/.github/assets/roadmap/d${nn}.svg`;
   const blob = (f) => `https://github.com/XDRProof/xdrproof/blob/main/${f}`;
   return [
     `> [!NOTE]\n> This issue tracks Deliverable ${d.n}. Updates are posted here as comments. Questions and ideas are welcome below.`,
-    `| | |\n|---|---|\n| **Tranche** | ${t.name}, weeks ${t.weeks} |\n| **Planned** | ${d.weeks.includes('–') ? 'weeks' : 'week'} ${d.weeks} |\n| **Due** | ${t.due}, if the award lands around 15 December |\n| **Status** | Planned. Starts when the SCF #46 award is confirmed (decision expected mid-December). |\n| **Owner** | @Blockchain-Oracle |\n| **Plan** | [STATUS.md](${blob('STATUS.md')}) · [ARCHITECTURE.md](${blob('ARCHITECTURE.md')}) |`,
+    `| | |\n|---|---|\n| **Tranche** | ${t.name}, weeks ${t.weeks} |\n| **Planned** | ${d.weeks.includes('–') ? 'weeks' : 'week'} ${keep(d.weeks)} |\n| **Due** | ${t.due}, if the award lands around 15 December |\n| **Status** | Planned. Starts when the SCF #46 award is confirmed (decision expected mid-December). |\n| **Owner** | @Blockchain-Oracle |\n| **Plan** | [STATUS.md](${blob('STATUS.md')}) · [ARCHITECTURE.md](${blob('ARCHITECTURE.md')}) |`,
     d.summary,
     `### How the parts fit\n\n![Deliverable ${d.n}, how the parts fit](${img})`,
     `### What ships\n\n${d.ships.map((s) => `- ${s}`).join('\n')}`,
-    `### Sub-issues\n\n| Sub-issue | What it covers | Target |\n|---|---|---|\n${d.parts.map(([a, b, c]) => `| ${a} | ${b} | ${c} |`).join('\n')}\n\n<sub>Each row becomes a GitHub sub-issue when its work starts, and then links to its pull requests.</sub>`,
+    `### Sub-issues\n\n| Sub-issue | What it covers | Target |\n|---|---|---|\n${d.parts.map(([a, b, c]) => `| ${a} | ${b} | ${keep(c)} |`).join('\n')}\n\n<sub>Each row becomes a GitHub sub-issue when its work starts, and then links to its pull requests.</sub>`,
     `### Done when\n\n${d.done} *(the proposal's words)*`,
     `### Not in this deliverable\n\n${d.notIn.map((s) => `- ${s}`).join('\n')}`,
     `### What exists today\n\n${d.today}`,

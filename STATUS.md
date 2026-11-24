@@ -3,6 +3,15 @@
 A dated public log of what has landed in XDRProof. Newest first. Weekly updates also go to #scf-general on the
 Stellar developer Discord.
 
+## 2026-11-25
+
+- **The roadmap issues now show where each deliverable stands.** Issues #1 to #13 each have the facts (tranche,
+  planned weeks, due date, status, owner), a diagram of how the parts fit, what ships, the parts as future sub-issues,
+  "done when" in the proposal's words, what is not included, and what exists today. The diagrams are drawn by
+  `tools/roadmap` from one data file.
+- **A form for reporting a problem with XDRProof itself**, and a pull request template that states what changed in
+  the corpus. Blank issues are off; the new-issue page links the security policy and the docs.
+
 ## 2026-11-24
 
 - **A 264th entry, mined from mainnet: a transaction that ends `txINTERNAL_ERROR`.** stellar-core threw while applying
