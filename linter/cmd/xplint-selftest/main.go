@@ -4,7 +4,8 @@
 //  1. every `// want RULE` marker has a finding of that rule on that line, and no other line has one;
 //  2. every mutant (a guard removed from a good case, or a fixed bug put back) makes its rule fire.
 //
-// Exit status 0 when both hold, 1 otherwise.
+// Exit status 0 when both hold, 1 otherwise. With -json the result is one JSON object on stdout (for
+// linter/selftest.mjs, which draws it as proof cards) and progress lines ("progress ...") go to stderr.
 package main
 
 import (
@@ -34,14 +35,47 @@ type mutation struct {
 	Offset int    `json:"offset"` // the finding is this many lines below At's line
 }
 
+// report is the -json output.
+type report struct {
+	Seeded     int            `json:"seeded"`
+	Caught     int            `json:"caught"`
+	Missed     []string       `json:"missed"`
+	Unexpected []string       `json:"unexpected"`
+	PerRule    map[string]int `json:"per_rule"`
+	Mutants    []mutantResult `json:"mutants"`
+}
+
+type mutantResult struct {
+	Name   string `json:"name"`
+	Expect string `json:"expect"`
+	Line   int    `json:"line,omitempty"`
+	Caught bool   `json:"caught"`
+	Why    string `json:"why,omitempty"`
+	Bad    string `json:"bad,omitempty"` // the mutant itself is broken (its text not found, or the analysis failed)
+}
+
 var want = regexp.MustCompile(`// want ((?:XP00\d/[a-z-]+ ?)+)\s*$`)
 
 func main() {
 	dir := flag.String("fixtures", "testdata/fixtures", "the fixtures module")
 	muts := flag.String("mutations", "testdata/mutations.json", "the mutants")
+	asJSON := flag.Bool("json", false, "print the result as one JSON object, progress on stderr")
 	flag.Parse()
 	abs, _ := filepath.Abs(*dir)
 	failed := 0
+	rep := report{Missed: []string{}, Unexpected: []string{}, Mutants: []mutantResult{}}
+	// say prints the text report; progress tells a -json caller where the run is
+	say := func(format string, a ...any) {
+		if !*asJSON {
+			fmt.Printf(format, a...)
+		}
+	}
+	progress := func(format string, a ...any) {
+		if *asJSON {
+			fmt.Fprintf(os.Stderr, "progress "+format+"\n", a...)
+		}
+	}
+	progress("fixtures")
 
 	// 1. markers
 	base, err := xplint.Run(abs, []string{"./..."}, nil, nil)
@@ -88,21 +122,24 @@ func main() {
 	for k := range expected {
 		perRule[strings.Fields(k)[1]]++
 	}
-	fmt.Printf("fixtures: %d seeded violations, %d caught, %d missed, %d findings on lines marked good\n", len(expected), len(expected)-len(missing), len(missing), len(extra))
+	rep.Seeded, rep.Caught, rep.PerRule = len(expected), len(expected)-len(missing), perRule
+	rep.Missed = append(rep.Missed, missing...)
+	rep.Unexpected = append(rep.Unexpected, extra...)
+	say("fixtures: %d seeded violations, %d caught, %d missed, %d findings on lines marked good\n", len(expected), len(expected)-len(missing), len(missing), len(extra))
 	rules := make([]string, 0, len(perRule))
 	for r := range perRule {
 		rules = append(rules, r)
 	}
 	sort.Strings(rules)
 	for _, r := range rules {
-		fmt.Printf("  %-26s %d\n", r, perRule[r])
+		say("  %-26s %d\n", r, perRule[r])
 	}
 	for _, k := range missing {
-		fmt.Println("  MISSED     ", k)
+		say("  MISSED      %s\n", k)
 		failed++
 	}
 	for _, k := range extra {
-		fmt.Println("  UNEXPECTED ", k)
+		say("  UNEXPECTED  %s\n", k)
 		failed++
 	}
 
@@ -118,11 +155,14 @@ func main() {
 		os.Exit(2)
 	}
 	killed := 0
-	for _, m := range ms {
+	progress("fixtures-done")
+	for i, m := range ms {
+		progress("mutant %d/%d", i, len(ms))
 		path := filepath.Join(abs, m.File)
 		src, err := os.ReadFile(path)
 		if err != nil || strings.Count(string(src), m.From) != 1 {
-			fmt.Printf("  BAD MUTANT  %s: the text to replace must occur exactly once in %s\n", m.Name, m.File)
+			say("  BAD MUTANT  %s: the text to replace must occur exactly once in %s\n", m.Name, m.File)
+			rep.Mutants = append(rep.Mutants, mutantResult{Name: m.Name, Expect: m.Expect, Bad: "the text to replace must occur exactly once in " + m.File})
 			failed++
 			continue
 		}
@@ -134,14 +174,16 @@ func main() {
 		}
 		k := strings.Index(mutated[from:], m.At)
 		if m.At == "" || k < 0 {
-			fmt.Printf("  BAD MUTANT  %s: %q is not in the mutated file\n", m.Name, m.At)
+			say("  BAD MUTANT  %s: %q is not in the mutated file\n", m.Name, m.At)
+			rep.Mutants = append(rep.Mutants, mutantResult{Name: m.Name, Expect: m.Expect, Bad: fmt.Sprintf("%q is not in the mutated file", m.At)})
 			failed++
 			continue
 		}
 		line := strings.Count(mutated[:from+k], "\n") + 1 + m.Offset
 		ds, err := xplint.Run(abs, []string{"./..."}, map[string][]byte{path: []byte(mutated)}, nil)
 		if err != nil {
-			fmt.Printf("  BAD MUTANT  %s: %v\n", m.Name, err)
+			say("  BAD MUTANT  %s: %v\n", m.Name, err)
+			rep.Mutants = append(rep.Mutants, mutantResult{Name: m.Name, Expect: m.Expect, Bad: err.Error()})
 			failed++
 			continue
 		}
@@ -153,15 +195,20 @@ func main() {
 		}
 		if hit {
 			killed++
-			fmt.Printf("  caught      %-50s %s at line %d\n", m.Name, m.Expect, line)
+			say("  caught      %-50s %s at line %d\n", m.Name, m.Expect, line)
 		} else {
-			fmt.Printf("  SURVIVED    %-50s %s at line %d (%s)\n", m.Name, m.Expect, line, m.Why)
+			say("  SURVIVED    %-50s %s at line %d (%s)\n", m.Name, m.Expect, line, m.Why)
 			failed++
 		}
+		rep.Mutants = append(rep.Mutants, mutantResult{Name: m.Name, Expect: m.Expect, Line: line, Caught: hit, Why: m.Why})
 	}
-	fmt.Printf("mutants: %d of %d caught\n", killed, len(ms))
+	say("mutants: %d of %d caught\n", killed, len(ms))
+	if *asJSON {
+		out, _ := json.Marshal(rep)
+		fmt.Println(string(out))
+	}
 	if failed > 0 {
 		os.Exit(1)
 	}
-	fmt.Println("OK: every seeded violation and every mutant is caught, and no good case is flagged.")
+	say("OK: every seeded violation and every mutant is caught, and no good case is flagged.\n")
 }

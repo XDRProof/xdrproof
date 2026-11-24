@@ -126,15 +126,18 @@ if __name__ == "__main__":
                           "arms_removed": sorted(a0 - a1), "enum_added": sorted(e1 - e0), "enum_removed": sorted(e0 - e1)}, indent=1))
     elif cmd == "walk":
         defs = load(sys.argv[2]); typ = sys.argv[3]; args = sys.argv[4:]; framed = "--framed" in args
-        files = [a for a in args if a != "--framed"]; w = Walker(defs); per = {}; nrec = 0; errs = []
+        # --progress: one line on stderr per file walked, for a live count
+        progress = "--progress" in args
+        files = [a for a in args if a not in ("--framed", "--progress")]; w = Walker(defs); per = {}; nrec = 0; errs = []
         for f in files:
             buf = open(f, "rb").read(); before = set(w.hit)
             try:
                 for rec in (frames(buf) if framed else [buf]): w.run(rec, typ); nrec += 1
             except Exception as ex: errs.append([f, repr(ex)])
             per[f] = sorted(set(w.hit) - before)
+            if progress: sys.stderr.write("walked\n"); sys.stderr.flush()
         a, e = atoms(defs, [typ]); hu = {k[2:] for k in w.hit if k[0] == "U"}; he = {k[2:] for k in w.hit if k[0] == "E"}
         print(json.dumps({"files": len(files), "records": nrec, "errors": errs,
             "arms_total": len(a), "arms_hit": len(hu & a), "enum_total": len(e), "enum_hit": len(he & e),
-            "arms_missing": sorted(a - hu), "first_seen_in": {k: len(v) for k, v in per.items() if v} and
+            "arms_missing": sorted(a - hu), "enum_missing": sorted(e - he), "first_seen_in": {k: len(v) for k, v in per.items() if v} and
             sum(1 for v in per.values() if v)}, indent=1))

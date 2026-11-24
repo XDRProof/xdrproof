@@ -18,7 +18,7 @@ novelty: tools/node_modules $(NATIVE) ## leave-one-out: no entry whose every arm
 	@$(LIVE) "Checking every entry adds something new" -- node tools/novelty.mjs
 
 coverage:                             ## arms reachable from LedgerCloseMeta vs arms in the corpus bytes and the mined ledgers (seconds)
-	@$(LIVE) "Measuring union-arm coverage" -- tools/coverage/run.sh
+	@tools/coverage/run.sh $(if $(or $(DETAILS),$(V)),--details)
 
 coverage-report: tools/node_modules $(NATIVE) ## COVERAGE.md: every arm reached by an entry's own transaction or classified with a core source line; fails if any is neither
 	@$(LIVE) "Writing COVERAGE.md" -- node tools/coverage-report.mjs
@@ -27,7 +27,7 @@ build: tools/node_modules $(NATIVE)   ## compile catalog/ into entries/ from the
 	@$(LIVE) "Compiling the catalog into entries" -- node tools/build.mjs
 
 coverage-goldens:                     ## same, plus stellar-core's own golden ledgers (downloads ~76 MB once)
-	@GOLDENS=1 $(LIVE) "Measuring coverage with core's golden ledgers" -- tools/coverage/run.sh
+	@GOLDENS=1 tools/coverage/run.sh $(if $(or $(DETAILS),$(V)),--details)
 
 generate: tools/node_modules          ## every run twice from a bare stellar-core: both lanes, both passphrases, P30 and P28, three flag profiles (~10 min)
 	@$(LIVE) "Generating ledgers with stellar-core" -- recipes/regenerate.sh
@@ -52,10 +52,10 @@ replay-sightings: tools/node_modules $(NATIVE)  ## #729/#716, #731, #745 and #75
 	@replay/run.sh sightings $(if $(or $(DETAILS),$(V)),--details)
 
 lint-selftest:                       ## xplint against its 44 seeded violations and 17 mutants: every one caught, no good case flagged (~2 min warm)
-	@$(LIVE) "xplint self-test" -- linter/go.sh sh -c 'go vet ./... && go build -o /xdrproof/linter/.work/bin/xplint-selftest ./cmd/xplint-selftest && /xdrproof/linter/.work/bin/xplint-selftest'
+	@node linter/selftest.mjs $(if $(or $(DETAILS),$(V)),--details)
 
 lint: tools/node_modules              ## xplint on wallet-backend, stellar-etl and go-stellar-sdk, the commits around upstream fixes, a patched tree and real-code mutants; must match linter/expectations.json (~15 min cold)
-	@$(LIVE) "Running xplint on the indexers" -- node linter/lint.mjs
+	@node linter/lint.mjs $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 native: $(NATIVE)                     ## build the native rs-stellar-xdr reader (~1 min once)
 

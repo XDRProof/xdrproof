@@ -1,0 +1,19 @@
+{
+  "$comment": "Short plain titles for what `make lint` prints, keyed by the upstream link a finding's triage names in linter/expectations.json, and the upstream fixes whose before and after commits are linted (pairs of targets in linter/targets.json).",
+  "issues": {
+    "https://github.com/stellar/wallet-backend/issues/820": { "title": "auth-tree walk has no depth limit" },
+    "https://github.com/stellar/wallet-backend/pull/756": { "title": "Blend may key accounts by M... addresses" },
+    "https://github.com/stellar/stellar-etl/issues/462": { "title": "contract IDs guessed from the footprint" },
+    "https://github.com/stellar/stellar-etl/issues/504": { "title": "invalid UTF-8 memos exported as U+FFFD" },
+    "https://github.com/stellar/stellar-etl/issues/488": { "title": "balance changes kept for failed Soroban txs" }
+  },
+  "fixes": [
+    { "before": "wallet-backend@f8e5786d", "after": "wallet-backend@bb0b162b", "upstream": "https://github.com/stellar/wallet-backend/pull/753", "label": "#753", "title": "Soroban source kept as M..." },
+    { "before": "wallet-backend@666a64d4", "after": "wallet-backend@4bbb1ecb", "upstream": "https://github.com/stellar/wallet-backend/commit/9538b3caeaebfeb3d034146c0ce9643c3066cf8a", "label": "9538b3c", "title": "participants taken from the auth tree" },
+    { "before": "wallet-backend@e967ce8b", "after": "wallet-backend@ff73ff46", "upstream": "https://github.com/stellar/wallet-backend/pull/803", "label": "#803", "title": "Blend pool names not UTF-8 checked" }
+  ],
+  "patches": [
+    { "base": "wallet-backend@main", "patched": "wallet-backend@main+820-patch", "label": "#820", "url": "https://github.com/stellar/wallet-backend/issues/820", "title": "#820 patch: the walk is bounded" },
+    { "base": "wallet-backend@main+820-patch", "patched": "wallet-backend@main+820-patch+blend-address-patch", "label": "#756", "url": "https://github.com/stellar/wallet-backend/pull/756", "title": "and Blend addresses as #756 does" }
+  ]
+}

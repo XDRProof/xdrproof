@@ -71,6 +71,9 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
     links,
     // the terminal's width (COLUMNS when not a terminal), kept between 40 and 120
     width: Math.max(40, Math.min(stream.columns || Number(env.COLUMNS) || 100, 120)),
+    // plain text wrapped at spaces into lines of at most n characters (a longer word is cut), for problem lines:
+    // on a narrow terminal the reason is the part that matters
+    wrap: (t, n) => String(t).split(' ').reduce((ls, w) => { const l = ls[ls.length - 1]; if (l !== undefined && (l + ' ' + w).length <= n) ls[ls.length - 1] = l + ' ' + w; else ls.push(w.length > n ? w.slice(0, Math.max(1, n - 1)) + '…' : w); return ls; }, []),
     // plain text cut to n visible characters with an ellipsis
     trunc: (s, n) => (s.length <= n ? s : s.slice(0, Math.max(1, n - 1)) + '…'),
     bold: (s) => (C ? SGR(1, 22)(s) : s),
@@ -116,6 +119,28 @@ export function makeUI({ stream = process.stdout, errStream = process.stderr } =
       const time = ms === undefined ? '' : ui.elapsed(ms);
       ui.out(`${ui.stamp(kind, word)}  ${ui.bold(text)}${time ? '   ' + ui.dim(time) : ''}`);
       ui.out();
+    },
+    // ---- proof cards ----
+    // A card: its title and score on the top edge, one row per line (mark ✓ passed, ! known and reported, ✗ wrong)
+    // with an optional right part (a count, or a short link label with its url), a dim detail line under a row when
+    // details is on, and the closing edge. As wide as the terminal allows, at most 64 columns; every line fits.
+    // rank(): 0 when a line failed, 1 when one is a known problem, 2 when all passed (failures print first).
+    rank: (lines) => (lines.some((l) => l.mark === '✗') ? 0 : lines.some((l) => l.mark === '!') ? 1 : 2),
+    card({ title, score = '', lines, details = false, footer = '' }) {
+      const C = Math.min(ui.width - 4, 64), INNER = C - 4, r = ui.rank(lines);
+      const sc = r === 0 ? ui.bad(score) : r === 1 ? ui.known(score) : score;
+      const t = ui.trunc(title, Math.max(4, C - 8 - (score ? score.length + 1 : 0)));
+      const dashes = Math.max(1, C - 6 - t.length - (score ? score.length + 1 : 0));
+      ui.out(`  ${ui.dim('╭─ ')}${ui.bold(t)}${ui.dim(' ' + '─'.repeat(dashes))}${score ? ' ' + sc : ''}${ui.dim('─╮')}`);
+      for (const l of lines) {
+        const mark = l.mark === '✓' ? ui.pass('✓') : l.mark === '!' ? ui.known('!') : ui.bad('✗');
+        const right = String(l.right ?? ''), rw = right.length, room = INNER - 2 - (rw ? rw + 1 : 0), text = ui.trunc(l.text, room);
+        const rr = !rw ? '' : ' ' + (l.url ? (l.mark === '!' ? ui.known(ui.link(right, l.url)) : ui.dim(ui.link(right, l.url))) : ui.dim(right));
+        ui.out(`  ${ui.dim('│')} ${mark} ${text}${' '.repeat(Math.max(0, room - text.length))}${rr} ${ui.dim('│')}`);
+        if (details && l.detail) for (const d of [].concat(l.detail)) ui.out(`  ${ui.dim('│')}   ${ui.dim(ui.trunc(d, INNER - 2).padEnd(INNER - 2))} ${ui.dim('│')}`);
+      }
+      if (footer) ui.out(`  ${ui.dim('│')} ${ui.dim(ui.trunc(footer, INNER).padEnd(INNER))} ${ui.dim('│')}`);
+      ui.out(`  ${ui.dim('╰' + '─'.repeat(C - 2) + '╯')}`);
     },
     // ---- the live block (interactive terminals only; every call is a no-op elsewhere) ----
     // ui.task(label, { waiting, since }) adds a row and returns { count(done, total), note(text), start(), done(),

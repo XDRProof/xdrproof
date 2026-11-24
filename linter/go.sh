@@ -6,6 +6,7 @@ HERE=$(cd "$(dirname "$0")" && pwd); REPO=$(cd "$HERE/.." && pwd)
 dir=/xdrproof/linter
 if [ "${1:-}" = -w ]; then dir=$2; shift 2; fi
 docker volume create xdrproof-gocache-127 >/dev/null
-exec docker run --rm -i -v "$REPO":/xdrproof -v xdrproof-gocache-127:/cache \
+# XDRPROOF_CONTAINER names the container, so a caller can remove it when the run is stopped
+exec docker run --rm -i ${XDRPROOF_CONTAINER:+--name "$XDRPROOF_CONTAINER"} -v "$REPO":/xdrproof -v xdrproof-gocache-127:/cache \
   -e GOCACHE=/cache/build -e GOMODCACHE=/cache/mod -e GOFLAGS=-buildvcs=false -e GOTOOLCHAIN=local -e CGO_ENABLED=1 \
   -w "$dir" "$(cat "$HERE/toolchain-image")" "$@"
