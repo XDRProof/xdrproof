@@ -11941,14 +11941,43 @@ Nothing in XDRProof runs as a hosted service. It runs on your machine or in CI: 
 **Why it matters.** When two SDKs read the same bytes differently, one of them is wrong, and every app built on it inherits the mistake. This finds it first.
 
 ```bash
-make conformance     # about 2 minutes once the builds are cached
+make conformance     # a fresh run about 2 minutes; a repeat about a second (results are cached)
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.
 
 Figure: how conformance works. The same bytes (every corpus variant, strkeys, invalid input and a depth ladder) go through each SDK build; every answer is compared with native rs-stellar-xdr (the bytes, SEP-0051 JSON, every expected fact), and the matrix marks each result pass or known (pinned with its cause).
 
-![A terminal: make conformance runs the corpus through the SDK builds, prints the matrix by family and build, with known differences marked, and ends with OK: every result matches the pre-registered expectations.](https://xdrproof.dev/gifs/conformance.gif)
+A real run of `make conformance ARGS=--fresh`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   conformance  · 6 SDK builds · 634 real ledgers
+
+  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 621/634─╮
+  │ ! refuses very deep auth trees                           #67 │
+  │ ! accepts an invalid bool value                         #622 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 634/634─╮
+  │ ! accepts an invalid bool value                         #622 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 634/634─╮
+  │ ! accepts an invalid strkey                            #6042 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Python SDK 17.0.1 ───────────────────────────────── 632/634─╮
+  │ ! JSON fails on muxed contracts                          F-2 │
+  │ ! drops colliding map keys                             #1250 │
+  │ ! accepts an invalid bool value                        #1268 │
+  │ ! accepts non-zero XDR padding                         #1262 │
+  │ ! accepts a bad optional flag                          #1263 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ No bugs ─────────────────────────────────────────── 634/634─╮
+  │ ✓ JavaScript SDK 17.4.0 · Python XDR 0.2.1                   │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   No new bugs.   2:11
+
+  bug status and older releases:  make conformance DETAILS=1
+```
 
 ## The builds
 
@@ -12044,6 +12073,27 @@ make coverage-report   # writes COVERAGE.md; fails on any arm that is
 make coverage-goldens  # plus core's own golden ledgers (76 MB, once)
 ```
 
+A real run of `make coverage`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   coverage  · stellar-xdr v30.0
+
+  ╭─ Union arms ──────────────────────────────────────── 417/499─╮
+  │ ✓ in the corpus entries                                  417 │
+  │ ✓ in the mined pubnet ledgers                            289 │
+  │ ✓ cannot appear at protocol 30, each with its reason      74 │
+  │ ! need a live network: to be mined                         8 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Enum members ────────────────────────────────────── 333/411─╮
+  │ ✓ in the corpus entries                                  333 │
+  │ ✓ in the mined pubnet ledgers                            218 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every arm is reached or explained.   6.6s
+
+  the reasons, by kind:  make coverage DETAILS=1
+```
+
 A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union arm and enum member reachable from `LedgerCloseMeta`. It then walks real ledgers and records which arms they meet.
 
 | Ledgers | Union arms |
@@ -12054,7 +12104,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>0e23f4c</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>d505bf2</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 
@@ -12310,7 +12360,47 @@ In this repository, both targets run in a pinned Go image (`linter/toolchain-ima
 
 ```bash
 make lint-selftest   # seeded fixtures and mutants (~2 min warm)
-make lint            # real code, against expectations.json (~3 min)
+make lint            # real code, against expectations.json (about 8 min fresh; seconds when nothing changed)
+```
+
+A real run of `make lint`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   lint  · xplint · 3 codebases · 3 upstream fixes · 5 mutants
+
+  ╭─ wallet-backend main · 18db88f4 ───────────────── 4 findings─╮
+  │ ! Blend may key accounts by M... addresses              #756 │
+  │ ! auth-tree walk has no depth limit                     #820 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ stellar-etl master · 7e3fc9af ───────────────── 12 findings─╮
+  │ ! contract IDs guessed from the footprint               #462 │
+  │ ! invalid UTF-8 memos exported as U+FFFD                #504 │
+  │ ! balance changes kept for failed Soroban txs           #488 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ go-stellar-sdk v0.9.0 · 5410d341 ─────────────── 0 findings─╮
+  │ ✓ no findings                                                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Caught before the fix, gone after ───────────────────── 3/3─╮
+  │ ✓ #753 Soroban source kept as M...                    10 → 0 │
+  │ ✓ 9538b3c participants taken from the auth tree       28 → 0 │
+  │ ✓ #803 Blend pool names not UTF-8 checked              1 → 0 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Our patches for wallet-backend ──────────────────────── 2/2─╮
+  │ ✓ #820 patch: the walk is bounded                      4 → 3 │
+  │ ✓ and Blend addresses as #756 does                     3 → 0 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Mutants of wallet-backend main ──────────────────────── 5/5─╮
+  │ ✓ drop the meta confirmation of a declared deploy      XP003 │
+  │ ✓ attribute operation bodies of failed transactions    XP003 │
+  │ ✓ muxed Soroban source added as M...                   XP001 │
+  │ ✓ Blend strings stored without the UTF-8 check         XP001 │
+  │ ✓ the auth-tree walk fails at depth 64                 XP002 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every finding as recorded, every mutant caught.   0.1s
+
+  results reused from the last run · ARGS=--fresh runs them again
+  rules, verdicts and timings:  make lint DETAILS=1
 ```
 
 ## The three mistakes
@@ -12452,7 +12542,7 @@ An entry is **redundant** when every one of its atoms is also held by some other
 
 ## Today
 
-At commit <code>0e23f4c</code>: 0 redundant entries, over 1,226 atoms.
+At commit <code>d505bf2</code>: 0 redundant entries, over 1,226 atoms.
 
 | Entries | Count |
 |---|---:|
@@ -12668,6 +12758,36 @@ make verify
 # runs, with node: tools/strkey.test.mjs, tools/verify.mjs,
 # tools/mined-verify.mjs and tools/auth-payload-check.mjs
 node tools/verify.mjs --write   # also rewrite manifest.json
+```
+
+A real run of `make verify`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   verify  · 263 entries · 634 ledger variants
+
+  ╭─ Second reader · stellar-xdr-json ────────────────── 621/634─╮
+  │ ! refuses very deep auth trees                           #67 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Corpus ──────────────────────────────────────────── 634/634─╮
+  │ ✓ entries match the schema and the hazard list           263 │
+  │ ✓ files match their sha256 and size                      634 │
+  │ ✓ ledgers read back byte for byte                        634 │
+  │ ✓ every focus transaction is in its ledger               634 │
+  │ ✓ expected values hold                                 1,715 │
+  │ ✓ ledgers with shuffled change order match                88 │
+  │ ✓ manifest.json is up to date                                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Mined pubnet ledgers ──────────────────────────────── 37/37─╮
+  │ ✓ 47 records and 223 values match the ledgers                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Keys and signatures ───────────────────────────────── 39/39─╮
+  │ ✓ strkeys: 10 valid accepted, 19 invalid refused          29 │
+  │ ✓ auth signatures hold (H-B16)                            10 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   The corpus is intact.   12s
+
+  every refused ledger and the hazards:  make verify DETAILS=1
 ```
 
 ## What it checks

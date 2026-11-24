@@ -1,9 +1,10 @@
-:HL["/_next/static/chunks/3690_op7pj-_a.css","style"]
-:HL["/_next/static/chunks/3fw-mbmchluv2.css","style"]
+:HL["/_next/static/chunks/0-ib-6wuwt7qy.css","style"]
+:HL["/_next/static/chunks/3umfmasjoq5a3.css","style"]
 :HL["/_next/static/media/BricolageGrotesque24_Medium-s.p.2z7vg1vcopys_.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/BricolageGrotesque96_Regular-s.p.1luzjr_zkj6oq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/InstrumentSans_Medium-s.p.3n-cep_pwimnq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/InstrumentSans_Regular-s.p.2s-lmpwfj5n6x.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
+:HL["/_next/static/media/JetBrainsMono_Bold-s.p.0q5j_e8lvwq_8.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/JetBrainsMono_Medium-s.p.3xs1d9eby2d3u.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/JetBrainsMono_Regular-s.p.2omah3cqpe3ui.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/MartianMono_ExtraLight-s.p.45bo4rab7bshf.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
@@ -11,4 +12,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"oc","k":"corpus/entries/failure-set-trust-line-flags-cant-revoke","s":[]},"h":64,"c":"$Q3"}]]
 1:[["children",{"s":"docs","h":32,"c":"$Q2"}]]
-0:{"b":"iNBsgwknhgiQ6seXBSbXy","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"lvQBD6sI4vW-LGkFFoef_","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

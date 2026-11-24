@@ -5,14 +5,43 @@
 **Why it matters.** When two SDKs read the same bytes differently, one of them is wrong, and every app built on it inherits the mistake. This finds it first.
 
 ```bash
-make conformance     # about 2 minutes once the builds are cached
+make conformance     # a fresh run about 2 minutes; a repeat about a second (results are cached)
 ```
 
 Needs Node ≥ 22.15, Rust and Docker. Every SDK build answers the same questions about the same bytes, and the run prints one matrix: which SDK reads which ledger correctly.
 
 Figure: how conformance works. The same bytes (every corpus variant, strkeys, invalid input and a depth ladder) go through each SDK build; every answer is compared with native rs-stellar-xdr (the bytes, SEP-0051 JSON, every expected fact), and the matrix marks each result pass or known (pinned with its cause).
 
-![A terminal: make conformance runs the corpus through the SDK builds, prints the matrix by family and build, with known differences marked, and ends with OK: every result matches the pre-registered expectations.](https://xdrproof.dev/gifs/conformance.gif)
+A real run of `make conformance ARGS=--fresh`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   conformance  · 6 SDK builds · 634 real ledgers
+
+  ╭─ JS XDR-JSON 30.0.0 ──────────────────────────────── 621/634─╮
+  │ ! refuses very deep auth trees                           #67 │
+  │ ! accepts an invalid bool value                         #622 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Rust XDR 30.0.0 ─────────────────────────────────── 634/634─╮
+  │ ! accepts an invalid bool value                         #622 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Go SDK v0.9.0 ───────────────────────────────────── 634/634─╮
+  │ ! accepts an invalid strkey                            #6042 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Python SDK 17.0.1 ───────────────────────────────── 632/634─╮
+  │ ! JSON fails on muxed contracts                          F-2 │
+  │ ! drops colliding map keys                             #1250 │
+  │ ! accepts an invalid bool value                        #1268 │
+  │ ! accepts non-zero XDR padding                         #1262 │
+  │ ! accepts a bad optional flag                          #1263 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ No bugs ─────────────────────────────────────────── 634/634─╮
+  │ ✓ JavaScript SDK 17.4.0 · Python XDR 0.2.1                   │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   No new bugs.   2:11
+
+  bug status and older releases:  make conformance DETAILS=1
+```
 
 ## The builds
 

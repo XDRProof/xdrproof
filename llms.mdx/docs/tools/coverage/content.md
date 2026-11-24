@@ -11,6 +11,27 @@ make coverage-report   # writes COVERAGE.md; fails on any arm that is
 make coverage-goldens  # plus core's own golden ledgers (76 MB, once)
 ```
 
+A real run of `make coverage`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   coverage  · stellar-xdr v30.0
+
+  ╭─ Union arms ──────────────────────────────────────── 417/499─╮
+  │ ✓ in the corpus entries                                  417 │
+  │ ✓ in the mined pubnet ledgers                            289 │
+  │ ✓ cannot appear at protocol 30, each with its reason      74 │
+  │ ! need a live network: to be mined                         8 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Enum members ────────────────────────────────────── 333/411─╮
+  │ ✓ in the corpus entries                                  333 │
+  │ ✓ in the mined pubnet ledgers                            218 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every arm is reached or explained.   6.6s
+
+  the reasons, by kind:  make coverage DETAILS=1
+```
+
 A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union arm and enum member reachable from `LedgerCloseMeta`. It then walks real ledgers and records which arms they meet.
 
 | Ledgers | Union arms |
@@ -21,7 +42,7 @@ A walker reads the rs-stellar-xdr definitions for v30.0, and lists every union a
 | Entries and mined ledgers together | 417 of 499 |
 | stellar-core's goldens (866 files, 15,306 ledgers, commit `f2b91947`) | 254 of 499 |
 
-The corpus rows are computed from the corpus at commit <code>0e23f4c</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
+The corpus rows are computed from the corpus at commit <code>d505bf2</code>, the same way `make coverage` computes them. The goldens row is a fixed measurement at stellar-core commit `f2b91947`. The goldens are the ledgers stellar-core's own tests produce.
 
 ## Every arm accounted for
 

@@ -23,7 +23,47 @@ In this repository, both targets run in a pinned Go image (`linter/toolchain-ima
 
 ```bash
 make lint-selftest   # seeded fixtures and mutants (~2 min warm)
-make lint            # real code, against expectations.json (~3 min)
+make lint            # real code, against expectations.json (about 8 min fresh; seconds when nothing changed)
+```
+
+A real run of `make lint`, recorded 24 Nov 2026:
+
+```text
+ XDRPROOF   lint  · xplint · 3 codebases · 3 upstream fixes · 5 mutants
+
+  ╭─ wallet-backend main · 18db88f4 ───────────────── 4 findings─╮
+  │ ! Blend may key accounts by M... addresses              #756 │
+  │ ! auth-tree walk has no depth limit                     #820 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ stellar-etl master · 7e3fc9af ───────────────── 12 findings─╮
+  │ ! contract IDs guessed from the footprint               #462 │
+  │ ! invalid UTF-8 memos exported as U+FFFD                #504 │
+  │ ! balance changes kept for failed Soroban txs           #488 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ go-stellar-sdk v0.9.0 · 5410d341 ─────────────── 0 findings─╮
+  │ ✓ no findings                                                │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Caught before the fix, gone after ───────────────────── 3/3─╮
+  │ ✓ #753 Soroban source kept as M...                    10 → 0 │
+  │ ✓ 9538b3c participants taken from the auth tree       28 → 0 │
+  │ ✓ #803 Blend pool names not UTF-8 checked              1 → 0 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Our patches for wallet-backend ──────────────────────── 2/2─╮
+  │ ✓ #820 patch: the walk is bounded                      4 → 3 │
+  │ ✓ and Blend addresses as #756 does                     3 → 0 │
+  ╰──────────────────────────────────────────────────────────────╯
+  ╭─ Mutants of wallet-backend main ──────────────────────── 5/5─╮
+  │ ✓ drop the meta confirmation of a declared deploy      XP003 │
+  │ ✓ attribute operation bodies of failed transactions    XP003 │
+  │ ✓ muxed Soroban source added as M...                   XP001 │
+  │ ✓ Blend strings stored without the UTF-8 check         XP001 │
+  │ ✓ the auth-tree walk fails at depth 64                 XP002 │
+  ╰──────────────────────────────────────────────────────────────╯
+
+ PASSED   Every finding as recorded, every mutant caught.   0.1s
+
+  results reused from the last run · ARGS=--fresh runs them again
+  rules, verdicts and timings:  make lint DETAILS=1
 ```
 
 ## The three mistakes
