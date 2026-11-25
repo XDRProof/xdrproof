@@ -113,7 +113,7 @@ def f3_second_figure():
     body = f"""<div class="sheet">{crosses()}
 <div class="eyebrow">wallet-backend · native_balances · a second mainnet ledger</div>
 <h1>Pubnet ledger 58357467: two balances stored short by exactly their refunds</h1>
-<p class="sub">Protocol 22, 269 transactions. Each refund is in its transaction&#8217;s <span class="mono">txChangesAfter</span>, which wallet&#8209;backend does not read. One is the unused fee of a transaction that ended <span class="mono">txINTERNAL_ERROR</span>.</p>
+<p class="sub">Protocol 22, 269 transactions. Each refund is in its transaction&#8217;s <span class="mono">txChangesAfter</span>, which wallet&#8209;backend leaves out when it builds <span class="mono">native_balances</span>. One is the unused fee of a transaction that ended <span class="mono">txINTERNAL_ERROR</span>.</p>
 <div class="tbl"><table>
  <tr><th>Account</th><th>Refunds in txChangesAfter</th><th>The ledger says</th><th>wallet&#8209;backend stores</th><th>Short by</th></tr>
  <tr><td>GBGWQF…TUBE</td><td>92 transactions</td><td>12,857,290,028,303</td><td>12,857,279,085,712</td><td class="short">10,942,591</td></tr>
