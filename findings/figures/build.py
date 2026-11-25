@@ -95,6 +95,37 @@ def f3_figure():
 {titleblock("Fig. 1", "pubnet ledger <b>56085459</b> · wallet-backend <b>18db88f4</b>")}</div>"""
     return page(body, 470, F3_CSS)
 
+# ---- Figure: F-3 again, a second mainnet ledger (for the #834 follow-up, 25 Nov 2026) ---------------------
+F3B_CSS = """
+.tbl{margin-top:20px;border:1.5px solid var(--ink);background:var(--node)}
+.tbl table{width:100%;border-collapse:collapse;font:500 13px/1.35 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.tbl th{font:600 10.5px/1.3 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:9px 12px;border-bottom:1.5px solid var(--ink)}
+.tbl td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--rule)} .tbl tr:last-child td{border-bottom:0}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td small{display:block;font:500 10.5px/1.35 "JetBrains Mono",monospace;color:var(--muted);margin-top:2px}
+.tbl td.short{background:var(--fail);color:var(--fail-t);font-weight:700}
+.result{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);background:var(--node)}
+.result>div{padding:12px 14px} .result>div+div{border-left:1px solid var(--rule)}
+.big{font:700 26px/1 "JetBrains Mono",monospace;letter-spacing:-.02em} .big.red{color:var(--fail-t)}
+.cap{font-size:13px;color:var(--sub);margin-top:6px;line-height:1.35}
+"""
+def f3_second_figure():
+    body = f"""<div class="sheet">{crosses()}
+<div class="eyebrow">wallet-backend · native_balances · a second mainnet ledger</div>
+<h1>Pubnet ledger 58357467: two balances stored short by exactly their refunds</h1>
+<p class="sub">Protocol 22, 269 transactions. Each refund is in its transaction&#8217;s <span class="mono">txChangesAfter</span>, which wallet&#8209;backend does not read. One is the unused fee of a transaction that ended <span class="mono">txINTERNAL_ERROR</span>.</p>
+<div class="tbl"><table>
+ <tr><th>Account</th><th>Refunds in txChangesAfter</th><th>The ledger says</th><th>wallet&#8209;backend stores</th><th>Short by</th></tr>
+ <tr><td>GBGWQF…TUBE</td><td>92 transactions</td><td>12,857,290,028,303</td><td>12,857,279,085,712</td><td class="short">10,942,591</td></tr>
+ <tr><td>GBSY3Z…N4IJ</td><td>1 transaction<small>ended txINTERNAL_ERROR</small></td><td>2,719,810,889</td><td>2,719,687,106</td><td class="short">123,783</td></tr>
+</table></div>
+<div class="result">
+ <div><div class="big red">2 balances</div><div class="cap">stored short, each by exactly the refunds credited to it in <span class="mono">txChangesAfter</span></div></div>
+ <div><div class="big red">11,066,374</div><div class="cap">stroops missing in all; on the fix branch both balances come out right</div></div>
+</div>
+{titleblock("Fig. 2", "pubnet ledger <b>58357467</b> · wallet-backend <b>76194899</b>")}</div>"""
+    return page(body, 456, F3B_CSS)
+
 # ---- Figure: F-1, how deep is too deep ----------------------------------------------------------------
 F1_CSS = """
 .chart{margin-top:26px;position:relative;height:220px}
@@ -314,7 +345,7 @@ def gif(frames, h, out):
 if __name__ == "__main__":
     which = sys.argv[1:] or ["figs", "gifs"]
     if "figs" in which:
-        for name, (fn, h) in {"f3-refunds.png": (f3_figure, 470), "f1-depth.png": (f1_figure, 494), "820-bounded-walk.png": (f820_figure, 514), "java-835-depth.png": (java_figure, 494)}.items():
+        for name, (fn, h) in {"f3-refunds.png": (f3_figure, 470), "f1-depth.png": (f1_figure, 494), "820-bounded-walk.png": (f820_figure, 514), "java-835-depth.png": (java_figure, 494), "f3-second-ledger.png": (f3_second_figure, 456)}.items():
             shoot(fn(), h, str(HERE / name)); print("wrote", name)
     if "gifs" in which:
         for name, (fn, h) in {"f1-repro.gif": (f1_gif, 262), "f3-repro.gif": (f3_gif, 500)}.items():
