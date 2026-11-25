@@ -1,5 +1,5 @@
 :HL["/_next/static/chunks/0-ib-6wuwt7qy.css","style"]
-:HL["/_next/static/chunks/0i0_3k_mzehhf.css","style"]
+:HL["/_next/static/chunks/0x99m0c69__k_.css","style"]
 :HL["/_next/static/media/BricolageGrotesque24_Medium-s.p.2z7vg1vcopys_.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/BricolageGrotesque96_Regular-s.p.1luzjr_zkj6oq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/InstrumentSans_Medium-s.p.3n-cep_pwimnq.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
@@ -9,7 +9,8 @@
 :HL["/_next/static/media/JetBrainsMono_Regular-s.p.2omah3cqpe3ui.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/media/MartianMono_ExtraLight-s.p.45bo4rab7bshf.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/_next/static/chunks/0iaxnelvtqw2u.css","style"]
+:HL["/brand/mark-stamp.svg","image"]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"oc","k":"corpus/entries/sponsorship-revoke","s":[]},"h":64,"c":"$Q3"}]]
 1:[["children",{"s":"docs","h":32,"c":"$Q2"}]]
-0:{"b":"ESTO4I5KUHCFo4W3dH_Ge","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"4yayXRr3U5P83rXKKKo3j","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

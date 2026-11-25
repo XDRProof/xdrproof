@@ -29,6 +29,9 @@
     .c-fail { fill: var(--fail); } .c-fail-t { fill: var(--fail-t); }
     .c-neu { fill: var(--neu); } .c-neu-t { fill: var(--neu-t); }
     .tile { fill: var(--tile); stroke: var(--tilestroke); }
+    .stamp { fill: var(--node); stroke: var(--line); stroke-width: 1.5; } .stamp-l { stroke: var(--line); stroke-width: 1.5; }
+    .stamp-n { font-size: 18px; font-weight: 600; fill: var(--title); }
+    .stamp-t { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 15px; fill: var(--title); }
   </style>
   <rect class="bg" width="1200" height="700"/>
   <path class="g1" d="M0.5 0V700M20.5 0V700M40.5 0V700M60.5 0V700M80.5 0V700M100.5 0V700M120.5 0V700M140.5 0V700M160.5 0V700M180.5 0V700M200.5 0V700M220.5 0V700M240.5 0V700M260.5 0V700M280.5 0V700M300.5 0V700M320.5 0V700M340.5 0V700M360.5 0V700M380.5 0V700M400.5 0V700M420.5 0V700M440.5 0V700M460.5 0V700M480.5 0V700M500.5 0V700M520.5 0V700M540.5 0V700M560.5 0V700M580.5 0V700M600.5 0V700M620.5 0V700M640.5 0V700M660.5 0V700M680.5 0V700M700.5 0V700M720.5 0V700M740.5 0V700M760.5 0V700M780.5 0V700M800.5 0V700M820.5 0V700M840.5 0V700M860.5 0V700M880.5 0V700M900.5 0V700M920.5 0V700M940.5 0V700M960.5 0V700M980.5 0V700M1000.5 0V700M1020.5 0V700M1040.5 0V700M1060.5 0V700M1080.5 0V700M1100.5 0V700M1120.5 0V700M1140.5 0V700M1160.5 0V700M1180.5 0V700M0 0.5H1200M0 20.5H1200M0 40.5H1200M0 60.5H1200M0 80.5H1200M0 100.5H1200M0 120.5H1200M0 140.5H1200M0 160.5H1200M0 180.5H1200M0 200.5H1200M0 220.5H1200M0 240.5H1200M0 260.5H1200M0 280.5H1200M0 300.5H1200M0 320.5H1200M0 340.5H1200M0 360.5H1200M0 380.5H1200M0 400.5H1200M0 420.5H1200M0 440.5H1200M0 460.5H1200M0 480.5H1200M0 500.5H1200M0 520.5H1200M0 540.5H1200M0 560.5H1200M0 580.5H1200M0 600.5H1200M0 620.5H1200M0 640.5H1200M0 660.5H1200M0 680.5H1200" stroke-width="1"/>
@@ -139,9 +142,15 @@
   <path class="flow" d="M1020 310 V336"/>
   <path class="head" d="M1020.0 336.0L1014.0 325.0L1026.0 325.0Z"/>
   <rect class="jn" x="534" y="392" width="12" height="12" transform="rotate(45 540 398)"/>
-  <text class="lab-m" x="40" y="676" text-anchor="start">FIG. 1 · XDRPROOF PIPELINE</text>
-  <path class="flow" d="M716 671H756"/>
-  <text class="lab-m" x="766" y="676" text-anchor="start">DATA</text>
-  <path class="alt" d="M836 671H876"/>
-  <text class="lab-m" x="886" y="676" text-anchor="start">TARGETS · PLANNED</text>
+  <path class="flow" d="M40 671H80"/>
+  <text class="lab-m" x="90" y="676" text-anchor="start">DATA</text>
+  <path class="alt" d="M160 671H200"/>
+  <text class="lab-m" x="210" y="676" text-anchor="start">TARGETS · PLANNED</text>
+  <rect class="stamp" x="754.5" y="651.5" width="433" height="36"/>
+  <path class="stamp-l" d="M888.5 651.5V687.5"/>
+  <path class="stamp-l" d="M970.5 651.5V687.5"/>
+  <image href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlhEUlByb29mIj4KICA8dGl0bGU+WERSUHJvb2Y8L3RpdGxlPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMCkgc2NhbGUoMSkiPgogICAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzEyMTExMCIgc3Ryb2tlPSIjRkFGN0YyIiBzdHJva2Utb3BhY2l0eT0iLjMiIHN0cm9rZS13aWR0aD0iMS4wMDAiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUgNSkgc2NhbGUoMC45MTY2NjY2NjY2NjY2NjY2KSI+CiAgICA8cGF0aCBkPSJNNS45OSA2LjgxTDguMjIgOC44OE0xNi44MSA1LjM2TDE0LjQ4IDguMzZNNi41OSAxOC41NEw4Ljc5IDE1LjcxTTE2Ljk2IDE2Ljk2TDE1LjA1IDE1LjE5TTE5Ljc3IDUuNTFMMjEuMDQgNy41MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkFGN0YyIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNMy42MCAyLjUwTDUuNzAgNC42MEwzLjYwIDYuNzBMMS41MCA0LjYwWiIgZmlsbD0iI0ZBRjdGMiIvPgogICAgPHBhdGggZD0iTTE4LjQwIDEuODVMMTkuODUgMy4zMEwxOC40MCA0Ljc1TDE2Ljk1IDMuMzBaIiBmaWxsPSIjRkFGN0YyIi8+CiAgICA8cGF0aCBkPSJNNS4wMCAxOS4xNUw2LjQ1IDIwLjYwTDUuMDAgMjIuMDVMMy41NSAyMC42MFoiIGZpbGw9IiNGQUY3RjIiLz4KICAgIDxwYXRoIGQ9Ik0xOS42MCAxNi45NUwyMi4wNSAxOS40MEwxOS42MCAyMS44NUwxNy4xNSAxOS40MFoiIGZpbGw9IiNGQUY3RjIiLz4KICAgIDxwYXRoIGQ9Ik0yMi4yMCA4LjM1TDIzLjI1IDkuNDBMMjIuMjAgMTAuNDVMMjEuMTUgOS40MFoiIGZpbGw9IiNGQUY3RjIiLz4KICAgIDxwYXRoIGQ9Ik0xMS42NCA4LjUzTDE1LjE0IDEyLjAzTDExLjY0IDE1LjUzTDguMTQgMTIuMDNaIiBmaWxsPSIjRkREQTI0Ii8+CiAgPC9nPgogIDwvZz4KPC9zdmc+Cg==" x="768.5" y="657.5" width="24" height="24"/>
+  <text class="stamp-n" x="800.5" y="675.5" textLength="74" lengthAdjust="spacingAndGlyphs">xdrproof</text>
+  <text class="stamp-t" x="902.5" y="674.5">Fig. 1</text>
+  <text class="stamp-t" x="984.5" y="674.5">the XDRProof pipeline</text>
 </svg>
