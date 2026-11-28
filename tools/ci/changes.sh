@@ -9,7 +9,7 @@ all() { echo "conformance=true"; echo "replay=true"; exit 0; }
 case "$event" in pull_request|push) ;; *) all ;; esac
 [[ "$base" =~ ^[0-9a-f]{40}$ && "$head" =~ ^[0-9a-f]{40}$ && "$base" != 0000000000000000000000000000000000000000 ]] || all
 # what both suites read: the corpus and its sources, the shared tools and build, and the checkout's own settings
-shared=(catalog entries mined schema tools recipes manifest.json Makefile .github/workflows/deep.yml
+shared=(catalog entries mined schema tools recipes manifest.json Makefile GNUmakefile makefile .github/workflows/deep.yml
         rust-toolchain rust-toolchain.toml .cargo .gitattributes .nvmrc .node-version)
 # git diff --quiet exits 1 when the paths changed, 0 when they did not, anything else on an error; renames count as a
 # delete plus an add, so both the old and the new path are seen. Pathspecs match quoted and non-ASCII names too.

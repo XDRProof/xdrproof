@@ -55,6 +55,10 @@ const unknownOnly = (ONLY ?? []).filter((n) => !TESTEES.some((t) => t.name === n
 if (unknownOnly.length) { console.error(`unknown build(s) in --only: ${unknownOnly.join(', ')}\nbuilds: ${TESTEES.map((t) => t.name).join(', ')}`); process.exit(2); }
 const SELECTED = TESTEES.filter((t) => !ONLY || ONLY.includes(t.name));
 const families = (FAMILIES ?? (ENTRIES !== null ? ['corpus', 'sdk-check'] : ALL)).filter((f) => ALL.includes(f));
+// an empty vector file would pass every build without testing anything: refuse it before any worker starts
+for (const [fam, file] of [['strkey', 'strkey.json'], ['lane-s', 'lane-s.json'], ['depth', 'depth.json']]) {
+  if (families.includes(fam) && !JSON.parse(readFileSync(join(HERE, 'vectors', file), 'utf8')).length) { console.error(`conformance: vectors/${file} is empty, so the ${fam} family would test nothing`); process.exit(1); }
+}
 // --entries: the corpus entries to run (all when absent); a check of another entry is not expected to run
 const ENTRY_IDS = readdirSync(join(ROOT, 'entries')).filter((d) => existsSync(join(ROOT, 'entries', d, 'entry.json'))).sort();
 const unknownEntries = (ENTRIES ?? []).filter((e) => !ENTRY_IDS.includes(e));
@@ -313,8 +317,6 @@ const vkey = (fam, vec) => `${fam}:${vec.id}:${sha(JSON.stringify(vec))}`;
 const vectors = async (fam, file, fn) => {
   if (!families.includes(fam)) return;
   const list = load(file);
-  // an empty vector file would pass every build without testing anything
-  if (!list.length) { console.error(`conformance: ${file} has no vectors, so the ${fam} family would test nothing`); process.exit(1); }
   await mapLimit(list, 16, async (vec) => { await Promise.all(inFamily(fam).map((t) => unit(t, vkey(fam, vec), (put) => fn(t, vec, put)))); rowsLive.vectors?.count(++vectorsDone, vectorCount); });
 };
 await vectors('strkey', 'strkey.json', async (t, vec, put) => {
@@ -422,7 +424,7 @@ if (PROFILE) {
 
 // ---- matrix -------------------------------------------------------------------------------------------------
 mkdirSync(W, { recursive: true });
-writeFileSync(join(W, 'matrix.json'), JSON.stringify({ schema: 'xdrproof.matrix/v1', testees: summary, results: Object.fromEntries([...results].map(([k, m]) => [k, Object.fromEntries(m)])) }, null, 1));
+writeFileSync(join(W, 'matrix.json'), JSON.stringify({ schema: 'xdrproof.matrix/v1', unexpected: unexpected.length, testees: summary, results: Object.fromEntries([...results].map(([k, m]) => [k, Object.fromEntries(m)])) }, null, 1));
 const cell = (c) => (!c ? 'not run' : [c.pass && `${c.pass} pass`, c.expected && `${c.expected} known`, c.unexpected && `**${c.unexpected} unexpected**`, c.na && `${c.na} n/a`].filter(Boolean).join(', ') || 'none');
 let md = `| Family | ${summary.map((s) => `\`${s.name}\``).join(' | ')} |\n|---|${summary.map(() => '---').join('|')}|\n`;
 for (const f of families) md += `| ${f} | ${summary.map((s) => cell(s.counts[f])).join(' | ')} |\n`;
