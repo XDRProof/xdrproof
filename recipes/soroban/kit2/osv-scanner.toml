@@ -1,0 +1,50 @@
+# Known advisories in this folder's lockfile, and why each is accepted (checked 28 Nov 2026 against OSV with the
+# exact locked versions). Re-check when the lockfile changes.
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0436"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0387"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0543"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0574"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0575"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0576"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0577"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0578"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0579"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0580"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0581"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0582"
+reason = "Test contract pinned on purpose. Its compiled Wasm is test data that this repository distributes, and the generated ledgers depend on its exact bytes. It runs only inside a throwaway standalone stellar-core with test keys. The affected crates run on a build machine only when the contract is rebuilt from source."

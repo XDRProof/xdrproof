@@ -2,8 +2,8 @@
 
 ## Reporting a vulnerability in XDRProof
 
-Please report it privately through GitHub: **Security → Report a vulnerability** on this repository. Don't open a
-public issue. XDRProof has one maintainer, so these are targets, not guarantees: a reply within 3 working days, and a
+Please report it privately through GitHub: **Security → Report a vulnerability** on this repository, or open the form
+directly at <https://github.com/XDRProof/xdrproof/security/advisories/new>. Don't open a public issue. XDRProof has one maintainer, so these are targets, not guarantees: a reply within 3 working days, and a
 fix or a mitigation plan within 30 days. You'll be credited in the release notes unless you'd rather not be named.
 
 In scope: anything in this repository that could mislead a user or harm their machine or CI. That includes a corpus
