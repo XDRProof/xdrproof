@@ -3,6 +3,7 @@
 //   - .github/assets/roadmap/dNN.svg: "How the parts fit" for each deliverable, in our drawing style (paper, ink,
 //     gold), with our mark in the stamp at its foot (every figure carries it, Abu, 24 Nov 2026). Text is drawn as
 //     outlines (tools/cast/fonts), so the picture looks the same on GitHub's light and dark themes and needs no font.
+//   - .github/assets/ideas/<slug>.svg: "How it would fit" for each idea in ideas.mjs (not in the proposal), same style.
 //   - with --bodies: dNN.md, the body of issue #NN in the "R1 + R3" format, and titles.json. The pictures are linked
 //     at a pinned commit (--sha), so a later change to the repository never changes a posted issue.
 // Needs the fonts' reader once: npm ci --ignore-scripts --prefix tools/cast
@@ -12,6 +13,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { textPath, loadFont, esc, r1 } from '../cast/svg.mjs';
 import { DELIVERABLES, TRANCHES } from './deliverables.mjs';
+import { IDEAS } from './ideas.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url)), ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, '.github', 'assets', 'roadmap');
@@ -39,8 +41,14 @@ function arrow(x1, y1, x2, y2) {
     + `<path d="M${r1(x2)} ${r1(y2)}L${r1(bx - uy * Hw)} ${r1(by + ux * Hw)}L${r1(bx + uy * Hw)} ${r1(by - ux * Hw)}Z" fill="${INK}"/>`;
 }
 
+// d is a deliverable, or an idea that brings its own heading, legend words and stamp cells (ideas.mjs)
 function diagram(d) {
-  const t = TRANCHES[d.tranche], nodes = d.diagram.nodes;
+  const nodes = d.diagram.nodes, who = d.fig ? d.slug : `D${d.n}`;
+  const f = d.fig ?? {
+    kicker: `DELIVERABLE ${d.n} · ${d.short.toUpperCase()}`, title: 'How the parts fit', name: `Deliverable ${d.n}`,
+    ships: `ships in Deliverable ${d.n}`, there: 'in XDRProof by then',
+    cells: [`Deliverable ${d.n}`, `Tranche ${d.tranche} · due ${TRANCHES[d.tranche].short}`],
+  };
   const cols = [0, 1, 2].map((c) => nodes.filter((n) => n.col === c));
   const rows = Math.max(...cols.map((c) => c.length));
   const at = new Map();
@@ -55,18 +63,18 @@ function diagram(d) {
   svg += `<path d="${grid}" stroke="rgba(21,19,15,.06)" stroke-width="1"/>`;
   svg += `<rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="${INK}" stroke-width="2"/>`;
   // heading
-  svg += text(MONO, `DELIVERABLE ${d.n} · ${d.short.toUpperCase()}`, PAD, 48, 14, GOLD_INK, 0.17);
-  svg += text(SANS, 'How the parts fit', PAD, 84, 27, INK, -0.01);
+  svg += text(MONO, f.kicker, PAD, 48, 14, GOLD_INK, 0.17);
+  svg += text(SANS, f.title, PAD, 84, 27, INK, -0.01);
   // arrows first, boxes over them
   for (const [a, b] of d.diagram.edges) {
     const A = at.get(a), B = at.get(b);
-    if (!A || !B) throw new Error(`roadmap: D${d.n} edge ${a} → ${b} names a missing box`);
+    if (!A || !B) throw new Error(`roadmap: ${who} edge ${a} → ${b} names a missing box`);
     if (A.c === B.c) {
-      if (Math.abs(A.i - B.i) !== 1) throw new Error(`roadmap: D${d.n} edge ${a} → ${b} skips a box`);
+      if (Math.abs(A.i - B.i) !== 1) throw new Error(`roadmap: ${who} edge ${a} → ${b} skips a box`);
       const down = B.y > A.y, cx = A.x + BOX_W / 2;
       svg += arrow(cx, A.y + (down ? 1 : -1) * BOX_H / 2, cx, B.y - (down ? 1 : -1) * (BOX_H / 2 + 1));
     } else {
-      if (B.c !== A.c + 1) throw new Error(`roadmap: D${d.n} edge ${a} → ${b} must go one column right`);
+      if (B.c !== A.c + 1) throw new Error(`roadmap: ${who} edge ${a} → ${b} must go one column right`);
       svg += arrow(A.x + BOX_W, A.y, B.x - 2, B.y);
     }
   }
@@ -74,11 +82,11 @@ function diagram(d) {
     const top = y - BOX_H / 2, fill = n.kind === 'ships' ? GOLD : SHEET;
     svg += `<rect x="${x}" y="${r1(top)}" width="${BOX_W}" height="${BOX_H}" fill="${fill}" stroke="${INK}" stroke-width="2"${n.kind === 'outside' ? ' stroke-dasharray="6 5"' : ''}/>`;
     const room = BOX_W - 36;
-    svg += text(SANS, n.title, x + 18, r1(y - 4), fit(SANS, n.title, 19, 15, room, `D${d.n} ${n.id} title`), INK);
-    svg += text(MONO, n.sub, x + 18, r1(y + 20), fit(MONO, n.sub, 13, 11, room, `D${d.n} ${n.id} line`), n.kind === 'ships' ? '#3B3731' : MUTED);
+    svg += text(SANS, n.title, x + 18, r1(y - 4), fit(SANS, n.title, 19, 15, room, `${who} ${n.id} title`), INK);
+    svg += text(MONO, n.sub, x + 18, r1(y + 20), fit(MONO, n.sub, 13, 11, room, `${who} ${n.id} line`), n.kind === 'ships' ? '#3B3731' : MUTED);
   }
   // legend: only the kinds this picture uses
-  const kinds = [['ships', `ships in Deliverable ${d.n}`], ['there', 'in XDRProof by then'], ['outside', 'outside XDRProof']]
+  const kinds = [['ships', f.ships], ['there', f.there], ['outside', 'outside XDRProof']]
     .filter(([k]) => nodes.some((n) => n.kind === k));
   let lx = PAD;
   for (const [k, label] of kinds) {
@@ -86,17 +94,17 @@ function diagram(d) {
     svg += text(MONO, label, lx + 22, legendY + 12, 13, INK);
     lx += 22 + width(MONO, label, 13) + 30;
   }
-  // the stamp: our mark and name | the deliverable | its tranche and due date
-  const c1 = 14 + 22 + 8 + width(SANS, 'xdrproof', 17) + 14, c2 = 28 + width(MONO, `Deliverable ${d.n}`, 14);
-  const third = `Tranche ${d.tranche} · due ${t.short}`, c3 = 28 + width(MONO, third, 14);
+  // the stamp: our mark and name | the deliverable (or "Idea") | its tranche and due date (or that it is unfunded)
+  const [second, third] = f.cells;
+  const c1 = 14 + 22 + 8 + width(SANS, 'xdrproof', 17) + 14, c2 = 28 + width(MONO, second, 14), c3 = 28 + width(MONO, third, 14);
   const sx = W - 1 - (c1 + c2 + c3), base = stampTop + 22; // its own row, under the legend
   svg += `<rect x="${r1(sx)}" y="${stampTop}" width="${r1(c1 + c2 + c3)}" height="${H - 1 - stampTop}" fill="${SHEET}" stroke="${INK}" stroke-width="2"/>`;
   svg += `<path d="M${r1(sx + c1)} ${stampTop}V${H - 1}M${r1(sx + c1 + c2)} ${stampTop}V${H - 1}" stroke="${INK}" stroke-width="2"/>`;
   svg += `<g transform="translate(${r1(sx + 14)} ${stampTop + 6}) scale(${r1(22 / 32 * 100) / 100})">${mark}</g>`;
   svg += text(SANS, 'xdrproof', sx + 14 + 22 + 8, base, 17, INK);
-  svg += text(MONO, `Deliverable ${d.n}`, sx + c1 + 14, base, 14, INK);
+  svg += text(MONO, second, sx + c1 + 14, base, 14, INK);
   svg += text(MONO, third, sx + c1 + c2 + 14, base, 14, INK);
-  const label = `Deliverable ${d.n}, how the parts fit: ` + nodes.map((n) => `${n.title} (${n.sub})`).join('; ') + `. Stamp: xdrproof, Deliverable ${d.n}, ${third}.`;
+  const label = `${f.name}, ${f.title.toLowerCase()}: ` + nodes.map((n) => `${n.title} (${n.sub})`).join('; ') + `. Stamp: xdrproof, ${second}, ${third}.`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}"><title>${esc(label)}</title>${svg}</svg>\n`;
 }
 
@@ -124,6 +132,13 @@ for (const d of DELIVERABLES) {
   const nn = String(d.n).padStart(2, '0'), svg = diagram(d);
   writeFileSync(join(OUT, `d${nn}.svg`), svg);
   console.log(`d${nn}.svg  ${(svg.length / 1024).toFixed(0)} KB  ${d.short}`);
+}
+const IDEAS_OUT = join(ROOT, '.github', 'assets', 'ideas');
+mkdirSync(IDEAS_OUT, { recursive: true });
+for (const idea of IDEAS) {
+  const svg = diagram(idea);
+  writeFileSync(join(IDEAS_OUT, `${idea.slug}.svg`), svg);
+  console.log(`ideas/${idea.slug}.svg  ${(svg.length / 1024).toFixed(0)} KB`);
 }
 if (BODIES) {
   // the pinned commit must hold every picture exactly as drawn now, or the posted issues show broken or stale images
