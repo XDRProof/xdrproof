@@ -1,0 +1,6 @@
+# Known advisories in this folder's lockfile, and why each is accepted (checked 28 Nov 2026 against OSV with the
+# exact locked versions). Re-check when the lockfile changes.
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0543"
+reason = "Informational notice (unmaintained crate), not a vulnerability: chrono comes in through serde_with; the reader uses no date handling."
