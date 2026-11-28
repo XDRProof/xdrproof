@@ -313,6 +313,8 @@ const vkey = (fam, vec) => `${fam}:${vec.id}:${sha(JSON.stringify(vec))}`;
 const vectors = async (fam, file, fn) => {
   if (!families.includes(fam)) return;
   const list = load(file);
+  // an empty vector file would pass every build without testing anything
+  if (!list.length) { console.error(`conformance: ${file} has no vectors, so the ${fam} family would test nothing`); process.exit(1); }
   await mapLimit(list, 16, async (vec) => { await Promise.all(inFamily(fam).map((t) => unit(t, vkey(fam, vec), (put) => fn(t, vec, put)))); rowsLive.vectors?.count(++vectorsDone, vectorCount); });
 };
 await vectors('strkey', 'strkey.json', async (t, vec, put) => {
@@ -400,6 +402,7 @@ for (const t of testees) {
   if (!got.startsWith(want)) miss(`${t.name}: the testee reports version ${got || 'none'}, not ${want}`);
   // --only picks builds, not checks: a selected build still runs every check of its families
   for (const k of Object.keys(exp.fail ?? {})) if (!mine.has(k) && families.includes(k.split('/')[0]) && t.families.includes(k.split('/')[0]) && checkRan(k)) miss(`${t.name} ${k}: expected to fail, but the check did not run`);
+  if (families.includes('depth') && t.families.includes('depth') && exp.depth_max != null && !(t.name in depthMax)) miss(`${t.name} depth: no depth result, expected ${exp.depth_max} levels`);
   if (t.name in depthMax && exp.depth_max !== undefined && exp.depth_max !== null && depthMax[t.name] !== exp.depth_max) miss(`${t.name} depth: decodes to ${depthMax[t.name]} levels, expected ${exp.depth_max}`);
   summary.push({ name: t.name, implementation: hello[t.name], counts, depth_max: depthMax[t.name] ?? null });
   if (RECORD) {

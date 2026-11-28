@@ -3,8 +3,9 @@
 #   replay       every corpus variant into wallet-backend main, one isolated session per ledger (make replay-main)
 # A pull request runs only the suites its files can affect (tools/ci/changes.sh); one that touches neither passes in
 # seconds. Every suite also runs nightly, on each push to main that affects it, and by hand.
-# The repository is public, so its logs are too: each suite's full output goes to a file, and the log shows it through
-# tools/ci/public-log.mjs, which withholds any line naming a crash or halt on a specific ledger (findings/policy.md).
+# The repository is public, so its logs are too: each suite's output goes to a file that is never printed, and the log
+# shows tools/ci/summary.mjs instead, counts from the suite's structured results (findings/policy.md: a crash or a
+# halt is reported privately first). To see which inputs failed, run the suite locally.
 name: deep
 on:
   pull_request:
@@ -15,9 +16,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# a new push to a pull request replaces its older run; runs on main (pushes, nightly, by hand) never cancel each other
 concurrency:
-  group: deep-${{ github.ref }}
-  cancel-in-progress: true
+  group: deep-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   changes:
     name: what changed
@@ -36,7 +38,11 @@ jobs:
           EVENT: ${{ github.event_name }}
           BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.sha }}
-        run: tools/ci/changes.sh "$EVENT" "$BASE" "$HEAD" | tee -a "$GITHUB_OUTPUT"
+        shell: bash
+        run: |
+          tools/ci/changes.sh "$EVENT" "$BASE" "$HEAD" > changes.out
+          cat changes.out
+          cat changes.out >> "$GITHUB_OUTPUT"
 
   conformance:
     name: conformance
@@ -52,11 +58,14 @@ jobs:
         with:
           node-version: 24
       - name: make conformance
+        shell: bash
         run: |
+          start=$(( $(date +%s) * 1000 ))
           set +e
           make conformance > conformance.log 2>&1
           status=$?
-          node tools/ci/public-log.mjs conformance.log
+          set -e
+          node tools/ci/summary.mjs conformance conformance.log "$start"
           exit $status
 
   replay:
@@ -73,11 +82,14 @@ jobs:
         with:
           node-version: 24
       - name: make replay-main
+        shell: bash
         run: |
+          start=$(( $(date +%s) * 1000 ))
           set +e
           make replay-main > replay.log 2>&1
           status=$?
-          node tools/ci/public-log.mjs replay.log
+          set -e
+          node tools/ci/summary.mjs replay replay.log "$start"
           exit $status
 
   # The one required check. It fails unless "what changed" succeeded and every suite it selected succeeded; a suite
