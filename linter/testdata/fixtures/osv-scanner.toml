@@ -1,534 +1,83 @@
-# Known advisories in this folder's lockfile, and why each is accepted (checked 28 Nov 2026 against OSV with the
-# exact locked versions). Re-check when the lockfile changes.
-
-[[IgnoredVulns]]
-id = "GHSA-259r-337f-4rfw"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-2wrh-6pvc-2jm9"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-39qc-96h7-956f"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-3vm4-22fp-5rfm"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-4374-p667-p6c8"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-45gg-vh54-h5m9"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-45x7-px36-x8w8"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-4v7x-pqxf-cx7m"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-4w3g-jfj2-cw2q"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-5cgq-3rg8-m6cv"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-5cv4-jp36-h3mw"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-5rcv-m4m3-hfh7"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-69cg-p879-7622"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-69ch-w2m2-3vjp"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-78mq-xcr3-xm33"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-83g2-8m93-v3w7"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-89gr-r52h-f8rx"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-8c26-wmh5-6g9v"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-8wmf-6v46-5gfg"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-9m57-25v3-79x9"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-cjjc-xp8v-855w"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-f5wc-c3c7-36mc"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-f6x5-jh6r-wrfv"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-ffhg-7mh4-33c4"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-fxg5-wq6x-vr4w"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-gwc9-m7rh-j2ww"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-h86h-8ppg-mxmh"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-hcg3-q754-cr77"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-hgr8-6h9x-f7q9"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-hp87-p4gw-j4gq"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-j5w8-q4qc-rx2x"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-jppx-rxg9-jmrx"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-mgcc-cww5-fp2q"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-p782-xgp4-8hr8"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-ppp9-7jff-5vj2"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-q4h4-gmj2-qvw2"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-q7gw-24fr-5p69"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-qppj-fm5r-hxr3"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-qpw4-5x99-6vjp"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-qxp5-gwg8-xv66"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-r5c5-pr8j-pfp7"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-rm3j-f69w-wqmq"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-v778-237x-gjrc"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-vgwf-h737-ff37"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-vvgc-356p-c3xw"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-vvm8-gf78-28g4"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-vvpx-j8f3-3w6h"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-w879-237q-wc7r"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-x3jr-pf6g-c48f"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-x527-x647-q7gg"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GHSA-xrjj-mj9h-534m"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2020-0012"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2020-0015"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2021-0113"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2021-0227"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2021-0238"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2021-0356"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0209"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0229"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0236"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0288"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0493"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0536"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0603"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+# Known advisories for the module versions this fixture's go.mod selects, and why each is accepted (checked 28 Nov
+# 2026 against OSV; one ID per advisory). Re-check when go.mod changes. Older versions that appear only as checksums
+# in go.sum are not selected, so they are not listed.
 
 [[IgnoredVulns]]
 id = "GO-2022-0635"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (github.com/aws/aws-sdk-go@v1.45.27) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2022-0646"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0968"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-0969"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-1059"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2022-1144"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-1495"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-1571"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-1988"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-1992"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-2102"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2023-2402"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2024-2687"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2024-2961"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2024-3321"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2024-3333"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-3487"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-3503"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-3595"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-4116"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-4134"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2025-4135"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-4316"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-4440"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-4441"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-4918"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-4950"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5005"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5006"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5013"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5014"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5015"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5016"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5017"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5018"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5019"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5020"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5021"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5024"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5025"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5026"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5027"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5028"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5029"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5030"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5033"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5320"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (github.com/aws/aws-sdk-go@v1.45.27) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-5841"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (github.com/klauspost/compress@v1.17.6) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-5932"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5942"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-5970"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-6179"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-6180"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-6303"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/crypto@v0.55.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6354"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/crypto@v0.55.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6355"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/crypto@v0.55.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6505"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (go.opentelemetry.io/otel/sdk@v1.44.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6603"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6610"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6611"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6612"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6617"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-6629"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6860"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6865"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (github.com/klauspost/compress@v1.17.6) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6866"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
-
-[[IgnoredVulns]]
-id = "GO-2026-6888"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (golang.org/x/net@v0.58.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6974"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (go.opentelemetry.io/otel/sdk@v1.44.0, go.opentelemetry.io/otel/trace@v1.44.0) and checks its syntax and types; it is never built into anything that runs."
 
 [[IgnoredVulns]]
 id = "GO-2026-6975"
-reason = "Linter test data: Go code that xplint reads and analyses, mirroring real indexers' dependencies. It is never built into anything that runs."
+reason = "Linter test data: xplint reads this Go code (go.opentelemetry.io/otel@v1.44.0) and checks its syntax and types; it is never built into anything that runs."
+
+[[IgnoredVulns]]
+id = "GHSA-4w3g-jfj2-cw2q"
+reason = "Linter test data: xplint reads this Go code (github.com/go-jose/go-jose/v4@v4.1.4) and checks its syntax and types; it is never built into anything that runs."
+
+[[IgnoredVulns]]
+id = "GHSA-mgcc-cww5-fp2q"
+reason = "Linter test data: xplint reads this Go code (github.com/go-jose/go-jose/v4@v4.1.4) and checks its syntax and types; it is never built into anything that runs."
+
+[[IgnoredVulns]]
+id = "GHSA-vvm8-gf78-28g4"
+reason = "Linter test data: xplint reads this Go code (github.com/go-jose/go-jose/v4@v4.1.4) and checks its syntax and types; it is never built into anything that runs."
