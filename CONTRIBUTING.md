@@ -20,8 +20,9 @@ ledger that broke your code, an expected value you think is wrong, and fixes.
 
 1. Branch from `main`, make the change, and open a pull request. The template asks what changed, why, and how it was
    checked.
-2. CI must pass: the `check` workflow's two jobs, `verify and novelty` and `linter self-test`. The branch must be up to
-   date with `main`.
+2. CI must pass: the `check` workflow's two jobs, `verify and novelty` and `linter self-test`, and `deep checks`, which
+   runs `make conformance` and `make replay-main` when the change can affect them (it passes in seconds when it
+   cannot). The branch must be up to date with `main`.
 3. Pull requests are squash-merged. A branch in this repository is deleted after the merge; a fork's branch is yours
    to delete.
 

@@ -1,0 +1,112 @@
+# deep: the long runs that `check` leaves out, as one required check, "deep checks".
+#   conformance  every corpus variant and vector through the 6 SDK builds (make conformance)
+#   replay       every corpus variant into wallet-backend main, one isolated session per ledger (make replay-main)
+# A pull request runs only the suites its files can affect (tools/ci/changes.sh); one that touches neither passes in
+# seconds. Every suite also runs nightly, on each push to main that affects it, and by hand.
+# The repository is public, so its logs are too: each suite's full output goes to a file, and the log shows it through
+# tools/ci/public-log.mjs, which withholds any line naming a crash or halt on a specific ledger (findings/policy.md).
+name: deep
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deep-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  changes:
+    name: what changed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      conformance: ${{ steps.pick.outputs.conformance }}
+      replay: ${{ steps.pick.outputs.replay }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pick
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.sha }}
+        run: tools/ci/changes.sh "$EVENT" "$BASE" "$HEAD" | tee -a "$GITHUB_OUTPUT"
+
+  conformance:
+    name: conformance
+    needs: changes
+    if: needs.changes.outputs.conformance == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: make conformance
+        run: |
+          set +e
+          make conformance > conformance.log 2>&1
+          status=$?
+          node tools/ci/public-log.mjs conformance.log
+          exit $status
+
+  replay:
+    name: replay
+    needs: changes
+    if: needs.changes.outputs.replay == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: make replay-main
+        run: |
+          set +e
+          make replay-main > replay.log 2>&1
+          status=$?
+          node tools/ci/public-log.mjs replay.log
+          exit $status
+
+  # The one required check. It fails unless "what changed" succeeded and every suite it selected succeeded; a suite
+  # may be skipped only when "what changed" said it was not needed.
+  gate:
+    name: deep checks
+    needs: [changes, conformance, replay]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          CHANGES: ${{ needs.changes.result }}
+          WANT_CONFORMANCE: ${{ needs.changes.outputs.conformance }}
+          GOT_CONFORMANCE: ${{ needs.conformance.result }}
+          WANT_REPLAY: ${{ needs.changes.outputs.replay }}
+          GOT_REPLAY: ${{ needs.replay.result }}
+        run: |
+          [ "$CHANGES" = success ] || { echo "what changed: $CHANGES"; exit 1; }
+          ok=1
+          check() {
+            case "$2" in
+              true)  [ "$3" = success ] || { echo "$1 was needed and ended $3"; ok=0; } ;;
+              false) [ "$3" = skipped ] || { echo "$1 was not needed but ended $3"; ok=0; } ;;
+              *)     echo "$1: unclear whether it was needed ('$2')"; ok=0 ;;
+            esac
+          }
+          check conformance "$WANT_CONFORMANCE" "$GOT_CONFORMANCE"
+          check replay "$WANT_REPLAY" "$GOT_REPLAY"
+          [ "$ok" = 1 ] && echo "deep checks: conformance $GOT_CONFORMANCE, replay $GOT_REPLAY"
+          [ "$ok" = 1 ]
