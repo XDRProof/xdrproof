@@ -105,7 +105,7 @@ The generator runs a standalone stellar-core (no peers) in Docker, with test-onl
 | Part | Choice | Why |
 |---|---|---|
 | Ledgers | stellar-core v30.0.0 (Docker, pinned digest), SDF's public data lake | the bytes the network writes |
-| Reference decoding | rs-stellar-xdr 30.0.0 (native), stellar-core `dump-xdr` | independent of every SDK under test |
+| Reference decoding | rs-stellar-xdr 30.0.0 (native), stellar-core `dump-xdr` | stellar-core's decoder shares no code with any SDK under test; the native reader depends on the same `stellar-xdr` 30.0.0 crate as the rs-stellar-xdr and `@stellar/stellar-xdr-json` builds under test |
 | Tooling | Node.js, Rust | the corpus tools and the native reader |
 | Linter | Go, `golang.org/x/tools` | the language of wallet-backend, stellar-etl and the SDK's ingest code |
 | Replay | Docker, TimescaleDB (wallet-backend's own pinned image) | each indexer in its real environment |
