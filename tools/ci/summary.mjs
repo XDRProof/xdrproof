@@ -39,6 +39,16 @@ function replay() {
   console.log(`replay: wallet-backend ${String(r.ref ?? '').replace(/[^0-9a-f]/g, '').slice(0, 12)}, ${n(r.judged)} variants judged${r.partial ? ' (partial)' : ''}`);
   console.log(`  verdicts: ${counts || 'none'}`);
   console.log(`  mismatches with replay/expectations: ${n(r.mismatches?.length)}; harness errors: ${n(r.errors?.length)}`);
+  // a harness or adapter error is XDRProof's own failure (reading the ledger, querying the indexer's database), never a
+  // crash or halt of the indexer, so its message is shown, cleaned and cut short, to make CI failures debuggable
+  const errs = (r.sessions ?? []).filter((x) => x.verdict === 'error' && x.error);
+  if (errs.length) {
+    const token = randomBytes(16).toString('hex');
+    console.log(`  harness or adapter errors (${errs.length}):`);
+    console.log(`::stop-commands::${token}`);
+    for (const x of errs.slice(0, 10)) console.log(`    ${String(x.error).replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, '').replace(/[\x00-\x1f\x7f]/g, ' ').slice(0, 200)}`);
+    console.log(`::${token}::`);
+  }
   if (r.harness_peak_rss_bytes) console.log(`  harness peak memory: ${Math.round(r.harness_peak_rss_bytes / 1048576)} MiB`);
   console.log(r.mismatches?.length || r.errors?.length ? 'replay: run make replay-main locally to see which variants.' : 'replay: every verdict as expected.');
   return true;
