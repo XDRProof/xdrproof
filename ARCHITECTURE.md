@@ -142,9 +142,9 @@ network. None is unclassified. stellar-core's own 866 golden ledger files reach 
 ## 8. SDK conformance runner
 
 `conformance/` runs each SDK build as a testee speaking one line-delimited JSON protocol, so a new language needs one
-small program. Every corpus variant, 164 strkeys (SEP-0023, all ten types), 14 invalid-input vectors and a depth
-ladder run through js-stellar-sdk 17.4.0, `@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk
-v0.9.0, py-stellar-base 17.0.1 and its successor `stellar-xdr` 0.2.1; five older releases run the regression vectors
+small program. Every corpus variant, 14 invalid-input vectors and a depth ladder run through js-stellar-sdk 17.4.0,
+`@stellar/stellar-xdr-json` 30.0.0, rs-stellar-xdr 30.0.0, go-stellar-sdk v0.9.0, py-stellar-base 17.0.1 and its
+successor `stellar-xdr` 0.2.1, and 164 strkeys (SEP-0023, all ten types) through all but `@stellar/stellar-xdr-json`; five older releases run the regression vectors
 for bugs already fixed upstream. Every known difference is pinned with its cause in `conformance/expectations/`, so a
 new failure, and a fix upstream, both fail the run until the expectation is updated.
 
@@ -183,7 +183,7 @@ from, and a check clears a value only when every source of it passed the check. 
 for GitHub code scanning.
 
 `make lint-selftest` catches 44 seeded violations, flags none of 31 good cases and catches 17 mutants. `make lint`
-runs it on real code: wallet-backend `main` has 4 findings, all true (the unbounded walk of #820 and three Blend
+runs it on real code: wallet-backend `18db88f4` (its `main` on 18 Nov) has 4 findings, all true (the unbounded walk of #820 and three Blend
 sites); with XDRProof's two patches it has 0, and wallet-backend's build, vet and tests pass. stellar-etl has 12, all
 matching open issues (#504, #462, #488); go-stellar-sdk's ingest packages have 0. It also fires before each upstream
 fix of these mistakes and goes quiet after.
@@ -262,7 +262,7 @@ a monitoring plan (what is watched, what triggers action, who responds), as SCF 
 | Part | Choice | Why |
 |---|---|---|
 | Ledgers | stellar-core v30.0.0 (Docker, pinned digest), SDF's public data lake | the bytes the network writes |
-| Reference decoding | rs-stellar-xdr 30.0.0 (native), stellar-core `dump-xdr` | independent of every SDK under test |
+| Reference decoding | rs-stellar-xdr 30.0.0 (native), stellar-core `dump-xdr` | stellar-core's decoder shares no code with any SDK under test; the native reader is the same crate as the rs-stellar-xdr build under test |
 | Tooling | Node.js 22, Rust | the corpus tools and the native reader |
 | Linter | Go, `golang.org/x/tools` v0.52.0 | the language of wallet-backend, stellar-etl and the SDK's ingest code |
 | Replay | Docker, TimescaleDB (wallet-backend's own pinned image) | each indexer in its real environment |
