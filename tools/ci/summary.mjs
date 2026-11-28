@@ -41,7 +41,8 @@ function replay() {
   console.log(`  mismatches with replay/expectations: ${n(r.mismatches?.length)}; harness errors: ${n(r.errors?.length)}`);
   // a harness or adapter error is XDRProof's own failure (reading the ledger, querying the indexer's database), never a
   // crash or halt of the indexer, so its message is shown, cleaned and cut short, to make CI failures debuggable
-  const errs = (r.sessions ?? []).filter((x) => x.verdict === 'error' && x.error);
+  const errs = (r.sessions ?? []).filter((x) => x.verdict === 'error').map((x) => ({ error: x.error
+    ?? (x.failures ?? []).filter((f) => f.status === 'error').map((f) => `${f.kind}: ${f.got}`).join('; ') ?? 'no message' }));
   if (errs.length) {
     const token = randomBytes(16).toString('hex');
     console.log(`  harness or adapter errors (${errs.length}):`);
