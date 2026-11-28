@@ -1,0 +1,14 @@
+# Dependabot keeps the GitHub Actions in .github/workflows current; they are pinned to full commit SHAs.
+# The SDK versions in conformance/testees are pinned on purpose (each one is a build under test), so they are not
+# updated here.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
