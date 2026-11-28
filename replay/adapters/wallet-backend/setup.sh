@@ -24,7 +24,8 @@ pull_once "$RUN_IMAGE" "a small Linux image for the sessions"
 echo "status: starting the database" >&2
 if ! docker inspect -f '{{.State.Running}}' "$DB" 2>/dev/null | grep -q true; then
   docker rm -f "$DB" >/dev/null 2>&1 || true
-  docker run -d --name "$DB" --network "$NET" -e POSTGRES_HOST_AUTH_METHOD=trust "$DB_IMAGE" \
+  # PostgreSQL's parallel workers use /dev/shm; Docker's default of 64 MB is too small under concurrent sessions
+  docker run -d --name "$DB" --network "$NET" --shm-size=1g -e POSTGRES_HOST_AUTH_METHOD=trust "$DB_IMAGE" \
     postgres -c max_connections=500 -c timescaledb.enable_chunk_skipping=on -c timescaledb.enable_sparse_index_bloom=on >/dev/null
 fi
 echo "status: waiting for the database" >&2

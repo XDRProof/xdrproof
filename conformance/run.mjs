@@ -55,6 +55,10 @@ const unknownOnly = (ONLY ?? []).filter((n) => !TESTEES.some((t) => t.name === n
 if (unknownOnly.length) { console.error(`unknown build(s) in --only: ${unknownOnly.join(', ')}\nbuilds: ${TESTEES.map((t) => t.name).join(', ')}`); process.exit(2); }
 const SELECTED = TESTEES.filter((t) => !ONLY || ONLY.includes(t.name));
 const families = (FAMILIES ?? (ENTRIES !== null ? ['corpus', 'sdk-check'] : ALL)).filter((f) => ALL.includes(f));
+// an empty vector file would pass every build without testing anything: refuse it before any worker starts
+for (const [fam, file] of [['strkey', 'strkey.json'], ['lane-s', 'lane-s.json'], ['depth', 'depth.json']]) {
+  if (families.includes(fam) && !JSON.parse(readFileSync(join(HERE, 'vectors', file), 'utf8')).length) { console.error(`conformance: vectors/${file} is empty, so the ${fam} family would test nothing`); process.exit(1); }
+}
 // --entries: the corpus entries to run (all when absent); a check of another entry is not expected to run
 const ENTRY_IDS = readdirSync(join(ROOT, 'entries')).filter((d) => existsSync(join(ROOT, 'entries', d, 'entry.json'))).sort();
 const unknownEntries = (ENTRIES ?? []).filter((e) => !ENTRY_IDS.includes(e));
@@ -400,6 +404,7 @@ for (const t of testees) {
   if (!got.startsWith(want)) miss(`${t.name}: the testee reports version ${got || 'none'}, not ${want}`);
   // --only picks builds, not checks: a selected build still runs every check of its families
   for (const k of Object.keys(exp.fail ?? {})) if (!mine.has(k) && families.includes(k.split('/')[0]) && t.families.includes(k.split('/')[0]) && checkRan(k)) miss(`${t.name} ${k}: expected to fail, but the check did not run`);
+  if (families.includes('depth') && t.families.includes('depth') && exp.depth_max != null && !(t.name in depthMax)) miss(`${t.name} depth: no depth result, expected ${exp.depth_max} levels`);
   if (t.name in depthMax && exp.depth_max !== undefined && exp.depth_max !== null && depthMax[t.name] !== exp.depth_max) miss(`${t.name} depth: decodes to ${depthMax[t.name]} levels, expected ${exp.depth_max}`);
   summary.push({ name: t.name, implementation: hello[t.name], counts, depth_max: depthMax[t.name] ?? null });
   if (RECORD) {
@@ -419,7 +424,7 @@ if (PROFILE) {
 
 // ---- matrix -------------------------------------------------------------------------------------------------
 mkdirSync(W, { recursive: true });
-writeFileSync(join(W, 'matrix.json'), JSON.stringify({ schema: 'xdrproof.matrix/v1', testees: summary, results: Object.fromEntries([...results].map(([k, m]) => [k, Object.fromEntries(m)])) }, null, 1));
+writeFileSync(join(W, 'matrix.json'), JSON.stringify({ schema: 'xdrproof.matrix/v1', unexpected: unexpected.length, testees: summary, results: Object.fromEntries([...results].map(([k, m]) => [k, Object.fromEntries(m)])) }, null, 1));
 const cell = (c) => (!c ? 'not run' : [c.pass && `${c.pass} pass`, c.expected && `${c.expected} known`, c.unexpected && `**${c.unexpected} unexpected**`, c.na && `${c.na} n/a`].filter(Boolean).join(', ') || 'none');
 let md = `| Family | ${summary.map((s) => `\`${s.name}\``).join(' | ')} |\n|---|${summary.map(() => '---').join('|')}|\n`;
 for (const f of families) md += `| ${f} | ${summary.map((s) => cell(s.counts[f])).join(' | ')} |\n`;

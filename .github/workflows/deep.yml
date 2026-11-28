@@ -1,0 +1,138 @@
+# deep: the long runs that `check` leaves out, as one required check, "deep checks".
+#   conformance  every corpus variant and vector through the 6 SDK builds (make conformance)
+#   replay       every corpus variant into wallet-backend main, one isolated session per ledger (make replay-main)
+# A pull request runs only the suites its files can affect (tools/ci/changes.sh); one that touches neither passes in
+# seconds. Every suite also runs nightly, on each push to main that affects it, and by hand.
+# The repository is public, so its logs are too: each suite's output goes to a file that is never printed, and the log
+# shows tools/ci/summary.mjs instead, counts from the suite's structured results (findings/policy.md: a crash or a
+# halt is reported privately first). To see which inputs failed, run the suite locally.
+name: deep
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+# a new push to a pull request replaces its older run; runs on main (pushes, nightly, by hand) never cancel each other
+concurrency:
+  group: deep-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  changes:
+    name: what changed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      conformance: ${{ steps.pick.outputs.conformance }}
+      replay: ${{ steps.pick.outputs.replay }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pick
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          tools/ci/changes.sh "$EVENT" "$BASE" "$HEAD" > changes.out
+          cat changes.out
+          cat changes.out >> "$GITHUB_OUTPUT"
+
+  conformance:
+    name: conformance
+    needs: changes
+    if: needs.changes.outputs.conformance == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: make conformance
+        shell: bash
+        run: |
+          start=$(( $(date +%s) * 1000 ))
+          set +e
+          make conformance > conformance.log 2>&1
+          status=$?
+          set -e
+          node tools/ci/summary.mjs conformance conformance.log "$start"
+          exit $status
+
+  replay:
+    name: replay
+    needs: changes
+    if: needs.changes.outputs.replay == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: make replay-main
+        shell: bash
+        run: |
+          start=$(( $(date +%s) * 1000 ))
+          set +e
+          # the shared database's own log, kept for the diagnostics step (teardown removes the container)
+          ( until docker inspect xdrproof-wb-db >/dev/null 2>&1; do sleep 2; done; docker logs -f xdrproof-wb-db > db.log 2>&1 ) &
+          make replay-main > replay.log 2>&1
+          status=$?
+          set -e
+          node tools/ci/summary.mjs replay replay.log "$start"
+          exit $status
+      # only fixed words and counts: whether the database lost a process, and how, and whether the kernel killed
+      # anything for memory; never a query, a ledger or a log line
+      - name: database and memory diagnostics
+        if: always()
+        shell: bash
+        run: |
+          count() { grep -ciE "$1" "$2" 2>/dev/null || true; }
+          touch db.log
+          echo "database restarts into recovery mode: $(count 'in recovery mode|terminating any other active server processes' db.log)"
+          for sig in 6 7 9 11; do echo "database processes ended by signal $sig: $(grep -cE "terminated by signal $sig\b" db.log || true)"; done
+          echo "shared memory exhausted: $(count 'could not resize shared memory|No space left on device' db.log)"
+          echo "kernel out-of-memory kills: $(sudo dmesg 2>/dev/null | grep -ciE 'oom-kill|killed process|out of memory' || true)"
+
+  # The one required check. It fails unless "what changed" succeeded and every suite it selected succeeded; a suite
+  # may be skipped only when "what changed" said it was not needed.
+  gate:
+    name: deep checks
+    needs: [changes, conformance, replay]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          CHANGES: ${{ needs.changes.result }}
+          WANT_CONFORMANCE: ${{ needs.changes.outputs.conformance }}
+          GOT_CONFORMANCE: ${{ needs.conformance.result }}
+          WANT_REPLAY: ${{ needs.changes.outputs.replay }}
+          GOT_REPLAY: ${{ needs.replay.result }}
+        run: |
+          [ "$CHANGES" = success ] || { echo "what changed: $CHANGES"; exit 1; }
+          ok=1
+          check() {
+            case "$2" in
+              true)  [ "$3" = success ] || { echo "$1 was needed and ended $3"; ok=0; } ;;
+              false) [ "$3" = skipped ] || { echo "$1 was not needed but ended $3"; ok=0; } ;;
+              *)     echo "$1: unclear whether it was needed ('$2')"; ok=0 ;;
+            esac
+          }
+          check conformance "$WANT_CONFORMANCE" "$GOT_CONFORMANCE"
+          check replay "$WANT_REPLAY" "$GOT_REPLAY"
+          [ "$ok" = 1 ] && echo "deep checks: conformance $GOT_CONFORMANCE, replay $GOT_REPLAY"
+          [ "$ok" = 1 ]
