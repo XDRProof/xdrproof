@@ -43,13 +43,13 @@ conformance: tools/node_modules $(NATIVE) ## every corpus variant, strkey, lane 
 	@conformance/run.sh $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 replay: tools/node_modules $(NATIVE)  ## the whole corpus into wallet-backend main, and every sighting before and after its fix; must match replay/expectations/ (~20 min cold)
-	@replay/run.sh all $(if $(or $(DETAILS),$(V)),--details)
+	@replay/run.sh all $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 replay-main: tools/node_modules $(NATIVE)  ## every corpus variant into wallet-backend main, one isolated session per ledger
-	@replay/run.sh main $(if $(or $(DETAILS),$(V)),--details)
+	@replay/run.sh main $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 replay-sightings: tools/node_modules $(NATIVE)  ## #729/#716, #731, #745 and #753 at the commits before and after each fix
-	@replay/run.sh sightings $(if $(or $(DETAILS),$(V)),--details)
+	@replay/run.sh sightings $(if $(or $(DETAILS),$(V)),--details) $(ARGS)
 
 lint-selftest:                       ## xplint against its 44 seeded violations and 17 mutants: every one caught, no good case flagged (~2 min warm)
 	@node linter/selftest.mjs $(if $(or $(DETAILS),$(V)),--details)

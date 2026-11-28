@@ -86,11 +86,25 @@ jobs:
         run: |
           start=$(( $(date +%s) * 1000 ))
           set +e
+          # the shared database's own log, kept for the diagnostics step (teardown removes the container)
+          ( until docker inspect xdrproof-wb-db >/dev/null 2>&1; do sleep 2; done; docker logs -f xdrproof-wb-db > db.log 2>&1 ) &
           make replay-main > replay.log 2>&1
           status=$?
           set -e
           node tools/ci/summary.mjs replay replay.log "$start"
           exit $status
+      # only fixed words and counts: whether the database lost a process, and how, and whether the kernel killed
+      # anything for memory; never a query, a ledger or a log line
+      - name: database and memory diagnostics
+        if: always()
+        shell: bash
+        run: |
+          count() { grep -ciE "$1" "$2" 2>/dev/null || true; }
+          touch db.log
+          echo "database restarts into recovery mode: $(count 'in recovery mode|terminating any other active server processes' db.log)"
+          for sig in 6 7 9 11; do echo "database processes ended by signal $sig: $(grep -cE "terminated by signal $sig\b" db.log || true)"; done
+          echo "shared memory exhausted: $(count 'could not resize shared memory|No space left on device' db.log)"
+          echo "kernel out-of-memory kills: $(sudo dmesg 2>/dev/null | grep -ciE 'oom-kill|killed process|out of memory' || true)"
 
   # The one required check. It fails unless "what changed" succeeded and every suite it selected succeeded; a suite
   # may be skipped only when "what changed" said it was not needed.
